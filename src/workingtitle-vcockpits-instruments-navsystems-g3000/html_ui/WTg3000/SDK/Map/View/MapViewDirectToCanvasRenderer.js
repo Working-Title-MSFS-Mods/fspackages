@@ -32,8 +32,14 @@ class WT_MapViewDirectToCanvasRenderer {
         return this._destinationRendered;
     }
 
+    /**
+     *
+     * @param {WT_DirectToEvent} event
+     */
     _onDirectToEvent(event) {
-        this._needsRedraw = true;
+        if (event.anyType(~(WT_DirectToEvent.Type.FINAL_ALTITUDE_CHANGED | WT_DirectToEvent.Type.VNAV_OFFSET_CHANGED | WT_DirectToEvent.Type.VNAV_PATH_CHANGED))) {
+            this._needsRedraw = true;
+        }
     }
 
     setOptions(options) {

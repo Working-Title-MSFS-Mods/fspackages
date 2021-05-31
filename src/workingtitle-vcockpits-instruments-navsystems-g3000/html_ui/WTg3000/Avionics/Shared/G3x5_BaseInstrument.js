@@ -207,7 +207,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
             // therefore we don't count forced enroute syncs that encounter errors as successful and will try again the next cycle
             await this.flightPlanManagerWT.syncActiveFromGame(!this.flightPlanManagerWT.activePlanHasManualEdit || this._forceSyncEnrouteFromAsobo);
 
-            // need to force enroute sync three times because sometimes the game is late loading all fpln legs from the world map
+            // need to force enroute sync multiple times because sometimes the game is late loading all fpln legs from the world map
             if (this._asoboEnrouteSyncCount < WT_G3x5_BaseInstrument.FLIGHT_PLAN_ENROUTE_SYNC_ATTEMPTS) {
                 this._asoboEnrouteSyncCount++;
             } else if (this._forceSyncEnrouteFromAsobo) {
@@ -227,6 +227,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         if (currentTime - this.flightPlanManagerWT.lastActivePlanSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
             this._syncFlightPlanManagerFromAsobo();
         }
+        this.flightPlanManagerWT.update(currentTime);
     }
 
     _doUpdates(currentTime) {

@@ -616,11 +616,11 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     _updateFlightPlanManager() {
-        let currentTime = Date.now() / 1000;
-        if (currentTime - this._lastFPMSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
+        let currentTime = Date.now();
+        if (currentTime - this._fpm.lastActivePlanSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
             this._fpm.syncActiveFromGame(true);
-            this._lastFPMSyncTime = currentTime;
         }
+        this._fpm.update(currentTime);
     }
 
     _updateScrollInputs() {
@@ -719,7 +719,7 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 }
 WT_VFRMapWT.MAX_LATITUDE = 85;
-WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL = 3; // seconds
+WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL = 3000; // ms
 WT_VFRMapWT.HOTKEY_SCROLL_STEP = 10;
 
 WT_VFRMapWT.BORDER_LOD_RESOLUTION_THRESHOLDS = [

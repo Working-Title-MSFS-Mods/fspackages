@@ -564,6 +564,15 @@ as3000-tsc-vertical-element #ApproachSelection wt-tsc-approachselection {
     --procedureselection-options-labeledbuttons-font-size: 1em;
 }
 
+as3000-tsc-vertical-element #VNAVProfile wt-tsc-vnavprofile {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3vh;
+}
+
 as3000-tsc-vertical-element .charts wt-tsc-charts {
     position: absolute;
     left: 1%;

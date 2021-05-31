@@ -323,6 +323,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._commonPages.departureSelection = new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
                 this._commonPages.arrivalSelection = new WT_G3x5_TSCPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
                 this._commonPages.approachSelection = new WT_G3x5_TSCPage("Approach Selection", "ApproachSelection", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
+                this._commonPages.vnavProfile = new WT_G3x5_TSCPage("VNAV Profile", "VNAVProfile", new WT_G3x5_TSCVNAVProfile("MFD", "MFD Home")),
                 new WT_G3x5_TSCPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.airportInfo = new WT_G3x5_TSCPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
                 this._mfdPagesRight.airportInfo = new WT_G3x5_TSCPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
@@ -398,6 +399,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.waypointKeyboard = new WT_G3x5_TSCElementContainer("Waypoint Keyboard", "WaypointKeyboard", new WT_G3x5_TSCWaypointKeyboard());
         this.waypointKeyboard.setGPS(this);
+
+        this.vnavAltitudeKeyboard = new WT_G3x5_TSCElementContainer("VNAV Altitude Keyboard", "VNAVAltitudeKeyboard", new WT_G3x5_TSCVNAVAltitudeKeyboard());
+        this.vnavAltitudeKeyboard.setGPS(this);
 
         this.duplicateWaypointSelection = new WT_G3x5_TSCElementContainer("Duplicate Waypoint Selection", "DuplicateWaypointSelection", new WT_G3x5_TSCDuplicateWaypointSelection());
         this.duplicateWaypointSelection.setGPS(this);

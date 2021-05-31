@@ -6,10 +6,15 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
          * @type {WT_Waypoint}
          */
         this._presetWaypoint = null;
+        this._presetVNAVAltitude = WT_Unit.FOOT.createNumber(NaN);
+        this._presetVNAVOffset = WT_Unit.NMILE.createNumber(0);
+
         /**
          * @type {WT_Waypoint}
          */
         this._selectedWaypoint = null;
+        this._selectedVNAVAltitude = WT_Unit.FOOT.createNumber(NaN);
+        this._selectedVNAVOffset = WT_Unit.NMILE.createNumber(0);
     }
 
     /**
@@ -49,8 +54,16 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
         this._initFromHTMLElement();
     }
 
-    presetWaypoint(waypoint) {
+    /**
+     *
+     * @param {WT_Waypoint} waypoint
+     * @param {WT_NumberUnitObject} [finalAltitude]
+     * @param {WT_NumberUnitObject} [vnavOffset]
+     */
+    presetWaypoint(waypoint, finalAltitude, vnavOffset) {
         this._presetWaypoint = waypoint;
+        this._presetVNAVAltitude.set(finalAltitude ? finalAltitude : NaN);
+        this._presetVNAVOffset.set(vnavOffset ? vnavOffset : 0);
     }
 
     _updateFromSelectedWaypoint() {
@@ -64,6 +77,32 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
 
         this._selectedWaypoint = waypoint;
         this._updateFromSelectedWaypoint();
+    }
+
+    _updateFromSelectedVNAVAltitude() {
+        this.htmlElement.setVNAVAltitude(this._selectedVNAVAltitude);
+    }
+
+    _selectVNAVAltitude(altitude) {
+        if (altitude.equals(this._selectedVNAVAltitude)) {
+            return;
+        }
+
+        this._selectedVNAVAltitude.set(altitude);
+        this._updateFromSelectedVNAVAltitude();
+    }
+
+    _updateFromSelectedVNAVOffset() {
+        this.htmlElement.setVNAVOffset(this._selectedVNAVOffset);
+    }
+
+    _selectVNAVOffset(offset) {
+        if (offset.equals(this._selectedVNAVOffset)) {
+            return;
+        }
+
+        this._selectedVNAVOffset.set(offset);
+        this._updateFromSelectedVNAVOffset();
     }
 
     _cancelDirectTo() {
@@ -88,7 +127,7 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
             return;
         }
 
-        this.instrument.flightPlanManagerWT.activateDirectTo(this._selectedWaypoint);
+        this.instrument.flightPlanManagerWT.activateDirectTo(this._selectedWaypoint, this._selectedVNAVAltitude.isNaN() ? null : this._selectedVNAVAltitude, this._selectedVNAVOffset);
     }
 
     /**
@@ -99,6 +138,12 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
         switch (event.type) {
             case WT_G3x5_TSCDirectToHTMLElement.EventType.SELECT_WAYPOINT:
                 this._selectWaypoint(event.waypoint);
+                break;
+            case WT_G3x5_TSCDirectToHTMLElement.EventType.SELECT_VNAV_ALTITUDE:
+                this._selectVNAVAltitude(event.altitude);
+                break;
+            case WT_G3x5_TSCDirectToHTMLElement.EventType.SELECT_VNAV_OFFSET:
+                this._selectVNAVOffset(event.offset);
                 break;
             case WT_G3x5_TSCDirectToHTMLElement.EventType.CANCEL:
                 this._openDirectToCancelConfirmPopUp();
@@ -121,11 +166,23 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
         this.htmlElement.loseFocus();
     }
 
-    onEnter() {
+    _loadPresets() {
         if (this._presetWaypoint) {
             this._selectWaypoint(this._presetWaypoint);
             this._presetWaypoint = null;
         }
+        if (!this._presetVNAVAltitude.isNaN()) {
+            this._selectVNAVAltitude(this._presetVNAVAltitude);
+            this._presetVNAVAltitude.set(NaN);
+        }
+        if (!this._presetVNAVOffset.isNaN()) {
+            this._selectVNAVOffset(this._presetVNAVOffset);
+            this._presetVNAVOffset.set(NaN);
+        }
+    }
+
+    onEnter() {
+        this._loadPresets();
         this.htmlElement.open();
     }
 
@@ -143,6 +200,9 @@ class WT_G3x5_TSCDirectToHTMLElement extends HTMLElement {
     constructor() {
         super();
 
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
         /**
          * @type {WT_G3x5_TSCDirectTo}
          */
@@ -152,6 +212,8 @@ class WT_G3x5_TSCDirectToHTMLElement extends HTMLElement {
          * @type {WT_Waypoint}
          */
         this._waypoint = null;
+        this._vnavAltitude = WT_Unit.FOOT.createNumber(NaN);
+        this._vnavOffset = WT_Unit.NMILE.createNumber(0);
 
         /**
          * @type {((event:WT_G3x5_TSCDirectToEvent) => void)[]}
@@ -203,6 +265,8 @@ class WT_G3x5_TSCDirectToHTMLElement extends HTMLElement {
         this._initTabs();
         this._isInit = true;
         this._updateFromWaypoint();
+        this._updateFromVNAVAltitude();
+        this._updateFromVNAVOffset();
     }
 
     connectedCallback() {
@@ -234,6 +298,44 @@ class WT_G3x5_TSCDirectToHTMLElement extends HTMLElement {
         this._waypoint = waypoint;
         if (this._isInit) {
             this._updateFromWaypoint();
+        }
+    }
+
+    _updateFromVNAVAltitude() {
+        this._waypointTab.setVNAVAltitude(this._vnavAltitude);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnitObject} altitude
+     */
+    setVNAVAltitude(altitude) {
+        if (altitude.equals(this._vnavAltitude)) {
+            return;
+        }
+
+        this._vnavAltitude.set(altitude);
+        if (this._isInit) {
+            this._updateFromVNAVAltitude();
+        }
+    }
+
+    _updateFromVNAVOffset() {
+        this._waypointTab.setVNAVOffset(this._vnavOffset);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnitObject} offset
+     */
+    setVNAVOffset(offset) {
+        if (offset.equals(this._vnavOffset)) {
+            return;
+        }
+
+        this._vnavOffset.set(offset);
+        if (this._isInit) {
+            this._updateFromVNAVOffset();
         }
     }
 
@@ -311,9 +413,11 @@ class WT_G3x5_TSCDirectToHTMLElement extends HTMLElement {
  */
 WT_G3x5_TSCDirectToHTMLElement.EventType = {
     SELECT_WAYPOINT: 0,
-    CANCEL: 1,
-    ACTIVATE: 2,
-    ACTIVATE_AND_INSERT_IN_FPLN: 3
+    SELECT_VNAV_ALTITUDE: 1,
+    SELECT_VNAV_OFFSET: 2,
+    CANCEL: 3,
+    ACTIVATE: 4,
+    ACTIVATE_AND_INSERT_IN_FPLN: 5
 };
 WT_G3x5_TSCDirectToHTMLElement.WAYPOINT_ICON_PATH = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCDirectToHTMLElement.TABBED_VIEW_CLASS = "directToTabbedView";
@@ -337,6 +441,8 @@ customElements.define(WT_G3x5_TSCDirectToHTMLElement.NAME, WT_G3x5_TSCDirectToHT
  * @property {WT_G3x5_TSCDirectToHTMLElement} source
  * @property {WT_G3x5_TSCDirectToHTMLElement.EventType} type
  * @property {WT_Waypoint} [waypoint]
+ * @property {WT_NumberUnit} [altitude]
+ * @property {WT_NumberUnit} [offset]
  */
 
 class WT_G3x5_TSCDirectToTab extends WT_G3x5_TSCTabContent {
@@ -429,6 +535,14 @@ class WT_G3x5_TSCDirectToWaypointTab extends WT_G3x5_TSCDirectToTab {
         this.htmlElement.setWaypoint(waypoint);
     }
 
+    setVNAVAltitude(altitude) {
+        this.htmlElement.setVNAVAltitude(altitude);
+    }
+
+    setVNAVOffset(offset) {
+        this.htmlElement.setVNAVOffset(offset);
+    }
+
     update() {
         this.htmlElement.update();
     }
@@ -451,6 +565,12 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
          * @type {WT_Waypoint}
          */
         this._waypoint = null;
+        this._vnavAltitude = WT_Unit.FOOT.createNumber(NaN);
+        this._vnavOffset = WT_Unit.NMILE.createNumber(0);
+
+        this._altitudeUnit = null;
+        this._distanceUnit = null;
+
         this._isInit = false;
 
         this._initFormatters();
@@ -497,9 +617,25 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
         });
     }
 
+    _initAltitudeFormatter() {
+        this._altitudeFormatter = new WT_NumberFormatter({
+            precision: 1,
+            unitCaps: true
+        });
+    }
+
+    _initVNAVOffsetFormatter() {
+        this._vnavOffsetFormatter = new WT_NumberFormatter({
+            precision: 1,
+            unitCaps: true
+        });
+    }
+
     _initFormatters() {
         this._initDistanceFormatter();
         this._initBearingFormatter();
+        this._initAltitudeFormatter();
+        this._initVNAVOffsetFormatter();
     }
 
     async _defineChildren() {
@@ -511,12 +647,16 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
         [
             this._selectButton,
             this._bearingArrow,
+            this._vnavAltitudeButton,
+            this._vnavOffsetButton,
             this._courseButton,
             this._cancelButton,
             this._activateButton
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#selectbutton`, WT_G3x5_TSCWaypointButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#bearingarrow`, WT_TSCBearingArrow),
+            WT_CustomElementSelector.select(this.shadowRoot, `#vnavaltitude`, WT_TSCValueButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#vnavoffset`, WT_TSCValueButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#course`, WT_TSCValueButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#cancel`, WT_TSCContentButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#activate`, WT_TSCContentButton),
@@ -529,6 +669,8 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
 
     _initButtonListeners() {
         this._selectButton.addButtonListener(this._onSelectButtonPressed.bind(this));
+        this._vnavAltitudeButton.addButtonListener(this._onVNAVAltitudeButtonPressed.bind(this));
+        this._vnavOffsetButton.addButtonListener(this._onVNAVOffsetButtonPressed.bind(this));
         this._cancelButton.addButtonListener(this._onCancelButtonPressed.bind(this));
         this._activateButton.addButtonListener(this._onActivateButtonPressed.bind(this));
     }
@@ -539,6 +681,8 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
         this._isInit = true;
         this._updateFromParent();
         this._updateFromWaypoint();
+        this._updateFromVNAVAltitude();
+        this._updateFromVNAVOffset();
     }
 
     connectedCallback() {
@@ -610,6 +754,48 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
         }
     }
 
+    _updateFromVNAVAltitude() {
+        let numberText = this._vnavAltitude.isNaN() ? "_____" : this._altitudeFormatter.getFormattedNumber(this._vnavAltitude, this._altitudeUnit);
+        let unitText = this._altitudeFormatter.getFormattedUnit(this._vnavAltitude, this._altitudeUnit);
+        this._vnavAltitudeButton.valueText = `${numberText}<span style="font-size: var(--directto-unit-font-size, 0.75em);">${unitText}</span>`;
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnitObject} altitude
+     */
+    setVNAVAltitude(altitude) {
+        if (altitude.equals(this._vnavAltitude)) {
+            return;
+        }
+
+        this._vnavAltitude.set(altitude);
+        if (this._isInit) {
+            this._updateFromVNAVAltitude();
+        }
+    }
+
+    _updateFromVNAVOffset() {
+        let numberText = this._vnavOffsetFormatter.getFormattedNumber(this._vnavOffset, this._distanceUnit);
+        let unitText = this._vnavOffsetFormatter.getFormattedUnit(this._vnavOffset, this._distanceUnit);
+        this._vnavOffsetButton.valueText = `${numberText}<span style="font-size: var(--directto-unit-font-size, 0.75em);">${unitText}</span>`;
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnitObject} offset
+     */
+    setVNAVOffset(offset) {
+        if (offset.equals(this._vnavOffset)) {
+            return;
+        }
+
+        this._vnavOffset.set(offset);
+        if (this._isInit) {
+            this._updateFromVNAVOffset();
+        }
+    }
+
     _updateCancelButton() {
         let directTo = this._parent.parentPage.instrument.flightPlanManagerWT.directTo;
         if (directTo.isActive()) {
@@ -651,6 +837,55 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
 
     _onSelectButtonPressed(button) {
         this._openWaypointKeyboard();
+    }
+
+    _onVNAVAltitudeSelected(altitude) {
+        this._parent.fireEvent(WT_G3x5_TSCDirectToHTMLElement.EventType.SELECT_VNAV_ALTITUDE, {altitude: altitude.copy().readonly()});
+    }
+
+    _onVNAVAltitudeRemoved() {
+        this._parent.fireEvent(WT_G3x5_TSCDirectToHTMLElement.EventType.SELECT_VNAV_ALTITUDE, {altitude: WT_Unit.FOOT.createNumber(NaN).readonly()});
+    }
+
+    _openVNAVAltitudeKeyboard() {
+        let initialValue = this._vnavAltitude.isNaN() ? WT_Unit.FOOT.createNumber(0) : this._vnavAltitude;
+
+        this._parent.parentPage.instrument.vnavAltitudeKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            showDirectTo: false,
+            unit: this._parent.parentPage.instrument.unitsSettingModel.altitudeSetting.getAltitudeUnit(),
+            initialValue: initialValue,
+            valueEnteredCallback: this._onVNAVAltitudeSelected.bind(this),
+            removeCallback: this._onVNAVAltitudeRemoved.bind(this)
+        });
+        this._parent.parentPage.instrument.switchToPopUpPage(this._parent.parentPage.instrument.vnavAltitudeKeyboard);
+    }
+
+    _onVNAVAltitudeButtonPressed(button) {
+        this._openVNAVAltitudeKeyboard();
+    }
+
+    _onVNAVOffsetSelected(offset) {
+        this._parent.fireEvent(WT_G3x5_TSCDirectToHTMLElement.EventType.SELECT_VNAV_OFFSET, {offset: offset.copy().readonly()});
+    }
+
+    _openVNAVOffsetKeyboard() {
+        this._parent.parentPage.instrument.numKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            digitCount: 3,
+            decimalPlaces: 0,
+            positiveOnly: false,
+            unit: this._parent.parentPage.instrument.unitsSettingModel.distanceSpeedSetting.getDistanceUnit(),
+            initialValue: this._vnavOffset,
+            valueEnteredCallback: this._onVNAVOffsetSelected.bind(this)
+        });
+        this._parent.parentPage.instrument.switchToPopUpPage(this._parent.parentPage.instrument.numKeyboard);
+    }
+
+    _onVNAVOffsetButtonPressed(button) {
+        this._openVNAVOffsetKeyboard();
     }
 
     _onCancelButtonPressed(button) {
@@ -696,9 +931,26 @@ class WT_G3x5_TSCDirectToWaypointTabHTMLElement extends HTMLElement {
         }
     }
 
+    _updateUnits() {
+        let unitsSettingModel = this._parent.parentPage.instrument.unitsSettingModel;
+
+        let altitudeUnit = unitsSettingModel.altitudeSetting.getAltitudeUnit();
+        if (!altitudeUnit.equals(this._altitudeUnit)) {
+            this._altitudeUnit = altitudeUnit;
+            this._updateFromVNAVAltitude();
+        }
+
+        let distanceUnit = unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        if (!distanceUnit.equals(this._distanceUnit)) {
+            this._distanceUnit = distanceUnit;
+            this._updateFromVNAVOffset();
+        }
+    }
+
     _doUpdate() {
         this._updateSelectButton();
         this._updateBearingDistance();
+        this._updateUnits();
     }
 
     update() {
@@ -861,8 +1113,8 @@ WT_G3x5_TSCDirectToWaypointTabHTMLElement.TEMPLATE.innerHTML = `
             </div>
         </div>
         <div id="options">
-            <wt-tsc-button-value id="vnavaltitude" labeltext="VNAV Altitude" valuetext='_____<span style="font-size: var(--directto-unit-font-size, 0.75em);">FT</span>' enabled="false"></wt-tsc-button-value>
-            <wt-tsc-button-value id="vnavoffset" labeltext="VNAV Offset" valuetext='0<span style="font-size: var(--directto-unit-font-size, 0.75em);">NM</span>' enabled="false"></wt-tsc-button-value>
+            <wt-tsc-button-value id="vnavaltitude" labeltext="VNAV Altitude"></wt-tsc-button-value>
+            <wt-tsc-button-value id="vnavoffset" labeltext="VNAV Offset"></wt-tsc-button-value>
             <wt-tsc-button-value id="course" labeltext="Course" enabled="false"></wt-tsc-button-value>
             <wt-tsc-button-value id="hold" labeltext="Hold" valuetext="–––" enabled="false"></wt-tsc-button-value>
         </div>

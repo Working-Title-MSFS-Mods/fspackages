@@ -13,6 +13,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
          * @type {WT_FlightPlan}
          */
         this._displayedFlightPlan = null;
+        /**
+         * @type {WT_FlightPlanVNAV}
+         */
+        this._displayedFlightPlanVNAV = null;
         this._selectedRow = null;
         this._isInit = false;
 
@@ -94,9 +98,6 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._airwaySelectionPopUp = new WT_G3x5_TSCElementContainer("Airway Selection", "AirwaySelection", new WT_G3x5_TSCAirwaySelection());
         this._airwaySelectionPopUp.setGPS(this.instrument);
 
-        this._vnavAltitudeKeyboardPopUp = new WT_G3x5_TSCElementContainer("VNAV Altitude Keyboard", "VNAVAltitudeKeyboard", new WT_G3x5_TSCVNAVAltitudeKeyboard());
-        this._vnavAltitudeKeyboardPopUp.setGPS(this.instrument);
-
         this._activateLegConfirmPopUp = new WT_G3x5_TSCElementContainer("Activate Leg Confirm", "ActivateLegConfirm", new WT_G3x5_TSCActivateLegConfirmation());
         this._activateLegConfirmPopUp.setGPS(this.instrument);
     }
@@ -107,7 +108,6 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _initHTMLElement() {
         this.htmlElement.setParentPage(this);
-        this._setDisplayedFlightPlan(this._fpm.activePlan);
     }
 
     _initButtonEventHandlerMap() {
@@ -120,6 +120,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.PROC] = this._onProcButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.STANDBY_FLIGHT_PLAN] = this._onStandbyFlightPlanButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVE_FLIGHT_PLAN] = this._onActiveFlightPlanButtonPressed.bind(this);
+        this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.VNAV] = this._onVNAVButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.FLIGHT_PLAN_OPTIONS] = this._onFlightPlanOptionsButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.HEADER] = this._onHeaderButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.LEG_WAYPOINT] = this._onLegWaypointButtonPressed.bind(this);
@@ -163,7 +164,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._initHTMLElement();
         this._initButtonListener();
         this._isInit = true;
-        this._updateTitle();
+        this._updateFromSource();
     }
 
     /**
@@ -214,12 +215,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _updateFromSource() {
         let flightPlan;
+        let flightPlanVNAV = null;
         if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
             flightPlan = this._fpm.activePlan;
+            flightPlanVNAV = this._fpm.activePlanVNAV;
         } else {
             flightPlan = this._fpm.standbyPlan;
         }
-        this._setDisplayedFlightPlan(flightPlan);
+        this._setDisplayedFlightPlan(flightPlan, flightPlanVNAV);
         this.htmlElement.setSource(this._source);
         this._updateTitle();
         this.updateFlightPlanPreview();
@@ -249,9 +252,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
-    _setDisplayedFlightPlan(flightPlan) {
+    _setDisplayedFlightPlan(flightPlan, flightPlanVNAV) {
         this._displayedFlightPlan = flightPlan;
-        this.htmlElement.setFlightPlan(flightPlan);
+        this._displayedFlightPlanVNAV = flightPlanVNAV;
+        this.htmlElement.setFlightPlan(flightPlan, flightPlanVNAV);
     }
 
     /**
@@ -541,6 +545,25 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     /**
      *
      * @param {WT_FlightPlanLeg} leg
+     * @param {WT_NumberUnitReadOnly} altitudeRestriction
+     */
+    async _activateVNAVDRCT(leg, altitudeRestriction) {
+        if (this._source !== WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            return false;
+        }
+
+        try {
+            this._fpm.activateVNAVDirectTo(leg);
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
      */
     async _activateLeg(leg) {
         try {
@@ -566,8 +589,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.SwitchToPageName(pageGroup, pageName);
     }
 
-    _openDRCTPage(waypoint) {
-        this.instrument.commonPages.directTo.element.presetWaypoint(waypoint);
+    _openDRCTPage(waypoint, vnavAltitude) {
+        this.instrument.commonPages.directTo.element.presetWaypoint(waypoint, vnavAltitude, WT_Unit.NMILE.createNumber(0));
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
 
@@ -679,16 +702,21 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     _openVNAVAltitudeKeyboardPopUp(leg) {
         let initialValue = this._getVNAVAltitudeKeyboardInitialValue(leg);
 
-        this._vnavAltitudeKeyboardPopUp.element.setContext({
+        let vnavLegRestriction = this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE ? this._fpm.activePlanVNAV.legRestrictions.get(leg.index) : null;
+        let isLegRestrictionValid = vnavLegRestriction ? (vnavLegRestriction.isDesignated && vnavLegRestriction.isValid) : false;
+
+        this.instrument.vnavAltitudeKeyboard.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
-            leg: leg,
+            showDirectTo: isLegRestrictionValid && this._fpm.isVNAVEnabled,
+            leg,
             unit: this.unitsModel.altitudeUnit,
             initialValue: initialValue,
             valueEnteredCallback: this._setVNAVAltitude.bind(this, leg),
-            removeCallback: this._removeVNAVAltitude.bind(this, leg)
+            removeCallback: this._removeVNAVAltitude.bind(this, leg),
+            vnavDRCTCallback: this._activateVNAVDRCT.bind(this, leg),
         });
-        this.instrument.switchToPopUpPage(this._vnavAltitudeKeyboardPopUp);
+        this.instrument.switchToPopUpPage(this.instrument.vnavAltitudeKeyboard);
     }
 
     /**
@@ -726,10 +754,15 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         let selectedRow = this.htmlElement.getSelectedRow();
         let selectedRowModeHTMLElement = selectedRow ? selectedRow.getActiveModeHTMLElement() : null;
         let waypoint = null;
+        let vnavAltitude = null;
         if (selectedRow && selectedRowModeHTMLElement.leg) {
             waypoint = selectedRowModeHTMLElement.leg.fix;
+            if (this._displayedFlightPlanVNAV) {
+                let legRestriction = this._displayedFlightPlanVNAV.legRestrictions.get(selectedRowModeHTMLElement.leg.index);
+                vnavAltitude = (legRestriction && legRestriction.isDesignated && legRestriction.isValid) ? legRestriction.altitude : null;
+            }
         }
-        this._openDRCTPage(waypoint);
+        this._openDRCTPage(waypoint, vnavAltitude);
     }
 
     _onActivateStandbyButtonPressed(event) {
@@ -747,6 +780,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _onActiveFlightPlanButtonPressed(event) {
         this.setSource(WT_G3x5_TSCFlightPlan.Source.ACTIVE);
+    }
+
+    _onVNAVButtonPressed(event) {
+        this._openPage("MFD", "VNAV Profile");
     }
 
     _onFlightPlanOptionsButtonPressed(event) {
@@ -905,7 +942,12 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onWaypointDRCTButtonPressed(event) {
-        this._openDRCTPage(event.leg.fix);
+        let vnavAltitude = null;
+        if (this._displayedFlightPlanVNAV) {
+            let legRestriction = this._displayedFlightPlanVNAV.legRestrictions.get(event.leg.index);
+            vnavAltitude = (legRestriction && legRestriction.isDesignated && legRestriction.isValid) ? legRestriction.altitude : null;
+        }
+        this._openDRCTPage(event.leg.fix, vnavAltitude);
     }
 
     /**
@@ -1217,6 +1259,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
         this._flightPlanListener = this._onFlightPlanChanged.bind(this);
+        this._flightPlanVNAVListener = this._onFlightPlanVNAVChanged.bind(this);
         this._rowButtonListener = this._onRowButtonPressed.bind(this);
 
         /**
@@ -1232,6 +1275,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
          * @type {WT_FlightPlan}
          */
         this._flightPlan = null;
+        /**
+         * @type {WT_FlightPlanVNAV}
+         */
+        this._flightPlanVNAV = null;
         this._source = WT_G3x5_TSCFlightPlan.Source.ACTIVE;
         /**
          * @type {WT_G3x5_TSCFlightPlanRowHTMLElement[]}
@@ -1348,6 +1395,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             this._procButton,
             this._standbyFlightPlanButton,
             this._activeFlightPlanButton,
+            this._vnavButton,
             this._flightPlanOptionsButton,
             this._rows,
             this._banner
@@ -1357,6 +1405,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             WT_CustomElementSelector.select(this.shadowRoot, `#proc`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#stdbyfpln`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#activefpln`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#vnav`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#fplnoptions`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#rows`, WT_TSCScrollList),
             WT_CustomElementSelector.select(this.shadowRoot, `#banner`, WT_TSCSlidingBanner),
@@ -1391,6 +1440,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._activeFlightPlanButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._activeFlightPlanButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVE_FLIGHT_PLAN
+        }));
+        this._vnavButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._vnavButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.VNAV
         }));
         this._flightPlanOptionsButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._flightPlanOptionsButton,
@@ -1542,6 +1595,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._flightPlan.removeListener(this._flightPlanListener);
     }
 
+    _cleanUpFlightPlanVNAVListener() {
+        if (!this._flightPlanVNAV) {
+            return;
+        }
+
+        this._flightPlanVNAV.removeListener(this._flightPlanVNAVListener);
+    }
+
     _cleanUpHeader() {
         this._nameTitle.textContent = "______/______";
     }
@@ -1560,16 +1621,25 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
         this._cleanUpFlightPlanRenderer();
         this._cleanUpFlightPlanListener();
+        this._cleanUpFlightPlanVNAVListener();
         this._cleanUpHeader();
         this._cleanUpRows();
     }
 
     _initFlightPlanRenderer() {
-        this._flightPlanRenderer = new WT_G3x5_TSCFlightPlanRenderer(this, this._flightPlan);
+        this._flightPlanRenderer = new WT_G3x5_TSCFlightPlanRenderer(this, this._flightPlan, this._flightPlanVNAV);
     }
 
     _initFlightPlanListener() {
         this._flightPlan.addListener(this._flightPlanListener);
+    }
+
+    _initFlightPlanVNAVListener() {
+        if (!this._flightPlanVNAV) {
+            return;
+        }
+
+        this._flightPlanVNAV.addListener(this._flightPlanVNAVListener);
     }
 
     _updateFromFlightPlan() {
@@ -1579,20 +1649,23 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
         this._initFlightPlanRenderer();
         this._initFlightPlanListener();
+        this._initFlightPlanVNAVListener();
         this._drawFlightPlan();
     }
 
     /**
      *
      * @param {WT_FlightPlan} flightPlan
+     * @param {WT_FlightPlanVNAV} flightPlanVNAV
      */
-    setFlightPlan(flightPlan) {
+    setFlightPlan(flightPlan, flightPlanVNAV) {
         if (flightPlan === this._flightPlan) {
             return;
         }
 
         this._cleanUpFlightPlan();
         this._flightPlan = flightPlan;
+        this._flightPlanVNAV = flightPlanVNAV;
         if (this._isInit) {
             this._updateFromFlightPlan();
         }
@@ -1886,9 +1959,11 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         if (event.types !== WT_FlightPlanEvent.Type.LEG_ALTITUDE_CHANGED) {
             this._updateAirwayCollapseMap();
             this._redrawFlightPlan();
-        } else {
-            this._flightPlanRenderer.refreshAltitudeConstraint(event.changedConstraint.leg, this._altitudeUnit);
         }
+    }
+
+    _onFlightPlanVNAVChanged(source) {
+        this._flightPlanRenderer.refreshAllAltitudeConstraints();
     }
 
     _updateDataFieldTitle() {
@@ -2390,7 +2465,7 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                 <wt-tsc-button-label id="proc" labeltext="PROC"></wt-tsc-button-label>
                 <wt-tsc-button-label id="stdbyfpln" class="activeOnly" labeltext="Standby Flight Plan"></wt-tsc-button-label>
                 <wt-tsc-button-label id="activefpln" class="standbyOnly" labeltext="Active Flight Plan"></wt-tsc-button-label>
-                <wt-tsc-button-label id="vnav" labeltext="VNAV" class="activeOnly" enabled="false"></wt-tsc-button-label>
+                <wt-tsc-button-label id="vnav" labeltext="VNAV" class="activeOnly"></wt-tsc-button-label>
                 <wt-tsc-button-label id="fplnoptions" labeltext="Flight Plan Options"></wt-tsc-button-label>
             </div>
             <div id="tablecontainer">
@@ -2864,6 +2939,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
          * @type {WT_FlightPlanLeg}
          */
         this._leg = null;
+        /**
+         * @type {WT_FlightPlanVNAVLegRestriction}
+         */
+        this._vnavLegRestriction = null;
 
         this._isActive = false;
         this._isInit = false;
@@ -3082,7 +3161,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     _clearAltitudeConstraint() {
-        this._altitudeConstraint.update(null, this._parentPage.unitsModel.altitudeUnit);
+        this._altitudeConstraint.update(null, null, this._parentPage.unitsModel.altitudeUnit);
     }
 
     _clearAirway() {
@@ -3093,8 +3172,8 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._waypointButton.setWaypoint(this._leg.fix);
     }
 
-    _updateAltitudeConstraintFromLeg() {
-        this._altitudeConstraint.update(this._leg.altitudeConstraint, this._parentPage.unitsModel.altitudeUnit);
+    _updateAltitudeConstraint() {
+        this._altitudeConstraint.update(this._leg.altitudeConstraint, this._vnavLegRestriction, this._parentPage.unitsModel.altitudeUnit);
     }
 
     /**
@@ -3120,7 +3199,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     _updateFromLeg() {
         if (this._leg) {
             this._updateWaypointFromLeg();
-            this._updateAltitudeConstraintFromLeg();
+            this._updateAltitudeConstraint();
             this._updateAirwayFromLeg();
         } else {
             this._clearWaypointButton();
@@ -3135,9 +3214,32 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
      * @param {WT_FlightPlanLeg} leg
      */
     setLeg(leg) {
+        if (leg === this._leg) {
+            return;
+        }
+
         this._leg = leg;
         if (this._isInit) {
             this._updateFromLeg();
+        }
+    }
+
+    _updateFromVNAVLegRestriction() {
+        this._updateAltitudeConstraint();
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanVNAVLegRestriction} restriction
+     */
+    setVNAVLegRestriction(restriction) {
+        if (this._vnavLegRestriction === restriction) {
+            return;
+        }
+
+        this._vnavLegRestriction = restriction;
+        if (this._isInit) {
+            this._updateFromVNAVLegRestriction();
         }
     }
 
@@ -3202,7 +3304,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
             return;
         }
 
-        this._updateAltitudeConstraintFromLeg();
+        this._updateAltitudeConstraint();
     }
 
     updateDataFieldUnits() {
@@ -3391,7 +3493,14 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
-        this._constraint = null;
+        /**
+         * @type {WT_FlightPlanLegAltitudeConstraint}
+         */
+        this._legConstraint = null;
+        /**
+         * @type {WT_FlightPlanVNAVLegRestriction}
+         */
+        this._vnavLegRestriction = null;
         this._altitudeUnit = null;
         this._isInit = false;
 
@@ -3436,6 +3545,14 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
         this._doUpdate();
     }
 
+    _setDesignated(value) {
+        this._wrapper.setAttribute("designated", `${value}`);
+    }
+
+    _setInvalid(value) {
+        this._wrapper.setAttribute("invalid", `${value}`);
+    }
+
     _displayNone() {
         this._ceilText.innerHTML = `_____${this._altitudeFormatter.getFormattedUnitHTML(WT_Unit.FOOT.createNumber(0), this._altitudeUnit)}`;
         this._wrapper.setAttribute("mode", "none");
@@ -3446,9 +3563,9 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
         this._wrapper.setAttribute("mode", "custom");
     }
 
-    _displayAdvisoryAltitude(altitude) {
+    _displayDefaultAltitude(altitude) {
         this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(altitude, this._altitudeUnit);
-        this._wrapper.setAttribute("mode", "advisory");
+        this._wrapper.setAttribute("mode", "default");
     }
 
     /**
@@ -3480,16 +3597,37 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
     }
 
     _doUpdate() {
-        if (this._constraint) {
-            if (this._constraint.customAltitude) {
-                this._displayCustomAltitude(this._constraint.customAltitude);
-            } else if (this._constraint.advisoryAltitude) {
-                this._displayAdvisoryAltitude(this._constraint.advisoryAltitude);
-            } else if (this._constraint.publishedConstraint) {
-                this._displayPublishedConstraint(this._constraint.publishedConstraint);
+        let isDesignated = false;
+        let isInvalid = false;
+        if (this._vnavLegRestriction) {
+            isDesignated = this._vnavLegRestriction.isDesignated;
+            isInvalid = isDesignated && !this._vnavLegRestriction.isValid;
+        }
+
+        this._setDesignated(isDesignated);
+        this._setInvalid(isInvalid);
+
+        // order of precedence for display:
+        // 1) VNAV designated altitude
+        // 2) VNAV advisory altitude
+        // 3) flight plan custom altitude
+        // 4) flight plan advisory altitude
+        // 5) published altitude
+
+        if (isDesignated) {
+            if (this._legConstraint && this._legConstraint.customAltitude) {
+                this._displayCustomAltitude(this._vnavLegRestriction.altitude);
             } else {
-                this._displayNone();
+                this._displayDefaultAltitude(this._vnavLegRestriction.altitude);
             }
+        } else if (this._vnavLegRestriction) {
+            this._displayDefaultAltitude(this._vnavLegRestriction.altitude);
+        } else if (this._legConstraint && this._legConstraint.customAltitude) {
+            this._displayCustomAltitude(this._legConstraint.customAltitude);
+        } else if (this._legConstraint && this._legConstraint.advisoryAltitude) {
+            this._displayDefaultAltitude(this._legConstraint.advisoryAltitude);
+        } else if (this._legConstraint && this._legConstraint.publishedConstraint) {
+            this._displayPublishedConstraint(this._legConstraint.publishedConstraint);
         } else {
             this._displayNone();
         }
@@ -3497,10 +3635,13 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
 
     /**
      *
-     * @param {WT_FlightPlanLegAltitudeConstraint} constraint
+     * @param {WT_FlightPlanLegAltitudeConstraint} legConstraint
+     * @param {WT_FlightPlanVNAVLegRestriction} vnavLegRestriction
+     * @param {WT_Unit} altitudeUnit
      */
-    update(constraint, altitudeUnit) {
-        this._constraint = constraint;
+    update(legConstraint, vnavLegRestriction, altitudeUnit) {
+        this._legConstraint = legConstraint;
+        this._vnavLegRestriction = vnavLegRestriction;
         this._altitudeUnit = altitudeUnit;
         if (this._isInit) {
             this._doUpdate();
@@ -3525,46 +3666,70 @@ WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
             top: var(--flightplanaltitudeconstraint-padding-top, 0.2em);
             width: calc(100% - var(--flightplanaltitudeconstraint-padding-left, 0.2em) - var(--flightplanaltitudeconstraint-padding-right, 0.2em));
             height: calc(100% - var(--flightplanaltitudeconstraint-padding-top, 0.2em) - var(--flightplanaltitudeconstraint-padding-bottom, 0.2em));
-            color: white;
-            display: flex;
-            flex-flow: row nowrap;
-            justify-content: center;
-            align-items: center;
+            --flightplanaltitudeconstraint-content-color: white;
         }
-            #altitude {
+        #wrapper[designated="true"] {
+            --flightplanaltitudeconstraint-content-color: var(--wt-g3x5-lightblue);
+        }
+            #flexbox {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
                 display: flex;
-                flex-flow: column nowrap;
+                flex-flow: row nowrap;
+                justify-content: center;
                 align-items: center;
             }
-                .altitudeComponent {
-                    display: none;
+                #altitude {
+                    display: flex;
+                    flex-flow: column nowrap;
+                    align-items: center;
+                    color: var(--flightplanaltitudeconstraint-content-color);
                 }
-                #wrapper[mode="none"] .none,
-                #wrapper[mode="custom"] .custom,
-                #wrapper[mode="advisory"] .advisory,
-                #wrapper[mode="above"] .above,
-                #wrapper[mode="below"] .below,
-                #wrapper[mode="at"] .at,
-                #wrapper[mode="between"] .between {
+                    .altitudeComponent {
+                        display: none;
+                    }
+                    #wrapper[mode="none"] .none,
+                    #wrapper[mode="custom"] .custom,
+                    #wrapper[mode="default"] .default,
+                    #wrapper[mode="above"] .above,
+                    #wrapper[mode="below"] .below,
+                    #wrapper[mode="at"] .at,
+                    #wrapper[mode="between"] .between {
+                        display: block;
+                    }
+                    #ceilbar {
+                        width: 100%;
+                        height: 0;
+                        border-bottom: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) var(--flightplanaltitudeconstraint-content-color);
+                    }
+                    #floorbar {
+                        width: 100%;
+                        height: 0;
+                        border-top: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) var(--flightplanaltitudeconstraint-content-color);
+                    }
+                #editicon {
+                    display: none;
+                    width: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
+                    height: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
+                    fill: var(--flightplanaltitudeconstraint-content-color);
+                }
+                #wrapper[mode="custom"] #editicon {
                     display: block;
                 }
-                #ceilbar {
-                    width: 100%;
-                    height: 0;
-                    border-bottom: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) white;
-                }
-                #floorbar {
-                    width: 100%;
-                    height: 0;
-                    border-top: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) white;
-                }
-            #editicon {
+            #invalidicon {
                 display: none;
-                width: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
-                height: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
-                fill: white;
+                position: absolute;
+                left: 0%;
+                top: 0%;
+                width: 100%;
+                height: 100%;
+                fill: transparent;
+                stroke-width: 5;
+                stroke: var(--flightplanaltitudeconstraint-content-color);
             }
-            #wrapper[mode="custom"] #editicon {
+            #wrapper[invalid="true"] #invalidicon {
                 display: block;
             }
 
@@ -3573,16 +3738,21 @@ WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
         }
     </style>
     <div id="wrapper">
-        <div id="altitude">
-            <div id="ceilbar" class="altitudeComponent between at below"></div>
-            <div id="ceiltext" class="altitudeComponent between at below advisory custom none"></div>
-            <div id="floortext" class="altitudeComponent between above"></div>
-            <div id="floorbar" class="altitudeComponent between at above"></div>
+        <div id="flexbox">
+            <div id="altitude">
+                <div id="ceilbar" class="altitudeComponent between at below"></div>
+                <div id="ceiltext" class="altitudeComponent between at below default custom none"></div>
+                <div id="floortext" class="altitudeComponent between above"></div>
+                <div id="floorbar" class="altitudeComponent between at above"></div>
+            </div>
+            <svg id="editicon" viewBox="0 0 64 64">
+                <path d="M48.4,6.28l3.1-3.11S55.39-.71,60.05,4s.78,8.55.78,8.55l-3.11,3.1Z" />
+                <path d="M46.84,7.84,4.11,50.56S1,61.44,1.78,62.22s11.66-2.33,11.66-2.33L56.16,17.16Z" />
+            </svg>
+            <svg id="invalidicon" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M 5 5 L 95 95 M 5 95 L 95 5" vector-effect="non-scaling-stroke" />
+            </svg>
         </div>
-        <svg id="editicon" viewBox="0 0 64 64">
-            <path d="M48.4,6.28l3.1-3.11S55.39-.71,60.05,4s.78,8.55.78,8.55l-3.11,3.1Z" />
-            <path d="M46.84,7.84,4.11,50.56S1,61.44,1.78,62.22s11.66-2.33,11.66-2.33L56.16,17.16Z" />
-        </svg>
     </div>
 `;
 
@@ -3917,10 +4087,12 @@ class WT_G3x5_TSCFlightPlanRenderer {
     /**
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_FlightPlan} flightPlan
+     * @param {WT_FlightPlanVNAV} flightPlanVNAV
      */
-    constructor(htmlElement, flightPlan) {
+    constructor(htmlElement, flightPlan, flightPlanVNAV) {
         this._htmlElement = htmlElement;
         this._flightPlan = flightPlan;
+        this._flightPlanVNAV = flightPlanVNAV;
 
         this._origin = new WT_G3x5_TSCFlightPlanOriginRenderer(this, flightPlan.getOrigin());
         this._enroute = new WT_G3x5_TSCFlightPlanEnrouteRenderer(this, flightPlan.getEnroute());
@@ -3955,6 +4127,14 @@ class WT_G3x5_TSCFlightPlanRenderer {
      */
     get flightPlan() {
         return this._flightPlan;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_FlightPlanVNAV}
+     */
+    get flightPlanVNAV() {
+        return this._flightPlanVNAV;
     }
 
     /**
@@ -4021,15 +4201,25 @@ class WT_G3x5_TSCFlightPlanRenderer {
         this._redrawActiveLeg();
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
     refreshAltitudeConstraint(leg) {
         let row = this._legRows.get(leg);
         if (row) {
-            row.getActiveModeHTMLElement().refreshAltitudeConstraint();
+            let modeHTMLElement = row.getActiveModeHTMLElement();
+            modeHTMLElement.setVNAVLegRestriction(this.flightPlanVNAV ? this.flightPlanVNAV.legRestrictions.get(leg.index) : null);
+            modeHTMLElement.refreshAltitudeConstraint();
         }
     }
 
     refreshAllAltitudeConstraints() {
-        this._legRows.forEach(row => row.getActiveModeHTMLElement().refreshAltitudeConstraint());
+        this._legRows.forEach(row => {
+            let modeHTMLElement = row.getActiveModeHTMLElement();
+            modeHTMLElement.setVNAVLegRestriction(this.flightPlanVNAV ? this.flightPlanVNAV.legRestrictions.get(modeHTMLElement.leg.index) : null);
+            modeHTMLElement.refreshAltitudeConstraint();
+        }, this);
     }
 
     updateDataFieldUnits() {
@@ -4394,6 +4584,7 @@ class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRende
 
         this._modeHTMLElement = this._row.getActiveModeHTMLElement();
         this._modeHTMLElement.setLeg(this.element);
+        this._modeHTMLElement.setVNAVLegRestriction(this._parent.flightPlanVNAV ? this._parent.flightPlanVNAV.legRestrictions.get(this.element.index) : null);
 
         this._parent.registerLegRow(this.element, this._row);
     }
@@ -4431,6 +4622,7 @@ class WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer extends WT_G3x5_TSCFligh
 
         this._modeHTMLElement = this._row.getActiveModeHTMLElement();
         this._modeHTMLElement.setLeg(this.element);
+        this._modeHTMLElement.setVNAVLegRestriction(this._parent.flightPlanVNAV ? this._parent.flightPlanVNAV.legRestrictions.get(this.element.index) : null);
 
         this._parent.registerLegRow(this.element, this._row);
     }
@@ -4443,243 +4635,6 @@ class WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer extends WT_G3x5_TSCFligh
         this._updateModeHTMLElement(state);
     }
 }
-
-class WT_G3x5_TSCVNAVAltitudeKeyboard extends WT_G3x5_TSCPopUpElement {
-    /**
-     * @readonly
-     * @type {WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement}
-     */
-    get htmlElement() {
-        return this._htmlElement;
-    }
-
-    _createHTMLElement() {
-        return new WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement();
-    }
-
-    async _initFromHTMLElement() {
-        await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
-        this.htmlElement.removeButton.addButtonListener(this._onRemoveButtonPressed.bind(this));
-    }
-
-    onInit() {
-        this._htmlElement = this._createHTMLElement();
-        this.popUpWindow.appendChild(this.htmlElement);
-        this._initFromHTMLElement();
-    }
-
-    _activateEnterButton() {
-        this.instrument.activateNavButton(6, "Enter", this._onEnterPressed.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
-    }
-
-    _deactivateEnterButton() {
-        this.instrument.deactivateNavButton(6, true);
-    }
-
-    _activateNavButtons() {
-        super._activateNavButtons();
-
-        this._activateEnterButton();
-    }
-
-    _deactivateNavButtons() {
-        super._activateNavButtons();
-
-        this._deactivateEnterButton();
-    }
-
-    _onEnterPressed() {
-        let value = this.htmlElement.getValue();
-        this.context.valueEnteredCallback(value);
-        this._onBackPressed();
-    }
-
-    _onRemoveButtonPressed() {
-        this.context.removeCallback();
-        this._onBackPressed();
-    }
-
-    onEnter() {
-        super.onEnter();
-
-        this.htmlElement.setContext({
-            digitCount: 5,
-            unit: this.context.unit,
-            initialValue: this.context.initialValue,
-            leg: this.context.leg
-        });
-        this.htmlElement.open();
-    }
-
-    onExit() {
-        super.onExit();
-
-        this.htmlElement.close();
-    }
-}
-
-class WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement extends HTMLElement {
-    constructor() {
-        super();
-
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
-
-        this._context = null;
-        this._isOpen = false;
-        this._isInit = false;
-    }
-
-    _getTemplate() {
-        return WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE;
-    }
-
-    /**
-     * @readonly
-     * @type {Boolean}
-     */
-    get isInitialized() {
-        return this._isInit;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_TSCLabeledButton}
-     */
-    get removeButton() {
-        return this._removeButton;
-    }
-
-    /**
-     *
-     * @returns {WT_NumberUnitReadOnly}
-     */
-    getValue() {
-        return this._isInit ? this._keyboard.getValue() : null;
-    }
-
-    async _defineChildren() {
-        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
-
-        [
-            this._keyboard,
-            this._removeButton
-        ] = await Promise.all([
-            WT_CustomElementSelector.select(this.shadowRoot, `#keyboard`, WT_G3x5_TSCNumericKeyboardHTMLElement),
-            WT_CustomElementSelector.select(this.shadowRoot, `#remove`, WT_TSCLabeledButton)
-        ]);
-    }
-
-    async _connectedCallbackHelper() {
-        await this._defineChildren();
-        this._isInit = true;
-        this._updateFromContext();
-        if (this._isOpen) {
-            this._initFromOpen();
-        }
-    }
-
-    connectedCallback() {
-        this._connectedCallbackHelper();
-    }
-
-    _updateFromContext() {
-        this._keyboard.setContext(this._context);
-    }
-
-    setContext(context) {
-        this._context = context;
-        if (this._isInit) {
-            this._updateFromContext();
-        }
-    }
-
-    _initFromOpen() {
-        this._keyboard.open();
-    }
-
-    open() {
-        this._isOpen = true;
-        if (!this._isInit || !this._context) {
-            return;
-        }
-
-        if (this._isInit) {
-            this._initFromOpen();
-        }
-    }
-
-    _cleanUpFromClose() {
-        this._keyboard.close();
-    }
-
-    close() {
-        this._isOpen = false;
-
-        if (this._isInit) {
-            this._cleanUpFromClose();
-        }
-    }
-}
-WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.NAME = "wt-tsc-vnavaltkeyboard";
-WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE = document.createElement("template");
-WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE.innerHTML = `
-    <style>
-        :host {
-            display: block;
-            border-radius: 5px;
-            background: linear-gradient(#1f3445, black 25px);
-            border: 3px solid var(--wt-g3x5-bordergray);
-        }
-
-        #wrapper {
-            position: absolute;
-            left: var(--vnavaltkeyboard-padding-left, 0.2em);
-            top: var(--vnavaltkeyboard-padding-top, 0.2em);
-            width: calc(100% - var(--vnavaltkeyboard-padding-left, 0.2em) - var(--vnavaltkeyboard-padding-right, 0.2em));
-            height: calc(100% - var(--vnavaltkeyboard-padding-top, 0.2em) - var(--vnavaltkeyboard-padding-bottom, 0.2em));
-        }
-            #keyboard {
-                position: absolute;
-                left: 0%;
-                top: 0%;
-                width: 100%;
-                height: 100%;
-                border-radius: 0;
-                background: transparent;
-                border: none;
-                --numkeyboard-padding-left: 0%;
-                --numkeyboard-padding-top: 0%;
-                --numkeyboard-padding-right: 0%;
-                --numkeyboard-padding-bottom: 0%;
-                --numkeyboard-display-horizontal-offset: -15%;
-                --numkeyboard-keyboard-horizontal-offset: -15%;
-            }
-            #removecontainer {
-                position: absolute;
-                left: 0%;
-                bottom: 0%;
-                width: var(--vnavaltkeyboard-bottom-button-width, calc(var(--numkeyboard-button-size, 1.5em) * 1.5));
-                height: var(--vnavaltkeyboard-bottom-button-height, var(--numkeyboard-button-size, 1.5em));
-            }
-                #remove {
-                    position: absolute;
-                    left: 0%;
-                    top: 0%;
-                    width: 100%;
-                    height: 100%;
-                    font-size: var(--vnavaltkeyboard-bottom-button-font-size, 0.5em);
-                }
-    </style>
-    <div id="wrapper">
-        <wt-tsc-numkeyboard id="keyboard"></wt-tsc-numkeyboard>
-        <div id="removecontainer">
-            <wt-tsc-button-label id="remove" labeltext="Remove VNAV ALT"></wt-tsc-button-label>
-        </div>
-    </div>
-`;
-
-customElements.define(WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.NAME, WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement);
 
 class WT_G3x5_TSCActivateLegConfirmation extends WT_G3x5_TSCConfirmationPopUp {
     _createHTMLElement() {

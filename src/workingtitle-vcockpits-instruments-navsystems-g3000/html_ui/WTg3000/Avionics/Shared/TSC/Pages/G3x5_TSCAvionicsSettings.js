@@ -759,6 +759,8 @@ class WT_G3x5_TSCSystemRunwayLengthRow extends WT_G3x5_TSCAvionicsSettingsRow {
         this._numKeyboardContext = {
             title: "Select Runway Length",
             digitCount: 5,
+            decimalPlaces: 0,
+            positiveOnly: true,
             valueEnteredCallback: this._onValueEntered.bind(this)
         };
     }

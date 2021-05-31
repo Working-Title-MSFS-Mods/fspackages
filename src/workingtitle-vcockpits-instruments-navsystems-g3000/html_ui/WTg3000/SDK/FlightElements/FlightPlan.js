@@ -798,9 +798,9 @@ class WT_FlightPlan {
                         waypoint = await this._icaoWaypointFactory.getWaypoint(entry.icao);
                     }
                     if (entry.steps && entry.steps.length > 0) {
-                        return new WT_FlightPlanWaypointFixLeg(waypoint, this._createLegSteps(waypoint, entry.steps), entry.publishedConstraint, entry.advisoryAltitude, entry.customAltitude);
+                        return new WT_FlightPlanWaypointFixLeg(waypoint, this._createLegSteps(waypoint, entry.steps), entry.isAltitudeSuppressed, entry.publishedConstraint, entry.advisoryAltitude, entry.customAltitude);
                     } else {
-                        return new WT_FlightPlanDirectToWaypointLeg(waypoint, entry.publishedConstraint, entry.advisoryAltitude, entry.customAltitude);
+                        return new WT_FlightPlanDirectToWaypointLeg(waypoint, entry.isAltitudeSuppressed, entry.publishedConstraint, entry.advisoryAltitude, entry.customAltitude);
                     }
                 }, this));
                 let eventData = {types: 0};
@@ -1169,6 +1169,10 @@ class WT_FlightPlanEvent {
         return this._data.changedConstraint;
     }
 
+    get oldIsSuppressed() {
+        return this._data.oldIsSuppressed;
+    }
+
     get oldPublishedConstraint() {
         return this._data.oldPublishedConstraint;
     }
@@ -1332,13 +1336,14 @@ class WT_FlightPlanElement {
 class WT_FlightPlanLeg extends WT_FlightPlanElement {
     /**
      * @param {WT_FlightPlanLegStep} firstStep
+     * @param {Boolean} isAltitudeSuppressed
      * @param {WT_AltitudeConstraint} [publishedConstraint]
      * @param {WT_NumberUnit} [advisoryAltitude]
      * @param {WT_NumberUnit} [customAltitude]
      * @param {WT_FlightPlanElement} [parent]
      * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(firstStep, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
+    constructor(firstStep, isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
         super(parent, segment);
 
         /**
@@ -1347,7 +1352,7 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
         this._firstStep = firstStep;
         this._firstStep._setLeg(this);
         this._stepCount = 1;
-        this._altitudeConstraint = new WT_FlightPlanLegAltitudeConstraint(this, publishedConstraint, advisoryAltitude, customAltitude);
+        this._altitudeConstraint = new WT_FlightPlanLegAltitudeConstraint(this, isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude);
         this._desiredTrack = new WT_NavAngleUnit(false).createNumber(NaN);
         this._index = -1;
 
@@ -1469,12 +1474,14 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 class WT_FlightPlanLegAltitudeConstraint {
     /**
      * @param {WT_FlightPlanLeg} leg
+     * @param {Boolean} [isSuppressed]
      * @param {WT_AltitudeConstraint} [publishedConstraint]
      * @param {WT_NumberUnit} [advisoryAltitude]
      * @param {WT_NumberUnit} [customAltitude]
      */
-    constructor(leg, publishedConstraint, advisoryAltitude, customAltitude) {
+    constructor(leg, isSuppressed, publishedConstraint, advisoryAltitude, customAltitude) {
         this._leg = leg;
+        this._isSuppressed = Boolean(isSuppressed);
         this._publishedConstraint = publishedConstraint ? publishedConstraint : null;
         this._advisoryAltitude = WT_Unit.FOOT.createNumber(advisoryAltitude ? advisoryAltitude.asUnit(WT_Unit.FOOT) : NaN);
         this._customAltitude = WT_Unit.FOOT.createNumber(customAltitude ? customAltitude.asUnit(WT_Unit.FOOT) : NaN)
@@ -1486,6 +1493,14 @@ class WT_FlightPlanLegAltitudeConstraint {
      */
     get leg() {
         return this._leg;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isSuppressed() {
+        return this._isSuppressed;
     }
 
     /**
@@ -1510,6 +1525,17 @@ class WT_FlightPlanLegAltitudeConstraint {
      */
     get customAltitude() {
         return this._customAltitude.isNaN() ? null : this._customAltitude.readonly();
+    }
+
+    setSuppressed(value) {
+        if (this._isSuppressed === value) {
+            return;
+        }
+
+        this._isSuppressed = value;
+        if (this.leg.flightPlan) {
+            this.leg.flightPlan._onLegAltitudeConstraintChanged(this, {oldIsSuppressed: !value});
+        }
     }
 
     /**
@@ -1796,14 +1822,15 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
      *
      * @param {WT_Waypoint} fix
      * @param {WT_FlightPlanLeg} firstStep
+     * @param {Boolean} isAltitudeSuppressed
      * @param {WT_AltitudeConstraint} [publishedConstraint]
      * @param {WT_NumberUnit} [advisoryAltitude]
      * @param {WT_NumberUnit} [customAltitude]
      * @param {WT_FlightPlanElement} [parent]
      * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(fix, firstStep, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
-        super(firstStep, publishedConstraint, advisoryAltitude, customAltitude, parent, segment);
+    constructor(fix, firstStep, isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
+        super(firstStep, isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment);
         this._fix = fix;
     }
 
@@ -1817,7 +1844,7 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
     }
 
     copy() {
-        return new WT_FlightPlanWaypointFixLeg(this.fix, this.firstStep().copy(), this.altitudeConstraint.publishedConstraint, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
+        return new WT_FlightPlanWaypointFixLeg(this.fix, this.firstStep().copy(), this.altitudeConstraint.isSuppressed, this.altitudeConstraint.publishedConstraint, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
     }
 }
 
@@ -1825,18 +1852,19 @@ class WT_FlightPlanInitialWaypointLeg extends WT_FlightPlanWaypointFixLeg {
     /**
      *
      * @param {WT_Waypoint} fix
+     * @param {Boolean} isAltitudeSuppressed
      * @param {WT_AltitudeConstraint} [publishedConstraint]
      * @param {WT_NumberUnit} [advisoryAltitude]
      * @param {WT_NumberUnit} [customAltitude]
      * @param {WT_FlightPlanElement} [parent]
      * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(fix, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
-        super(fix, new WT_FlightPlanLegInitialStep(fix.location), publishedConstraint, advisoryAltitude, customAltitude, parent, segment);
+    constructor(fix, isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
+        super(fix, new WT_FlightPlanLegInitialStep(fix.location), isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment);
     }
 
     copy() {
-        return new WT_FlightPlanInitialWaypointLeg(this.fix, this.altitudeConstraint.publishedConstraint, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
+        return new WT_FlightPlanInitialWaypointLeg(this.fix, this.altitudeConstraint.isSuppressed, this.altitudeConstraint.publishedConstraint, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
     }
 
     equals(other) {
@@ -1848,18 +1876,19 @@ class WT_FlightPlanDirectToWaypointLeg extends WT_FlightPlanWaypointFixLeg {
     /**
      *
      * @param {WT_Waypoint} fix
+     * @param {Boolean} isAltitudeSuppressed
      * @param {WT_AltitudeConstraint} [publishedConstraint]
      * @param {WT_NumberUnit} [advisoryAltitude]
      * @param {WT_NumberUnit} [customAltitude]
      * @param {WT_FlightPlanElement} [parent]
      * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(fix, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
-        super(fix, new WT_FlightPlanLegDirectStep(fix.location), publishedConstraint, advisoryAltitude, customAltitude, parent, segment);
+    constructor(fix, isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment) {
+        super(fix, new WT_FlightPlanLegDirectStep(fix.location), isAltitudeSuppressed, publishedConstraint, advisoryAltitude, customAltitude, parent, segment);
     }
 
     copy() {
-        return new WT_FlightPlanDirectToWaypointLeg(this.fix, this.altitudeConstraint.publishedConstraint, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
+        return new WT_FlightPlanDirectToWaypointLeg(this.fix, this.altitudeConstraint.isSuppressed, this.altitudeConstraint.publishedConstraint, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
     }
 
     equals(other) {
@@ -1872,13 +1901,14 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
      * @param {WT_ProcedureLeg} procedureLeg
      * @param {WT_Waypoint} fix
      * @param {WT_FlightPlanLegStep} firstStep
+     * @param {Boolean} isAltitudeSuppressed
      * @param {WT_NumberUnit} [advisoryAltitude]
      * @param {WT_NumberUnit} [customAltitude]
      * @param {WT_FlightPlanElement} [parent]
      * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(procedureLeg, fix, firstStep, advisoryAltitude, customAltitude, parent, segment) {
-        super(fix, firstStep, procedureLeg.altitudeConstraint, advisoryAltitude, customAltitude, parent, segment);
+    constructor(procedureLeg, fix, firstStep, isAltitudeSuppressed, advisoryAltitude, customAltitude, parent, segment) {
+        super(fix, firstStep, isAltitudeSuppressed, procedureLeg.altitudeConstraint, advisoryAltitude, customAltitude, parent, segment);
 
         this._procedureLeg = procedureLeg;
     }
@@ -1902,7 +1932,7 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
     }
 
     copy() {
-        return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.fix, this.firstStep().copy(), this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
+        return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.fix, this.firstStep().copy(), this.altitudeConstraint.isSuppressed, this.altitudeConstraint.advisoryAltitude, this.altitudeConstraint.customAltitude, null, this._segment);
     }
 
     equals(other) {
@@ -2095,7 +2125,7 @@ class WT_FlightPlanOrigin extends WT_FlightPlanOriginDest {
     _setWaypoint(waypoint) {
         this._clear();
         if (waypoint) {
-            this._insert(new WT_FlightPlanInitialWaypointLeg(waypoint, null, null, null, this), 0);
+            this._insert(new WT_FlightPlanInitialWaypointLeg(waypoint, true, null, null, null, this), 0);
         }
     }
 
@@ -2117,7 +2147,7 @@ class WT_FlightPlanDestination extends WT_FlightPlanOriginDest {
     _setWaypoint(waypoint) {
         this._clear();
         if (waypoint) {
-            this._insert(new WT_FlightPlanDirectToWaypointLeg(waypoint, null, null, null, this), 0);
+            this._insert(new WT_FlightPlanDirectToWaypointLeg(waypoint, true, null, null, null, this), 0);
         }
     }
 

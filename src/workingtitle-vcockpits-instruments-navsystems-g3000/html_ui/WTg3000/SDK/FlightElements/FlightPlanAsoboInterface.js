@@ -149,7 +149,7 @@ class WT_FlightPlanAsoboInterface {
                 }
                 if (leg.lla.alt > 0) {
                     let altitude = WT_Unit.METER.createNumber(leg.lla.alt);
-                    if (leg.altitudeMode === "Manual") {
+                    if (leg.altitudeMode === WT_FlightPlanAsoboInterface.LEG_ALTITUDE_MODE_TEXT[WT_FlightPlanAsoboInterface.LegAltitudeMode.CUSTOM]) {
                         entry.customAltitude = altitude;
                     } else {
                         entry.advisoryAltitude = altitude;
@@ -542,8 +542,9 @@ class WT_FlightPlanAsoboInterface {
      *
      * @param {WT_FlightPlanLeg} leg
      * @param {WT_NumberUnit} altitude
+     * @param {WT_FlightPlanAsoboInterface.LegAltitudeMode} mode
      */
-    async setLegAltitude(leg, altitude) {
+    async setLegAltitude(leg, altitude, mode) {
         if (leg.segment === WT_FlightPlan.Segment.APPROACH) {
             return;
         }
@@ -554,17 +555,9 @@ class WT_FlightPlanAsoboInterface {
             throw "Could not find leg in Asobo flight plan";
         }
 
-        let altitudeValue;
-        let modeValue;
-        if (altitude) {
-            altitudeValue = altitude.asUnit(WT_Unit.METER);
-            modeValue = "Manual";
-        } else {
-            altitudeValue = 0;
-            modeValue = "None";
-        }
+        let altitudeValue = altitude ? altitude.asUnit(WT_Unit.METER) : 0;
         await Coherent.call("SET_WAYPOINT_ALTITUDE", altitudeValue, index);
-        await Coherent.call("SET_WAYPOINT_ADDITIONAL_DATA", index, "ALTITUDE_MODE", modeValue);
+        await Coherent.call("SET_WAYPOINT_ADDITIONAL_DATA", index, "ALTITUDE_MODE", WT_FlightPlanAsoboInterface.LEG_ALTITUDE_MODE_TEXT[mode]);
     }
 
     /**
@@ -662,7 +655,7 @@ class WT_FlightPlanAsoboInterface {
                 return legs.get(index);
             }
         }
-        return leg ? leg: null;
+        return leg ? leg : null;
     }
 
     /**
@@ -697,3 +690,16 @@ class WT_FlightPlanAsoboInterface {
         await Coherent.call("ACTIVATE_DIRECT_TO", icao);
     }
 }
+/**
+ * @enum {Number}
+ */
+WT_FlightPlanAsoboInterface.LegAltitudeMode = {
+    NONE: 0,
+    CUSTOM: 1,
+    SUPPRESSED: 2
+};
+WT_FlightPlanAsoboInterface.LEG_ALTITUDE_MODE_TEXT = [
+    "None",
+    "Custom",
+    "Suppressed"
+];

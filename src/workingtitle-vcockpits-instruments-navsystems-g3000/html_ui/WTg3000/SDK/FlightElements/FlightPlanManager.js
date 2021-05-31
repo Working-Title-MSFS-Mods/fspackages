@@ -9,21 +9,29 @@ class WT_FlightPlanManager {
      * @param {String} instrumentID - the ID string of the new manager's parent instrument.
      * @param {WT_PlayerAirplane} airplane - the player airplane.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the waypoint factory used to create ICAO waypoint objects.
+     * @param {Object} [options] - options with which to initialize the new flight plan manager.
      */
-    constructor(isMaster, instrumentID, airplane, icaoWaypointFactory) {
+    constructor(isMaster, instrumentID, airplane, icaoWaypointFactory, options) {
         this._isMaster = isMaster;
         this._instrumentID = instrumentID;
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
 
         this._active = new WT_FlightPlan(icaoWaypointFactory);
+        this._activeVNAV = new WT_FlightPlanVNAV(this._active);
+        this._activeVNAV.addListener(this._onActiveFlightPlanVNAVChanged.bind(this));
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
         this._isSyncingStandby = false;
         this._standby.addListener(this._onStandbyFlightPlanChanged.bind(this));
         this._directTo = new WT_DirectTo();
 
+        this._isVNAVEnabled = false;
+        this._activeVNAVFPA = NaN;
+
         this._isActiveLocked = false;
         this._activePlanHasManualEdit = false;
+
+        this._initSyncEventHandlerMap();
 
         this._syncHandler = new WT_FlightPlanSyncHandler(icaoWaypointFactory);
         this._syncHandler.addListener(this._onSyncEvent.bind(this));
@@ -31,9 +39,46 @@ class WT_FlightPlanManager {
         this._asoboInterface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
         this._lastActivePlanSyncTime = 0;
 
+        /**
+         * @type {WT_FlightPlanLeg}
+         */
         this._activeLegCached = null;
+        /**
+         * @type {WT_FlightPlanVNAVLegDesignatedRestriction}
+         */
+        this._activeVNAVLegRestrictionCached = null;
 
-        this._tempFeet = WT_Unit.FOOT.createNumber(0);
+        this._lastVNAVUpdateTime = 0;
+
+        this._optsManager = new WT_OptionsManager(this, WT_FlightPlanManager.OPTION_DEFS);
+        if (options) {
+            this._optsManager.setOptions(options);
+        }
+    }
+
+    _initSyncEventHandlerMap() {
+        /**
+         * @type {((event:WT_FlightPlanSyncEvent) => void)[]}
+         */
+        this._syncEventHandlers = [];
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ORIGIN] = (event) => this._doSetOrigin(event.icao);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DESTINATION] = (event) => this._doSetDestination(event.icao);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DEPARTURE] = (event) => this._doSetDeparture(event.procedureIndex, event.enrouteTransitionIndex, event.runwayTransitionIndex);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT] = (event) => this._doInsertEnrouteWaypoint(event.icao, event.index);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY] = (event) => this._doInsertEnrouteAirway(event.airwayName, event.enterICAO, event.exitICAO, event.index);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX] = (event) => this._doRemoveEnrouteElement(event.index);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ARRIVAL] = (event) => this._doSetArrival(event.procedureIndex, event.enrouteTransitionIndex, event.runwayTransitionIndex);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH] = (event) => this._doSetApproach(event.procedureIndex, event.transitionIndex);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE] = (event) => this._doSetAltitude(event.index, event.altitude);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE] = (event) => this._doRemoveAltitude(event.index);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN] = (event) => this._doClearFlightPlan();
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE] = (event) => this._doActivateDirectTo(event.icao, event.finalAlt, event.offset, event.initialAlt);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.DIRECTTO_DEACTIVATE] = (event) => this._doDeactivateDirectTo();
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.VNAV_DIRECTTO_ACTIVATE] = (event) => this._doActivateVNAVDirectTo(event.index, event.initialAlt, event.distance);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY] = (event) => this._doActivateStandby();
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC] = (event) => this._doStandbySync(event.flightPlan);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.VNAV_ENABLE_SYNC] = (event) => this._doVNAVEnableSync(event.enabled);
+        this._syncEventHandlers[WT_FlightPlanSyncHandler.EventType.VNAV_ACTIVE_FPA_SYNC] = (event) => this._doActiveVNAVFPASync(event.fpa);
     }
 
     /**
@@ -64,6 +109,15 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * The VNAV component of this manager's active flight plan.
+     * @readonly
+     * @type {WT_FlightPlanVNAV}
+     */
+    get activePlanVNAV() {
+        return this._activeVNAV;
+    }
+
+    /**
      * This manager's standby flight plan.
      * @readonly
      * @type {WT_FlightPlan}
@@ -79,6 +133,15 @@ class WT_FlightPlanManager {
      */
     get directTo() {
         return this._directTo;
+    }
+
+    /**
+     * Whether VNAV is enabled.
+     * @readonly
+     * @type {Boolean}
+     */
+    get isVNAVEnabled() {
+        return this._isVNAVEnabled;
     }
 
     /**
@@ -99,6 +162,10 @@ class WT_FlightPlanManager {
         return this._activePlanHasManualEdit;
     }
 
+    setOptions(options) {
+        this._optsManager.setOptions(options);
+    }
+
     /**
      * Locks the active flight plan. No changes can be made to the active flight plan while it is locked.
      */
@@ -113,10 +180,22 @@ class WT_FlightPlanManager {
         this._isActiveLocked = false;
     }
 
+    _updateActiveVNAVLegRestriction() {
+        if (!this.directTo.isActive()) {
+            let legRestriction;
+            if (this._activeLegCached) {
+                legRestriction = this._activeVNAV.legRestrictions.find(restriction => restriction && restriction.isDesignated && restriction.isValid && restriction.leg.index >= this._activeLegCached.index);
+            }
+            this._activeVNAVLegRestrictionCached = legRestriction ? legRestriction : null;
+        } else {
+            this._activeVNAVLegRestrictionCached = null;
+        }
+    }
+
     /**
      * Syncs this manager's active flight plan from the sim's default flight plan manager.
      * @param {Boolean} [forceEnrouteSync] - whether to force syncing of the enroute segment from the sim's flight plan
-     *                                      manager. False by default.
+     *        manager. False by default.
      * @returns {Promise<void>} a Promise which is fulfilled when the sync completes.
      */
     async syncActiveFromGame(forceEnrouteSync) {
@@ -132,6 +211,7 @@ class WT_FlightPlanManager {
         } else {
             this._activeLegCached = null;
         }
+        this._updateActiveVNAVLegRestriction();
     }
 
     /**
@@ -139,7 +219,7 @@ class WT_FlightPlanManager {
      * approach. An approach needs to be activated when the autopilot has sequenced past the last leg of the active
      * flight plan prior to the first approach leg.
      * @returns {Promise<void>} a Promise which is fulfilled either when the system determines an approach does not
-     *                          need to be activated, or when the approach has been activated.
+     *          need to be activated, or when the approach has been activated.
      */
     async tryAutoActivateApproach() {
         if (this._activeLegCached && this.activePlan.hasApproach() && (this._activeLegCached.index >= this.activePlan.getApproach().legs.first().index) && !this.isApproachActive()) {
@@ -173,11 +253,11 @@ class WT_FlightPlanManager {
     /**
      * Gets the waypoint of the currently active origin.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @returns {Promise<WT_Waypoint>|WT_Waypoint} the waypoint of the currently active origin, or a Promise which will
-     * be fulfilled with the waypoint after the active flight plan is synced.
+     *          be fulfilled with the waypoint after the active flight plan is synced.
      */
     getOriginWaypoint(cached = false) {
         if (cached) {
@@ -201,9 +281,9 @@ class WT_FlightPlanManager {
     /**
      * Gets the waypoint of the currently active destination.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @returns {Promise<WT_Waypoint>|WT_Waypoint} the waypoint of the currently active destination, or a Promise which
      *          which will be fulfilled with the waypoint after the active flight plan is synced.
      */
@@ -301,8 +381,7 @@ class WT_FlightPlanManager {
      * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the new waypoint.
      * @param {String} icao - the ICAO string of the waypoint to add.
      * @param {Number} [index] - the index within the specified flight plan segment at which to add the new waypoint.
-     *                           If this argument is not supplied, the waypoint will be added to the end of the
-     *                           segment.
+     *        If this argument is not supplied, the waypoint will be added to the end of the segment.
      */
     addWaypointICAOToActive(segment, icao, index) {
         if (icao === "") {
@@ -326,8 +405,7 @@ class WT_FlightPlanManager {
      * @param {WT_ICAOWaypoint} enter - the entry waypoint of the airway sequence.
      * @param {WT_ICAOWaypoint} exit - the exit waypoint of the airway sequence.
      * @param {Number} [index] - the index within the specified flight plan segment at which to add the airway
-     *                           sequence. If this argument is not supplied, the waypoint will be added to the
-     *                           end of the segment.
+     *        sequence. If this argument is not supplied, the waypoint will be added to the end of the segment.
      */
     addAirwaySequenceToActive(segment, airway, enter, exit, index) {
         if (segment !== WT_FlightPlan.Segment.ENROUTE) {
@@ -535,9 +613,9 @@ class WT_FlightPlanManager {
     /**
      * Gets the currently active flight plan leg. If there is no active flight plan leg, null is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @returns {Promise<WT_FlightPlanLeg>|WT_FlightPlanLeg} the currently active flight plan leg, or a Promise which
      *          will be fulfilled with the leg after the active flight plan is synced.
      */
@@ -557,7 +635,7 @@ class WT_FlightPlanManager {
      * changed.
      * @param {WT_FlightPlanLeg} leg - the leg to set as the active leg.
      * @returns {Promise<void>} a Promise which will be fulfilled when the active leg has been successfully changed, or
-     *                          rejected if the provided leg was not able to be set as the active leg.
+     *          rejected if the provided leg was not able to be set as the active leg.
      */
     async setActiveLeg(leg) {
         if (leg.flightPlan !== this.activePlan) {
@@ -571,9 +649,15 @@ class WT_FlightPlanManager {
     /**
      * Activates a direct-to to a waypoint.
      * @param {WT_Waypoint} destination - the target of the direct-to.
+     * @param {WT_NumberUnitObject} [finalAltitude] - the VNAV final altitude of the direct-to.
+     * @param {WT_NumberUnitObject} [vnavOffset] - the VNAV offset of the direct-to.
      */
-    activateDirectTo(destination) {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE, {icao: destination.icao});
+    activateDirectTo(destination, finalAltitude, vnavOffset) {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE, {
+            icao: destination.icao,
+            finalAlt: finalAltitude ? finalAltitude.asUnit(WT_Unit.FOOT) : null,
+            offset: vnavOffset ? vnavOffset.asUnit(WT_Unit.NMILE) : 0
+        });
         this._syncHandler.fireEvent(syncEvent);
     }
 
@@ -582,6 +666,89 @@ class WT_FlightPlanManager {
      */
     deactivateDirectTo() {
         let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.DIRECTTO_DEACTIVATE);
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Enables or disables VNAV. While VNAV is disabled, there will be no active VNAV paths.
+     * @param {Boolean} enabled - whether to enable or disable VNAV.
+     */
+    setVNAVEnabled(enabled) {
+        if (this.isVNAVEnabled === enabled) {
+            return;
+        }
+
+        this._isVNAVEnabled = enabled;
+        if (enabled) {
+            this._updateActiveVNAV(Date.now());
+        }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.SYNC, WT_FlightPlanSyncHandler.EventType.VNAV_ENABLE_SYNC, {enabled});
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Sets the flight path angle of the currently active VNAV path.
+     * @param {Number} fpa - the new flight path angle.
+     */
+    setActiveVNAVFPA(fpa) {
+        if (!this.isVNAVEnabled) {
+            return;
+        }
+
+        this._activeVNAVFPA = fpa;
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.SYNC, WT_FlightPlanSyncHandler.EventType.VNAV_ACTIVE_FPA_SYNC, {fpa});
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Sets the vertical speed target of the currently active VNAV path. The specified vertical speed target will be
+     * used to calculate the path's flight path angle using the airplane's current ground speed.
+     * @param {WT_NumberUnitObject} vsTarget - the new vertical speed target.
+     */
+    setActiveVNAVVSTarget(vsTarget) {
+        let activeVNAVPath = this.getActiveVNAVPath(true);
+        if (!activeVNAVPath) {
+            return;
+        }
+
+        let groundSpeed = this._airplane.navigation.groundSpeed(WT_FlightPlanManager._tempKnot);
+        let fpa;
+        if (this.directTo.isActive()) {
+            this.directTo.setVerticalSpeedTarget(vsTarget, groundSpeed);
+            this.directTo.computeVNAVPath();
+            fpa = this.directTo.vnavPath.getFlightPathAngle();
+        } else {
+            this._activeVNAVLegRestrictionCached.setVerticalSpeedTarget(vsTarget, groundSpeed);
+            this._activeVNAVLegRestrictionCached.computeVNAVPath();
+            fpa = this._activeVNAVLegRestrictionCached.vnavPath.getFlightPathAngle();
+        }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.SYNC, WT_FlightPlanSyncHandler.EventType.VNAV_ACTIVE_FPA_SYNC, {fpa});
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Activates a VNAV Direct-To. This will set the initial altitude of the currently active VNAV path to the
+     * airplane's current indicated altitude and the flight path angle to the value such that the TOD falls on the
+     * airplane's current position. If the flight path angle required to meet the path's final altitude exceeds the
+     * maximum allowable flight path angle, the Direct-To will not be activated. The VNAV Direct-To can be activated
+     * for the currently active Direct-To or any leg in the active flight plan with a valid designated VNAV
+     * restriction. This method throws an error if VNAV is not enabled.
+     * @param {WT_FlightPlanLeg} [flightPlanLeg] - the flight plan leg for which to activate the VNAV Direct-To. The
+     *        leg must have a designated and valid VNAV restriction. This parameter should be left undefined in order
+     *        to activate a VNAV Direct-To for the currently active Direct-To.
+     */
+    activateVNAVDirectTo(flightPlanLeg) {
+        if (!this.isVNAVEnabled) {
+            throw new Error("Cannot activate VNAV Direct To while VNAV is disabled.");
+        }
+        if (flightPlanLeg && flightPlanLeg.flightPlan !== this.activePlan) {
+            throw new Error("Attempted to activate a VNAV Direct To on a leg that was not in the active flight plan.");
+        }
+
+        let index = flightPlanLeg ? flightPlanLeg.index : -1;
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.VNAV_DIRECTTO_ACTIVATE, {index});
         this._syncHandler.fireEvent(syncEvent);
     }
 
@@ -599,9 +766,9 @@ class WT_FlightPlanManager {
      * Gets the leg in the active flight plan to which the currently active direct-to is directed. If a direct-to is
      * not active or the direct-to destination is not in the active flight plan, null is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @returns {Promise<WT_FlightPlanLeg>|WT_FlightPlanLeg} the leg in the active flight plan to which the currently
      *          active direct-to is directed, or a Promise which will be fulfilled with the leg after the active flight
      *          plan is synced.
@@ -684,11 +851,11 @@ class WT_FlightPlanManager {
      * Gets the remaining distance to the terminator fix of the currently active flight plan leg. If there is no active
      * flight plan leg, undefined is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
-     *                                      new WT_NumberUnit object will be created with units of nautical miles.
+     *        new WT_NumberUnit object will be created with units of nautical miles.
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the remaining distance to the terminator fix of the currently
      *          active flight plan leg, or a Promise which will be fulfilled with the distance after the active flight
      *          plan is synced.
@@ -721,11 +888,11 @@ class WT_FlightPlanManager {
      * Gets the estimated time enroute to the terminator fix of the currently active flight plan leg. If there is no
      * active flight plan leg or the plane is on the ground, undefined is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
-     *                                      new WT_NumberUnit object will be created with units of seconds.
+     *        new WT_NumberUnit object will be created with units of seconds.
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the estimated time enroute to the terminator fix of the
      *          currently active flight plan leg, or a Promise which will be fulfilled with the time after the active
      *          flight plan is synced.
@@ -768,11 +935,11 @@ class WT_FlightPlanManager {
      * Gets the remaining distance to the currently active destination. If there is no active destination, undefined
      * is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
-     *                                      new WT_NumberUnit object will be created with units of nautical miles.
+     *        new WT_NumberUnit object will be created with units of nautical miles.
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the remaining distance to the currently active destination, or
      *          a Promise which will be fulfilled with the distance after the active flight plan is synced.
      */
@@ -804,11 +971,11 @@ class WT_FlightPlanManager {
      * Gets the estimated time enroute to the currently active destination. If there is no active destination or the
      * plane is on the ground, undefined is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
-     *                                      new WT_NumberUnit object will be created with units of seconds.
+     *        new WT_NumberUnit object will be created with units of seconds.
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the estimated time enroute to the currently active destination,
      *          or a Promise which will be fulfilled with the time after the active flight plan is synced.
      */
@@ -839,11 +1006,11 @@ class WT_FlightPlanManager {
      * Gets the remaining distance to the destination waypoint of the currently active direct-to. If direct-to is not
      * active, undefined is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
-     *                                      new WT_NumberUnit object will be created with units of nautical miles.
+     *        new WT_NumberUnit object will be created with units of nautical miles.
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the remaining distance to the currently active direct-to, or
      *          a Promise which will be fulfilled with the distance after the active flight plan is synced.
      */
@@ -875,11 +1042,11 @@ class WT_FlightPlanManager {
      * Gets the estimated time enroute to the destination waypoint of the currently active direct-to. If there is
      * no active destination or the plane is on the ground, undefined is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
-     *                             based on data cached from the last time the active flight plan was synced from the
-     *                             sim. If false, this method will return a Promise which is fulfilled once the active
-     *                             flight plan is synced and the result is available. False by default.
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
-     *                                      new WT_NumberUnit object will be created with units of seconds.
+     *        new WT_NumberUnit object will be created with units of seconds.
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the estimated time enroute to destination waypoint of the
      *          currently active direct-to, or a Promise which will be fulfilled with the time after the active flight
      *          plan is synced.
@@ -895,6 +1062,346 @@ class WT_FlightPlanManager {
         }
     }
 
+    _getActiveVNAVWaypoint() {
+        if (!this.isVNAVEnabled) {
+            return null;
+        }
+
+        if (this.directTo.isVNAVActive()) {
+            return this.directTo.getDestination();
+        } else {
+            return this._activeVNAVLegRestrictionCached ? this._activeVNAVLegRestrictionCached.leg.fix : null;
+        }
+    }
+
+    /**
+     * Gets the active VNAV waypoint. The result is null if there is no active VNAV waypoint.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @returns {Promise<WT_Waypoint>|WT_Waypoint} the active VNAV waypoint, or a Promise which will be fulfilled with
+     *          the waypoint after the active flight plan is synced.
+     */
+    getActiveVNAVWaypoint(cached = false) {
+        if (cached) {
+            return this._getActiveVNAVWaypoint();
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._getActiveVNAVWaypoint(reference));
+            });
+        }
+    }
+
+    /**
+     * Gets the active flight plan VNAV leg restriction which is currently active. The result is null if there is no
+     * such leg restriction.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @returns {Promise<WT_FlightPlanVNAVLegRestriction>|WT_FlightPlanVNAVLegRestriction} the active flight plan VNAV
+     *          leg restriction which is currently active, or a Promise which will be fulfilled with the restriction
+     *          after the active flight plan is synced.
+     */
+    getActiveVNAVLegRestriction(cached = false) {
+        if (cached) {
+            if (!this.isVNAVEnabled) {
+                return null;
+            }
+            return this._activeVNAVLegRestrictionCached;
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                if (!this.isVNAVEnabled) {
+                    return null;
+                }
+                resolve(this._activeVNAVLegRestrictionCached);
+            });
+        }
+    }
+
+    _getActiveVNAVPath() {
+        if (!this.isVNAVEnabled) {
+            return null;
+        }
+
+        if (this.directTo.isVNAVActive()) {
+            return this.directTo.vnavPath;
+        } else {
+            return this._activeVNAVLegRestrictionCached ? this._activeVNAVLegRestrictionCached.vnavPath : null;
+        }
+    }
+
+    /**
+     * Gets the active VNAV path. The result is null if there is no active VNAV path.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @returns {Promise<WT_VNAVPathReadOnly>|WT_VNAVPathReadOnly} the active VNAV path, or a Promise which will be
+     *          fulfilled with the VNAV path after the active flight plan is synced.
+     */
+    getActiveVNAVPath(cached = false) {
+        if (cached) {
+            return this._getActiveVNAVPath();
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._getActiveVNAVPath());
+            });
+        }
+    }
+
+    _distanceToActiveVNAVLegRestriction(reference) {
+        if (!this._activeLegCached || !this._activeVNAVLegRestrictionCached) {
+            return undefined;
+        }
+
+        return this._distanceToActiveLegFix(reference).add(this._activeVNAVLegRestrictionCached.leg.cumulativeDistance).subtract(this._activeLegCached.cumulativeDistance);
+    }
+
+    _distanceToActiveVNAVWaypoint(reference) {
+        if (!this.isVNAVEnabled) {
+            return undefined;
+        }
+
+        if (this.directTo.isVNAVActive()) {
+            return this._distanceToDirectTo(reference).add(this.directTo.getVNAVOffset());
+        } else {
+            return this._distanceToActiveVNAVLegRestriction(reference);
+        }
+    }
+
+    /**
+     * Gets the distance to the active VNAV waypoint. If the VNAV path associated with the waypoint includes an offset,
+     * the distance returned will include the offset. The result is undefined if there is no active VNAV waypoint.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
+     *        new WT_NumberUnit object will be created with units of nautical miles.
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the distance to the active VNAV waypoint, or a Promise which
+     *          will be fulfilled with the distance after the active flight plan is synced.
+     */
+    distanceToActiveVNAVWaypoint(cached = false, reference) {
+        if (cached) {
+            return this._distanceToActiveVNAVWaypoint(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._distanceToActiveVNAVWaypoint(reference));
+            });
+        }
+    }
+
+    _timeToActiveVNAVWaypoint(reference) {
+        if (!this.isVNAVEnabled || this._airplane.sensors.isOnGround()) {
+            return undefined;
+        }
+
+        let distance = this._distanceToActiveVNAVWaypoint(WT_FlightPlanManager._tempNM);
+        if (!distance) {
+            return undefined;
+        }
+
+        let hours = distance.number / this._airplane.navigation.groundSpeed(WT_FlightPlanManager._tempKnot).number;
+        return reference ? reference.set(hours, WT_Unit.HOUR) : WT_Unit.SECOND.createNumber(WT_Unit.HOUR.convert(hours, WT_Unit.SECOND));
+    }
+
+    /**
+     * Gets the estimated time to reach the active VNAV waypoint based on the airplane's current ground speed. The
+     * result is undefined if there is no active VNAV waypoint.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
+     *        new WT_NumberUnit object will be created with units of seconds.
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the estimated time to reach the active VNAV waypoint, or a
+     *          Promise which will be fulfilled with the time after the active flight plan is synced.
+     */
+    timeToActiveVNAVWaypoint(cached = false, reference) {
+        if (cached) {
+            return this._timeToActiveVNAVWaypoint(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._timeToActiveVNAVWaypoint(reference));
+            });
+        }
+    }
+
+    _distanceToDirectToVNAVPathStart(reference) {
+        return this._distanceToDirectTo(reference).subtract(this.directTo.vnavPath.getTotalDistance());
+    }
+
+    _distanceToActiveVNAVLegRestrictionPathStart(reference) {
+        if (!this._activeLegCached || !this._activeVNAVLegRestrictionCached) {
+            return undefined;
+        }
+
+        return this._distanceToActiveVNAVLegRestriction(reference).subtract(this._activeVNAVLegRestrictionCached.vnavPath.getTotalDistance());
+    }
+
+    _distanceToActiveVNAVPathStart(reference) {
+        if (!this.isVNAVEnabled) {
+            return undefined;
+        }
+
+        if (this.directTo.isVNAVActive()) {
+            return this._distanceToDirectToVNAVPathStart(reference);
+        } else {
+            return this._distanceToActiveVNAVLegRestrictionPathStart(reference);
+        }
+    }
+
+    /**
+     * Gets the distance to the start of the currently active VNAV path. The start of the path is defined as point at
+     * which the path begins to deviate from its initial altitude. The result is undefined if there is no active VNAV
+     * path.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
+     *        new WT_NumberUnit object will be created with units of nautical miles.
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the distance to the start of the currently active VNAV path, or
+     *          a Promise which will be fulfilled with the distance after the active flight plan is synced.
+     */
+    distanceToActiveVNAVPathStart(cached = false, reference) {
+        if (cached) {
+            return this._distanceToActiveVNAVPathStart(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._distanceToActiveVNAVPathStart(reference));
+            });
+        }
+    }
+
+    _timeToActiveVNAVPathStart(reference) {
+        if (!this.isVNAVEnabled || this._airplane.sensors.isOnGround()) {
+            return undefined;
+        }
+
+        let distance = this._distanceToActiveVNAVPathStart(WT_FlightPlanManager._tempNM);
+        if (!distance) {
+            return undefined;
+        }
+
+        let hours = distance.number / this._airplane.navigation.groundSpeed(WT_FlightPlanManager._tempKnot).number;
+        return reference ? reference.set(hours, WT_Unit.HOUR) : WT_Unit.SECOND.createNumber(WT_Unit.HOUR.convert(hours, WT_Unit.SECOND));
+    }
+
+    /**
+     * Gets the estimated time to reach the start of the currently active VNAV path based on the airplane's current
+     * ground speed. The start of the path is defined as point at which the path begins to deviate from its initial
+     * altitude. The result is undefined if there is no active VNAV path.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
+     *        new WT_NumberUnit object will be created with units of seconds.
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the estimated time to reach the start of the currently active
+     *          VNAV path, or a Promise which will be fulfilled with the time after the active flight plan is synced.
+     */
+    timeToActiveVNAVPathStart(cached = false, reference) {
+        if (cached) {
+            return this._timeToActiveVNAVPathStart(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._timeToActiveVNAVPathStart(reference));
+            });
+        }
+    }
+
+    _distanceToTOD(reference) {
+        if (!this.isVNAVEnabled) {
+            return undefined;
+        }
+
+        if (this.directTo.isVNAVActive()) {
+            return this._distanceToActiveVNAVPathStart(reference);
+        } else if (this._activeLegCached && this._activeVNAVLegRestrictionCached) {
+            let firstDescentLegRestriction = this.activePlanVNAV.getFirstDescentLegRestriction();
+            if (firstDescentLegRestriction) {
+                let distance = this._distanceToActiveLegFix(reference).add(firstDescentLegRestriction.leg.cumulativeDistance).subtract(this._activeLegCached.cumulativeDistance);
+                if (!firstDescentLegRestriction.vnavPath.getTotalDistance().isNaN()) {
+                    distance.subtract(firstDescentLegRestriction.vnavPath.getTotalDistance());
+                }
+                return distance;
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * Gets the distance to the currently active top of descent (TOD). The TOD is defined as the start of the Direct-To
+     * VNAV path if one is active, or the start of the first VNAV path of the active flight plan's descent phase. The
+     * result is undefined if the TOD does not exist.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
+     *        new WT_NumberUnit object will be created with units of nautical miles.
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the distance to the currently active top of descent, or a
+     *          Promise which is fulfilled with the distance after the active flight plan is synced.
+     */
+    distanceToTOD(cached = false, reference) {
+        if (cached) {
+            return this._distanceToTOD(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._distanceToTOD(reference));
+            });
+        }
+    }
+
+    _timeToTOD(reference) {
+        if (!this.isVNAVEnabled || this._airplane.sensors.isOnGround()) {
+            return undefined;
+        }
+
+        let distance = this._distanceToTOD(WT_FlightPlanManager._tempNM);
+        if (!distance) {
+            return undefined;
+        }
+
+        let hours = distance.number / this._airplane.navigation.groundSpeed(WT_FlightPlanManager._tempKnot).number;
+        return reference ? reference.set(hours, WT_Unit.HOUR) : WT_Unit.SECOND.createNumber(WT_Unit.HOUR.convert(hours, WT_Unit.SECOND));
+    }
+
+    /**
+     * Gets the estimated time to reach the currently active top of descent (TOD) based on the airplane's current
+     * ground speed. The TOD is defined as the start of the Direct-To VNAV path if one is active, or the start of the
+     * first VNAV path of the active flight plan's descent phase. The result is undefined if the TOD does not exist.
+     * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
+     *        based on data cached from the last time the active flight plan was synced from the sim. If false, this
+     *        method will return a Promise which is fulfilled once the active flight plan is synced and the result is
+     *        available. False by default.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
+     *        new WT_NumberUnit object will be created with units of seconds.
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit} the estimated time to reach the top of descent, or a Promise
+     *          which will be fulfilled with the time after the active flight plan is synced.
+     */
+    timeToTOD(cached = false, reference) {
+        if (cached) {
+            return this._timeToTOD(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._timeToTOD(reference));
+            });
+        }
+    }
+
     /**
      * Activates the standby flight plan. The currently active flight plan will be replaced by the standby flight plan.
      * The standby flight plan will remain unchanged.
@@ -902,6 +1409,10 @@ class WT_FlightPlanManager {
     activateStandby() {
         let event = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY);
         this._syncHandler.fireEvent(event);
+    }
+
+    _onActiveFlightPlanVNAVChanged(event) {
+        this._updateActiveVNAVLegRestriction();
     }
 
     /**
@@ -1288,7 +1799,7 @@ class WT_FlightPlanManager {
 
         if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
             // no need to sync with the sim if modifying an enroute leg
-            leg.altitudeConstraint.setCustomAltitude(this._tempFeet.set(altitude));
+            leg.altitudeConstraint.setCustomAltitude(WT_FlightPlanManager._tempFeet.set(altitude));
             let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE, {
                 index: index,
                 altitude: altitude
@@ -1297,7 +1808,7 @@ class WT_FlightPlanManager {
         } else {
             this.lockActive();
             try {
-                await this._asoboInterface.setLegAltitude(leg, this._tempFeet.set(altitude));
+                await this._asoboInterface.setLegAltitude(leg, WT_FlightPlanManager._tempFeet.set(altitude), WT_FlightPlanAsoboInterface.LegAltitudeMode.CUSTOM);
 
                 let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE, {
                     index: index,
@@ -1325,7 +1836,7 @@ class WT_FlightPlanManager {
 
         if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
             // no need to sync with the sim if modifying an enroute leg
-            leg.altitudeConstraint.setCustomAltitude(this._tempFeet.set(altitude));
+            leg.altitudeConstraint.setCustomAltitude(WT_FlightPlanManager._tempFeet.set(altitude));
         } else {
             try {
                 await this.syncActiveFromGame();
@@ -1363,7 +1874,7 @@ class WT_FlightPlanManager {
         } else {
             this.lockActive();
             try {
-                await this._asoboInterface.setLegAltitude(leg, null);
+                await this._asoboInterface.setLegAltitude(leg, null, WT_FlightPlanAsoboInterface.LegAltitudeMode.NONE);
 
                 let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE, {
                     index: index
@@ -1439,16 +1950,25 @@ class WT_FlightPlanManager {
         }
     }
 
-    async _doActivateDirectToWithSync(icao) {
+    async _doActivateDirectToWithSync(icao, finalAltitude, vnavOffset) {
         if (this.isActiveLocked) {
             return;
         }
 
         this.lockActive();
         try {
+            this._directTo.setFinalAltitude((typeof finalAltitude === "number") ? WT_FlightPlanManager._tempFeet.set(finalAltitude) : null);
+            this._directTo.setVNAVOffset(WT_FlightPlanManager._tempNM.set(vnavOffset));
             await this._asoboInterface.activateDirectTo(icao);
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE);
+            let initialAltitude = this._airplane.sensors.getAltimeter(this.altimeterIndex).altitudeIndicated(WT_FlightPlanManager._tempFeet);
+            this._directTo.setInitialAltitude(initialAltitude);
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE, {
+                finalAlt: finalAltitude,
+                offset: vnavOffset,
+                initialAlt: initialAltitude.asUnit(WT_Unit.FOOT)
+            });
             this._syncHandler.fireEvent(syncEvent);
         } catch (e) {
             console.log(e);
@@ -1462,19 +1982,22 @@ class WT_FlightPlanManager {
         }
     }
 
-    async _doActivateDirectToWithoutSync(icao) {
+    async _doActivateDirectToWithoutSync(icao, finalAltitude, vnavOffset, initialAltitude) {
         try {
+            this._directTo.setFinalAltitude((typeof finalAltitude === "number") ? WT_FlightPlanManager._tempFeet.set(finalAltitude) : null);
+            this._directTo.setVNAVOffset(WT_FlightPlanManager._tempNM.set(vnavOffset));
+            this._directTo.setInitialAltitude(WT_FlightPlanManager._tempFeet.set(initialAltitude));
             await this.syncActiveFromGame();
         } catch (e) {
             console.log(e);
         }
     }
 
-    async _doActivateDirectTo(icao) {
+    async _doActivateDirectTo(icao, finalAltitude, vnavOffset, initialAltitude) {
         if (this.isMaster) {
-            await this._doActivateDirectToWithSync(icao);
+            await this._doActivateDirectToWithSync(icao, finalAltitude, vnavOffset);
         } else {
-            await this._doActivateDirectToWithoutSync(icao);
+            await this._doActivateDirectToWithoutSync(icao, finalAltitude, vnavOffset, initialAltitude);
         }
     }
 
@@ -1514,6 +2037,62 @@ class WT_FlightPlanManager {
             await this._doDeactivateDirectToWithSync();
         } else {
             await this._doDeactivateDirectToWithoutSync();
+        }
+    }
+
+    async _doActivateVNAVDirectToWithSync(index) {
+        if (this.isActiveLocked) {
+            return;
+        }
+
+        this.lockActive();
+
+        try {
+            let altitude = this._airplane.sensors.getAltimeter(this.altimeterIndex).altitudeIndicated(WT_FlightPlanManager._tempFeet);
+
+            let success = false;
+            let distanceRemaining;
+            if (index < 0) {
+                if (this.directTo.isVNAVActive()) {
+                    distanceRemaining = this._distanceToActiveVNAVWaypoint(WT_FlightPlanManager._tempNM);
+                    success = this.directTo.activateVNAVDirectTo(altitude, distanceRemaining);
+                }
+            } else {
+                let legRestriction = this.activePlanVNAV.legRestrictions.get(index);
+                if (this._activeLegCached && legRestriction && legRestriction.isDesignated && legRestriction.isValid && this._activeLegCached.index <= legRestriction.leg.index) {
+                    distanceRemaining = this._distanceToActiveLegFix(WT_FlightPlanManager._tempNM).add(legRestriction.leg.cumulativeDistance).subtract(this._activeLegCached.cumulativeDistance);
+                    success = this.activePlanVNAV.activateVNAVDirectTo(legRestriction, altitude, distanceRemaining);
+                }
+            }
+
+            if (success) {
+                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.VNAV_DIRECTTO_ACTIVATE, {
+                    index,
+                    initialAlt: altitude.asUnit(WT_Unit.FOOT),
+                    distance: distanceRemaining.asUnit(WT_Unit.NMILE)
+                });
+                this._syncHandler.fireEvent(syncEvent);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        this.unlockActive();
+    }
+
+    async _doActivateVNAVDirectToWithoutSync(index, initialAlt, distanceRemaining) {
+        if (index < 0) {
+            this.directTo.activateVNAVDirectTo(WT_FlightPlanManager._tempFeet.set(initialAlt), WT_FlightPlanManager._tempNM.set(distanceRemaining));
+        } else {
+            let legRestriction = this.activePlanVNAV.legRestrictions.get(index);
+            this.activePlanVNAV.activateVNAVDirectTo(legRestriction, WT_FlightPlanManager._tempFeet.set(initialAlt), WT_FlightPlanManager._tempNM.set(distanceRemaining));
+        }
+    }
+
+    async _doActivateVNAVDirectTo(index, initialAlt, distanceRemaining) {
+        if (this.isMaster) {
+            await this._doActivateVNAVDirectToWithSync(index);
+        } else {
+            await this._doActivateVNAVDirectToWithoutSync(index, initialAlt, distanceRemaining);
         }
     }
 
@@ -1649,11 +2228,24 @@ class WT_FlightPlanManager {
         this._isSyncingStandby = false;
     }
 
+    async _doVNAVEnableSync(enabled) {
+        this._isVNAVEnabled = enabled;
+        if (enabled) {
+            this._updateActiveVNAV(Date.now());
+        }
+    }
+
+    async _doActiveVNAVFPASync(fpa) {
+        this._activeVNAVFPA = fpa;
+    }
+
     /**
      *
      * @param {WT_FlightPlanSyncEvent} event
      */
     _onSyncEvent(event) {
+        console.log(event);
+
         let isRequest = event.command === WT_FlightPlanSyncHandler.Command.REQUEST;
         let isConfirm = event.command === WT_FlightPlanSyncHandler.Command.CONFIRM;
         if ((isRequest && !this.isMaster) ||
@@ -1671,59 +2263,76 @@ class WT_FlightPlanManager {
             this._activePlanHasManualEdit = true;
         }
 
-        switch (event.type) {
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ORIGIN:
-                this._doSetOrigin(event.icao);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DESTINATION:
-                this._doSetDestination(event.icao);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DEPARTURE:
-                this._doSetDeparture(event.procedureIndex, event.enrouteTransitionIndex, event.runwayTransitionIndex);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT:
-                this._doInsertEnrouteWaypoint(event.icao, event.index);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY:
-                this._doInsertEnrouteAirway(event.airwayName, event.enterICAO, event.exitICAO, event.index);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX:
-                this._doRemoveEnrouteElement(event.index);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ARRIVAL:
-                this._doSetArrival(event.procedureIndex, event.enrouteTransitionIndex, event.runwayTransitionIndex);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH:
-                this._doSetApproach(event.procedureIndex, event.transitionIndex);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE:
-                this._doSetAltitude(event.index, event.altitude);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE:
-                this._doRemoveAltitude(event.index);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN:
-                this._doClearFlightPlan();
-                break;
-            case WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE:
-                this._doActivateDirectTo(event.icao);
-                break;
-            case WT_FlightPlanSyncHandler.EventType.DIRECTTO_DEACTIVATE:
-                this._doDeactivateDirectTo();
-                break;
-            case WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY:
-                this._doActivateStandby();
-                break;
-            case WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC:
-                this._doStandbySync(event.flightPlan);
-                break;
+        let handler = this._syncEventHandlers[event.type];
+        if (handler) {
+            handler(event);
         }
     }
+
+    _updateFirstVNAVDescentLegRestriction() {
+        let firstDescentLegRestriction = this.activePlanVNAV.getFirstDescentLegRestriction();
+
+        if (firstDescentLegRestriction && !firstDescentLegRestriction.isVNAVDirectToActive && (!this._activeVNAVLegRestrictionCached || (this._activeVNAVLegRestrictionCached === firstDescentLegRestriction))) {
+            let initialAltitude = this._airplane.autopilot.referenceAltitude(WT_FlightPlanManager._tempFeet);
+            let shouldUpdateInitialAltitude = false;
+            if (firstDescentLegRestriction.vnavPath.getTotalDistance().isNaN()) {
+                shouldUpdateInitialAltitude = true;
+            } else if (!initialAltitude.equals(firstDescentLegRestriction.vnavPath.initialAltitude)) {
+                if (this._activeVNAVLegRestrictionCached === firstDescentLegRestriction) {
+                    let timeToTOD = this.timeToActiveVNAVPathStart(true, WT_FlightPlanManager._tempSeconds);
+                    shouldUpdateInitialAltitude = timeToTOD && timeToTOD.compare(WT_FlightPlanManager.INITIAL_TOD_TIME_THRESHOLD) > 0;
+                }
+            }
+
+            if (shouldUpdateInitialAltitude) {
+                firstDescentLegRestriction.setInitialAltitude(initialAltitude);
+                if (firstDescentLegRestriction.vnavPath.deltaAltitude.number === 0) {
+                    firstDescentLegRestriction.setFlightPathAngle(0);
+                } else {
+                    firstDescentLegRestriction.setFlightPathAngle(this.activePlanVNAV.defaultDescentFlightPathAngle);
+                }
+                firstDescentLegRestriction.computeVNAVPath();
+            }
+        }
+    }
+
+    _updateActiveVNAV(currentTime) {
+        this._updateFirstVNAVDescentLegRestriction();
+        this._lastVNAVUpdateTime = currentTime;
+    }
+
+    _updateActiveVNAVFPA() {
+        if (!isNaN(this._activeVNAVFPA)) {
+            if (this.directTo.isActive() && this.directTo.isVNAVActive()) {
+                this.directTo.setFlightPathAngle(this._activeVNAVFPA);
+                this.directTo.computeVNAVPath();
+                this._activeVNAVFPA = NaN;
+            } else if (this._activeVNAVLegRestrictionCached) {
+                this._activeVNAVLegRestrictionCached.setFlightPathAngle(this._activeVNAVFPA);
+                this._activeVNAVLegRestrictionCached.computeVNAVPath();
+                this._activeVNAVFPA = NaN;
+            }
+        }
+    }
+
+    update(currentTime) {
+        if (currentTime - this._lastVNAVUpdateTime >= WT_FlightPlanManager.VNAV_UPDATE_INTERVAL) {
+            this._updateActiveVNAV(currentTime);
+        }
+        this._updateActiveVNAVFPA();
+    }
 }
+WT_FlightPlanManager._tempFeet = WT_Unit.FOOT.createNumber(0);
 WT_FlightPlanManager._tempNM = WT_Unit.NMILE.createNumber(0);
 WT_FlightPlanManager._tempKnot = WT_Unit.KNOT.createNumber(0);
+WT_FlightPlanManager._tempSeconds = WT_Unit.SECOND.createNumber(0);
 WT_FlightPlanManager._tempGeoPoint = new WT_GeoPoint(0, 0);
 WT_FlightPlanManager.ACTIVE_STEP_FIX_TOLERANCE = 1e-6; // ~6 m
+WT_FlightPlanManager.VNAV_UPDATE_INTERVAL = 2000; // ms
+WT_FlightPlanManager.INITIAL_TOD_TIME_THRESHOLD = WT_Unit.MINUTE.createNumber(1);
+WT_FlightPlanManager.OPTION_DEFS = {
+    altimeterIndex: {default: 1, auto: true}
+};
 
 class WT_FlightPlanSyncHandler {
     /**
@@ -1757,7 +2366,7 @@ class WT_FlightPlanSyncHandler {
      */
     _serialize(event) {
         let object;
-        if (event.command === WT_FlightPlanSyncHandler.Command.SYNC) {
+        if (event.type === WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC) {
             object = {
                 sourceID: event.sourceID,
                 command: event.command,
@@ -1790,7 +2399,7 @@ class WT_FlightPlanSyncHandler {
      */
     async _parseEventFromData(data) {
         let object = JSON.parse(data);
-        if (object.command === WT_FlightPlanSyncHandler.Command.SYNC) {
+        if (object.type === WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC) {
             return {
                 sourceID: object.sourceID,
                 command: object.command,
@@ -1863,8 +2472,11 @@ WT_FlightPlanSyncHandler.EventType = {
     ACTIVE_CLEAR_FLIGHT_PLAN: 10,
     DIRECTTO_ACTIVATE: 11,
     DIRECTTO_DEACTIVATE: 12,
-    ACTIVATE_STANDBY: 13,
-    STANDBY_SYNC: 14
+    VNAV_DIRECTTO_ACTIVATE: 13,
+    ACTIVATE_STANDBY: 14,
+    STANDBY_SYNC: 15,
+    VNAV_ENABLE_SYNC: 16,
+    VNAV_ACTIVE_FPA_SYNC: 17
 }
 
 /**
@@ -1877,5 +2489,11 @@ WT_FlightPlanSyncHandler.EventType = {
  * @property {String} [enterICAO]
  * @property {String} [exitICAO]
  * @property {Number} [index]
+ * @property {Number} [finalAlt]
+ * @property {Number} [offset]
+ * @property {Number} [initialAlt]
+ * @property {Number} [distance]
  * @property {WT_FlightPlan} [flightPlan]
+ * @property {Boolean} [enabled]
+ * @property {Number} [fpa]
  */
