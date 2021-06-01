@@ -304,7 +304,8 @@ class WT_G3x5_PFDAutopilotDisplayModel {
 
     _updatePrimaryArmedVerticalMode() {
         if (this.verticalModeActive === WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.VS ||
-            this.verticalModeActive === WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.FLC) {
+            this.verticalModeActive === WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.FLC ||
+            this.verticalModeActive === WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.PITCH) {
 
             this._verticalModeArmedPrimary = WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.ALT_CAPTURE;
         } else {
