@@ -406,6 +406,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetMainHTMLElement extends HTMLEl
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
         this._disTitle = this.shadowRoot.querySelector(`#distitle`);
+        this._eteTitle = this.shadowRoot.querySelector(`#etetitle`);
         this._rowsContainer = this.shadowRoot.querySelector(`#rowscontainer`);
         this._activeArrowStemRect = this.shadowRoot.querySelector(`#activearrowstem rect`);
         this._activeArrowHead = this.shadowRoot.querySelector(`#activearrowhead`);
@@ -535,6 +536,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetMainHTMLElement extends HTMLEl
 
     _updateFromDistanceCumulative() {
         this._disTitle.innerHTML = this._isDistanceCumulative ? "Cum<br>DIS" : "Leg<br>DIS";
+        this._eteTitle.innerHTML = this._isDistanceCumulative ? "Cum<br>ETE" : "Leg<br>ETE";
         this._visibleRows.forEach(row => row.setDistanceCumulative(this._isDistanceCumulative), this);
     }
 
@@ -784,7 +786,7 @@ WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetMainHTMLElement.TEMPLATE.innerHTML =
                 <div id="distitle" class="title"></div>
                 <div id="alttitle" class="title">ALT</div>
                 <div id="fueltitle" class="title fullSizeOnlyTitle">Fuel<br>REM</div>
-                <div id="etetitle" class="title fullSizeOnlyTitle">Leg<br>ETE</div>
+                <div id="etetitle" class="title fullSizeOnlyTitle"></div>
                 <div id="etatitle" class="title fullSizeOnlyTitle">ETA</div>
             </div>
             <div id="rows">
@@ -1580,9 +1582,19 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
      *
      * @param {WT_NumberUnit} value
      */
-    _updateETE(value) {
+    _updateLegETE(value) {
         if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let distanceNM = this.leg.distance.asUnit(WT_Unit.NMILE);
+            let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
+            value.set(speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 ? (distanceNM / speed.number) : NaN, WT_Unit.HOUR);
+        } else {
+            value.set(NaN);
+        }
+    }
+
+    _updateCumulativeETE(value) {
+        if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
+            let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE);
             let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
             value.set(speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 ? (distanceNM / speed.number) : NaN, WT_Unit.HOUR);
         } else {
@@ -1616,7 +1628,8 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         this._cumDisInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "CUM"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {updateValue: this._updateCumulativeDistance.bind(this)}));
         this._legDisInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "DIS"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {updateValue: this._updateLegDistance.bind(this)}));
         this._fuelInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "FUEL"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON_FUEL, {updateValue: this._updateFuelRemaining.bind(this)}));
-        this._eteInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "ETE"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {updateValue: this._updateETE.bind(this)}));
+        this._legETEInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "ETE"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {updateValue: this._updateLegETE.bind(this)}));
+        this._cumETEInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "ETE"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {updateValue: this._updateCumulativeETE.bind(this)}));
         this._etaInfo = new WT_G3x5_NavDataInfoTime({shortName: "", longName: "ETA"}, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {updateTime: this._updateETA.bind(this)}), this._instrument.avionicsSystemSettingModel.timeFormatSetting, this._instrument.avionicsSystemSettingModel.timeLocalOffsetSetting));
     }
 
@@ -1841,7 +1854,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         }
 
         this._fuelField.update(this._fuelInfo, this._volumeInfoFormatter);
-        this._eteField.update(this._eteInfo, this._durationInfoFormatter);
+        this._eteField.update(this._isDistanceCumulative ? this._cumETEInfo : this._legETEInfo, this._durationInfoFormatter);
         this._etaField.update(this._etaInfo, this._timeInfoFormatter);
 
         this._dynamicDataFieldUpdateTime = this._instrument.currentTimeStamp;
@@ -1972,7 +1985,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowAirwaySequenceFooterHTMLEle
      *
      * @param {WT_NumberUnit} value
      */
-    _updateETE(value) {
+    _updateLegETE(value) {
         if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let distanceNM = this.leg.parent.distance.asUnit(WT_Unit.NMILE);
             let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
