@@ -429,8 +429,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.thousandsBlock = document.createElementNS(Avionics.SVG.NS, "rect");
                 this.thousandsBlock.setAttribute("visibility", "hidden");
                 this.thousandsBlock.setAttribute("id", "ThousandsBlock");
-                this.thousandsBlock.setAttribute("fill", "var(--green)");
-                this.thousandsBlock.setAttribute("stroke", "var(--green)");
+                this.thousandsBlock.setAttribute("fill", "#11d011");
+                this.thousandsBlock.setAttribute("stroke", "#11d011");
                 this.thousandsBlock.setAttribute("stroke-width", "2");
                 this.thousandsBlock.setAttribute("x", "38");
                 this.thousandsBlock.setAttribute("y", "192");
@@ -441,8 +441,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.tenThousandsBlock = document.createElementNS(Avionics.SVG.NS, "rect");
                 this.tenThousandsBlock.setAttribute("visibility", "hidden");
                 this.tenThousandsBlock.setAttribute("id", "TenThousandsBlock");
-                this.tenThousandsBlock.setAttribute("fill", "var(--green)");
-                this.tenThousandsBlock.setAttribute("stroke", "var(--green)");
+                this.tenThousandsBlock.setAttribute("fill", "#11d011");
+                this.tenThousandsBlock.setAttribute("stroke", "#11d011");
                 this.tenThousandsBlock.setAttribute("stroke-width", "2");
                 this.tenThousandsBlock.setAttribute("x", "18");
                 this.tenThousandsBlock.setAttribute("y", "192");
