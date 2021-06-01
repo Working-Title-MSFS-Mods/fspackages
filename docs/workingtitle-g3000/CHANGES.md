@@ -1,5 +1,32 @@
 # Changelog
 
+### v0.7.2
+**New Features**
+- \[FPLN\] Added support for advisory VNAV guidance. The FMS can now calculate VNAV descent profiles and provide information on top of descent, bottom of descent, required vertical speed, and vertical path deviation. The autopilot still does not support V PATH mode.
+  - For VNAV guidance to be issued, the following conditions must be met:
+    - VNAV is enabled via the GTC VNAV Profile page (MFD Home -> Flight Plan -> VNAV).
+    - A Direct-To with VNAV altitude restriction is active, OR the active flight plan contains at least one designated VNAV altitude restriction at or after the current active leg (designated altitude restrictions are displayed in cyan in the GTC Active Flight Plan page and the Navigation Map Flight Plan Text Inset).
+    - The currently active VNAV altitude restriction defines a descent path.
+  - You may now activate VNAV Direct-To's (not to be confused with a Direct-To with VNAV altitude restriction). Activating a VNAV Direct-To will place the TOD of the selected VNAV waypoint at the airplane's current position. In addition, if the selected VNAV waypoint is in the active flight plan, all VNAV altitude restrictions in the flight plan prior to it are removed (effectively bypassing all altitude restrictions between the airplane's current position and the selected VNAV waypoint).
+    - To activate a VNAV Direct-To for the currently active VNAV waypoint, press the VNAV Direct-To button in the GTC VNAV Profile Page (MFD Home -> Flight Plan -> VNAV).
+    - To activate a VNAV Direct-To targeting a designated VNAV restriction in the active flight plan, use the GTC to navigate to the Active Flight Plan page (MFD Home -> Flight Plan -> (\[optional\] -> Standby Flight Plan)), press the VNAV Altitude button for the desired restriction, and press the VNAV Direct-To button in the VNAV Altitude keypad pop-up.
+  - VNAV indications include the following:
+    - PFD
+      - The navigation status box will flash a "TOD within 1 minute" warning when the system calculates the top of descent will be reached in less than or equal to 1 minute.
+      - The altimeter will begin to display the currently active VNAV altitude, vertical deviation indicator (VDI), and required vertical speed in conjunction with the "TOD within 1 minute warning".
+    - MFD
+      - The navigation map will display TOD and BOD markers at their calculated position along the flight path.
+      - The flight plan text inset will display various VNAV parameters. (only visible when the MFD is in Full pane mode)
+    - GTC
+      - The VNAV Profile page will display various VNAV parameters.
+
+**Changed Features**
+- \[FPLN\] Enabled entry of custom VNAV altitude restrictions for approach legs in the active flight plan.
+- \[Misc\] Added measurement unit options (gallons, liters, pounds, kilograms) for fuel display fields. (Note that these do not apply to EICAS).
+
+**Fixes**
+- \[FPLN\] Fixed a bug that prevented editing of the active flight plan under certain circumstances.
+
 ### v0.7.1
 **Changed Features**
 - \[GTC\] Updated the Direct To page to more closely match the real-life units.
@@ -17,7 +44,7 @@
   - To insert an airway, select an Enroute leg in the GTC Flight Plan page (MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan)) which represents the desired entry point, then press the Load Airway button in the Waypoint Options menu on the right. A pop-up window will appear allowing you to select the desired entry point (defaults to the waypoint belonging to the selected leg), airway, and exit point. Once all three fields have been entered, press the Load Airway button to insert the airway into the flight plan immediately after the selected leg (or, if the selected leg is within another airway, immediately after the airway sequence).
   - By default, airways are collapsed within the Flight Plan page unless they contain the active flight plan leg. To manually expand/collapse airways, select an airway header row in the Flight Plan page and use the Airway Options menu on the right.
 - \[FPLN\] Added support for a standby flight plan.
-  - To access the standby flight plan, use the GTC navigate to MFD Home -> Flight Plan -> Standby Flight Plan.
+  - To access the standby flight plan, use the GTC to navigate to MFD Home -> Flight Plan -> Standby Flight Plan.
   - Note that because the mod still uses the sim's built-in flight plan system to manage the active flight plan, when activating the standby flight plan changes may be made to it for compatibility reasons.
   - Leg altitude restrictions are not imported into the active flight plan when activating the standby flight plan.
 - \[FPLN\] Added a function to delete the active/standby flight plans via the new Flight Plan Options menu.
