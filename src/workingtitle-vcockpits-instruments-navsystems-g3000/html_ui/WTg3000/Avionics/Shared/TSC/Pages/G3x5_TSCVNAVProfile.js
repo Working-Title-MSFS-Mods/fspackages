@@ -319,7 +319,7 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
      * @returns {Boolean}
      */
     _canEditActiveVNAVProfile(activeVNAVPath, timeToTOD, apSelectedAltitude) {
-        return activeVNAVPath && (timeToTOD.compare(WT_G3x5_TSCVNAVProfileHTMLElement.PROFILE_EDIT_TIME_TO_TOD_THRESHOLD) <= 0 || apSelectedAltitude.compare(activeVNAVPath.finalAltitude) < 0);
+        return activeVNAVPath && ((timeToTOD && timeToTOD.compare(WT_G3x5_TSCVNAVProfileHTMLElement.PROFILE_EDIT_TIME_TO_TOD_THRESHOLD) <= 0) || apSelectedAltitude.compare(activeVNAVPath.finalAltitude) < 0);
     }
 
     /**
@@ -368,7 +368,7 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
      * @param {WT_NumberUnitObject} timeToBOD
      */
     _updateTimeTo(activeVNAVPath, timeToTOD, timeToBOD) {
-        if (activeVNAVPath) {
+        if (activeVNAVPath && activeVNAVPath.deltaAltitude.number < 0 && timeToTOD && timeToBOD) {
             if (timeToTOD.number >= 0) {
                 this._timeToTitle.innerHTML = "Time to<br>TOD";
                 this._timeToValue.textContent = this._durationFormatter.getFormattedString(timeToTOD);
@@ -385,14 +385,14 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
     /**
      *
      * @param {WT_VNAVPathReadOnly} activeVNAVPath
-     * @param {WT_NumberUnitObject} timeToTOD
+     * @param {Boolean} hasReachedTOD
      * @param {WT_NumberUnitObject} distanceRemaining
      * @param {WT_NumberUnitObject} indicatedAltitude
      * @param {WT_NumberUnitObject} groundSpeed
      * @param {WT_Unit} verticalSpeedUnit
      */
-    _updateVSRequired(activeVNAVPath, timeToTOD, distanceRemaining, indicatedAltitude, groundSpeed, verticalSpeedUnit) {
-        if (activeVNAVPath && timeToTOD.number <= 0) {
+    _updateVSRequired(activeVNAVPath, hasReachedTOD, distanceRemaining, indicatedAltitude, groundSpeed, verticalSpeedUnit) {
+        if (activeVNAVPath && hasReachedTOD) {
             let vsRequired = activeVNAVPath.getVerticalSpeedRequiredAt(distanceRemaining, indicatedAltitude, groundSpeed, this._tempFPM);
             this._vsRequiredNumber.textContent = this._verticalSpeedFormatter.getFormattedNumber(vsRequired, verticalSpeedUnit);
             this._vsRequiredUnit.textContent = this._verticalSpeedFormatter.getFormattedUnit(vsRequired, verticalSpeedUnit);
@@ -405,13 +405,13 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
     /**
      *
      * @param {WT_VNAVPathReadOnly} activeVNAVPath
-     * @param {WT_NumberUnitObject} timeToTOD
+     * @param {Boolean} hasReachedTOD
      * @param {WT_NumberUnitObject} distanceRemaining
      * @param {WT_NumberUnitObject} indicatedAltitude
      * @param {WT_Unit} altitudeUnit
      */
-    _updateVerticalDeviation(activeVNAVPath, timeToTOD, distanceRemaining, indicatedAltitude, altitudeUnit) {
-        if (activeVNAVPath && timeToTOD.number <= 0) {
+    _updateVerticalDeviation(activeVNAVPath, hasReachedTOD, distanceRemaining, indicatedAltitude, altitudeUnit) {
+        if (activeVNAVPath && hasReachedTOD) {
             let verticalDeviation = activeVNAVPath.getVerticalDeviationAt(distanceRemaining, indicatedAltitude, this._tempFoot3);
             this._vertDevNumber.textContent = this._altitudeFormatter.getFormattedNumber(verticalDeviation, altitudeUnit);
             this._vertDevUnit.textContent = this._altitudeFormatter.getFormattedUnit(verticalDeviation, altitudeUnit);
@@ -437,6 +437,7 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
         let timeToTOD;
         let timeToBOD;
         let distanceRemaining;
+        let hasReachedTOD;
         if (activeVNAVPath) {
             groundSpeed = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnot);
             indicatedAltitude = this._parentPage.instrument.airplane.sensors.getAltimeter(this._parentPage.instrument.flightPlanManagerWT.altimeterIndex).altitudeIndicated(this._tempFoot1);
@@ -444,6 +445,7 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
             timeToTOD = this._parentPage.instrument.flightPlanManagerWT.timeToActiveVNAVPathStart(true, this._tempSecond1);
             timeToBOD = this._parentPage.instrument.flightPlanManagerWT.timeToActiveVNAVWaypoint(true, this._tempSecond2);
             distanceRemaining = this._parentPage.instrument.flightPlanManagerWT.distanceToActiveVNAVWaypoint(true, this._tempNM);
+            hasReachedTOD = activeVNAVPath.deltaAltitude.number === 0 || !(timeToTOD && timeToBOD && timeToTOD.number >= 0);
         }
 
         this._updateVNAVEnableButton(isVNAVEnabled);
@@ -451,8 +453,8 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
         this._updateVSTargetButton(activeVNAVPath, timeToTOD, apSelectedAltitude, groundSpeed, verticalSpeedUnit);
         this._updateFPAButton(activeVNAVPath, timeToTOD, apSelectedAltitude);
         this._updateTimeTo(activeVNAVPath, timeToTOD, timeToBOD);
-        this._updateVSRequired(activeVNAVPath, timeToTOD, distanceRemaining, indicatedAltitude, groundSpeed, verticalSpeedUnit);
-        this._updateVerticalDeviation(activeVNAVPath, timeToTOD, distanceRemaining, indicatedAltitude, altitudeUnit);
+        this._updateVSRequired(activeVNAVPath, hasReachedTOD, distanceRemaining, indicatedAltitude, groundSpeed, verticalSpeedUnit);
+        this._updateVerticalDeviation(activeVNAVPath, hasReachedTOD, distanceRemaining, indicatedAltitude, altitudeUnit);
         this._updateVNAVDRCTButton(activeVNAVPath);
     }
 

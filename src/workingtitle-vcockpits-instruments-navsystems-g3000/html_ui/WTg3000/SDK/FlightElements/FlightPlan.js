@@ -170,6 +170,8 @@ class WT_FlightPlan {
         if (this.hasOrigin()) {
             if (!this._departure || this._departure.runwayTransitionIndex < 0) {
                 this._legs.push(...this._origin.legs);
+            } else {
+                this._origin.leg()._index = -1;
             }
             if (this._departure) {
                 this._legs.push(...this._departure.legs);
@@ -185,6 +187,8 @@ class WT_FlightPlan {
             }
             if (!this._approach || !this._approach.procedure.runway) {
                 this._legs.push(...this._destination.legs);
+            } else {
+                this._destination.leg()._index = -1;
             }
         }
 
@@ -1571,7 +1575,7 @@ class WT_FlightPlanLegAltitudeConstraint {
      * @param {WT_AltitudeConstraint} constraint
      */
     setPublishedConstraint(constraint) {
-        if (!this._publishedConstraint && !constraint || (constraint && constraint.equals(this._publishedConstraint))) {
+        if (!constraint || (!this._publishedConstraint && !constraint) || (constraint && constraint.equals(this._publishedConstraint))) {
             return;
         }
 
@@ -1599,7 +1603,7 @@ class WT_FlightPlanLegAltitudeConstraint {
      * @param {WT_NumberUnit} altitude
      */
     setAdvisoryAltitude(altitude) {
-        if (this._advisoryAltitude.equals(altitude)) {
+        if (!altitude || this._advisoryAltitude.equals(altitude)) {
             return;
         }
 
@@ -1627,7 +1631,7 @@ class WT_FlightPlanLegAltitudeConstraint {
      * @param {WT_NumberUnit} altitude
      */
     setCustomAltitude(altitude) {
-        if (this._customAltitude.equals(altitude) || this._advisoryAltitude.equals(altitude)) {
+        if (!altitude || this._customAltitude.equals(altitude) || this._advisoryAltitude.equals(altitude)) {
             return;
         }
 
@@ -1660,6 +1664,28 @@ class WT_FlightPlanLegAltitudeConstraint {
                (!this.publishedConstraint && !other.publishedConstraint || (this.publishedConstraint && this.publishedConstraint.equals(other.publishedConstraint))) &&
                (!this.advisoryAltitude && !other.advisoryAltitude || (this.advisoryAltitude && this.advisoryAltitude.equals(other.advisoryAltitude))) &&
                (!this.customAltitude && !other.customAltitude || (this.customAltitude && this.customAltitude.equals(other.customAltitude)))
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLegAltitudeConstraint} other
+     */
+    copyFrom(other) {
+        if (other.publishedConstraint) {
+            this.setPublishedConstraint(other.publishedConstraint);
+        } else {
+            this.removePublishedConstraint();
+        }
+        if (other.advisoryAltitude) {
+            this.setAdvisoryAltitude(other.advisoryAltitude);
+        } else {
+            this.removeAdvisoryAltitude();
+        }
+        if (other.customAltitude) {
+            this.setCustomAltitude(other.customAltitude);
+        } else {
+            this.removeCustomAltitude();
+        }
     }
 }
 

@@ -131,9 +131,10 @@ class WT_FlightPlanAsoboInterface {
      *
      * @param {Object} data
      * @param {WT_Waypoint[]} array
+     * @param {Boolean} includeAltitudes
      * @returns {Promise<void>}
      */
-    async _getWaypointEntriesFromData(data, array) {
+    async _getWaypointEntriesFromData(data, array, includeAltitudes) {
         for (let i = 0; i < data.length; i++) {
             let leg = data[i];
             let waypoint = await this._getWaypointFromAsoboLeg(leg);
@@ -147,7 +148,7 @@ class WT_FlightPlanAsoboInterface {
                 if (leg.transitionLLas && leg.transitionLLas.length > 1) {
                     entry.steps = leg.transitionLLas.slice(0, leg.transitionLLas.length - 1).map(lla => new WT_GeoPoint(lla.lat, lla.long));
                 }
-                if (leg.lla.alt > 0) {
+                if (includeAltitudes && leg.lla.alt > 0) {
                     let altitude = WT_Unit.METER.createNumber(leg.lla.alt);
                     if (leg.altitudeMode === WT_FlightPlanAsoboInterface.LEG_ALTITUDE_MODE_TEXT[WT_FlightPlanAsoboInterface.LegAltitudeMode.CUSTOM]) {
                         entry.customAltitude = altitude;
@@ -157,6 +158,52 @@ class WT_FlightPlanAsoboInterface {
                 }
                 array.push(entry);
             }
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan} masterFlightPlan
+     * @param {WT_FlightPlan} syncedFlightPlan
+     */
+    _preserveApproachAltitudeConstraints(masterFlightPlan, syncedFlightPlan) {
+        // because the sim's flight plan system does not allow setting of approach altitude constraints, that
+        // information is stored exclusively within the custom flight plan object. Therefore we must ensure that after
+        // a sync, the altitude constraints are preserved. To that end, if the approach did not change, we will just
+        // copy over the altitude constraints. If the approach did change, but only because a USER waypoint was added
+        // to the beginning (a result of activating the approach), we will still copy over the constraints for the
+        // remaining, unchanged legs.
+
+        if (!masterFlightPlan.hasApproach() || !syncedFlightPlan.hasApproach()) {
+            return;
+        }
+
+        let masterApproachSegment = masterFlightPlan.getApproach();
+        let syncedApproachSegment = syncedFlightPlan.getApproach();
+        if (!masterApproachSegment.procedure.equals(syncedApproachSegment.procedure) ||
+            masterApproachSegment.transitionIndex !== syncedApproachSegment.transitionIndex ||
+            masterApproachSegment.legs.length === 0 ||
+            syncedApproachSegment.legs.length === 0 ||
+            Math.abs(masterApproachSegment.legs.length - syncedApproachSegment.legs.length) > 1) {
+
+            return;
+        }
+
+        let masterApproachLength = masterApproachSegment.legs.length;
+        let syncedApproachLength = syncedApproachSegment.legs.length;
+        let minLength = Math.min(masterApproachLength, syncedApproachLength);
+        for (let offset = 1; offset <= minLength; offset++) {
+            let masterLeg = masterApproachSegment.legs.get(masterApproachLength - offset);
+            let syncedLeg = syncedApproachSegment.legs.get(syncedApproachLength - offset);
+            if (!masterLeg.equals(syncedLeg)) {
+                return;
+            }
+        }
+
+        for (let offset = 1; offset <= minLength; offset++) {
+            let masterLeg = masterApproachSegment.legs.get(masterApproachLength - offset);
+            let syncedLeg = syncedApproachSegment.legs.get(syncedApproachLength - offset);
+            syncedLeg.altitudeConstraint.copyFrom(masterLeg.altitudeConstraint);
         }
     }
 
@@ -191,14 +238,14 @@ class WT_FlightPlanAsoboInterface {
                 removeStart++;
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length - removeStart);
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.departureStartIndex, this._asoboFlightPlanInfo.enrouteStartIndex), waypointEntries);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.departureStartIndex, this._asoboFlightPlanInfo.enrouteStartIndex), waypointEntries, true);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypointEntries);
             waypointEntries = [];
         }
 
         if (forceEnrouteSync) {
             let enrouteEnd = this._asoboFlightPlanInfo.enrouteStartIndex + this._asoboFlightPlanInfo.enrouteLength;
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.enrouteStartIndex, enrouteEnd), waypointEntries);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.enrouteStartIndex, enrouteEnd), waypointEntries, true);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
         } else {
             tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
@@ -215,7 +262,7 @@ class WT_FlightPlanAsoboInterface {
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, removeCount);
             let arrivalEnd = this._asoboFlightPlanInfo.arrivalStartIndex + this._asoboFlightPlanInfo.arrivalLength;
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.arrivalStartIndex, arrivalEnd), waypointEntries);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.arrivalStartIndex, arrivalEnd), waypointEntries, true);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypointEntries, 0);
         }
         if (tempFlightPlan.hasDestination() && data.approachIndex >= 0) {
@@ -229,8 +276,9 @@ class WT_FlightPlanAsoboInterface {
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, approachLength - preserveCount);
             waypointEntries = [];
-            await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - preserveCount), waypointEntries);
+            await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - preserveCount), waypointEntries, false);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.APPROACH, waypointEntries, 0);
+            this._preserveApproachAltitudeConstraints(flightPlan, tempFlightPlan);
         }
 
         flightPlan.copyFrom(tempFlightPlan);
@@ -348,6 +396,9 @@ class WT_FlightPlanAsoboInterface {
         }
         await Coherent.call("SET_DESTINATION", icao, !this._asoboHasDestination());
         await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean", 1);
+
+        await this.removeArrival();
+        await this.removeApproach();
     }
 
     /**

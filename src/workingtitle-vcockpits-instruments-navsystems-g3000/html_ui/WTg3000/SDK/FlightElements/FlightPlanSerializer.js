@@ -167,8 +167,9 @@ class WT_FlightPlanSerializer {
     _getApproach(approachSegment) {
         return {
             name: approachSegment.procedure.name,
-            trnIndex: approachSegment.transitionIndex
-        }
+            trnIndex: approachSegment.transitionIndex,
+            alts: approachSegment.legs.map(leg => this._getAltitudeConstraintObject(leg.altitudeConstraint), this)
+        };
     }
 
     /**
@@ -338,6 +339,7 @@ class WT_FlightPlanSerializer {
      */
     async _parseApproach(app, flightPlan) {
         await flightPlan.setApproach(app.name, app.trnIndex);
+        flightPlan.getApproach().legs.forEach((leg, index) => this._parseAltitudeConstraint(app.alts[index], leg), this);
     }
 
     /**
@@ -366,7 +368,7 @@ class WT_FlightPlanSerializer {
      * @param {String} string - the string representation of the flight plan to deserialize.
      * @param {WT_FlightPlan} flightPlan - the flight plan into which to copy the deserialized flight plan.
      * @returns {Promise<WT_FlightPlan>} a Promise which is fulfilled with the supplied flight plan once it has been
-     *                                   copied from the deserialized flight plan.
+     *          copied from the deserialized flight plan.
      */
     async deserialize(string, flightPlan) {
         if (string === "") {
@@ -384,13 +386,14 @@ class WT_FlightPlanSerializer {
  * @typedef WT_FlightPlanSerializableObject
  * @property {String} orig - the ICAO string of the origin, or the empty string if no origin exists.
  * @property {String} dest - the ICAO string of the destination, or the empty string if no destination exists.
- * @property {(WT_FlightPlanLegSerializableObject|WT_FlightPlanAirwaySerializableObject)[]} enr - an array of serializable object representations of the elements in the enroute segment.
+ * @property {(WT_FlightPlanLegSerializableObject|WT_FlightPlanAirwaySerializableObject)[]} enr - an array of
+ *           serializable object representations of the elements in the enroute segment.
  * @property {WT_FlightPlanDepartureArrivalSerializableObject} [dep] - a serializable object representation of the
- *                                                                     departure segment.
+ *           departure segment.
  * @property {WT_FlightPlanDepartureArrivalSerializableObject} [arr] - a serializable object representation of the
- *                                                                     arrival segment.
+ *           arrival segment.
  * @property {WT_FlightPlanApproachSerializableObject} [app] - a serializable object representation of the approach
- *                                                             segment.
+ *           segment.
  */
 
 /**
@@ -399,14 +402,15 @@ class WT_FlightPlanSerializer {
  * @property {Number} enrIndex - the enroute transition index of the procedure.
  * @property {Number} rwyIndex - the runway transition index of the procedure.
  * @property {WT_FlightPlanAltitudeConstraintSerializableObject[]} alts - an array of serializable object
- *                                                                        representations of the altitude constraints
- *                                                                        of the procedure segment's legs.
+ *           representations of the altitude constraints of the procedure segment's legs.
  */
 
 /**
  * @typedef WT_FlightPlanApproachSerializableObject
  * @property {String} name - the name of the procedure.
  * @property {Number} trnIndex - the transition index of the procedure.
+ * @property {WT_FlightPlanAltitudeConstraintSerializableObject[]} alts - an array of serializable object
+ *           representations of the altitude constraints of the procedure segment's legs.
  */
 
 /**
@@ -416,8 +420,7 @@ class WT_FlightPlanSerializer {
  * @property {String} entry - the ICAO string of the entry waypoint.
  * @property {String} exit - the ICAO string of the exit waypoint.
  * @property {WT_FlightPlanAltitudeConstraintSerializableObject[]} alts - an array of serializable object
- *                                                                        representations of the altitude constraints
- *                                                                        of the airway sequence's legs.
+ *           representations of the altitude constraints of the airway sequence's legs.
  */
 
 /**
@@ -425,14 +428,13 @@ class WT_FlightPlanSerializer {
  * @property {Number} leg - equal to 1 to signify this object represents a flight plan leg.
  * @property {String} [icao] - the ICAO string of the leg terminator fix.
  * @property {Number[]} [latlon] - the lat/long coordinates ([long, lat]) of the leg terminator fix. Only defined if
- *                                 the fix is not an ICAO waypoint.
+ *           the fix is not an ICAO waypoint.
  * @property {String} [ident] - the ident string of the leg terminator fix. Only defined if the fix is not an ICAO
- *                              waypoint.
+ *           waypoint.
  * @property {Number[][]} [steps] - an array of lat/long coordinates ([long, lat]) of the endpoints of the individual
- *                                  steps which comprise the leg. Only defined if the leg has more than one component
- *                                  step.
+ *           steps which comprise the leg. Only defined if the leg has more than one component step.
  * @property {WT_FlightPlanAltitudeConstraintSerializableObject} alt - a serializable object representation of the
- *                                                                     leg's altitude constraint.
+ *           leg's altitude constraint.
  */
 
 /**

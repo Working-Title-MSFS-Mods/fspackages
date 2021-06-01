@@ -185,10 +185,11 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
         let distanceRemaining = this._context.airplane.fms.flightPlanManager.distanceToActiveVNAVWaypoint(true, this._tempNM);
         let fpaRequired = activeVNAVPath.getFlightPathAngleRequiredAt(distanceRemaining, indicatedAltitude);
         let altitudeDelta = indicatedAltitude.subtract(activeVNAVPath.finalAltitude);
+        let timeToTOD = this._context.airplane.fms.flightPlanManager.timeToTOD(true, this._tempSecond);
 
         return altitudeDelta.compare(WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_ALTITUDE_DELTA_THRESHOLD) >= 0 &&
             fpaRequired >= WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_FPA_REQUIRED_THRESHOLD &&
-            this._context.airplane.fms.flightPlanManager.timeToTOD(true, this._tempSecond).compare(WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_THRESHOLD) <= 0;
+            (timeToTOD && timeToTOD.compare(WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_THRESHOLD) <= 0);
     }
 
     _updateTODWarning() {

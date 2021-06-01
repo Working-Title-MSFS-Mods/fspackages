@@ -390,9 +390,11 @@ class WT_G3x5_PFDAltimeterModel {
         // * time to TOD <= 1 minute
         // * flight path angle required to meet VNAV target altitude restriction within limits
 
+        let timeToTOD = this.airplane.fms.flightPlanManager.timeToTOD(true, this._tempSecond);
+
         return activeVNAVPath.deltaAltitude.number <= 0 &&
             this._tempFoot1.set(this.indicatedAltitude).subtract(activeVNAVPath.finalAltitude).compare(WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_ALTITUDE_DELTA_THRESHOLD) >= 0 &&
-            this.airplane.fms.flightPlanManager.timeToTOD(true, this._tempSecond).compare(WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_TIME_TO_TOD_THRESHOLD) <= 0 &&
+            (timeToTOD && timeToTOD.compare(WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_TIME_TO_TOD_THRESHOLD) <= 0) &&
             activeVNAVPath.getFlightPathAngleRequiredAt(this._distanceToActiveVNAVWaypoint, this.indicatedAltitude) >= WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_FPA_REQUIRED_THRESHOLD;
     }
 

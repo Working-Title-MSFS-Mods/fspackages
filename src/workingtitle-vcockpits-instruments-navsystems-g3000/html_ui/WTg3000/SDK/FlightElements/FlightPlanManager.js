@@ -1782,12 +1782,12 @@ class WT_FlightPlanManager {
         }
 
         let leg = this.activePlan.legs.get(index);
-        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+        if (!leg) {
             return;
         }
 
-        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
-            // no need to sync with the sim if modifying an enroute leg
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE || leg.segment === WT_FlightPlan.Segment.APPROACH) {
+            // no need to sync with the sim if modifying an enroute or approach leg
             leg.altitudeConstraint.setCustomAltitude(WT_FlightPlanManager._tempFeet.set(altitude));
             let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE, {
                 index: index,
@@ -1819,12 +1819,12 @@ class WT_FlightPlanManager {
 
     async _doSetAltitudeWithoutSync(index, altitude) {
         let leg = this.activePlan.legs.get(index);
-        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+        if (!leg) {
             return;
         }
 
-        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
-            // no need to sync with the sim if modifying an enroute leg
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE || leg.segment === WT_FlightPlan.Segment.APPROACH) {
+            // no need to sync with the sim if modifying an enroute or approach leg
             leg.altitudeConstraint.setCustomAltitude(WT_FlightPlanManager._tempFeet.set(altitude));
         } else {
             try {
@@ -1849,12 +1849,12 @@ class WT_FlightPlanManager {
         }
 
         let leg = this.activePlan.legs.get(index);
-        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+        if (!leg) {
             return;
         }
 
-        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
-            // no need to sync with the sim if modifying an enroute leg
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE || leg.segment === WT_FlightPlan.Segment.APPROACH) {
+            // no need to sync with the sim if modifying an enroute or approach leg
             leg.altitudeConstraint.removeCustomAltitude();
             let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE, {
                 index: index
@@ -1884,12 +1884,12 @@ class WT_FlightPlanManager {
 
     async _doRemoveAltitudeWithoutSync(index) {
         let leg = this.activePlan.legs.get(index);
-        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+        if (!leg) {
             return;
         }
 
-        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
-            // no need to sync with the sim if modifying an enroute leg
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE || leg.segment === WT_FlightPlan.Segment.APPROACH) {
+            // no need to sync with the sim if modifying an enroute or approach leg
             leg.altitudeConstraint.removeCustomAltitude();
         } else {
             try {

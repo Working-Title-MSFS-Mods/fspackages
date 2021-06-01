@@ -543,19 +543,21 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
         let vnavOffset = this._fpm.directTo.getVNAVOffset();
         let timeToTOD = this._fpm.timeToActiveVNAVPathStart(true, this._tempSecond);
 
-        if (timeToTOD.number >= 0) {
-            let distance = vnavOffset.asUnit(WT_Unit.GA_RADIAN) - activeVNAVPath.getTotalDistance().asUnit(WT_Unit.GA_RADIAN);
-            let tod = this._tempGeoPoint.set(this._fpm.directTo.getDestination().location).offset(finalBearing.number, distance, true);
-            this._drawVNAVPoint(state, tod, "TOD");
-            return;
-        } else if (this._fpm.directTo.getVNAVOffset().number !== 0) {
-            // only draw BOD if it is not coincident with the direct to waypoint
-            let timeToBOD = this._fpm.timeToActiveVNAVWaypoint(true, this._tempSecond);
-            if (timeToBOD.number >= 0) {
-                let distance = vnavOffset.asUnit(WT_Unit.GA_RADIAN);
-                let bod = this._tempGeoPoint.set(this._fpm.directTo.getDestination().location).offset(finalBearing.number, distance, true);
-                this._drawVNAVPoint(state, bod, "BOD");
+        if (timeToTOD) {
+            if (timeToTOD.number >= 0) {
+                let distance = vnavOffset.asUnit(WT_Unit.GA_RADIAN) - activeVNAVPath.getTotalDistance().asUnit(WT_Unit.GA_RADIAN);
+                let tod = this._tempGeoPoint.set(this._fpm.directTo.getDestination().location).offset(finalBearing.number, distance, true);
+                this._drawVNAVPoint(state, tod, "TOD");
                 return;
+            } else if (this._fpm.directTo.getVNAVOffset().number !== 0) {
+                // only draw BOD if it is not coincident with the direct to waypoint
+                let timeToBOD = this._fpm.timeToActiveVNAVWaypoint(true, this._tempSecond);
+                if (timeToBOD.number >= 0) {
+                    let distance = vnavOffset.asUnit(WT_Unit.GA_RADIAN);
+                    let bod = this._tempGeoPoint.set(this._fpm.directTo.getDestination().location).offset(finalBearing.number, distance, true);
+                    this._drawVNAVPoint(state, bod, "BOD");
+                    return;
+                }
             }
         }
 
@@ -573,10 +575,17 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
         while (offset < 0 || offset > currentLeg.distance.asUnit(WT_Unit.NMILE)) {
             let delta = offset < 0 ? -1 : 1;
             let newIndex = currentLeg.index + delta;
-            if (newIndex < 0 || newIndex >= currentLeg.flightPlan.legs.length) {
+            if (newIndex <= 0 || newIndex >= currentLeg.flightPlan.legs.length) {
                 break;
             }
+
+            if (delta > 0) {
+                offset -= currentLeg.distance.asUnit(WT_Unit.NMILE);
+            }
             currentLeg = leg.flightPlan.legs.get(newIndex);
+            if (delta < 0) {
+                offset += currentLeg.distance.asUnit(WT_Unit.NMILE);
+            }
         }
 
         return currentLeg.getPointAlong(this._tempNM.set(offset), reference);
@@ -587,7 +596,7 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
      */
     _updateFlightPlanVNAV(state) {
         let timeToTOD = this._fpm.timeToActiveVNAVPathStart(true, this._tempSecond);
-        if (timeToTOD.number >= 0) {
+        if (timeToTOD && timeToTOD.number >= 0) {
             let legRestriction = this._fpm.getActiveVNAVLegRestriction(true);
             let totalVNAVDistance = legRestriction.vnavPath.getTotalDistance();
             let tod = this._findPointAlongFlightPlan(legRestriction.leg, legRestriction.leg.distance.asUnit(WT_Unit.NMILE) - totalVNAVDistance.asUnit(WT_Unit.NMILE), this._tempGeoPoint);

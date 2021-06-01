@@ -833,12 +833,13 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetVNAVHTMLElement extends HTMLEl
         this._needRedrawFlightPlan = false;
         this._isInit = false;
 
-        this._tempSeconds = WT_Unit.SECOND.createNumber(0);
-        this._tempFeet1 = WT_Unit.FOOT.createNumber(0);
-        this._tempFeet2 = WT_Unit.FOOT.createNumber(0);
+        this._tempSecond1 = WT_Unit.SECOND.createNumber(0);
+        this._tempSecond2 = WT_Unit.SECOND.createNumber(0);
+        this._tempFoot1 = WT_Unit.FOOT.createNumber(0);
+        this._tempFoot2 = WT_Unit.FOOT.createNumber(0);
         this._tempNM = WT_Unit.NMILE.createNumber(0);
         this._tempFPM = WT_Unit.FPM.createNumber(0);
-        this._tempKnots = WT_Unit.KNOT.createNumber(0);
+        this._tempKnot = WT_Unit.KNOT.createNumber(0);
 
         this._initFormatters();
     }
@@ -939,62 +940,115 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetVNAVHTMLElement extends HTMLEl
     _clearWaypoint(state) {
         this._waypointIdentDisplay.textContent = "__________";
         this._waypointAltitudeNumber.textContent = "_____";
-        this._waypointAltitudeUnit.textContent = this._altitudeFormatter.getFormattedUnit(this._tempFeet1, state.unitsModel.altitudeUnit);
+        this._waypointAltitudeUnit.textContent = this._altitudeFormatter.getFormattedUnit(this._tempFoot1, state.unitsModel.altitudeUnit);
     }
 
     /**
      *
      * @param {WT_G3x5_NavMapDisplayPaneFlightPlanInsetState} state
-     * @param {WT_VNAVPathReadOnly} vnavPath
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     * @param {WT_NumberUnitObject} timeToTOD
+     * @param {WT_NumberUnitObject} timeToBOD
      */
-    _updateFields(state, vnavPath) {
-        let altitude = this._instrument.airplane.sensors.getAltimeter(this._instrument.flightPlanManagerWT.altimeterIndex).altitudeIndicated(this._tempFeet1);
-        let distanceRemaining = this._instrument.flightPlanManagerWT.distanceToActiveVNAVWaypoint(true, this._tempNM);
-        let groundSpeed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
-
-        let hasReachedTOD = false;
-        if (vnavPath.deltaAltitude.number === 0) {
-            hasReachedTOD = true;
+    _updateTimeTo(state, activeVNAVPath, timeToTOD, timeToBOD) {
+        if (activeVNAVPath.deltaAltitude.number < 0 && timeToTOD && timeToBOD) {
+            if (timeToTOD.number >= 0) {
+                this._timeToTitle.textContent = "Time to TOD";
+                this._timeToNumber.textContent = this._durationFormatter.getFormattedString(timeToTOD);
+            } else {
+                this._timeToTitle.textContent = "Time to BOD";
+                this._timeToNumber.textContent = this._durationFormatter.getFormattedString(timeToBOD);
+            }
+        } else {
             this._timeToTitle.textContent = "Time to BOD";
             this._timeToNumber.textContent = "__:__";
-        } else {
-            let timeToPathStart = this._instrument.flightPlanManagerWT.timeToActiveVNAVPathStart(true, this._tempSeconds);
-            if (timeToPathStart.number >= 0) {
-                this._timeToTitle.textContent = "Time to TOD";
-                this._timeToNumber.textContent = this._durationFormatter.getFormattedNumber(timeToPathStart);
-            } else {
-                hasReachedTOD = true;
-                let timeToWaypoint = this._instrument.flightPlanManagerWT.timeToActiveVNAVWaypoint(true, this._tempSeconds);
-                this._timeToTitle.textContent = "Time to BOD";
-                this._timeToNumber.textContent = this._durationFormatter.getFormattedNumber(timeToWaypoint);
-            }
         }
+    }
 
-        this._fpaNumber.textContent = vnavPath.getFlightPathAngle().toFixed(2);
+    /**
+     *
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanInsetState} state
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     */
+    _updateFPA(state, activeVNAVPath) {
+        this._fpaNumber.textContent = activeVNAVPath.getFlightPathAngle().toFixed(2);
+    }
 
-        let vsTarget = vnavPath.getVerticalSpeedTarget(groundSpeed, this._tempFPM);
+    /**
+     *
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanInsetState} state
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     * @param {WT_NumberUnitReadOnly} groundSpeed
+     */
+    _updateVSTarget(state, activeVNAVPath, groundSpeed) {
+        let vsTarget = activeVNAVPath.getVerticalSpeedTarget(groundSpeed, this._tempFPM);
         this._vsTargetNumber.textContent = this._verticalSpeedFormatter.getFormattedNumber(vsTarget, state.unitsModel.verticalSpeedUnit);
         this._vsTargetUnit.textContent = this._verticalSpeedFormatter.getFormattedUnit(vsTarget, state.unitsModel.verticalSpeedUnit);
+    }
 
+    /**
+     *
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanInsetState} state
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     * @param {Boolean} hasReachedTOD
+     * @param {WT_NumberUnitObject} distanceRemaining
+     * @param {WT_NumberUnitObject} altitude
+     * @param {WT_NumberUnitObject} groundSpeed
+     */
+    _updateVSRequired(state, activeVNAVPath, hasReachedTOD, distanceRemaining, altitude, groundSpeed) {
         if (hasReachedTOD) {
-            this._setFieldsColorMode("bod");
-
-            let vsRequired = vnavPath.getVerticalSpeedRequiredAt(distanceRemaining, altitude, groundSpeed, this._tempFPM);
+            let vsRequired = activeVNAVPath.getVerticalSpeedRequiredAt(distanceRemaining, altitude, groundSpeed, this._tempFPM);
             this._vsRequiredNumber.textContent = this._verticalSpeedFormatter.getFormattedNumber(vsRequired, state.unitsModel.verticalSpeedUnit);
             this._vsRequiredUnit.textContent = this._verticalSpeedFormatter.getFormattedUnit(vsRequired, state.unitsModel.verticalSpeedUnit);
+        } else {
+            this._vsRequiredNumber.textContent = "_____";
+            this._vsRequiredUnit.textContent = this._verticalSpeedFormatter.getFormattedUnit(this._tempFPM, state.unitsModel.verticalSpeedUnit);
+        }
+    }
 
-            let verticalDeviation = vnavPath.getVerticalDeviationAt(distanceRemaining, altitude, this._tempFeet2);
+    /**
+     *
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanInsetState} state
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     * @param {Boolean} hasReachedTOD
+     * @param {WT_NumberUnitObject} distanceRemaining
+     * @param {WT_NumberUnitObject} altitude
+     */
+    _updateVerticalDeviation(state, activeVNAVPath, hasReachedTOD, distanceRemaining, altitude) {
+        if (hasReachedTOD) {
+            let verticalDeviation = activeVNAVPath.getVerticalDeviationAt(distanceRemaining, altitude, this._tempFoot2);
             this._verticalDeviationNumber.textContent = this._altitudeFormatter.getFormattedNumber(verticalDeviation, state.unitsModel.altitudeUnit);
             this._verticalDeviationUnit.textContent = this._altitudeFormatter.getFormattedUnit(verticalDeviation, state.unitsModel.altitudeUnit);
         } else {
-            this._setFieldsColorMode("tod");
-
-            this._vsRequiredNumber.textContent = "_____";
-            this._vsRequiredUnit.textContent = this._verticalSpeedFormatter.getFormattedUnit(this._tempFPM, state.unitsModel.verticalSpeedUnit);
-
             this._verticalDeviationNumber.textContent = "_____";
-            this._verticalDeviationUnit.textContent = this._altitudeFormatter.getFormattedUnit(this._tempFeet1, state.unitsModel.altitudeUnit);
+            this._verticalDeviationUnit.textContent = this._altitudeFormatter.getFormattedUnit(this._tempFoot1, state.unitsModel.altitudeUnit);
         }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanInsetState} state
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     */
+    _updateFields(state, activeVNAVPath) {
+        let altitude = this._instrument.airplane.sensors.getAltimeter(this._instrument.flightPlanManagerWT.altimeterIndex).altitudeIndicated(this._tempFoot1);
+        let distanceRemaining = this._instrument.flightPlanManagerWT.distanceToActiveVNAVWaypoint(true, this._tempNM);
+        let groundSpeed = this._instrument.airplane.navigation.groundSpeed(this._tempKnot);
+        let timeToTOD = this._instrument.flightPlanManagerWT.timeToActiveVNAVPathStart(true, this._tempSecond1);
+        let timeToBOD = this._instrument.flightPlanManagerWT.timeToActiveVNAVWaypoint(true, this._tempSecond2);
+
+        let hasReachedTOD = activeVNAVPath.deltaAltitude.number === 0 || !(timeToTOD && timeToBOD && timeToTOD.number >= 0);
+        if (hasReachedTOD) {
+            this._setFieldsColorMode("bod");
+        } else {
+            this._setFieldsColorMode("tod");
+        }
+
+        this._updateTimeTo(state, activeVNAVPath, timeToTOD, timeToBOD);
+        this._updateFPA(state, activeVNAVPath);
+        this._updateVSTarget(state, activeVNAVPath, groundSpeed);
+        this._updateVSRequired(state, activeVNAVPath, hasReachedTOD, distanceRemaining, altitude, groundSpeed);
+        this._updateVerticalDeviation(state, activeVNAVPath, hasReachedTOD, distanceRemaining, altitude);
     }
 
     /**
@@ -1014,7 +1068,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetVNAVHTMLElement extends HTMLEl
         this._vsRequiredUnit.textContent = this._verticalSpeedFormatter.getFormattedUnit(this._tempFPM, state.unitsModel.verticalSpeedUnit);
 
         this._verticalDeviationNumber.textContent = "_____";
-        this._verticalDeviationUnit.textContent = this._altitudeFormatter.getFormattedUnit(this._tempFeet1, state.unitsModel.altitudeUnit);
+        this._verticalDeviationUnit.textContent = this._altitudeFormatter.getFormattedUnit(this._tempFoot1, state.unitsModel.altitudeUnit);
 
         this._setFieldsColorMode("none");
     }
