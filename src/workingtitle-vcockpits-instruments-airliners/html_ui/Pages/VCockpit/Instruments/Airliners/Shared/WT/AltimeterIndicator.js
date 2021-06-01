@@ -99,7 +99,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 1000));
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 100));
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 10));
-        this.cursorDecimals = new Avionics.AltitudeScroller(5, 25, 10, 100);
+        this.cursorDecimals = new Avionics.AltitudeScroller(5, 25, 20, 100);
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.rootGroup.setAttribute("id", "Altimeter");
@@ -425,6 +425,30 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorM.appendChild(this.CursorMM);
                 this.cursorSVG.appendChild(this.cursorM);
                 this.centerSVG.appendChild(this.cursorSVG);
+
+                this.thousandsBlock = document.createElementNS(Avionics.SVG.NS, "rect");
+                this.thousandsBlock.setAttribute("visibility", "hidden");
+                this.thousandsBlock.setAttribute("id", "ThousandsBlock");
+                this.thousandsBlock.setAttribute("fill", "var(--green)");
+                this.thousandsBlock.setAttribute("stroke", "var(--green)");
+                this.thousandsBlock.setAttribute("stroke-width", "2");
+                this.thousandsBlock.setAttribute("x", "38");
+                this.thousandsBlock.setAttribute("y", "192");
+                this.thousandsBlock.setAttribute("width", "15");
+                this.thousandsBlock.setAttribute("height", "28");
+                this.centerSVG.appendChild(this.thousandsBlock);
+
+                this.tenThousandsBlock = document.createElementNS(Avionics.SVG.NS, "rect");
+                this.tenThousandsBlock.setAttribute("visibility", "hidden");
+                this.tenThousandsBlock.setAttribute("id", "TenThousandsBlock");
+                this.tenThousandsBlock.setAttribute("fill", "var(--green)");
+                this.tenThousandsBlock.setAttribute("stroke", "var(--green)");
+                this.tenThousandsBlock.setAttribute("stroke-width", "2");
+                this.tenThousandsBlock.setAttribute("x", "18");
+                this.tenThousandsBlock.setAttribute("y", "192");
+                this.tenThousandsBlock.setAttribute("width", "15");
+                this.tenThousandsBlock.setAttribute("height", "28");
+                this.centerSVG.appendChild(this.tenThousandsBlock);
             }
 
             var targetAltitudeIndicatorPosX = gradWidth - 13;
@@ -1747,7 +1771,19 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.cursorM.setAttribute("visibility", "hidden");
         }
         if (this.cursorIntegrals) {
-            let hideZeros = (this.aircraft == Aircraft.A320_NEO) ? true : false;
+            let hideZeros = (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4) ? true : false;
+            if (this.aircraft == Aircraft.CJ4) {
+                let absoluteAltitude = Math.abs(_altitude);
+                if (absoluteAltitude < 995)
+                    this.thousandsBlock.setAttribute("visibility", "visible");
+                else
+                    this.thousandsBlock.setAttribute("visibility", "hidden");
+                if (absoluteAltitude < 9995)
+                    this.tenThousandsBlock.setAttribute("visibility", "visible");
+                else
+                    this.tenThousandsBlock.setAttribute("visibility", "hidden");
+            }
+
             // if(this.aircraft == Aircraft.CJ4){
             //     if(_altitude < 10000){
             //         this.cursorIntegrals[0].clear("X");
