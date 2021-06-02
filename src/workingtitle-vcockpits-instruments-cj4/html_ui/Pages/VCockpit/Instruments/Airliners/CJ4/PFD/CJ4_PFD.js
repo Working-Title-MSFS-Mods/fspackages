@@ -803,8 +803,7 @@ class CJ4_AOA extends NavSystemElement {
     onUpdate(_deltaTime) {
         var angle = Simplane.getAngleOfAttack();
         this.aoaStyle = WTDataStore.get('WT_CJ4_aoaStyle');
-        let seconds = _deltaTime / 10;
-        this._angle = Utils.SmoothSin(0.0, angle, 0.5, seconds);
+        this._angle = Utils.SmoothSin(this._angle, angle, 0.4, _deltaTime / 1000);
         //AoA only visible when flaps 35
         this.aoa.setAttribute("angle", this._angle);
         const flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
