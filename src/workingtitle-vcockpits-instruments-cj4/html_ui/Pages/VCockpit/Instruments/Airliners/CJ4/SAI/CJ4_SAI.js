@@ -494,7 +494,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 1000));
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 100));
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 10));
-        this.cursorDecimals = new Avionics.AltitudeScroller(3, 36, 10, 100);
+        this.cursorDecimals = new Avionics.AltitudeScroller(3, 36, 20, 100);
         this.construct();
     }
     construct() {
@@ -619,6 +619,12 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             this.cursorSVGClip.setAttribute("stroke-width", "3");
             trs.appendChild(this.cursorSVGClip);
 
+            this.cursorBox = document.createElementNS(Avionics.SVG.NS, "path");
+            this.cursorBox.setAttribute("visibility", "hidden");
+            this.cursorBox.setAttribute("transform", "scale(0.55)");
+            this.cursorBox.setAttribute("fill", "#11d011");
+            this.cursorBox.setAttribute("d", "M 18 55 L 7 70.5 L 7 82.5 L 26 55 Z M 29 55 L 7 87 L 7 99.5 L 36.834 55.017 Z M 40 55 L 7 104 L 15 104 L 48 55 Z M 48 59.5 L 18 104 L 26 104 L 48 72 Z M 48 76.5 L 29 104 L 37 104 L 48 88.5 Z");
+
             if (!this.cursorSVGShape)
                 this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
             this.cursorSVGShape.setAttribute("fill", "black");
@@ -643,6 +649,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
                 this.cursorIntegrals[2].construct(integralsGroup, _cursorPosX + 81, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.4, "#11d011");
             }
             this.cursorDecimals.construct(trs, _cursorPosX + 119, _cursorPosY + 6, _width, "Jost-Bold", this.fontSize * 1.50, "#11d011");
+            trs.appendChild(this.cursorBox);
             trs.appendChild(this.cursorSVGClip);
             this.rootGroup.appendChild(this.cursorSVG);
         }
@@ -739,6 +746,12 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         }
         if (this.cursorDecimals) {
             this.cursorDecimals.update(_altitude);
+        }
+
+        if (_altitude < 9995) {
+            this.cursorBox.setAttribute("visibility", "visible");
+        } else {
+            this.cursorBox.setAttribute("visibility", "hidden");
         }
     }
 }
@@ -845,7 +858,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
             let pitchSvgClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
             pitchSvgClip.setAttribute("id", "pitchClip");
             let attitudePitchContainerShape = document.createElementNS(Avionics.SVG.NS, "path");
-            attitudePitchContainerShape.setAttribute("d", "M 0 -130 L -120 -70 L -120 70 L 0 130 L 120 70 L 120 -70 Z");
+            attitudePitchContainerShape.setAttribute("d", "M 0 -123 L -120 -70 L -120 70 L 0 123 L 120 70 L 120 -70 Z");
             pitchSvgClip.appendChild(attitudePitchContainerShape);
             pitchSvgDefs.appendChild(pitchSvgClip);
             this.pitch_root.appendChild(pitchSvgDefs);

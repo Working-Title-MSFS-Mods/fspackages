@@ -99,8 +99,10 @@ class CJ4_FMC_NavRadioPageOne {
 
     render() {
         // console.log("Render Nav");
+
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
-        const relAbsDisplay = (SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]");
+        const relAbsDisplay = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]";
+
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
             [" COM1", "COM2 "],
@@ -569,7 +571,7 @@ class CJ4_FMC_NavRadioPage {
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
-            [" MODE ", "ALT TAG "],
+            [" MODE", "ALT TAG "],
             [tcasModeSwitch, relAbsSwitch],
             [""],
             ["", "TEST[s-text disabled]"],
