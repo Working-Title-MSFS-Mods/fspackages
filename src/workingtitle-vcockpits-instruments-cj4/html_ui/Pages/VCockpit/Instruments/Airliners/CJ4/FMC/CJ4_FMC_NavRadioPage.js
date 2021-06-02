@@ -381,7 +381,7 @@ class CJ4_FMC_NavRadioDispatch {
         // console.log("Render Nav");
 
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
-        const relAbsDisplay = (SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]");
+        const relAbsDisplay = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]";
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
