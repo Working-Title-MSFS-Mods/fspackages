@@ -1172,7 +1172,7 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
         this.rootSVG.setAttribute("viewBox", "0 0 500 250");
         var posX = 0;
         var posY = 0;
-        var width = 495;
+        var width = 490;
         var height = 110;
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1224,7 +1224,7 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
                 let cursorShape = document.createElementNS(Avionics.SVG.NS, "path");
                 cursorShape.setAttribute("fill", "white");
                 cursorShape.setAttribute("fill-opacity", this.cursorOpacity);
-                cursorShape.setAttribute("d", "M 19 1 L 20 1 L 20 62 L 18 62 L 18 20 L 18 1 Z");
+                cursorShape.setAttribute("d", "M 18 1 L 21 1 L 21 62 L 18 62 Z");
                 this.cursorSVG.appendChild(cursorShape);
             }
             this.centerSVG.appendChild(this.cursorSVG);
