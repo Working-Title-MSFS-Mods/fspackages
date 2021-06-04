@@ -163,6 +163,44 @@ class WT_FlightPlanAsoboInterface {
 
     /**
      *
+     * @param {WT_FlightPlanDepartureArrival} masterSegment
+     * @param {WT_FlightPlanDepartureArrival} syncedSegment
+     */
+    _preserveDepartureArrivalAltitudeConstraints(masterSegment, syncedSegment) {
+        if (!masterSegment || !syncedSegment) {
+            return;
+        }
+        if (!masterSegment.equals(syncedSegment)) {
+            return;
+        }
+
+        for (let i = 0; i < masterSegment.legs.length; i++) {
+            let masterLeg = masterSegment.legs.get(i);
+            let syncedLeg = syncedSegment.legs.get(i);
+            syncedLeg.altitudeConstraint.copyFrom(masterLeg.altitudeConstraint);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan} masterFlightPlan
+     * @param {WT_FlightPlan} syncedFlightPlan
+     */
+    _preserveDepartureAltitudeConstraints(masterFlightPlan, syncedFlightPlan) {
+        this._preserveDepartureArrivalAltitudeConstraints(masterFlightPlan.getDeparture(), syncedFlightPlan.getDeparture());
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan} masterFlightPlan
+     * @param {WT_FlightPlan} syncedFlightPlan
+     */
+    _preserveArrivalAltitudeConstraints(masterFlightPlan, syncedFlightPlan) {
+        this._preserveDepartureArrivalAltitudeConstraints(masterFlightPlan.getArrival(), syncedFlightPlan.getArrival());
+    }
+
+    /**
+     *
      * @param {WT_FlightPlan} masterFlightPlan
      * @param {WT_FlightPlan} syncedFlightPlan
      */
@@ -238,14 +276,15 @@ class WT_FlightPlanAsoboInterface {
                 removeStart++;
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length - removeStart);
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.departureStartIndex, this._asoboFlightPlanInfo.enrouteStartIndex), waypointEntries, true);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.departureStartIndex, this._asoboFlightPlanInfo.enrouteStartIndex), waypointEntries, false);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypointEntries);
+            this._preserveDepartureAltitudeConstraints(flightPlan, tempFlightPlan);
             waypointEntries = [];
         }
 
         if (forceEnrouteSync) {
             let enrouteEnd = this._asoboFlightPlanInfo.enrouteStartIndex + this._asoboFlightPlanInfo.enrouteLength;
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.enrouteStartIndex, enrouteEnd), waypointEntries, true);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.enrouteStartIndex, enrouteEnd), waypointEntries, false);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
         } else {
             tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
@@ -262,8 +301,9 @@ class WT_FlightPlanAsoboInterface {
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, removeCount);
             let arrivalEnd = this._asoboFlightPlanInfo.arrivalStartIndex + this._asoboFlightPlanInfo.arrivalLength;
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.arrivalStartIndex, arrivalEnd), waypointEntries, true);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.arrivalStartIndex, arrivalEnd), waypointEntries, false);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypointEntries, 0);
+            this._preserveArrivalAltitudeConstraints(flightPlan, tempFlightPlan);
         }
         if (tempFlightPlan.hasDestination() && data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
