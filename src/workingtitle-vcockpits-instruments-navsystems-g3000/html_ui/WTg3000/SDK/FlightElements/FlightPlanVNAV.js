@@ -42,6 +42,8 @@ class WT_FlightPlanVNAV {
 
         this._flightPlan.addListener(this._onFlightPlanEvent.bind(this));
         this.build();
+
+        this._ignoreFlightPlanEvents = false;
     }
 
     /**
@@ -328,6 +330,13 @@ class WT_FlightPlanVNAV {
             return false;
         }
 
+        // remove all custom flight plan altitude constraints prior to the direct to
+        this._ignoreFlightPlanEvents = true;
+        for (let i = 0; i < legRestriction.leg.index; i++) {
+            this._flightPlan.legs.get(i).altitudeConstraint.removeCustomAltitude();
+        }
+        this._ignoreFlightPlanEvents = false;
+
         // remove all leg restrictions prior to the direct to
         for (let i = legRestriction.leg.index - 1; i >= 0; i--) {
             this._legRestrictions[i] = null;
@@ -346,6 +355,10 @@ class WT_FlightPlanVNAV {
      * @param {WT_FlightPlanEvent} event
      */
     _onFlightPlanEvent(event) {
+        if (this._ignoreFlightPlanEvents) {
+            return;
+        }
+
         this.build();
     }
 
