@@ -412,7 +412,7 @@ class WT_G3x5_TSCVNAVProfileHTMLElement extends HTMLElement {
      */
     _updateVerticalDeviation(activeVNAVPath, hasReachedTOD, distanceRemaining, indicatedAltitude, altitudeUnit) {
         if (activeVNAVPath && hasReachedTOD) {
-            let verticalDeviation = activeVNAVPath.getVerticalDeviationAt(distanceRemaining, indicatedAltitude, this._tempFoot3);
+            let verticalDeviation = activeVNAVPath.getVerticalDeviationAt(distanceRemaining, indicatedAltitude, true, this._tempFoot3);
             this._vertDevNumber.textContent = this._altitudeFormatter.getFormattedNumber(verticalDeviation, altitudeUnit);
             this._vertDevUnit.textContent = this._altitudeFormatter.getFormattedUnit(verticalDeviation, altitudeUnit);
         } else {

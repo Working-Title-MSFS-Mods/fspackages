@@ -155,22 +155,26 @@ class WT_VNAVPath {
     }
 
     /**
-     * Gets the target altitude at a point defined by horizontal distance from the end of this path. If the specified
-     * distance is greater than or equal to the total horizontal distance of this path, the target altitude will be
-     * equal to this path's initial altitude. If the specified distance is less than or equal to 0, the target altitude
-     * will be equal to this path's final altitude.
+     * Gets the target altitude at a point defined by horizontal distance from the end of this path.
      * @param {WT_NumberUnitObject} distanceRemaining - the distance from the end of this path, defining the point
      *        at which to get the target altitude.
+     * @param {Boolean} [shouldProject] - whether to project this path's slope infinitely forwards and backwards past
+     *        the final and initial altitudes, respectively. If false, the target altitude is equal to the initial
+     *        altitude if distanceRemaining is less than 0, and equal to the final altitude if distanceRemaining is
+     *        greater than the total horizontal distance of this path. False by default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
      *        new WT_NumberUnit object will be created with units of feet.
      * @returns {WT_NumberUnit} the target altitude at the specified distance from the end of this path.
      */
-    getTargetAltitudeAt(distanceRemaining, reference) {
+    getTargetAltitudeAt(distanceRemaining, shouldProject = false, reference) {
         let value;
         if (this._totalDistance.isNaN()) {
             value = NaN;
         } else {
-            let distanceRatio = Math.max(0, Math.min(1, distanceRemaining.ratio(this._totalDistance)));
+            let distanceRatio = distanceRemaining.ratio(this._totalDistance);
+            if (!shouldProject) {
+                distanceRatio = Math.max(0, Math.min(1, distanceRatio));
+            }
             value = this.finalAltitude.asUnit(WT_Unit.FOOT) - this._deltaAltitude.number * distanceRatio;
         }
 
@@ -184,12 +188,17 @@ class WT_VNAVPath {
      *        for which to get the vertical deviation.
      * @param {WT_NumberUnitObject} indicatedAltitude - the indicated altitude of the point for which to get the
      *        vertical deviation.
+     * @param {Boolean} [shouldProject] - whether to project this path's slope infinitely forwards and backwards past
+     *        the final and initial altitudes, respectively. If false, the target altitude used to calculate the
+     *        vertical deviation is equal to the initial altitude if distanceRemaining is less than 0, and equal to the
+     *        final altitude if distanceRemaining is greater than the total horizontal distance of this path. False by
+     *        default.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a
      *        new WT_NumberUnit object will be created with units of feet.
      * @returns {WT_NumberUnit} the vertical deviation from this path of the specified point.
      */
-    getVerticalDeviationAt(distanceRemaining, indicatedAltitude, reference) {
-        let targetAltitude = this.getTargetAltitudeAt(distanceRemaining, reference);
+    getVerticalDeviationAt(distanceRemaining, indicatedAltitude, shouldProject = false, reference) {
+        let targetAltitude = this.getTargetAltitudeAt(distanceRemaining, shouldProject, reference);
         return targetAltitude.scale(-1, true).add(indicatedAltitude);
     }
 

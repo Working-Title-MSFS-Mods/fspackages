@@ -1018,7 +1018,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetVNAVHTMLElement extends HTMLEl
      */
     _updateVerticalDeviation(state, activeVNAVPath, hasReachedTOD, distanceRemaining, altitude) {
         if (hasReachedTOD) {
-            let verticalDeviation = activeVNAVPath.getVerticalDeviationAt(distanceRemaining, altitude, this._tempFoot2);
+            let verticalDeviation = activeVNAVPath.getVerticalDeviationAt(distanceRemaining, altitude, true, this._tempFoot2);
             this._verticalDeviationNumber.textContent = this._altitudeFormatter.getFormattedNumber(verticalDeviation, state.unitsModel.altitudeUnit);
             this._verticalDeviationUnit.textContent = this._altitudeFormatter.getFormattedUnit(verticalDeviation, state.unitsModel.altitudeUnit);
         } else {

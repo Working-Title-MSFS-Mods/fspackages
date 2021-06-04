@@ -269,7 +269,7 @@ class WT_FlightPlanVNAV {
                     // at and after the TOD
                     this._legRestrictions[i] = null;
                 } else {
-                    let altitude = designatedRestriction.vnavPath.getTargetAltitudeAt(distanceRemaining, this._tempFeet);
+                    let altitude = designatedRestriction.vnavPath.getTargetAltitudeAt(distanceRemaining, false, this._tempFeet);
                     if (!legRestriction) {
                         this._legRestrictions[i] = new WT_FlightPlanVNAVLegAdvisoryRestriction(leg, altitude);
                     } else {

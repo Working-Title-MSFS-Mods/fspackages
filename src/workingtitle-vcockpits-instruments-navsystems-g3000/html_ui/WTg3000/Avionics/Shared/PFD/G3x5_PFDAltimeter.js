@@ -457,7 +457,7 @@ class WT_G3x5_PFDAltimeterModel {
      * @returns {Number}
      */
     _calculateVNAVDeflection(activeVNAVPath) {
-        return -activeVNAVPath.getVerticalDeviationAt(this._distanceToActiveVNAVWaypoint, this.indicatedAltitude, this._tempFoot1).ratio(WT_G3x5_PFDAltimeterModel.VDI_FULL_DEFLECTION);
+        return -activeVNAVPath.getVerticalDeviationAt(this._distanceToActiveVNAVWaypoint, this.indicatedAltitude, true, this._tempFoot1).ratio(WT_G3x5_PFDAltimeterModel.VDI_FULL_DEFLECTION);
     }
 
     _updateVerticalTrackGlidePreview() {
