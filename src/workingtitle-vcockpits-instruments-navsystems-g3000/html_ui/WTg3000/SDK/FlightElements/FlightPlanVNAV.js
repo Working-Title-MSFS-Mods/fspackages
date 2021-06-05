@@ -149,11 +149,11 @@ class WT_FlightPlanVNAV {
     }
 
     _getHighestRestrictionleg() {
-        // tiebreakers go to the later leg
+        // tiebreakers go to the earlier leg
 
         let highestLeg = this._lastDescentLegRestriction.leg;
         let highestAltitude = this._lastDescentLegRestriction.altitude;
-        for (let i = 0; i < this._lastDescentLegRestriction.leg.index; i++) {
+        for (let i = this._lastDescentLegRestriction.leg.index - 1; i >= 0; i--) {
             let leg = this.flightPlan.legs.get(i);
             let altitudeRestriction = this._getAltitudeRestrictionFromLeg(leg);
             if (altitudeRestriction && altitudeRestriction.compare(highestAltitude) >= 0) {
