@@ -1748,18 +1748,6 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
         if (this.cursorIntegrals) {
             let hideZeros = (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4) ? true : false;
-            // if(this.aircraft == Aircraft.CJ4){
-            //     if(_altitude < 10000){
-            //         this.cursorIntegrals[0].clear("X");
-            //     }else{
-            //         this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined);
-            //     }
-            //     if(_altitude < 1000){
-            //         this.cursorIntegrals[1].clear("X");
-            //     }else{
-            //         this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
-            //     }
-            // }else{
             if (this.aircraft == Aircraft.CJ4) {
                 this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined, "$"); // $ character has been modded in the font to a box shape.
                 this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined, "$");
