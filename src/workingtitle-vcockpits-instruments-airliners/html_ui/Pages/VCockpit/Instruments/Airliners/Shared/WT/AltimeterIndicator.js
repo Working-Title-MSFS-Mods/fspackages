@@ -96,10 +96,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.totalGraduations = this.nbPrimaryGraduations + ((this.nbPrimaryGraduations - 1) * this.nbSecondaryGraduations);
         this.graduationScroller = new Avionics.Scroller(this.nbPrimaryGraduations, 100, true);
         this.cursorIntegrals = new Array();
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 1000));
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 100));
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 52, 1, 10, 10));
-        this.cursorDecimals = new Avionics.AltitudeScroller(5, 25, 10, 100);
+        this.cursorIntegrals.push(new CJ4_AltitudeScroller(3, 52, 1, 10, 1000));
+        this.cursorIntegrals.push(new CJ4_AltitudeScroller(3, 52, 1, 10, 100));
+        this.cursorIntegrals.push(new CJ4_AltitudeScroller(3, 52, 1, 10, 10));
+        this.cursorDecimals = new CJ4_AltitudeScroller(5, 25, 20, 100);
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.rootGroup.setAttribute("id", "Altimeter");
@@ -1747,7 +1747,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.cursorM.setAttribute("visibility", "hidden");
         }
         if (this.cursorIntegrals) {
-            let hideZeros = (this.aircraft == Aircraft.A320_NEO) ? true : false;
+            let hideZeros = (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4) ? true : false;
             // if(this.aircraft == Aircraft.CJ4){
             //     if(_altitude < 10000){
             //         this.cursorIntegrals[0].clear("X");
@@ -1760,8 +1760,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             //         this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
             //     }
             // }else{
-            this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined);
-            this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
+            this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined, "$"); // $ character has been modded in the font to a box shape.
+            this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined, "$");
             // }
             this.cursorIntegrals[2].update(_altitude, 100);
         }
