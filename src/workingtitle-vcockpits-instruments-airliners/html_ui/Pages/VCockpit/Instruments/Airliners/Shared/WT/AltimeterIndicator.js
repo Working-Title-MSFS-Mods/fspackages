@@ -1760,9 +1760,15 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             //         this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
             //     }
             // }else{
-            this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined, "$"); // $ character has been modded in the font to a box shape.
-            this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined, "$");
-            // }
+            if (this.aircraft == Aircraft.CJ4) {
+                this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined, "$"); // $ character has been modded in the font to a box shape.
+                this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined, "$");
+            }
+            else {
+                this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined);
+                this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
+        }
+            
             this.cursorIntegrals[2].update(_altitude, 100);
         }
         if (this.cursorDecimals) {
