@@ -50,6 +50,7 @@ class WT_MapViewTextLabel {
 
 /**
  * An implementation of a text label that supports customization of text font and background.
+ * @abstract
  */
 class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
     /**
@@ -217,8 +218,8 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         let width = context.measureText(this.text).width;
         let height = this.fontSize * state.dpiScale;
 
-        let centerX = this._position.x + (this.anchor.x - 0.5) * width;
-        let centerY = this._position.y + (this.anchor.x - 0.5) * height;
+        let centerX = this._position.x - (this.anchor.x - 0.5) * width;
+        let centerY = this._position.y - (this.anchor.y - 0.5) * height;
 
         if (this.showBackground) {
             this._drawBackground(state, context, centerX, centerY, width, height);
@@ -272,6 +273,63 @@ WT_MapViewSimpleTextLabel.OPTIONS_DEF = {
     backgroundBorderRadius: {default: 0, auto: true},
     backgroundOutlineWidth: {default: 0, auto: true},
     backgroundOutlineColor: {default: "white", auto: true}
+};
+
+/**
+ * A text label associated with a specific geographic location.
+ */
+class WT_MapViewLocationTextLabel extends WT_MapViewSimpleTextLabel {
+    /**
+     * @param {{lat:Number, long:Number}} location - the geographic location of the new label.
+     * @param {String} text - the text content of the new label.
+     * @param {Number} priority - the display priority of the new label.
+     * @param {Boolean} [alwaysShow] - whether the new label is immune to culling. False by default.
+     */
+    constructor(location, text, priority, alwaysShow = false) {
+        super(text, priority, alwaysShow);
+
+        this._location = new WT_GeoPoint(location.lat, location.long);
+        this._offset = new WT_GVector2(0, 0);
+
+        this._optsManager.addOptions(WT_MapViewLocationTextLabel.OPTIONS_DEF);
+
+        this._anchor.set(0.5, 0.5);
+    }
+
+    /**
+     * The geographic location associated with this label.
+     * @readonly
+     * @type {WT_GeoPointReadOnly}
+     */
+    get location() {
+        return this._location.readonly();
+    }
+
+    /**
+     * The offset, in pixel coordinates, of this label from its projected location.
+     * @type {WT_GVector2}
+     */
+    get offset() {
+        return this._offset.readonly();
+    }
+
+    set offset(value) {
+        this._offset.set(value);
+    }
+
+    /**
+     * Updates this label according to the current map view state.
+     * @param {WT_MapViewState} state - the current map view state.
+     */
+    update(state) {
+        state.projection.project(this.location, this._position);
+        this._position.add(this.offset.x * state.dpiScale, this.offset.y * state.dpiScale);
+
+        super.update(state);
+    }
+}
+WT_MapViewLocationTextLabel.OPTIONS_DEF = {
+    offset: {default: {x: 0, y: 0}}
 };
 
 /**

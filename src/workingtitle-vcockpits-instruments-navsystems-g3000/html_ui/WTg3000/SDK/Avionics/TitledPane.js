@@ -3,9 +3,13 @@ class WT_TitledPane extends HTMLElement {
         super();
 
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_TitledPane.TEMPLATE.content.cloneNode(true));
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
         this._titleText = "";
+    }
+
+    _getTemplate() {
+        return WT_TitledPane.TEMPLATE;
     }
 
     static get observedAttributes() {
@@ -38,6 +42,7 @@ class WT_TitledPane extends HTMLElement {
         }
     }
 }
+WT_TitledPane.NAME = "wt-pane-titled";
 WT_TitledPane.TEMPLATE = document.createElement("template");
 WT_TitledPane.TEMPLATE.innerHTML = `
     <style>
@@ -79,6 +84,7 @@ WT_TitledPane.TEMPLATE.innerHTML = `
                         font-size: var(--pane-title-font-size, 1.75vh);
                         background-color: var(--pane-title-bg-color, black);
                         padding: 0.05em 0.1em;
+                        white-space: nowrap;
                     }
                 #content {
                     display: block;
@@ -98,4 +104,4 @@ WT_TitledPane.TEMPLATE.innerHTML = `
     </div>
 `;
 
-customElements.define("pane-titled", WT_TitledPane);
+customElements.define(WT_TitledPane.NAME, WT_TitledPane);

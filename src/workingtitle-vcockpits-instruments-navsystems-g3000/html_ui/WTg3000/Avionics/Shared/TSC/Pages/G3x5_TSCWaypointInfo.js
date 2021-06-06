@@ -137,7 +137,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     }
 
     _getSettingModelID(instrumentID, halfPaneID) {
-        return `${instrumentID}-${halfPaneID}_${WT_G3x5_WaypointInfoDisplay.SETTING_MODEL_ID}`;
+        return `${instrumentID}-${halfPaneID}_${WT_G3x5_WaypointInfoDisplayPane.SETTING_MODEL_ID}`;
     }
 
     _initSettingModel() {
@@ -193,7 +193,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     }
 
     setWaypoint(waypoint) {
-        if (waypoint === null && this.selectedWaypoint === null || (waypoint && waypoint.equals(this.selectedWaypoint))) {
+        if ((!waypoint && !this.selectedWaypoint) || (waypoint && waypoint.equals(this.selectedWaypoint))) {
             return;
         }
 
@@ -203,28 +203,18 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
         }
     }
 
-    async _setICAO(icao) {
-        if (icao) {
-            try {
-                let waypoint = await this._createWaypointFromICAO(icao);
-                this.setWaypoint(waypoint);
-                return;
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        this.setWaypoint(null);
-    }
-
-    _onKeyboardClosed(icao) {
-        this._setICAO(icao);
+    _onKeyboardClosed(waypoint) {
+        this.setWaypoint(waypoint);
     }
 
     _openKeyboard() {
-        this.instrument.deactivateNavButton(5);
-        this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), this._icaoWaypointType);
-        this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
+        this.instrument.waypointKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            searchTypes: [this._icaoWaypointType],
+            callback: this._onKeyboardClosed.bind(this)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.waypointKeyboard);
     }
 
     _onSelectButtonPressed(button) {
@@ -238,8 +228,8 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
             waypoint: this.selectedWaypoint,
             icaoSetting: this._displayPaneICAOSetting,
             mfdPaneDisplaySetting: this._mfdPaneDisplaySetting,
-            showOnMapOnDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Display.WAYPOINT_INFO,
-            showOnMapOffDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP
+            showOnMapOnDisplayMode: WT_G3x5_PaneDisplaySetting.Mode.WAYPOINT_INFO,
+            showOnMapOffDisplayMode: WT_G3x5_PaneDisplaySetting.Mode.NAVMAP
         }
         this.instrument.waypointOptions.element.setContext(context);
         this.instrument.switchToPopUpPage(this.instrument.waypointOptions);
@@ -250,8 +240,6 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this.htmlElement.open();
     }
 
@@ -259,16 +247,8 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
         this.htmlElement.update();
     }
 
-    _updateDirectTo() {
-        // TODO: Implement a more sane way to push data to direct to page.
-        this.instrument.lastRelevantICAO = this.selectedWaypoint ? this.selectedWaypoint.icao : null;
-    }
-
     onExit() {
-        this._updateDirectTo();
         this.htmlElement.close();
-
-        super.onExit();
     }
 }
 

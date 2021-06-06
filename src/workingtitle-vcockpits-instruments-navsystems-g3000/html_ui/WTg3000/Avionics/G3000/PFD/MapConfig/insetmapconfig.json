@@ -118,7 +118,7 @@
         "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map"
     },
 
-    "flightPlan": {
+    "activeFlightPlan": {
         "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map"
     },
 

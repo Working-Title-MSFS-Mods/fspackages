@@ -1,4 +1,4 @@
-class WT_NavigraphAPI {
+class WT_NavigraphNetworkAPI {
     constructor(magicStrings) {
         this._chartListCache = new Map();
         this._chartCacheTimestamp = 0;
@@ -11,10 +11,10 @@ class WT_NavigraphAPI {
     }
     /** Sets the refresh token */
     set refreshToken(val) {
-        WTDataStore.set(WT_NavigraphAPI.REFRESH_TOKEN_KEY, val);
+        WTDataStore.set(WT_NavigraphNetworkAPI.REFRESH_TOKEN_KEY, val);
     }
     get refreshToken() {
-        return WTDataStore.get(WT_NavigraphAPI.REFRESH_TOKEN_KEY, "");
+        return WTDataStore.get(WT_NavigraphNetworkAPI.REFRESH_TOKEN_KEY, "");
     }
     /** Returns a boolean indicating if a access token is known */
     get hasAccessToken() {
@@ -22,12 +22,12 @@ class WT_NavigraphAPI {
     }
     /** Sets the access token */
     set accessToken(val) {
-        localStorage.setItem(WT_NavigraphAPI.ACC_TOKEN_KEY, val);
+        localStorage.setItem(WT_NavigraphNetworkAPI.ACC_TOKEN_KEY, val);
         this._accessTokenTimestamp = Date.now();
     }
     /** Gets the access token */
     get accessToken() {
-        return localStorage.getItem(WT_NavigraphAPI.ACC_TOKEN_KEY);
+        return localStorage.getItem(WT_NavigraphNetworkAPI.ACC_TOKEN_KEY);
     }
     /**
      * Checks if the access token is still good or starts the link account process
@@ -80,7 +80,7 @@ class WT_NavigraphAPI {
             if (!this._chartListCache.has(icao)) {
                 let success = yield this.validateToken();
                 if (!success) {
-                    throw (WT_NavigraphAPI.Error.ACCESS_DENIED);
+                    throw (WT_NavigraphNetworkAPI.Error.ACCESS_DENIED);
                 }
                 const signedUrlResp = yield this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
                 if (signedUrlResp.ok) {
@@ -164,7 +164,7 @@ class WT_NavigraphAPI {
             if (chart !== undefined) {
                 let success = yield this.validateToken();
                 if (!success) {
-                    throw (WT_NavigraphAPI.Error.ACCESS_DENIED);
+                    throw (WT_NavigraphNetworkAPI.Error.ACCESS_DENIED);
                 }
                 const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${dayChart ? chart.file_day : chart.file_night}`;
                 const urlResp = yield this.sendRequest(url, "get", null, true);
@@ -183,8 +183,8 @@ class WT_NavigraphAPI {
     sendRequest(path, method, form = null, auth = false) {
         return WT_Wait.awaitGenerator(this, void 0, void 0, function* () {
             const formData = new Map();
-            formData.set(LZUTF8.decompress(WT_NavigraphAPI.FORM_KEYS[0], { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this._magicStrings[0], { inputEncoding: "StorageBinaryString" }));
-            formData.set(LZUTF8.decompress(WT_NavigraphAPI.FORM_KEYS[1], { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this._magicStrings[1], { inputEncoding: "StorageBinaryString" }));
+            formData.set(LZUTF8.decompress(WT_NavigraphNetworkAPI.FORM_KEYS[0], { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this._magicStrings[0], { inputEncoding: "StorageBinaryString" }));
+            formData.set(LZUTF8.decompress(WT_NavigraphNetworkAPI.FORM_KEYS[1], { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this._magicStrings[1], { inputEncoding: "StorageBinaryString" }));
             if (form !== null) {
                 form.forEach((v, k) => {
                     formData.set(k, v);
@@ -207,21 +207,21 @@ class WT_NavigraphAPI {
         });
     }
 }
-WT_NavigraphAPI.REFRESH_TOKEN_KEY = "WT_NG_REFRESH_TOKEN";
-WT_NavigraphAPI.ACC_TOKEN_KEY = "WT_NG_ACC_TOKEN";
+WT_NavigraphNetworkAPI.REFRESH_TOKEN_KEY = "WT_NG_REFRESH_TOKEN";
+WT_NavigraphNetworkAPI.ACC_TOKEN_KEY = "WT_NG_ACC_TOKEN";
 /**
  * @enum {String}
  */
-WT_NavigraphAPI.Error = {
+WT_NavigraphNetworkAPI.Error = {
     ACCESS_DENIED: "Access denied",
     AUTH_FAILED: "Authorization failed"
 }
-WT_NavigraphAPI.FORM_KEYS = [
+WT_NavigraphNetworkAPI.FORM_KEYS = [
     "ㆶᩙⷎ䗶䬠耂老",
     "ㆶᩙⷎ䗷ᬫ෉䫨耂老"
 ];
 
-WT_NavigraphAPI.MAGIC_STRINGS_G3000 = [
+WT_NavigraphNetworkAPI.MAGIC_STRINGS_G3000 = [
     "㮺୙晦\u0303耂耀",
     "∧娒ै╃↙慐滦欶ᦪᄝ䭍㐔㦛ⶭ⒈焹ㄼ䀀耀"
 ]
@@ -267,3 +267,143 @@ WT_NavigraphChart.BoundsIndex = {
     RIGHT: 2,
     BOTTOM: 1
 };
+
+class WT_NavigraphChartOperations {
+    /**
+     * Retrieves the ident string of the airport to which a chart belongs from the ID of the chart.
+     * @param {String} chartID - the ID of the chart.
+     * @returns {String} the ident string of the airport to which the chart belongs.
+     */
+    static getAirportIdentFromID(chartID) {
+        return chartID.substring(0, 4);
+    }
+
+    /**
+     * Retrieves the airport diagram chart definition from a list of charts belonging to an airport. Returns
+     * undefined if the airport diagram chart definition cannot be found.
+     * @param {WT_NavigraphChartDefinition[]} chartDefs - the list of charts belonging to the airport.
+     * @returns {WT_NavigraphChartDefinition} the airport diagram chart definition.
+     */
+    static findAirportDiagram(chartDefs) {
+        return chartDefs.find(chartDef => chartDef.type.code === "AP");
+    }
+
+    /**
+     * Retrieves the chart definition associated with a specific departure procedure from a list of charts belonging
+     * to an airport. Returns undefined if an associated chart definition cannot be found.
+     * @param {WT_NavigraphChartDefinition[]} chartDefs - the list of charts belonging to the airport.
+     * @param {WT_Departure} departure - a departure procedure.
+     * @returns {WT_NavigraphChartDefinition} the chart definition associated with the departure procedure.
+     */
+    static findDepartureChart(chartDefs, departure) {
+        return departure ? chartDefs.find(chartDef => chartDef.type.section === "DEP" && chartDef.procedure_code[0] === departure.name) : undefined;
+    }
+
+    /**
+     * Checks if a chart definition is associated with a specific departure procedure.
+     * @param {WT_NavigraphChartDefinition} chartDef - a chart definition.
+     * @param {WT_Departure} departure - a departure procedure.
+     * @returns {Boolean} whether the chart definition and departure procedure are associated with each other.
+     */
+    static doesChartMatchDeparture(chartDef, departure) {
+        return chartDef && departure && chartDef.icao_airport_identifier === departure.airport.ident && chartDef.type.section === "DEP" && chartDef.procedure_code[0] === departure.name;
+    }
+
+    /**
+     * Retrieves the chart definition associated with a specific arrival procedure from a list of charts belonging
+     * to an airport. Returns undefined if an associated chart definition cannot be found.
+     * @param {WT_NavigraphChartDefinition[]} chartDefs - the list of charts belonging to the airport.
+     * @param {WT_Arrival} arrival - an arrival procedure.
+     * @returns {WT_NavigraphChartDefinition} the chart definition associated with the arrival procedure.
+     */
+    static findArrivalChart(chartDefs, arrival) {
+        return arrival ? chartDefs.find(chartDef => chartDef.type.section === "ARR" && chartDef.procedure_code[0] === arrival.name) : undefined;
+    }
+
+    /**
+     * Checks if a chart definition is associated with a specific arrival procedure.
+     * @param {WT_NavigraphChartDefinition} chartDef - a chart definition.
+     * @param {WT_Arrival} arrival - an arrival procedure.
+     * @returns {Boolean} whether the chart definition and arrival procedure are associated with each other.
+     */
+    static doesChartMatchArrival(chartDef, arrival) {
+        return chartDef && arrival && chartDef.icao_airport_identifier === arrival.airport.ident && chartDef.type.section === "ARR" && chartDef.procedure_code[0] === arrival.name;
+    }
+
+    /**
+     *
+     * @param {WT_Approach} approach
+     * @returns {String}
+     */
+    static _getApproachChartCodePrefix(approach) {
+        if (approach) {
+            switch (approach.type) {
+                case WT_Approach.Type.ILS:
+                    return "I";
+                case WT_Approach.Type.LOC:
+                    return approach.runway ? "L" : "LDM";
+                case WT_Approach.Type.RNAV:
+                    return approach.runway ? "R" : "RNV";
+                case WT_Approach.Type.VOR:
+                    return approach.runway ? "V" : "VOR";
+                case WT_Approach.Type.NDB:
+                    return approach.runway ? "N" : "NDB";
+                case WT_Approach.Type.LDA:
+                    return "X";
+            }
+        }
+        return "";
+    }
+
+    /**
+     *
+     * @param {WT_Approach} approach
+     * @returns {String}
+     */
+    static _getApproachChartCodeSuffix(approach) {
+        if (approach) {
+            let letterMatch = approach.name.match(/( |-)([A-Z])( |$)/);
+            if (letterMatch) {
+                return letterMatch[2];
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Retrieves the chart definition associated with a specific approach procedure from a list of charts belonging
+     * to an airport. Returns undefined if an associated chart definition cannot be found.
+     * @param {WT_NavigraphChartDefinition[]} chartDefs - the list of charts belonging to the airport.
+     * @param {WT_Approach} approach - an approach procedure.
+     * @returns {WT_NavigraphChartDefinition} the chart definition associated with the approach procedure.
+     */
+    static findApproachChart(chartDefs, approach) {
+        if (!approach) {
+            return undefined;
+        }
+
+        let prefix = WT_NavigraphChartOperations._getApproachChartCodePrefix(approach);
+        let suffix = WT_NavigraphChartOperations._getApproachChartCodeSuffix(approach);
+        let code = `${prefix}${approach.runway ? approach.runway.designationFull : ""}${suffix}`;
+        let codeAlt = `${prefix}${approach.runway ? approach.runway.designationFull : ""}-${suffix}`;
+        return chartDefs.find(chartDef => chartDef.type.section === "APP" && chartDef.procedure_code.some(candidate => candidate === code || candidate === codeAlt));
+    }
+
+    /**
+     * Checks if a chart definition is associated with a specific approach procedure.
+     * @param {WT_NavigraphChartDefinition} chartDef - a chart definition.
+     * @param {WT_Approach} approach - an approach procedure.
+     * @returns {Boolean} whether the chart definition and approach procedure are associated with each other.
+     */
+    static doesChartMatchApproach(chartDef, approach) {
+        if (!chartDef || !approach || chartDef.icao_airport_identifier !== approach.airport.ident || chartDef.type.section !== "APP") {
+            return false;
+        }
+
+        let prefix = WT_NavigraphChartOperations._getApproachChartCodePrefix(approach);
+        let suffix = WT_NavigraphChartOperations._getApproachChartCodeSuffix(approach);
+        let code = `${prefix}${approach.runway ? approach.runway.designationFull : ""}${suffix}`;
+        let codeAlt = `${prefix}${approach.runway ? approach.runway.designationFull : ""}-${suffix}`;
+        return chartDef.procedure_code.some(candidate => candidate === code || candidate === codeAlt);
+    }
+}

@@ -339,7 +339,7 @@ class WT_GeoPoint {
     }
 
     static _rhumbCorrection(deltaPsi, latRad1, latRad2) {
-        return Math.abs(deltaPsi) > 1e-12 ? (latRad2 - latRad1) / deltaPsi : Math.cos(lat1);
+        return Math.abs(deltaPsi) > 1e-12 ? (latRad2 - latRad1) / deltaPsi : Math.cos(latRad1);
     }
 }
 WT_GeoPoint._tempValue = {lat: 0, long: 0};

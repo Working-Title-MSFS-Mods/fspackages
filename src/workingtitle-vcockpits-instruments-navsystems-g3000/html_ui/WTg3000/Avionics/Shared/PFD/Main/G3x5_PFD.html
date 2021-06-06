@@ -18,6 +18,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/Utils/SortedArray.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/InterpolatedLookupTable.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/FileHandler.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/CrossInstrumentEvent.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/StyleInjector.js"></script>
@@ -57,8 +58,11 @@
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/Airway.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/ICAOWaypointFactory.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/ICAOSearcher.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/VNAVPath.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlan.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/DirectTo.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanVNAV.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanSerializer.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanAsoboInterface.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanManager.js"></script>
 
@@ -99,6 +103,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelRoadsModule.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelCitiesModule.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointsModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelActiveFlightPlanModule.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/MapProjection.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/MapView.js"></script>
@@ -138,6 +143,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewCityLayer.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewWaypointLayer.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewFlightPlanLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewActiveFlightPlanLayer.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapSettingModel.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapTerrainModeSetting.js"></script>
@@ -163,6 +169,9 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/NavDataInfo/G3x5_NavDataInfo.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Map/G3x5_MapViewFlightPlanLegCanvasStyler.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Pane/G3x5_DisplayPane.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Pane/G3x5_PaneSettings.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_TrafficSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_MapModelTrafficModule.js"></script>

@@ -52,18 +52,24 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
         this.instrument.setBottomKnobText("-Range+ Push: Pan");
     }
 
-    onEnter() {
-        super.onEnter();
+    onFocusGained() {
+        super.onFocusGained();
 
         this._activateLabelBar();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this._deactivateLabelBar();
+    }
+
+    onEnter() {
         this.htmlElement.open();
         WT_MapSettingModel.setSettingValue(this._mapSettingModelID, WT_G3x5_MapPointerShowSetting.KEY, true);
     }
 
     onExit() {
-        super.onExit();
-
-        this._deactivateLabelBar();
         this.htmlElement.close();
         WT_MapSettingModel.setSettingValue(this._mapSettingModelID, WT_G3x5_MapPointerShowSetting.KEY, false);
     }

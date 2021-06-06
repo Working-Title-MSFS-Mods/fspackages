@@ -281,8 +281,8 @@ class WT_G3x5_NavDataInfoView extends HTMLElement {
     }
 
     _defineChildren() {
-        this._title = new WT_CachedElement(this.shadowRoot.querySelector(`#title`));
-        this._value = new WT_CachedElement(this.shadowRoot.querySelector(`#value`));
+        this._title = new WT_CachedElement(this.shadowRoot.querySelector(`#title`), {cacheAttributes: false});
+        this._value = new WT_CachedElement(this.shadowRoot.querySelector(`#value`), {cacheAttributes: false});
     }
 
     connectedCallback() {

@@ -22,6 +22,13 @@
     display: none; }
 
 @font-face {
+    font-family: "Roboto-Mono";
+    src: url("/WTg3000/SDK/Assets/Fonts/RobotoMono-Medium-Mod.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
   font-family: "Roboto-Regular";
   src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular-Mod.ttf") format("truetype");
   font-weight: normal;
@@ -272,8 +279,6 @@
 #Electricity #PagesDisplay[state=PFDMapSettings] #PFDMapSettings,
 #Electricity #PagesDisplay[state=PFDNavMapTrafficSettings] #PFDNavMapTrafficSettings,
 #Electricity #PagesDisplay[state=PFDSettings] #PFDSettings,
-#Electricity #PagesDisplay[state=DirectTo] #DirectTo,
-#Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
 #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
 #Electricity #PagesDisplay[state=MFDMapSettingsLeft] #MFDMapSettingsLeft,
 #Electricity #PagesDisplay[state=MFDMapSettingsRight] #MFDMapSettingsRight,
@@ -287,6 +292,13 @@
 #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
 #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
 #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
+#Electricity #PagesDisplay[state=DirectTo] #DirectTo,
+#Electricity #PagesDisplay[state=FlightPlan] #FlightPlan,
+#Electricity #PagesDisplay[state=Procedures] #Procedures,
+#Electricity #PagesDisplay[state=DepartureSelection] #DepartureSelection,
+#Electricity #PagesDisplay[state=ArrivalSelection] #ArrivalSelection,
+#Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
+#Electricity #PagesDisplay[state=VNAVProfile] #VNAVProfile,
 #Electricity #PagesDisplay[state=WaypointInfoSelection] #WaypointInfoSelection,
 #Electricity #PagesDisplay[state=AirportInfoLeft] #AirportInfoLeft,
 #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
@@ -327,12 +339,13 @@
   z-index: 10; }
 .PopUpWindow[state=Inactive] {
   display: none; }
+.PopUpWindow.Transparent {
+  background-image: none;
+  background-color: rgba(0, 0, 0, 0.8); }
   .PopUpWindow .WindowTitle {
     color: white;
     text-align: center; }
-  .Transparent {
-    background-image: none;
-    background-color: rgba(0, 0, 0, 0.8); }
+
 
 #SelectionList .content {
   position: relative;
@@ -374,9 +387,9 @@ wt-tsc-mapsettings-tabrow {
 wt-tsc-mapsettings-tabrow > * {
     margin: 0.25vh;
 }
-wt-tsc-mapsettings-tabrow .mapSettingsTabRowRight {
-    color: var(--wt-g3x5-lightblue);
-}
+    wt-tsc-mapsettings-tabrow .mapSettingsTabRowRight {
+        color: var(--wt-g3x5-lightblue);
+    }
 
 .MapDetailSelect .Container {
   position: absolute;

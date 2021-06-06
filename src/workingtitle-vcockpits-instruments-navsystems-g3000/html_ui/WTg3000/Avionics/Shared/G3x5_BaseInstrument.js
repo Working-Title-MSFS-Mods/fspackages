@@ -4,6 +4,8 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
         this._isModConfigLoaded = false;
 
+        this._currentTimeStamp = 0;
+
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._unitsSettingModel = new WT_G3x5_UnitsSettingModel();
         this._avionicsSystemSettingModel = new WT_G3x5_AvionicsSystemSettingModel();
@@ -17,6 +19,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The g3000 mod's config settings.
      * @readonly
      * @type {WT_g3000_ModConfig}
      */
@@ -25,6 +28,16 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The real-world time stamp of the current update cycle.
+     * @readonly
+     * @type {Number}
+     */
+    get currentTimeStamp() {
+        return this._currentTimeStamp;
+    }
+
+    /**
+     * The in-sim time at the beginning of the current update cycle.
      * @readonly
      * @type {WT_TimeReadOnly}
      */
@@ -33,6 +46,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The player airplane.
      * @readonly
      * @type {WT_PlayerAirplane}
      */
@@ -124,9 +138,9 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     _createAirplane() {
         switch (WT_PlayerAirplane.getAircraftType()) {
             case WT_PlayerAirplane.Type.TBM930:
-                return new WT_TBM930Airplane();
+                return new WT_TBM930Airplane((() => this.currentTimeStamp).bind(this));
             case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                return new WT_CitationLongitudeAirplane();
+                return new WT_CitationLongitudeAirplane((() => this.currentTimeStamp).bind(this));
         }
     }
 
@@ -134,10 +148,30 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._airplane = this._createAirplane();
     }
 
+    async _loadATCFlightPlan() {
+        // this pulls the flight plan that was set in the world map (if one exists) into the sim's built-in flight plan
+        await Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
+        await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
+        await WT_Wait.awaitCallback(() => this.gameState === GameState.ingame, this);
+
+        // On first load, force sync of enroute legs from the sim's built-in flight plan so we can grab any legs imported from the world map
+        this._asoboEnrouteSyncCount = 0;
+        this._forceSyncEnrouteFromAsobo = true;
+        if (this.flightPlanManagerWT.isMaster) {
+            // lock the active flight plan while attempting to sync enroute legs from the sim's built-in flight plan
+            this.flightPlanManagerWT.lockActive();
+        }
+    }
+
+    _isFlightPlanManagerMaster() {
+        return false;
+    }
+
     _initFlightPlanManager() {
-        this._fpm = new WT_FlightPlanManager(this.airplane, this.icaoWaypointFactory);
-        this._lastFPMSyncTime = 0;
+        this._fpm = new WT_FlightPlanManager(this._isFlightPlanManagerMaster(), this.instrumentIdentifier, this.airplane, this.icaoWaypointFactory);
         this.airplane.fms.setFlightPlanManager(this._fpm);
+        this._forceSyncEnrouteFromAsobo = false;
+        this._loadATCFlightPlan();
     }
 
     _initICAOSearchers() {
@@ -152,6 +186,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     Init() {
         super.Init();
 
+        this._currentTimeStamp = Date.now();
         this._initTime();
         this._initAirplane();
         this._initFlightPlanManager();
@@ -166,11 +201,33 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this.icaoWaypointFactory.update();
     }
 
-    _updateFlightPlanManager(currentTime) {
-        if (currentTime - this._lastFPMSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this.flightPlanManagerWT.syncActiveFromGame();
-            this._lastFPMSyncTime = currentTime;
+    async _syncFlightPlanManagerFromAsobo() {
+        try {
+            // this needs to be in a try-catch block because for a period of time after loading a flight, Coherent has issues retrieving ICAO waypoint data
+            // therefore we don't count forced enroute syncs that encounter errors as successful and will try again the next cycle
+            await this.flightPlanManagerWT.syncActiveFromGame(!this.flightPlanManagerWT.activePlanHasManualEdit || this._forceSyncEnrouteFromAsobo);
+
+            // need to force enroute sync multiple times because sometimes the game is late loading all fpln legs from the world map
+            if (this._asoboEnrouteSyncCount < WT_G3x5_BaseInstrument.FLIGHT_PLAN_ENROUTE_SYNC_ATTEMPTS) {
+                this._asoboEnrouteSyncCount++;
+            } else if (this._forceSyncEnrouteFromAsobo) {
+                this.flightPlanManagerWT.unlockActive();
+                this._forceSyncEnrouteFromAsobo = false;
+            }
+
+            if (this.flightPlanManagerWT.isMaster) {
+                await this.flightPlanManagerWT.tryAutoActivateApproach();
+            }
+        } catch (e) {
+            console.log(e);
         }
+    }
+
+    _updateFlightPlanManager(currentTime) {
+        if (currentTime - this.flightPlanManagerWT.lastActivePlanSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
+            this._syncFlightPlanManagerFromAsobo();
+        }
+        this.flightPlanManagerWT.update(currentTime);
     }
 
     _doUpdates(currentTime) {
@@ -180,8 +237,9 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     onUpdate(deltaTime) {
-        let currentTime = Date.now();
-        this._doUpdates(currentTime);
+        this._currentTimeStamp = Date.now();
+        this._doUpdates(this._currentTimeStamp);
     }
 }
 WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL = 2000; // ms
+WT_G3x5_BaseInstrument.FLIGHT_PLAN_ENROUTE_SYNC_ATTEMPTS = 5;

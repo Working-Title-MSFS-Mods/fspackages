@@ -1,7 +1,7 @@
 class WT_G3x5_ChartsModel {
-    constructor(navigraphAPI) {
-        this._navigraphAPI = navigraphAPI;
-        this._navigraphStatus = WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
+    constructor(navigraphNetworkAPI) {
+        this._navigraphNetworkAPI = navigraphNetworkAPI;
+        this._navigraphStatus = navigraphNetworkAPI.isAccountLinked ? WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE : WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
 
         this._chartID = "";
         this._airportIdent = "";
@@ -16,15 +16,14 @@ class WT_G3x5_ChartsModel {
         this._taskID = 0;
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_ChartsModel.OPTION_DEFS);
-        this.updateNavigraphStatus();
     }
 
     /**
      * @readonly
-     * @type {WT_NavigraphAPI}
+     * @type {WT_NavigraphNetworkAPI}
      */
-    get navigraphAPI() {
-        return this._navigraphAPI;
+    get navigraphNetworkAPI() {
+        return this._navigraphNetworkAPI;
     }
 
     /**
@@ -37,8 +36,8 @@ class WT_G3x5_ChartsModel {
 
     async updateNavigraphStatus() {
         let status;
-        if (this.navigraphAPI.isAccountLinked) {
-            let isAccessAvail = await this.navigraphAPI.validateToken();
+        if (this.navigraphNetworkAPI.isAccountLinked) {
+            let isAccessAvail = await this.navigraphNetworkAPI.validateToken();
             if (isAccessAvail) {
                 status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
             } else {
@@ -53,7 +52,7 @@ class WT_G3x5_ChartsModel {
 
     async _retrieveCharts(ident) {
         try {
-            let response = await this.navigraphAPI.getChartsList(ident);
+            let response = await this.navigraphNetworkAPI.getChartsList(ident);
             this._navigraphStatus = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
             if (response) {
                 return response.charts;
@@ -67,7 +66,7 @@ class WT_G3x5_ChartsModel {
 
     async _retrieveChartURLs(chart) {
         try {
-            let urls = await Promise.all([this.navigraphAPI.getChartPngUrl(chart, true), this.navigraphAPI.getChartPngUrl(chart, false)]);
+            let urls = await Promise.all([this.navigraphNetworkAPI.getChartPngUrl(chart, true), this.navigraphNetworkAPI.getChartPngUrl(chart, false)]);
             this._navigraphStatus = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
             return urls;
         } catch (e) {
@@ -107,7 +106,7 @@ class WT_G3x5_ChartsModel {
         }
 
         this._chartID = id;
-        this._airportIdent = id ? id.substring(0, 4) : "";
+        this._airportIdent = id ? WT_NavigraphChartOperations.getAirportIdentFromID(id) : "";
         this._updateCharts();
     }
 

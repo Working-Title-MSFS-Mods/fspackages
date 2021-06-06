@@ -104,12 +104,22 @@ WT_G3x5_TSCPFDMapSettings.MAP_LAYER_OPTIONS = {
 };
 
 class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
-    constructor(homePageGroup, homePageName, instrumentID, halfPaneID) {
+    constructor(homePageGroup, homePageName, instrumentID, halfPaneID, paneSettings) {
         super(homePageGroup, homePageName, `${instrumentID}-${halfPaneID}`);
+
+        this._paneSettings = paneSettings;
     }
 
     _getLayerOptions() {
         return WT_G3x5_TSCMFDMapSettings.MAP_LAYER_OPTIONS;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_PaneSettings}
+     */
+    get paneSettings() {
+        return this._paneSettings;
     }
 
     _createHTMLElement() {
@@ -474,6 +484,14 @@ class WT_G3x5_TSCPFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLEle
 customElements.define("wt-tsc-pfdmapsettings", WT_G3x5_TSCPFDMapSettingsHTMLElement);
 
 class WT_G3x5_TSCMFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLElement {
+    _initInsetTab() {
+        super._initInsetTab();
+
+        this._tabbedContent.enableTab(this._insetTab);
+
+        this._insetTab.attachRow(new WT_G3x5_TSCMapSettingsFlightPlanTextTabRow(this.parentPage.paneSettings.navMapInset, this.parentPage.paneSettings.navMapFlightPlanTextInsetDistance));
+    }
+
     _initLandTab() {
         let settings = this.parentPage.mapSettings;
 
@@ -914,6 +932,33 @@ class WT_G3x5_TSCMapSettingsToggleTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 }
 
+class WT_G3x5_TSCMapSettingsToggleEnumTabRow extends WT_G3x5_TSCMapSettingsTabRow {
+    /**
+     * @param {String} toggleButtonLabel
+     * @param {WT_MapSetting} setting
+     * @param {Number} toggleValue
+     * @param {Number} [toggleOffValue]
+     */
+     constructor(toggleButtonLabel, setting, toggleValue, toggleOffValue) {
+        super();
+
+        this._toggleButtonLabel = toggleButtonLabel;
+        this._setting = setting;
+        this._toggleValue = toggleValue;
+        this._toggleOffValue = toggleOffValue;
+    }
+
+    _initLeft() {
+        this._toggleButton = new WT_TSCStatusBarButton();
+        this._toggleButton.labelText = this._toggleButtonLabel;
+
+        this._toggleButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this._toggleButton, this._setting, this._toggleValue, this._toggleOffValue);
+        this._toggleButtonManager.init();
+
+        return this._toggleButton;
+    }
+}
+
 class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabRow {
     /**
      * @param {String} showButtonLabel
@@ -1295,6 +1340,49 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
         this._initModeButtonManager();
     }
 }
+
+class WT_G3x5_TSCMapSettingsFlightPlanTextTabRow extends WT_G3x5_TSCMapSettingsToggleEnumTabRow {
+    constructor(toggleSetting, distanceSetting) {
+        super(WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.TOGGLE_BUTTON_LABEL, toggleSetting, WT_G3x5_NavMapDisplayInsetSetting.Mode.FLIGHT_PLAN_TEXT, WT_G3x5_NavMapDisplayInsetSetting.Mode.NONE);
+
+        this._distanceSetting = distanceSetting;
+    }
+
+    _initRight() {
+        this._distanceButton = new WT_TSCLabeledButton();
+        return this._distanceButton;
+    }
+
+    _initDistanceWindowContext() {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.DISTANCE_SETTING_VALUE_TEXT);
+        this._distanceWindowContext = {
+            title: "Flight Plan Text Inset Distance",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            homePageGroup: this.context.homePageGroup,
+            homePageName: this.context.homePageName
+        };
+    }
+
+    _initDistanceButtonManager() {
+        this._modeButtonManager = new WT_TSCSettingLabeledButtonManager(this.context.instrument, this._distanceButton, this._distanceSetting, this.context.instrument.selectionListWindow1, this._distanceWindowContext, value => WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.DISTANCE_SETTING_VALUE_TEXT[value ? 1 : 0], [false, true]);
+        this._modeButtonManager.init();
+    }
+
+    onAttached(context) {
+        super.onAttached(context);
+
+        this._initDistanceWindowContext();
+        this._initDistanceButtonManager();
+    }
+}
+WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.TOGGLE_BUTTON_LABEL = "Flight Plan Text";
+WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.DISTANCE_SETTING_VALUE_TEXT = [
+    "Leg-Leg",
+    "CUM"
+];
 
 class WT_G3x5_TSCMapSettingIndexGetter {
     /**

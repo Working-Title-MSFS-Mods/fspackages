@@ -64,9 +64,19 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
     }
 
-    onEnter() {
-        super.onEnter();
+    onFocusGained() {
+        super.onFocusGained();
 
+        this.htmlElement.gainFocus();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this.htmlElement.loseFocus();
+    }
+
+    onEnter() {
         this.htmlElement.open();
     }
 
@@ -75,8 +85,6 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
     }
 }
@@ -168,6 +176,20 @@ class WT_G3x5_TSCSpeedBugsHTMLElement extends HTMLElement {
 
     _updateActiveTab() {
         this._tabbedContent.getActiveTab().update();
+    }
+
+    gainFocus() {
+        let activeTab = this._tabbedContent.getActiveTab();
+        if (activeTab) {
+            activeTab.gainFocus();
+        }
+    }
+
+    loseFocus() {
+        let activeTab = this._tabbedContent.getActiveTab();
+        if (activeTab) {
+            activeTab.loseFocus();
+        }
     }
 
     open() {
@@ -296,13 +318,21 @@ class WT_G3x5_TSCSpeedBugsTab extends WT_G3x5_TSCTabContent {
         this.parentPage.instrument.deactivateNavButton(6, false);
     }
 
-    onActivated() {
+    gainFocus() {
         this._activateNavButtons();
+    }
+
+    loseFocus() {
+        this._deactivateNavButtons();
+    }
+
+    onActivated() {
         this.htmlElement.open();
+        this.gainFocus();
     }
 
     onDeactivated() {
-        this._deactivateNavButtons();
+        this.loseFocus();
         this.htmlElement.close();
     }
 

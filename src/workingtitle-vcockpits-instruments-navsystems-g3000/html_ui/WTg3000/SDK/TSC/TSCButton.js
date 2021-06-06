@@ -39,7 +39,7 @@ class WT_TSCButton extends HTMLElement {
                 border-color: #7dddff;
             }
             :host([highlight=true][primed=false]) {
-                color: black;
+                color: var(--button-highlighted-color, black);
             }
             :host([enabled=true][primed=true]) {
                 background: linear-gradient(#62f0f5, #0eb8d4 8%, #018cb5 30%, #0285ac 90%);
@@ -55,10 +55,10 @@ class WT_TSCButton extends HTMLElement {
         return `
             #wrapper {
                 position: absolute;
-                left: 1%;
-                top: 1%;
-                right: 1%;
-                bottom: 1%;
+                left: var(--button-padding-left, 1%);
+                top: var(--button-padding-top, 1%);
+                width: calc(100% - var(--button-padding-left, 1%) - var(--button-padding-right, 1%));
+                height: calc(100% - var(--button-padding-top, 1%) - var(--button-padding-bottom, 1%));
             }
         `;
     }
@@ -353,8 +353,8 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
             #labelbox {
                 position: absolute;
                 width: 100%;
-                top: 5%;
-                height: 40%;
+                top: var(--button-value-label-top, 5%);
+                height: var(--button-value-label-height, 40%);
             }
         `;
     }
@@ -364,8 +364,8 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
             #valuebox {
                 position: absolute;
                 width: 100%;
-                top: 55%;
-                height: 40%;
+                top: var(--button-value-value-top, 55%);
+                height: var(--button-value-value-height, 40%);
             }
         `;
     }
@@ -379,6 +379,9 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
                 transform: translateY(-50%);
                 color: var(--button-value-color, white);
                 font-size: var(--button-value-font-size, 1em);
+            }
+            :host([highlight=true][primed=false]) #value {
+                color: var(--button-highlighted-value-color, black);
             }
         `;
     }

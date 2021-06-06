@@ -297,9 +297,9 @@ class WT_MapViewRing {
      * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
      * @param {Number[]} lineDash - the dash of the stroke.
      */
-    _applyStrokeToContext(context, lineWidth, strokeWidth, lineDash) {
+    _applyStrokeToContext(context, lineWidth, strokeStyle, lineDash) {
         context.lineWidth = lineWidth;
-        context.strokeStyle = strokeWidth;
+        context.strokeStyle = strokeStyle;
         context.setLineDash(lineDash);
         context.stroke();
     }

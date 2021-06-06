@@ -113,11 +113,14 @@ class WT_SimpleHTMLElementRecycler extends WT_HTMLElementRecycler {
     /**
      * @param {HTMLElement} parent - the parent HTML element of the elements maintained by the new recycler.
      * @param {String} tagName - the tag name of the recycled elements maintained by the new recycler.
+     * @param {(element:HTMLElement) => void} [onCreateCallback] - an optional callback function to execute whenever a
+     *                                                             new element is created by the new recycler.
      */
-    constructor(parent, tagName) {
+    constructor(parent, tagName, onCreateCallback) {
         super(parent);
 
         this._htmlElementTagName = tagName;
+        this._onCreateCallback = onCreateCallback;
     }
 
     /**
@@ -125,7 +128,11 @@ class WT_SimpleHTMLElementRecycler extends WT_HTMLElementRecycler {
      * @returns {T}
      */
     _createElement() {
-        return document.createElement(this._htmlElementTagName);
+        let element = document.createElement(this._htmlElementTagName);
+        if (this._onCreateCallback) {
+            this._onCreateCallback(element);
+        }
+        return element;
     }
 }
 
@@ -137,11 +144,14 @@ class WT_CustomHTMLElementRecycler extends WT_HTMLElementRecycler {
     /**
      * @param {HTMLElement} parent - the parent HTML element of the elements maintained by the new recycler.
      * @param {new T} htmlElementConstructor - the constructor of the recycled elements maintained by the new recycler.
+     * @param {(element:T) => void} [onCreateCallback] - an optional callback function to execute whenever a new
+     *                                                   element is created by the new recycler.
      */
-    constructor(parent, htmlElementConstructor) {
+    constructor(parent, htmlElementConstructor, onCreateCallback) {
         super(parent);
 
         this._htmlElementConstructor = htmlElementConstructor;
+        this._onCreateCallback = onCreateCallback;
     }
 
     /**
@@ -149,6 +159,10 @@ class WT_CustomHTMLElementRecycler extends WT_HTMLElementRecycler {
      * @returns {T}
      */
     _createElement() {
-        return new this._htmlElementConstructor();
+        let element = new this._htmlElementConstructor();
+        if (this._onCreateCallback) {
+            this._onCreateCallback(element);
+        }
+        return element;
     }
 }

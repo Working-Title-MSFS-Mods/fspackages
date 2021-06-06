@@ -23,8 +23,8 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         this._lastTime = 0;
         this._lastHoursRemaining = 0;
 
-        this._tempGPH = WT_Unit.GPH.createNumber(0);
-        this._tempGal = WT_Unit.GALLON.createNumber(0);
+        this._tempGPH = WT_Unit.GPH_FUEL.createNumber(0);
+        this._tempGal = WT_Unit.GALLON_FUEL.createNumber(0);
         this._tempKnot = WT_Unit.KNOT.createNumber(0);
     }
 

@@ -3,8 +3,8 @@
  */
 class WT_Waypoint {
     /**
+     * A unique identifier for this waypoint.
      * @readonly
-     * @property {String} uniqueID - a unique identifier for this waypoint.
      * @type {String}
      */
     get uniqueID() {
@@ -12,8 +12,8 @@ class WT_Waypoint {
     }
 
     /**
+     * The ident string for this waypoint.
      * @readonly
-     * @property {String} ident - the ident string for this waypoint.
      * @type {String}
      */
     get ident() {
@@ -21,8 +21,8 @@ class WT_Waypoint {
     }
 
     /**
+     * The name of this waypoint.
      * @readonly
-     * @property {String} name - the name of this waypoint.
      * @type {String}
      */
     get name() {
@@ -30,8 +30,8 @@ class WT_Waypoint {
     }
 
     /**
+     * The lat/long coordinates of this waypoint.
      * @readonly
-     * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
      * @type {WT_GeoPoint}
      */
     get location() {
@@ -53,6 +53,10 @@ class WT_Waypoint {
  * A navigational waypoint defined by a custom set of lat/long coordinates.
  */
 class WT_CustomWaypoint extends WT_Waypoint {
+    /**
+     * @param {String} ident - the ident string for the new waypoint.
+     * @param {WT_GeoPoint} location - the lat/long coordinates of the new waypoint.
+     */
     constructor(ident, location) {
         super();
         this._ident = ident;
@@ -61,8 +65,8 @@ class WT_CustomWaypoint extends WT_Waypoint {
     }
 
     /**
+     * A unique identifier for this waypoint.
      * @readonly
-     * @property {String} uniqueID - a unique identifier for this waypoint.
      * @type {String}
      */
     get uniqueID() {
@@ -70,8 +74,8 @@ class WT_CustomWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The ident string for this waypoint.
      * @readonly
-     * @property {String} ident - the ident string for this waypoint.
      * @type {String}
      */
     get ident() {
@@ -79,8 +83,8 @@ class WT_CustomWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The name of this waypoint.
      * @readonly
-     * @property {String} name - the name of this waypoint.
      * @type {String}
      */
     get name() {
@@ -88,8 +92,8 @@ class WT_CustomWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The lat/long coordinates of this waypoint.
      * @readonly
-     * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
      * @type {WT_GeoPoint}
      */
     get location() {
@@ -125,8 +129,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * A unique identifier for this waypoint.
      * @readonly
-     * @property {String} uniqueID - a unique identifier for this waypoint.
      * @type {String}
      */
     get uniqueID() {
@@ -134,8 +138,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The ICAO type of this waypoint.
      * @readonly
-     * @property {WT_ICAOWaypoint.Type} type - the type of this waypoint.
      * @type {WT_ICAOWaypoint.Type}
      */
     get type() {
@@ -143,8 +147,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The ICAO string for this waypoint.
      * @readonly
-     * @property {String} icao - the ICAO string for this waypoint.
      * @type {String}
      */
     get icao() {
@@ -152,8 +156,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The 5LNC identifier for this waypoint.
      * @readonly
-     * @property {String} ident - the 5LNC identifier for this waypoint.
      * @type {String}
      */
     get ident() {
@@ -161,8 +165,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The lat/long coordinates of this waypoint.
      * @readonly
-     * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
      * @type {WT_GeoPoint}
      */
     get location() {
@@ -170,8 +174,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The long-form name of this waypoint.
      * @readonly
-     * @property {String} name - the long-form name of this waypoint.
      * @type {String}
      */
     get name() {
@@ -179,8 +183,8 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * Information on the city and (optionally) state/province associated with this waypoint.
      * @readonly
-     * @property {WT_ICAOWaypointCity} city - information on the city and (optionally) state/province associated with this waypoint.
      * @type {WT_ICAOWaypointCity}
      */
     get city() {
@@ -188,25 +192,57 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The two-letter region code of this waypoint.
      * @readonly
-     * @property {String} region - the two-letter region code of this waypoint.
      * @type {String}
      */
     get region() {
         return this._region;
     }
+
+    /**
+     * Gets the ICAO type of the waypoint with the specified ICAO string.
+     * @param {String} icao - an ICAO string.
+     * @returns {WT_ICAOWaypoint.Type} the ICAO type of the waypoint with the specified ICAO string.
+     */
+    static getICAOType(icao) {
+        if (!icao) {
+            return undefined;
+        }
+
+        switch (icao[0]) {
+            case "A":
+                return WT_ICAOWaypoint.Type.AIRPORT;
+            case "V":
+                return WT_ICAOWaypoint.Type.VOR;
+            case "N":
+                return WT_ICAOWaypoint.Type.NDB;
+            case "W":
+                return WT_ICAOWaypoint.Type.INT;
+        }
+    }
+
+    /**
+     * Gets the ICAO string prefix (the first character of the full ICAO string) associated with the specified ICAO
+     * type.
+     * @param {WT_ICAOWaypoint.Type} type - an ICAO type.
+     * @returns {String} the ICAO string prefix associated with the specified ICAO type.
+     */
+    static getICAOPrefixFromType(type) {
+        return WT_ICAOWaypoint.PREFIXES[type];
+    }
 }
 /**
  * Type of ICAO waypoint.
- * @readonly
- * @enum {String}
+ * @enum {Number}
  */
 WT_ICAOWaypoint.Type = {
-    AIRPORT: "A",
-    VOR: "V",
-    NDB: "N",
-    INT: "W"
+    AIRPORT: 0,
+    VOR: 1,
+    NDB: 2,
+    INT: 3
 };
+WT_ICAOWaypoint.PREFIXES = ["A", "V", "N", "W"];
 
 class WT_ICAOWaypointCity {
     constructor(city, state) {
@@ -215,8 +251,8 @@ class WT_ICAOWaypointCity {
     }
 
     /**
+     * The name of this city.
      * @readonly
-     * @property {String} city - the name of this city.
      * @type {String}
      */
     get city() {
@@ -224,8 +260,8 @@ class WT_ICAOWaypointCity {
     }
 
     /**
+     * The name of the state/province in which this city is located.
      * @readonly
-     * @property {String} state - the name of the state/province in which this city is located.
      * @type {String}
      */
     get state() {

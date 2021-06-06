@@ -1,5 +1,6 @@
 /**
  * A procedure.
+ * @abstract
  */
 class WT_Procedure {
     /**
@@ -44,17 +45,25 @@ class WT_Procedure {
         return ProcedureLegFactory.createFromData(this, data);
     }
 
-    _runwayTransitionMap(data) {
-        return new WT_ProcedureRunwayTransition(this, data);
+    _enrouteTransitionMap(data) {
     }
 
-    _enrouteTransitionMap(data) {
-        return new WT_ProcedureTransition(this, data);
+    _runwayTransitionMap(data) {
+    }
+
+    /**
+     * Checks whether this procedure is equal to another value. Returns true if and only if the other value is an
+     * WT_Procedure object of the same type as this procedure and has the same owning airport and name.
+     * @param {*} other - the value to check for equality against this procedure.
+     * @returns {Boolean} whether this procedure is equal to the specified value.
+     */
+    equals(other) {
     }
 }
 
 /**
  * A SID/STAR-type procedure.
+ * @abstract
  */
 class WT_DepartureArrival extends WT_Procedure {
     /**
@@ -71,20 +80,20 @@ class WT_DepartureArrival extends WT_Procedure {
 
     _initFromData(data) {
         if (data.commonLegs) {
-            this._commonLegs = new WT_ProcedureLegList(data.commonLegs.map(this._legMap.bind(this)));
+            this._commonLegs = new WT_ReadOnlyArray(data.commonLegs.map(this._legMap.bind(this)));
         }
         if (data.runwayTransitions) {
-            this._runwayTransitions = new WT_TransitionList(data.runwayTransitions.map(this._runwayTransitionMap.bind(this)));
+            this._runwayTransitions = new WT_TransitionList(data.runwayTransitions.map(data => this._runwayTransitionMap(data), this));
         }
         if (data.enRouteTransitions) {
-            this._enrouteTransitions = new WT_TransitionList(data.enRouteTransitions.map(this._enrouteTransitionMap.bind(this)));
+            this._enrouteTransitions = new WT_TransitionList(data.enRouteTransitions.map(data => this._enrouteTransitionMap(data), this));
         }
     }
 
     /**
      * The common legs for this procedure.
      * @readonly
-     * @type {WT_ProcedureLegList}
+     * @type {WT_ReadOnlyArray<WT_ProcedureLeg>}
      */
     get commonLegs() {
         return this._commonLegs;
@@ -113,12 +122,46 @@ class WT_DepartureArrival extends WT_Procedure {
  * A standard instrument departure (SID) procedure.
  */
 class WT_Departure extends WT_DepartureArrival {
+    _enrouteTransitionMap(data) {
+        return new WT_DepartureEnrouteTransition(this, data);
+    }
+
+    _runwayTransitionMap(data) {
+        return new WT_DepartureRunwayTransition(this, data);
+    }
+
+    /**
+     * Checks whether this procedure is equal to another value. Returns true if and only if the other value is an
+     * WT_Procedure object of the same type as this procedure and has the same owning airport and name.
+     * @param {*} other - the value to check for equality against this procedure.
+     * @returns {Boolean} whether this procedure is equal to the specified value.
+     */
+    equals(other) {
+        return other instanceof WT_Departure && this.airport.equals(other.airport) && this.name === other.name;
+    }
 }
 
 /**
  * A standard terminal arrival (STAR) procedure.
  */
 class WT_Arrival extends WT_DepartureArrival {
+    _enrouteTransitionMap(data) {
+        return new WT_ArrivalEnrouteTransition(this, data);
+    }
+
+    _runwayTransitionMap(data) {
+        return new WT_ArrivalRunwayTransition(this, data);
+    }
+
+    /**
+     * Checks whether this procedure is equal to another value. Returns true if and only if the other value is an
+     * WT_Procedure object of the same type as this procedure and has the same owning airport and name.
+     * @param {*} other - the value to check for equality against this procedure.
+     * @returns {Boolean} whether this procedure is equal to the specified value.
+     */
+    equals(other) {
+        return other instanceof WT_Arrival && this.airport.equals(other.airport) && this.name === other.name;
+    }
 }
 
 /**
@@ -137,11 +180,23 @@ class WT_Approach extends WT_Procedure {
         this._initFromData(data);
     }
 
+    _enrouteTransitionMap(data) {
+        return new WT_ApproachTransition(this, data);
+    }
+
     _initType(data) {
         if (this.name.indexOf("ILS") >= 0) {
-            this._type = WT_Approach.Type.ILS_LOC;
+            this._type = WT_Approach.Type.ILS;
         } else if (this.name.indexOf("RNAV") >= 0) {
             this._type = WT_Approach.Type.RNAV;
+        } else if (this.name.indexOf("LOC") >= 0) {
+            this._type = WT_Approach.Type.LOC;
+        } else if (this.name.indexOf("VOR") >= 0) {
+            this._type = WT_Approach.Type.VOR;
+        } else if (this.name.indexOf("NDB") >= 0) {
+            this._type = WT_Approach.Type.NDB;
+        } else if (this.name.indexOf("LDA") >= 0) {
+            this._type = WT_Approach.Type.LDA;
         } else {
             this._type = WT_Approach.Type.UNKNOWN;
         }
@@ -157,15 +212,20 @@ class WT_Approach extends WT_Procedure {
 
     _initLegs(data) {
         if (data.finalLegs) {
-            this._finalLegs = new WT_ProcedureLegList(data.finalLegs.map(this._legMap.bind(this)));
+            this._finalLegs = data.finalLegs.map(this._legMap.bind(this));
+            if (this.runway) {
+                // nav data from the sim doesn't include runway fix, so we have to add it ourselves
+                this._finalLegs.push(new WT_ProcedureRunwayFix(this, false, new WT_RunwayWaypoint(this.runway, WT_RunwayWaypoint.Reference.START)));
+            }
+            this._finalLegsReadOnly = new WT_ReadOnlyArray(this._finalLegs);
         }
         if (data.transitions) {
-            this._transitions = new WT_TransitionList(data.transitions.map(this._enrouteTransitionMap.bind(this)));
+            this._transitions = new WT_TransitionList(data.transitions.map(data => this._enrouteTransitionMap(data), this));
         }
     }
 
     _initFrequency() {
-        if (this.type !== WT_Approach.Type.ILS_LOC || !this.runway) {
+        if (!(this.type === WT_Approach.Type.ILS || this.type === WT_Approach.Type.LOC) || !this.runway) {
             return;
         }
 
@@ -204,16 +264,16 @@ class WT_Approach extends WT_Procedure {
     /**
      * The final approach legs for this approach.
      * @readonly
-     * @type {WT_ProcedureLegList}
+     * @type {WT_ReadOnlyArray<WT_ProcedureLeg>}
      */
     get finalLegs() {
-        return this._finalLegs;
+        return this._finalLegsReadOnly;
     }
 
     /**
      * The transitions for this approach.
      * @readonly
-     * @type {WT_TransitionList<WT_ProcedureTransition>}
+     * @type {WT_TransitionList<WT_ApproachTransition>}
      */
     get transitions() {
         return this._transitions;
@@ -227,18 +287,33 @@ class WT_Approach extends WT_Procedure {
     get frequency() {
         return this._frequency;
     }
+
+    /**
+     * Checks whether this procedure is equal to another value. Returns true if and only if the other value is an
+     * WT_Procedure object of the same type as this procedure and has the same owning airport and name.
+     * @param {*} other - the value to check for equality against this procedure.
+     * @returns {Boolean} whether this procedure is equal to the specified value.
+     */
+    equals(other) {
+        return other instanceof WT_Approach && this.airport.equals(other.airport) && this.name === other.name;
+    }
 }
 /**
  * @enum {Number}
  */
 WT_Approach.Type = {
     UNKNOWN: 0,
-    ILS_LOC: 1,
-    RNAV: 2
+    ILS: 1,
+    LOC: 2,
+    RNAV: 3,
+    VOR: 4,
+    NDB: 5,
+    LDA: 6
 }
 
 /**
  * A procedure transition.
+ * @abstract
  */
 class WT_ProcedureTransition {
     /**
@@ -251,12 +326,14 @@ class WT_ProcedureTransition {
     }
 
     _initFromData(data) {
-        this._legs = new WT_ProcedureLegList(data.legs.map(this.procedure._legMap.bind(this.procedure)));
+        this._name = data.name; // provided only with Navigraph data
+        this._legs = data.legs.map(this.procedure._legMap.bind(this.procedure));
+        this._legsReadOnly = new WT_ReadOnlyArray(this._legs);
     }
 
     /**
+     * The procedure to which this transition belongs.
      * @readonly
-     * @property {WT_Procedure} procedure - the procedure to which this transition belongs.
      * @type {WT_Procedure}
      */
     get procedure() {
@@ -264,21 +341,74 @@ class WT_ProcedureTransition {
     }
 
     /**
+     * The name of this transition.
      * @readonly
-     * @property {WT_ProcedureLegList} legs - the legs for this transition.
-     * @type {WT_ProcedureLegList}
+     * @type {String}
+     */
+    get name() {
+        return this._name;
+    }
+
+    /**
+     * The procedure legs for this transition.
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_ProcedureLeg>}
      */
     get legs() {
-        return this._legs;
+        return this._legsReadOnly;
+    }
+}
+
+/**
+ * A departure enroute transition.
+ */
+class WT_DepartureEnrouteTransition extends WT_ProcedureTransition {
+    _initFromData(data) {
+        super._initFromData(data);
+
+        if (!this._name) {
+            let lastLeg = this.legs.last();
+            this._name = (lastLeg && lastLeg.fixICAO) ? lastLeg.fixICAO.substr(7, 5).trim() : "";
+        }
+    }
+}
+
+/**
+ * An arrival enroute transition.
+ */
+class WT_ArrivalEnrouteTransition extends WT_ProcedureTransition {
+    _initFromData(data) {
+        super._initFromData(data);
+
+        if (!this._name) {
+            let firstLeg = this.legs.first();
+            this._name = (firstLeg && firstLeg.fixICAO) ? firstLeg.fixICAO.substr(7, 5).trim() : "";
+        }
+    }
+}
+
+/**
+ * An approach transition.
+ */
+class WT_ApproachTransition extends WT_ProcedureTransition {
+    _initFromData(data) {
+        super._initFromData(data);
+
+        if (!this._name) {
+            let firstLeg = this.legs.first();
+            this._name = (firstLeg && firstLeg.fixICAO) ? firstLeg.fixICAO.substr(7, 5).trim() : "";
+        }
     }
 }
 
 /**
  * A procedure runway transition.
+ * @abstract
  */
 class WT_ProcedureRunwayTransition extends WT_ProcedureTransition {
     _initFromData(data) {
         super._initFromData(data);
+
         let runwayDesignation = data.runwayNumber + "";
         switch(data.runwayDesignation) {
             case 1: runwayDesignation += WT_Runway.Suffix.L; break;
@@ -286,11 +416,12 @@ class WT_ProcedureRunwayTransition extends WT_ProcedureTransition {
             case 3: runwayDesignation += WT_Runway.Suffix.C; break;
         }
         this._runway = this.procedure.airport.runways.getByDesignation(runwayDesignation);
+        this._name = this._runway ? `RW${this._runway.designationFull}` : "";
     }
 
     /**
+     * The runway for this transition.
      * @readonly
-     * @property {WT_Runway} runway - the runway for this transition.
      * @type {WT_Runway}
      */
     get runway() {
@@ -298,24 +429,43 @@ class WT_ProcedureRunwayTransition extends WT_ProcedureTransition {
     }
 }
 
+class WT_DepartureRunwayTransition extends WT_ProcedureRunwayTransition {
+    _initFromData(data) {
+        super._initFromData(data);
+
+        // nav data from the sim doesn't include runway fix, so we have to add it ourselves
+        this._legs.unshift(new WT_ProcedureRunwayFix(this.procedure, true, new WT_RunwayWaypoint(this.runway, WT_RunwayWaypoint.Reference.END)));
+    }
+}
+
+class WT_ArrivalRunwayTransition extends WT_ProcedureRunwayTransition {
+    _initFromData(data) {
+        super._initFromData(data);
+
+        // nav data from the sim doesn't include runway fix, so we have to add it ourselves
+        this._legs.push(new WT_ProcedureRunwayFix(this.procedure, false, new WT_RunwayWaypoint(this.runway, WT_RunwayWaypoint.Reference.START)));
+    }
+}
+
 /**
  * A list of procedure transitions.
- * @template T
+ * @template {WT_ProcedureTransition} T
  */
 class WT_TransitionList {
     /**
      * @param {Array<T>} transitions - an array of transitions with which to initialize the new list.
      */
     constructor(transitions) {
-        this._transitions = transitions;
+        this._array = new WT_ReadOnlyArray(transitions);
     }
 
     /**
-     * Gets the number of transitions in this list.
-     * @returns {Number} the number of transitions in this list.
+     * A read-only array of the transitions in this list.
+     * @readonly
+     * @type {WT_ReadOnlyArray<T>}
      */
-    count() {
-        return this._transitions.length;
+    get array() {
+        return this._array;
     }
 
     /**
@@ -324,14 +474,16 @@ class WT_TransitionList {
      * @returns {T} a transition.
      */
     getByIndex(index) {
-        return this._transitions[index];
+        return this._array.get(index);
     }
 
     /**
-     * @returns {Iterator<T>}
+     * Gets a transition from this list by its name.
+     * @param {String} name - the name of the transition to get.
+     * @returns {T} a transition.
      */
-    [Symbol.iterator]() {
-        return this._transitions.values();
+    getByName(name) {
+        return this._array.find(transition => transition.name === name);
     }
 }
 
@@ -353,9 +505,6 @@ class WT_ProcedureLeg {
     _initFromData(data) {
         this._altitudeDescription = data.altDesc;
         switch (data.altDesc) {
-            case WT_ProcedureLeg.AltitudeDescription.NONE:
-                this._altitudeConstraint = WT_AltitudeConstraint.NO_CONSTRAINT;
-                break;
             case WT_ProcedureLeg.AltitudeDescription.AT:
                 this._altitudeConstraint = new WT_AtAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
@@ -366,14 +515,16 @@ class WT_ProcedureLeg {
                 this._altitudeConstraint = new WT_AtOrBelowAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
             case WT_ProcedureLeg.AltitudeDescription.BETWEEN:
-                this._altitudeConstraint = new WT_AtAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude2), WT_ProcedureLeg._tempMeter2.set(data.altitude1));
+                this._altitudeConstraint = new WT_BetweenAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude2), WT_ProcedureLeg._tempMeter2.set(data.altitude1));
                 break;
+            default:
+                this._altitudeConstraint = WT_AltitudeConstraint.NO_CONSTRAINT;
         }
     }
 
     /**
+     * The procedure to which this leg belongs.
      * @readonly
-     * @property {WT_Procedure} procedure - the procedure to which this leg belongs.
      * @type {WT_Procedure}
      */
     get procedure() {
@@ -381,8 +532,8 @@ class WT_ProcedureLeg {
     }
 
     /**
+     * The type of this leg.
      * @readonly
-     * @property {Number} type - the type of this leg.
      * @type {Number}
      */
     get type() {
@@ -390,8 +541,8 @@ class WT_ProcedureLeg {
     }
 
     /**
+     * The altitude constraint type of this leg.
      * @readonly
-     * @property {Number} altitudeDescription - the altitude constraint type of this leg.
      * @type {Number}
      */
     get altitudeDescription() {
@@ -399,8 +550,8 @@ class WT_ProcedureLeg {
     }
 
     /**
+     * The altitude constraint of this leg.
      * @readonly
-     * @property {WT_AltitudeConstraint} altitudeConstraint - the altitude constraint of this leg.
      * @type {WT_AltitudeConstraint}
      */
     get altitudeConstraint() {
@@ -408,8 +559,8 @@ class WT_ProcedureLeg {
     }
 
     /**
+     * Whether this leg ends in a discontinuity.
      * @readonly
-     * @property {Boolean} discontinuity - whether this leg ends in a discontinuity.
      * @type {Boolean}
      */
     get discontinuity() {
@@ -422,15 +573,17 @@ WT_ProcedureLeg._tempMeter2 = WT_Unit.METER.createNumber(0);
  * @enum {Number}
  */
 WT_ProcedureLeg.Type = {
-    INITIAL_FIX: 1,
-    FIX: 2,
-    FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE: 3,
-    FLY_REFERENCE_RADIAL_FOR_DISTANCE: 4,
-    FLY_HEADING_TO_INTERCEPT: 5,
-    FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING: 6,
-    FLY_TO_BEARING_DISTANCE_FROM_REFERENCE: 7,
-    FLY_HEADING_TO_ALTITUDE: 8,
-    FLY_VECTORS: 9
+    INITIAL_FIX: 0,
+    FIX: 1,
+    FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE:2,
+    FLY_REFERENCE_RADIAL_FOR_DISTANCE: 3,
+    FLY_HEADING_TO_INTERCEPT: 4,
+    FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING: 5,
+    FLY_TO_BEARING_DISTANCE_FROM_REFERENCE: 6,
+    FLY_HEADING_TO_ALTITUDE: 7,
+    FLY_VECTORS: 8,
+    INITIAL_RUNWAY_FIX: 9,
+    RUNWAY_FIX: 10,
 };
 /**
  * @enum {Number}
@@ -444,42 +597,9 @@ WT_ProcedureLeg.AltitudeDescription = {
 };
 
 /**
- * A list of procedure legs.
+ * A procedure leg representing an initial waypoint fix.
  */
-class WT_ProcedureLegList {
-    /**
-     * @param {WT_ProcedureLeg[]} legs - an array of procedure legs with which to initialize the new list.
-     */
-    constructor(legs) {
-        this._legs = legs;
-    }
-
-    /**
-     * Gets the number of legs in this list.
-     * @returns {Number} the number of legs in this list.
-     */
-    count() {
-        return this._legs.length;
-    }
-
-    /**
-     * Gets a leg from this list by its index.
-     * @param {Number} index - the index of the leg to get.
-     * @returns {WT_ProcedureLeg} a procedure leg.
-     */
-    getByIndex(index) {
-        return this._legs[index];
-    }
-
-    /**
-     * @returns {IterableIterator<WT_ProcedureLeg>}
-     */
-    [Symbol.iterator]() {
-        return this._legs.values();
-    }
-}
-
-class WT_InitialFix extends WT_ProcedureLeg {
+class WT_ProcedureInitialFix extends WT_ProcedureLeg {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.INITIAL_FIX, data);
     }
@@ -491,8 +611,8 @@ class WT_InitialFix extends WT_ProcedureLeg {
     }
 
     /**
+     * The ICAO string of the waypoint fix for this leg.
      * @readonly
-     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg.
      * @type {String}
      */
     get fixICAO() {
@@ -500,6 +620,10 @@ class WT_InitialFix extends WT_ProcedureLeg {
     }
 }
 
+/**
+ * A procedure leg which involves flying a constant heading.
+ * @abstract
+ */
 class WT_ProcedureLegCourse extends WT_ProcedureLeg {
     _initFromData(data) {
         super._initFromData(data);
@@ -508,8 +632,8 @@ class WT_ProcedureLegCourse extends WT_ProcedureLeg {
     }
 
     /**
+     * The course heading of this leg.
      * @readonly
-     * @property {Number} course - the course heading of this leg.
      * @type {Number}
      */
     get course() {
@@ -520,7 +644,7 @@ class WT_ProcedureLegCourse extends WT_ProcedureLeg {
 /**
  * A procedure leg consisting of flying a direct course to a pre-defined terminator waypoint fix.
  */
-class WT_FlyToFix extends WT_ProcedureLegCourse {
+class WT_ProcedureFlyToFix extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FIX, data);
     }
@@ -532,8 +656,8 @@ class WT_FlyToFix extends WT_ProcedureLegCourse {
     }
 
     /**
+     * The ICAO string of the terminator waypoint fix for this leg.
      * @readonly
-     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg.
      * @type {String}
      */
     get fixICAO() {
@@ -541,6 +665,11 @@ class WT_FlyToFix extends WT_ProcedureLegCourse {
     }
 }
 
+/**
+ * A procedure leg which involves flying a constant heading and which ends at a position derived from a reference ICAO
+ * waypoint fix.
+ * @abstract
+ */
 class WT_ProcedureLegCourseReference extends WT_ProcedureLegCourse {
     _initFromData(data) {
         super._initFromData(data);
@@ -549,8 +678,8 @@ class WT_ProcedureLegCourseReference extends WT_ProcedureLegCourse {
     }
 
     /**
+     * The ICAO string of the reference fix for this leg.
      * @readonly
-     * @property {String} referenceICAO - the ICAO string of the reference fix for this leg.
      * @type {String}
      */
     get referenceICAO() {
@@ -558,6 +687,11 @@ class WT_ProcedureLegCourseReference extends WT_ProcedureLegCourse {
     }
 }
 
+/**
+ * A procedure leg which involves flying a constant heading, ends at a position derived from a reference ICAO waypoint
+ * fix, and whose end .
+ * @abstract
+ */
 class WT_ProcedureLegCourseReferenceDistance extends WT_ProcedureLegCourseReference {
     _initFromData(data) {
         super._initFromData(data);
@@ -566,8 +700,8 @@ class WT_ProcedureLegCourseReferenceDistance extends WT_ProcedureLegCourseRefere
     }
 
     /**
+     * The distance to fly for this leg.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} distance - the distance to fly for this leg.
      * @type {WT_NumberUnitReadOnly}
      */
     get distance() {
@@ -578,7 +712,7 @@ class WT_ProcedureLegCourseReferenceDistance extends WT_ProcedureLegCourseRefere
 /**
  * A procedure leg consisting of flying a constant heading from the previous fix until reaching a specified distance from a reference fix.
  */
-class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseReferenceDistance {
+class WT_ProcedureFlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseReferenceDistance {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE, data);
     }
@@ -587,7 +721,7 @@ class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseRefer
 /**
  * A procedure leg consisting of flying a constant heading from the previous fix for a specified distance.
  */
-class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDistance {
+class WT_ProcedureFlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDistance {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_REFERENCE_RADIAL_FOR_DISTANCE, data);
     }
@@ -614,7 +748,7 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
 /**
  * A procedure leg consisting of flying a constant heading from the previous fix until intercepting the next leg's course.
  */
-class WT_FlyHeadingToIntercept extends WT_ProcedureLegCourse {
+class WT_ProcedureFlyHeadingToIntercept extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_TO_INTERCEPT, data);
     }
@@ -624,7 +758,7 @@ class WT_FlyHeadingToIntercept extends WT_ProcedureLegCourse {
  * A procedure leg consisting of flying a constant heading from the previous fix until crossing a specified radial line
  * of a reference fix.
  */
-class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseReference {
+class WT_ProcedureFlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseReference {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING, data);
     }
@@ -648,25 +782,51 @@ class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseRef
 /**
  * A procedure leg consisting of flying direct to a point at a specified bearing and distance from a reference fix.
  */
-class WT_FlyToBearingDistanceFromReference extends WT_ProcedureLegCourseReferenceDistance {
+class WT_ProcedureFlyToBearingDistanceFromReference extends WT_ProcedureLegCourseReferenceDistance {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_TO_BEARING_DISTANCE_FROM_REFERENCE, data);
+    }
+
+    _initFromData(data) {
+        super._initFromData(data);
+
+        if (data.fixIcao.trim()) {
+            this._fixICAO = data.fixIcao;
+        }
+    }
+
+    /**
+     * @readonly
+     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg, if one exists.
+     * @type {String}
+     */
+    get fixICAO() {
+        return this._fixICAO;
     }
 }
 
 /**
  * A procedure leg consisting of flying a constant heading from the previous fix until reaching a specified altitude.
  */
-class WT_FlyHeadingToAltitude extends WT_ProcedureLegCourse {
+class WT_ProcedureFlyHeadingToAltitude extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE, data);
+    }
+
+    /**
+     * @readonly
+     * @property {Boolean} discontinuity - whether this leg ends in a discontinuity.
+     * @type {Boolean}
+     */
+    get discontinuity() {
+        return true;
     }
 }
 
 /**
  * A procedure leg consisting of flying a VECTORS instruction. Ends in a discontinuity.
  */
-class WT_FlyVectors extends WT_ProcedureLeg {
+class WT_ProcedureFlyVectors extends WT_ProcedureLeg {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_VECTORS, data);
     }
@@ -681,6 +841,45 @@ class WT_FlyVectors extends WT_ProcedureLeg {
     }
 }
 
+/**
+ * A procedure leg representing either an initial runway fix or flying a direct course to a runway fix.
+ */
+class WT_ProcedureRunwayFix extends WT_ProcedureLeg {
+    /**
+     * @param {WT_Procedure} procedure - the procedure to which the new leg belongs.
+     * @param {Boolean} isInitial - whether the new leg is an initial runway fix.
+     * @param {WT_RunwayWaypoint} fix - the new leg's runway waypoint fix.
+     */
+    constructor(procedure, isInitial, fix) {
+        super(procedure, isInitial ? WT_ProcedureLeg.Type.INITIAL_RUNWAY_FIX : WT_ProcedureLeg.Type.RUNWAY_FIX, null);
+
+        this._fix = fix;
+    }
+
+    _initFromData(data) {
+        this._altitudeDescription = WT_ProcedureLeg.AltitudeDescription.NONE;
+        this._altitudeConstraint = WT_AltitudeConstraint.NO_CONSTRAINT;
+    }
+
+    /**
+     * This leg's runway fix.
+     * @readonly
+     * @type {WT_RunwayWaypoint}
+     */
+    get fix() {
+        return this._fix;
+    }
+
+    /**
+     * The runway associated with this leg.
+     * @readonly
+     * @type {WT_Runway}
+     */
+    get runway() {
+        return this.fix.runway;
+    }
+}
+
 class ProcedureLegFactory {
     /**
      * Creates a WT_ProcedureLeg object from a procedure data object.
@@ -691,33 +890,41 @@ class ProcedureLegFactory {
     static createFromData(procedure, data) {
         switch (data.type) {
             case 15:
-                return new WT_InitialFix(procedure, data);
+                return new WT_ProcedureInitialFix(procedure, data);
             case 7:
             case 17:
             case 18:
-                return new WT_FlyToFix(procedure, data);
+                if (data.fixIcao && data.fixIcao[0] === "R") { // ignore runway fixes
+                    return;
+                }
+                return new WT_ProcedureFlyToFix(procedure, data);
             case 3:
-                return new WT_FlyHeadingUntilDistanceFromReference(procedure, data);
+                return new WT_ProcedureFlyHeadingUntilDistanceFromReference(procedure, data);
             case 4:
                 if (data.fixIcao && data.fixIcao[0] === "R") { // ignore runway fixes
-                    break;
+                    return;
                 }
-                return new WT_FlyReferenceRadialForDistance(procedure, data);
+                return new WT_ProcedureFlyReferenceRadialForDistance(procedure, data);
             case 5:
             case 21:
-                return new WT_FlyHeadingToIntercept(procedure, data);
+                return new WT_ProcedureFlyHeadingToIntercept(procedure, data);
             case 6:
             case 23:
-                return new WT_FlyHeadingUntilReferenceRadialCrossing(procedure, data);
+                return new WT_ProcedureFlyHeadingUntilReferenceRadialCrossing(procedure, data);
             case 9:
             case 10:
-                return new WT_FlyToBearingDistanceFromReference(procedure, data);
+                return new WT_ProcedureFlyToBearingDistanceFromReference(procedure, data);
             case 2:
             case 19:
-                return new WT_FlyHeadingToAltitude(procedure, data);
+                return new WT_ProcedureFlyHeadingToAltitude(procedure, data);
             case 11:
             case 22:
-                return new WT_FlyVectors(procedure, data);
+                return new WT_ProcedureFlyVectors(procedure, data);
+            default:
+                if (data.fixIcao) {
+                    // for now we will treat all unknown leg types with a defined fix as a direct leg
+                    return new WT_ProcedureFlyToFix(procedure, data);
+                }
         }
     }
 }

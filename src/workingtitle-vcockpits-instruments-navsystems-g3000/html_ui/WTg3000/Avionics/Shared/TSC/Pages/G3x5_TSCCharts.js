@@ -2,13 +2,16 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     /**
      * @param {String} homePageGroup
      * @param {String} homePageName
-     * @param {WT_NavigraphAPI} navigraphAPI
      * @param {WT_G3x5_MFDHalfPane.ID} halfPaneID
+     * @param {WT_NavigraphNetworkAPI} navigraphAPI
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     * @param {WT_G3x5_PaneSettings} paneSettings
      */
-    constructor(homePageGroup, homePageName, navigraphAPI, halfPaneID, icaoWaypointFactory) {
+    constructor(homePageGroup, homePageName, halfPaneID, navigraphAPI, icaoWaypointFactory, paneSettings) {
         super(homePageGroup, homePageName);
 
         this._icaoWaypointFactory = icaoWaypointFactory;
+        this._chartIDSetting = paneSettings.chartID;
 
         this._icao = "";
         /**
@@ -27,10 +30,10 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._dataFail = false;
 
         this._navigraphAPI = navigraphAPI;
-        this._settingModelID = `MFD-${halfPaneID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
-        this._initSettingModel();
+        this._settingModelID = `MFD-${halfPaneID}`;
+        this._initSettings();
 
-        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
+        this._scrollEventKey = `${WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
 
         this._hasMadeManualAirportSelection = false;
         this._manualAirportSelectKey = `${WT_G3x5_TSCCharts.AIRPORT_SELECT_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
@@ -52,10 +55,9 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._initChartIDSettingListener();
     }
 
-    _initSettingModel() {
+    _initSettings() {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
         this._settingModel.addSetting(this._icaoSetting = new WT_G3x5_ChartsICAOSetting(this._settingModel));
-        this._settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this._settingModel));
         this._settingModel.addSetting(this._lightModeSetting = new WT_G3x5_ChartsLightModeSetting(this._settingModel));
         this._settingModel.addSetting(this._lightThresholdSetting = new WT_G3x5_ChartsLightThresholdSetting(this._settingModel));
         this._settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this._settingModel));
@@ -177,18 +179,10 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     rotateCCW() {
-        if (!this.selectedChart) {
-            return;
-        }
-
         this.rotationSetting.rotateCCW();
     }
 
     rotateCW() {
-        if (!this.selectedChart) {
-            return;
-        }
-
         this.rotationSetting.rotateCW();
     }
 
@@ -197,10 +191,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     changeZoom(delta) {
-        if (!this.selectedChart) {
-            return;
-        }
-
         this.zoomSetting.changeZoom(delta);
     }
 
@@ -213,15 +203,18 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {WT_GVector2} delta
      */
     scroll(delta) {
-        if (!this.selectedChart) {
-            return;
-        }
-
         WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, `${delta.x},${delta.y}`);
     }
 
     resetScroll() {
-        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET);
+        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_RESET);
+    }
+
+    resetChartSettings() {
+        this.sectionSetting.setValue(WT_G3x5_ChartsModel.SectionMode.ALL);
+        this.resetRotation();
+        this.resetZoom();
+        this.resetScroll();
     }
 
     _findChart(id) {
@@ -251,7 +244,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
                 }
             } catch (e) {
                 console.log(e);
-                if (e === WT_NavigraphAPI.Error.ACCESS_DENIED) {
+                if (e === WT_NavigraphNetworkAPI.Error.ACCESS_DENIED) {
                     this._dataFail = true;
                     if (this.htmlElement && this.htmlElement.isInitialized) {
                         this.htmlElement.setDataFail(this._dataFail);
@@ -277,15 +270,15 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      */
     _updateChartIDFromAirport(airport) {
         if (airport) {
-            if (this._chartID.substring(0, 4) !== airport.ident) {
+            if (WT_NavigraphChartOperations.getAirportIdentFromID(this._chartID) !== airport.ident) {
                 // selected chart ID does not belong to the airport -> try to select airport diagram.
                 let chartID = "";
-                let chart = this._charts.find(chart => chart.type.code === "AP");
+                let chart = WT_NavigraphChartOperations.findAirportDiagram(this._charts);
                 if (chart) {
                     chartID = chart.id;
                 }
                 this._chartIDSetting.setValue(chartID);
-                this._resetChartSettings();
+                this.resetChartSettings();
             } else {
                 this._updateChartFromID(this._chartID);
             }
@@ -374,8 +367,13 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     _openKeyboard() {
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), WT_ICAOWaypoint.Type.AIRPORT);
-        this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
+        this.instrument.waypointKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            searchTypes: [WT_ICAOWaypoint.Type.AIRPORT],
+            callback: this._onKeyboardClosed.bind(this)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.waypointKeyboard);
     }
 
     _openOptionsWindow() {
@@ -397,19 +395,16 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         WT_CrossInstrumentEvent.fireEvent(this._manualAirportSelectKey, "");
     }
 
-    _onKeyboardClosed(icao) {
-        this.setAirportICAO(icao);
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    _onKeyboardClosed(airport) {
+        this.setAirportICAO(airport ? airport.icao : "");
     }
 
     _onManualAirportSelect(key, data) {
         this._hasMadeManualAirportSelection = true;
-    }
-
-    _resetChartSettings() {
-        this.sectionSetting.setValue(WT_G3x5_ChartsModel.SectionMode.ALL);
-        this.resetRotation();
-        this.resetZoom();
-        this.resetScroll();
     }
 
     /**
@@ -418,7 +413,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      */
     _onChartSelected(chart) {
         this._chartIDSetting.setValue(chart.id);
-        this._resetChartSettings();
+        this.resetChartSettings();
     }
 
     /**
@@ -476,11 +471,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _autoSelectAirport() {
-        let lastPageName = this.instrument.history[this.instrument.history.length - 1].pageName;
-        if (lastPageName !== "MFD Home") {
-            return;
-        }
-
         let airportToSelect = this._chooseAutoSelectAirport();
         if (airportToSelect && airportToSelect.icao !== this._icao) {
             this._setAirportICAO(airportToSelect.icao, false);
@@ -493,13 +483,11 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _activateChartsDisplayPane() {
-        let settings = this.instrument.getSelectedMFDPaneSettings();
-        settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS);
+        let settings = this.instrument.getSelectedPaneSettings();
+        settings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.CHARTS);
     }
 
     onEnter() {
-        super.onEnter();
-
         this._autoSelectAirport();
         this._activateChartsDisplayPane();
         this.htmlElement.open();
@@ -510,8 +498,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
     }
 }
