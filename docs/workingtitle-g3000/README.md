@@ -35,6 +35,8 @@ During a flight, you can check your Navigraph account link status in the GTC Dat
 
 **Fixes**
 - \[FPLN\] Fixed a bug that prevented editing of the active flight plan under certain circumstances.
+- \[PFD\] Autopilot display now correctly shows ALTS armed indication while in PITCH mode.
+- \[NavMap\] Flight Plan Text Inset now displays cumulative ETE instead of leg ETE when CUM mode is selected.
 
 ### Known Issues
 - \[FPLN\] There is currently a bug with the sim's built-in flight plan management system which prevents waypoints from being properly added to the flight plan while an approach is loaded. As a result, inserting waypoints or airways into the Enroute segment of the active flight plan with an approach loaded will desynchronize the FMS flight plan from the sim's flight plan and lead to unexpected behavior. As a workaround, enter waypoints _before_ loading an approach. If you need to enter waypoints after an approach has been loaded, remove the approach, make the necessary edits, then reload the approach. Lastly, if the FMS active flight plan becomes desynchronized, you can fix it by deleting the active flight plan via the Flight Plan Options menu.

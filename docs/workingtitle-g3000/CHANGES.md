@@ -26,6 +26,8 @@
 
 **Fixes**
 - \[FPLN\] Fixed a bug that prevented editing of the active flight plan under certain circumstances.
+- \[PFD\] Autopilot display now correctly shows ALTS armed indication while in PITCH mode.
+- \[NavMap\] Flight Plan Text Inset now displays cumulative ETE instead of leg ETE when CUM mode is selected.
 
 ### v0.7.1
 **Changed Features**
