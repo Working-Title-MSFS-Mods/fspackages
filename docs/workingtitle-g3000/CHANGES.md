@@ -1,5 +1,89 @@
 # Changelog
 
+### v0.7.2
+**New Features**
+- \[FPLN\] Added support for advisory VNAV guidance. The FMS can now calculate VNAV descent profiles and provide information on top of descent, bottom of descent, required vertical speed, and vertical path deviation. The autopilot still does not support V PATH mode.
+  - For VNAV guidance to be issued, the following conditions must be met:
+    - VNAV is enabled via the GTC VNAV Profile page (MFD Home -> Flight Plan -> VNAV).
+    - A Direct-To with VNAV altitude restriction is active, OR the active flight plan contains at least one designated VNAV altitude restriction at or after the current active leg (designated altitude restrictions are displayed in cyan in the GTC Active Flight Plan page and the Navigation Map Flight Plan Text Inset).
+    - The currently active VNAV altitude restriction defines a descent path.
+  - You may now activate VNAV Direct-To's (not to be confused with a Direct-To with VNAV altitude restriction). Activating a VNAV Direct-To will place the TOD of the selected VNAV waypoint at the airplane's current position. In addition, if the selected VNAV waypoint is in the active flight plan, all VNAV altitude restrictions in the flight plan prior to it are removed (effectively bypassing all altitude restrictions between the airplane's current position and the selected VNAV waypoint).
+    - To activate a VNAV Direct-To for the currently active VNAV waypoint, press the VNAV Direct-To button in the GTC VNAV Profile Page (MFD Home -> Flight Plan -> VNAV).
+    - To activate a VNAV Direct-To targeting a designated VNAV restriction in the active flight plan, use the GTC to navigate to the Active Flight Plan page (MFD Home -> Flight Plan -> (\[optional\] -> Standby Flight Plan)), press the VNAV Altitude button for the desired restriction, and press the VNAV Direct-To button in the VNAV Altitude keypad pop-up.
+  - VNAV indications include the following:
+    - PFD
+      - The navigation status box will flash a "TOD within 1 minute" warning when the system calculates the top of descent will be reached in less than or equal to 1 minute.
+      - The altimeter will begin to display the currently active VNAV altitude, vertical deviation indicator (VDI), and required vertical speed in conjunction with the "TOD within 1 minute warning".
+    - MFD
+      - The navigation map will display TOD and BOD markers at their calculated position along the flight path.
+      - The flight plan text inset will display various VNAV parameters. (only visible when the MFD is in Full pane mode)
+    - GTC
+      - The VNAV Profile page will display various VNAV parameters.
+
+**Changed Features**
+- \[FPLN\] Enabled entry of custom VNAV altitude restrictions for approach legs in the active flight plan.
+- \[Misc\] Added measurement unit options (gallons, liters, pounds, kilograms) for fuel display fields. (Note that these do not apply to EICAS).
+
+**Fixes**
+- \[FPLN\] Fixed a bug that prevented editing of the active flight plan under certain circumstances.
+- \[PFD\] Autopilot display now correctly shows ALTS armed indication while in PITCH mode.
+- \[NavMap\] Flight Plan Text Inset now displays cumulative ETE instead of leg ETE when CUM mode is selected.
+
+### v0.7.1
+**Changed Features**
+- \[GTC\] Updated the Direct To page to more closely match the real-life units.
+- \[GTC\] Added confirmation pop-ups when attempting to cancel a Direct To, activate a flight plan leg, delete a flight plan, and activate the standby flight plan.
+
+**Fixes**
+- \[Compatibility\] Fixed a compatibility issue with Sim Update 4 where the FMS would not automatically activate approaches.
+- \[FPLN\] Reduced the chance of failing to import enroute waypoints into the FMS when loading a flight plan from the world map.
+- \[FPLN\] Fixed a bug where for certain ILS/LOC approaches, the FMS would automatically switch autopilot navigation source to NAV1/NAV2 before the plane was inbound on the final approach course.
+
+### v0.7.0
+**New Features**
+- \[FPLN\] Added the ability to insert airways into flight plans.
+  - Airways may only be inserted into the Enroute segment.
+  - To insert an airway, select an Enroute leg in the GTC Flight Plan page (MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan)) which represents the desired entry point, then press the Load Airway button in the Waypoint Options menu on the right. A pop-up window will appear allowing you to select the desired entry point (defaults to the waypoint belonging to the selected leg), airway, and exit point. Once all three fields have been entered, press the Load Airway button to insert the airway into the flight plan immediately after the selected leg (or, if the selected leg is within another airway, immediately after the airway sequence).
+  - By default, airways are collapsed within the Flight Plan page unless they contain the active flight plan leg. To manually expand/collapse airways, select an airway header row in the Flight Plan page and use the Airway Options menu on the right.
+- \[FPLN\] Added support for a standby flight plan.
+  - To access the standby flight plan, use the GTC to navigate to MFD Home -> Flight Plan -> Standby Flight Plan.
+  - Note that because the mod still uses the sim's built-in flight plan system to manage the active flight plan, when activating the standby flight plan changes may be made to it for compatibility reasons.
+  - Leg altitude restrictions are not imported into the active flight plan when activating the standby flight plan.
+- \[FPLN\] Added a function to delete the active/standby flight plans via the new Flight Plan Options menu.
+  - The option can be found by using the GTC to navigate to MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan) -> Flight Plan Options -> Delete Flight Plan.
+- \[FPLN\] Added the ability to preview flight plans and procedures via the Flight Plan and Procedure Preview Panes, respectively.
+  - To preview a flight plan, use the GTC to navigate to MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan) -> Flight Plan Options. Press the Show On Map to activate the Flight Plan Preview pane in the currently selected MFD pane.
+    - By default, the entire flight plan is previewed. To preview specific segments or legs, return to the GTC Flight Plan page and select the row representing the part of the flight plan you wish to preview.
+    - For flight plans that span a large distance (>4000 NM) or whose path passes near the poles, the preview may not accurately depict the entire flight plan.
+  - To preview a procedure, select the procedure via the appropriate GTC Procedure Selection page (MFD Home -> PROC -> Departure/Arrival/Approach), press the Preview button, and select Show On Map.
+- \[FPLN\] For the Longitude: the Flight Plan Keypad now allows direct entry of routes (waypoints or airways) into the Enroute segments of flight plans.
+  - Routes are made up of a sequence of one or more *route entries*. Each route entry is either a waypoint IDENT or airway name. Depending on the sequence of route entries entered into the keypad, a series of either direct (waypoint-to-waypoint) legs or airways will be inserted into the flight plan.
+  - The Route (\*) key is used for delimiting route entries.
+  - The syntax for inserting routes is as follows:
+    - Direct route (waypoint): *\[wpt\]* \*
+    - Airway: *\[entry_wpt\]* \* *\[airway\]* \* *\[exit_wpt\]* \* OR *\[entry_wpt\]* \* *\[airway1\]* \* *\[airway2\]* \*
+      - The second syntax will automatically select the exit waypoint based on where airway2 intersects airway1. After airway1 has been inserted, the system will automatically load airway2 into the keypad, and you will be prompted to input the exit waypoint (or intersecting airway) for airway2.
+- \[NavMap\] Added the Flight Plan Text Inset window.
+  - The inset displays information on up to 5 flight plan legs, beginning with the leg immediately prior to the active leg (or the first leg in the flight plan if there is no active leg). Airways are always displayed as collapsed, with only the airway header and last leg in the airway sequence visible, unless the airway contains the active leg.
+  - To enable/disable the inset, use the GTC to navigate to MFD Home -> Map Settings -> Inset Window tab, and press the Flight Plan Text button. The associated Leg-Leg/CUM button will change the DIS column in the inset to display either leg-leg distance or cumulative distance.
+- \[Charts\] Charts for terminal procedures may now be accessed and previewed by their corresponding procedures.
+  - To preview a chart for a given procedure, select the procedure via the appropriate GTC Procedure Selection page (MFD Home -> PROC -> Departure/Arrival/Approach), press the Preview button, and select Show Chart.
+
+**Changed Features**
+- \[GTC\] Overhauled the Flight Plan and Procedures pages to support the new flight planning features and to more closely match the real-life units.
+  - The two data fields on the far-right column of the Flight Plan page can now be customized by using the GTC to navigate to MFD Home -> Flight Plan -> Flight Plan Options -> Edit Data Fields. The following types of data are supported: CUM (cumulative distance), DIS (leg-leg distance), DTK (desired track), ETA (estimated time of arrival), ETE (estimated time enroute), FUEL (fuel to destination).
+  - Data displays in the Flight Plan page now respect measurement unit and time format settings set via Avionics Settings.
+- \[GTC\] Updated the Waypoint Keyboard and Waypoint Duplicates pop up pages to more closely match the real-life units.
+
+**Fixes**
+- \[FPLN\] Fixed a bug where the GTC Flight Plan page would display a different active leg from the navigation map and PFD navigation status bar.
+- \[GTC\] The Flight Plan page should now report accurate leg-leg distances for all flight plan legs.
+- \[GTC\] The Back button now works properly in the Procedure Selection pages.
+- \[GTC\] The Waypoint Keyboard now provides accurate indications of when a match for the entered waypoint ident has been found.
+- \[GTC\] Fixed a graphical glitch affecting certain touchscreen buttons.
+- \[Charts\] The mod should now be better at "remembering" Navigraph account access and should not require account re-linking as frequently.
+- \[VFR Map\] Fixed a bug preventing the VFR Map from being moved when it was not detached to a separate window.
+
 ### v0.6.2
 **New Features**
 - \[Traffic\] Enabled support for laurinius's MSFS Traffic Service app, which adds Offline AI traffic and SimConnect-injected traffic to the mod's traffic systems.

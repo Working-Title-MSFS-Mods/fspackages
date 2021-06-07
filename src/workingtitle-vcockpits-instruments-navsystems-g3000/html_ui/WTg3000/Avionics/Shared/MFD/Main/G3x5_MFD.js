@@ -61,10 +61,10 @@ class WT_G3x5_MFD extends NavSystem {
 
     /**
      * @readonly
-     * @type {WT_NavigraphAPI}
+     * @type {WT_NavigraphNetworkAPI}
      */
-    get navigraphAPI() {
-        return this._navigraphAPI;
+    get navigraphNetworkAPI() {
+        return this._navigraphNetworkAPI;
     }
 
     /**
@@ -89,6 +89,10 @@ class WT_G3x5_MFD extends NavSystem {
     }
 
     disconnectedCallback() {
+    }
+
+    _isFlightPlanManagerMaster() {
+        return true;
     }
 
     _getReferenceAirspeedSensor() {
@@ -128,7 +132,7 @@ class WT_G3x5_MFD extends NavSystem {
     }
 
     _initNavigraphAPI() {
-        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
+        this._navigraphNetworkAPI = new WT_NavigraphNetworkAPI(WT_NavigraphNetworkAPI.MAGIC_STRINGS_G3000);
     }
 
     Init() {

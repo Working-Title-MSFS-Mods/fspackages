@@ -405,6 +405,7 @@ class WT_Runway {
             default: this._suffix = WT_Runway.Suffix.NONE;
         }
         this._designation = this._number + this._suffix;
+        this._designationFull = this._number.toFixed(0).padStart(2, "0") + this._suffix;
         this._location = new WT_GeoPoint(data.latitude, data.longitude);
         this._elevation = new WT_NumberUnit(data.elevation, WT_Unit.METER);
         this._direction = reverse ? (data.direction + 180) % 360 : data.direction;
@@ -454,6 +455,16 @@ class WT_Runway {
     }
 
     /**
+     * The full designation of this runway, consisting of the runway number padded to 2 digits followed by an optional
+     * L/C/R suffix.
+     * @readonly
+     * @type {String}
+     */
+    get designationFull() {
+        return this._designationFull;
+    }
+
+    /**
      * The designation of the runway pair that contains this runway, or simply this runway's designation if
      * this runway has no reciprocal.
      * @readonly
@@ -461,6 +472,16 @@ class WT_Runway {
      */
     get pairDesignation() {
         return this._pairDesignation;
+    }
+
+    /**
+     * The full designation of the runway pair that contains this runway, or simply this runway's full designation if
+     * this runway has no reciprocal.
+     * @readonly
+     * @type {String}
+     */
+    get pairDesignationFull() {
+        return this._pairDesignationFull;
     }
 
     /**
@@ -571,6 +592,16 @@ class WT_Runway {
     }
 
     /**
+     * Checks whether this runway is equal to another value. Returns true if and only if the other value is an object
+     * of type WT_Runway with the same owning airport and designation as this runway.
+     * @param {*} other - the value to compare to this runway.
+     * @returns {Boolean} whether this runway is equal to the specified value.
+     */
+    equals(other) {
+        return other instanceof WT_Runway && other.airport.equals(this.airport) && other.designation === this.designation;
+    }
+
+    /**
      * Creates one or two runways for an airport given the specified runway data. One runway (forward) is guaranteed to be created.
      * If the forward runway also has an associated reverse runway, the reverse runway will be created as well.
      * @param {WT_Airport} airport - the airport to which the new runways belong.
@@ -585,13 +616,17 @@ class WT_Runway {
             returnValue.push(new WT_Runway(airport, parseInt(designations[1]), data, true));
 
             let pairDesignation = `${returnValue[0].designation}-${returnValue[1].designation}`;
+            let pairDesignationFull = `${returnValue[0].designationFull}-${returnValue[1].designationFull}`;
 
             returnValue[0]._pairDesignation = pairDesignation;
+            returnValue[0]._pairDesignationFull = pairDesignationFull;
             returnValue[0]._reciprocal = returnValue[1];
             returnValue[1]._pairDesignation = pairDesignation;
+            returnValue[1]._pairDesignationFull = pairDesignationFull;
             returnValue[1]._reciprocal = returnValue[0];
         } else {
             returnValue[0]._pairDesignation = returnValue[0].designation;
+            returnValue[0]._pairDesignationFull = returnValue[0].designationFull;
             returnValue[0]._reciprocal = null;
         }
         return returnValue;
@@ -641,17 +676,30 @@ WT_Runway.Surface = {
 class WT_RunwayWaypoint extends WT_Waypoint {
     /**
      * @param {WT_Runway} runway - the runway associated with the new waypoint.
+     * @param {WT_RunwayWaypoint.Reference} reference - the runway reference point for the new waypoint.
      */
-    constructor(runway) {
+    constructor(runway, reference) {
         super();
 
         this._runway = runway;
-        this._ident = `RW${this.runway.number.toString().padStart(2, "0")}${this.runway.suffix}`;
+        this._ident = `RW${this.runway.designationFull}`;
+        this._reference = reference;
+        switch (reference) {
+            case WT_RunwayWaypoint.Reference.START:
+                this._location = this.runway.start;
+                break;
+            case WT_RunwayWaypoint.Reference.CENTER:
+                this._location = this.runway.location;
+                break;
+            case WT_RunwayWaypoint.Reference.END:
+                this._location = this.runway.end;
+                break;
+        }
     }
 
     /**
+     * The runway associated with this waypoint.
      * @readonly
-     * @property {WT_Runway} runway - the runway associated with this waypoint.
      * @type {WT_Runway}
      */
     get runway() {
@@ -659,8 +707,17 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The runway reference point for this waypoint. Either start, center, or end.
      * @readonly
-     * @property {String} uniqueID - a unique identifier for this waypoint.
+     * @type {WT_RunwayWaypoint.Reference}
+     */
+    get reference() {
+        return this._reference;
+    }
+
+    /**
+     * A unique identifier for this waypoint.
+     * @readonly
      * @type {String}
      */
     get uniqueID() {
@@ -668,8 +725,8 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The ident string for this waypoint.
      * @readonly
-     * @property {String} ident - the ident string for this waypoint.
      * @type {String}
      */
     get ident() {
@@ -677,8 +734,8 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The name of this waypoint.
      * @readonly
-     * @property {String} name - the name of this waypoint.
      * @type {String}
      */
     get name() {
@@ -686,13 +743,21 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The lat/long coordinates of this waypoint.
      * @readonly
-     * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
-     * @type {WT_GeoPoint}
+     * @type {WT_GeoPointReadOnly}
      */
     get location() {
-        return this.runway.location;
+        return this._location;
     }
+}
+/**
+ * @enum {Number}
+ */
+WT_RunwayWaypoint.Reference = {
+    START: 0,
+    CENTER: 1,
+    END: 2
 }
 
 /**

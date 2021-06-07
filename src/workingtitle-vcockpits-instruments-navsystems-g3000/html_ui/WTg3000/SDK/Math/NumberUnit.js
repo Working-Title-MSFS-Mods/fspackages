@@ -48,9 +48,10 @@ class WT_NumberUnit {
 
     /**
      * Sets this NumberUnit's numeric value. This method will not change this NumberUnit's unit type.
-     * @param {WT_NumberUnit|Number} value - the new value.
+     * @param {WT_NumberUnitObject|Number} value - the new value.
      * @param {WT_Unit} [unit] - the unit type of the new value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} this NumberUnit, after it has been changed.
      */
     set(value, unit) {
         let converted = this._toNumberOfThisUnit(value, unit);
@@ -63,9 +64,9 @@ class WT_NumberUnit {
     /**
      * Adds a value to this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the unit type of
      * the value to add can be converted to this NumberUnit's unit type.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
+     *        is a NumberUnit.
      * @returns {WT_NumberUnit} the sum as a new WT_NumberUnit object, or undefined if the the operation was invalid.
      */
     plus(value, unit) {
@@ -80,10 +81,10 @@ class WT_NumberUnit {
      * Adds a value to this NumberUnit in place and returns this NumberUnit. The operation is only valid if the unit type of the value to
      * add can be converted to this NumberUnit's unit type. An invalid operation will not be carried out, but this NumberUnit will still be
      * returned.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
-     * @returns {WT_NumberUnit} this NumberUnit.
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} this NumberUnit, after it has been changed.
      */
     add(value, unit) {
         let converted = this._toNumberOfThisUnit(value, unit);
@@ -96,9 +97,9 @@ class WT_NumberUnit {
     /**
      * Subtracts a value from this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the
      * unit type of the value to subtract can be converted to this NumberUnit's unit type.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
+     *        is a NumberUnit.
      * @returns {WT_NumberUnit} the difference as a new WT_NumberUnit object, or undefined if the the operation was invalid.
      */
     minus(value, unit) {
@@ -113,10 +114,10 @@ class WT_NumberUnit {
      * Subtracts a value from this NumberUnit in place and returns this NumberUnit. The operation is only valid if the unit type of the
      * value to subtract can be converted to this NumberUnit's unit type. An invalid operation will not be carried out, but this NumberUnit
      * will still be returned.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
-     * @returns {WT_NumberUnit} this NumberUnit.
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} this NumberUnit, after it has been changed.
      */
     subtract(value, unit) {
         let converted = this._toNumberOfThisUnit(value, unit);
@@ -144,9 +145,9 @@ class WT_NumberUnit {
 
     /**
      * Calculates the ratio of this NumberUnit to another value.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
+     *        is a NumberUnit.
      * @returns {Number} the ratio.
      */
     ratio(value, unit) {
@@ -159,7 +160,7 @@ class WT_NumberUnit {
      * this number to the result.
      * @param {Boolean} mutate - whether to perform the operation in place.
      * @returns {WT_NumberUnit} the absolute value of this NumberUnit, either as a new WT_NumberUnit object or this NumberUnit after
-     *                          being changed.
+     *          being changed.
      */
     abs(mutate = false) {
         if (mutate) {
@@ -181,9 +182,9 @@ class WT_NumberUnit {
 
     /**
      * Checks whether this NumberUnit is greater than, equal to, or less than another value.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
+     *        is a WT_NumberUnit object.
      * @returns {Number} 0 if this NumberUnit is equal to the other value, -1 if this number is less, and 1 if this number is greater.
      */
     compare(value, unit) {
@@ -201,9 +202,9 @@ class WT_NumberUnit {
 
     /**
      * Checks whether this NumberUnit is equal to another value. This method is a synonym for this.compare(value, unit) === 0.
-     * @param {WT_NumberUnit|Number} value - the other value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
      * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
-     *                           is a WT_NumberUnit object.
+     *        is a NumberUnit.
      * @returns {Boolean} whether this NumberUnit is equal to the other value.
      */
     equals(value, unit) {
@@ -265,62 +266,152 @@ class WT_NumberUnitReadOnly {
         return this._source.unit;
     }
 
+    /**
+     * Creates a copy of this NumberUnit with a specified value. The copy will retain this NumberUnit's unit type.
+     * @param {WT_NumberUnitObject|Number} value - the value of the copy.
+     * @param {WT_Unit} [unit] - the unit type of the new value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     */
     set(value, unit) {
         return this._source.copy().set(value, unit);
     }
 
+    /**
+     * Adds a value to this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the unit type of
+     * the value to add can be converted to this NumberUnit's unit type.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} the sum as a new WT_NumberUnit object, or undefined if the the operation was invalid.
+     */
     plus(value, unit) {
         return this._source.plus(value, unit);
     }
 
+    /**
+     * Adds a value to this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the unit type of
+     * the value to add can be converted to this NumberUnit's unit type.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} the sum as a new WT_NumberUnit object, or undefined if the the operation was invalid.
+     */
     add(value, unit) {
         return this._source.plus(value, unit);
     }
 
+    /**
+     * Subtracts a value from this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the
+     * unit type of the value to subtract can be converted to this NumberUnit's unit type.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} the difference as a new WT_NumberUnit object, or undefined if the the operation was invalid.
+     */
     minus(value, unit) {
         return this._source.minus(value, unit);
     }
 
+    /**
+     * Subtracts a value from this NumberUnit and returns the result as a new WT_NumberUnit object. The operation is only valid if the
+     * unit type of the value to subtract can be converted to this NumberUnit's unit type.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     * @returns {WT_NumberUnit} the difference as a new WT_NumberUnit object, or undefined if the the operation was invalid.
+     */
     subtract(value, unit) {
         return this._source.minus(value, unit);
     }
 
-    scale(factor, mutate = false) {
+    /**
+     * Scales this NumberUnit by a unit-less factor and returns the result as a new WT_NumberUnit object.
+     * @param {Number} factor - the factor by which to scale.
+     * @returns {WT_NumberUnit} the scaled value as a new WT_NumberUnit object.
+     */
+    scale(factor) {
         return this._source.scale(factor, false);
     }
 
+    /**
+     * Calculates the ratio of this NumberUnit to another value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     * @returns {Number} the ratio.
+     */
     ratio(value, unit) {
         return this._source.ratio(value, unit);
     }
 
-    abs(mutate = false) {
+    /**
+     * Calculates the absolute value of this NumberUnit and returns the result as a new WT_NumberUnit object.
+     * @returns {WT_NumberUnit} the absolute value of this NumberUnit as a new WT_NumberUnit object.
+     */
+    abs() {
         return this._source.abs(false);
     }
 
+    /**
+     * Returns the numeric value of this NumberUnit after conversion to a specified unit.
+     * @param {WT_Unit} unit - the unit to which to convert.
+     * @returns {Number} the converted numeric value.
+     */
     asUnit(unit) {
         return this._source.asUnit(unit);
     }
 
+    /**
+     * Checks whether this NumberUnit is greater than, equal to, or less than another value.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a WT_NumberUnit object.
+     * @returns {Number} 0 if this NumberUnit is equal to the other value, -1 if this number is less, and 1 if this number is greater.
+     */
     compare(other) {
         return this._source.compare(other);
     }
 
+    /**
+     * Checks whether this NumberUnit is equal to another value. This method is a synonym for this.compare(value, unit) === 0.
+     * @param {WT_NumberUnitObject|Number} value - the other value.
+     * @param {WT_Unit} [unit] - the unit type of the other value. Defaults to this NumberUnit's unit type. This argument is ignored if value
+     *        is a NumberUnit.
+     * @returns {Boolean} whether this NumberUnit is equal to the other value.
+     */
     equals(other) {
         return this._source.equals(other);
     }
 
+    /**
+     * Checks whether this NumberUnit has a numeric value of NaN.
+     * @returns {Boolean} whether this NumberUnit has a numeric value of NaN.
+     */
     isNaN() {
         return this._source.isNaN();
     }
 
+    /**
+     * Copies this NumberUnit.
+     * @returns {WT_NumberUnit} a copy of this NumberUnit.
+     */
     copy() {
         return this._source.copy();
     }
 
+    /**
+     * Gets a read-only version of this NumberUnit. The read-only version is updated as this NumberUnit is changed. Attempting to call
+     * any mutating method on the read-only version will create and return a mutated copy of this NumberUnit instead.
+     * @returns {WT_NumberUnitReadOnly} a read-only version of this NumberUnit.
+     */
     readonly() {
         return this;
     }
 }
+
+/**
+ * @typedef {WT_NumberUnit|WT_NumberUnitReadOnly} WT_NumberUnitObject
+ */
 
 /**
  * A unit of measurement.
@@ -339,9 +430,8 @@ class WT_Unit {
     }
 
     /**
+     * The family this unit belongs to. Unit conversions are only valid for units within the same family.
      * @readonly
-     * @property {String} - the family this unit belongs to. a.family === b.family
-     *                      must be true if and only if conversions between a and b are valid.
      * @type {String}
      */
     get family() {
@@ -349,8 +439,8 @@ class WT_Unit {
     }
 
     /**
+     * The name of this unit in singular form.
      * @readonly
-     * @property {String} - the name of this unit in singular form.
      * @type {String}
      */
     get fullNameSingular() {
@@ -358,8 +448,8 @@ class WT_Unit {
     }
 
     /**
+     * The name of this unit in multiple form.
      * @readonly
-     * @property {String} - the name of this unit in multiple form.
      * @type {String}
      */
     get fullNameMultiple() {
@@ -367,8 +457,8 @@ class WT_Unit {
     }
 
     /**
+     * The abbreviated name of this unit.
      * @readonly
-     * @property {String} - the abbreviated name of this unit.
      * @type {String}
      */
     get abbrevName() {
@@ -420,7 +510,7 @@ class WT_SimpleUnit extends WT_Unit {
     /**
      * @param {String} family - the family to which the new unit belongs.
      * @param {Number} scaleFactor - the relative scale of one of the new unit compared to one of the standard unit of the
-     *                               same family.
+     *                 same family.
      * @param {String} fullNameSingular - the name of the new unit in singular form.
      * @param {String} fullNameMultiple - the name of the new unit in multiple form.
      * @param {String} abbrevName - the abbreviated name of the new unit.
@@ -608,6 +698,10 @@ WT_Unit.POUND = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 0.453592, "pound", "pou
 WT_Unit.TON = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 907.185, "ton", "tons", "tn");
 WT_Unit.TONNE = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 1000, "tonne", "tonnes", "tn");
 
+// the following fuel units use the generic conversion factor of 1 gal = 6.7 lbs
+WT_Unit.LITER_FUEL = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 0.80283679, "liter", "liters", "l");
+WT_Unit.GALLON_FUEL = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 3.0390664, "gallon", "gallons", "gal");
+
 WT_Unit.LITER = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 1, "liter", "liters", "l");
 WT_Unit.GALLON = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 3.78541, "gallon", "gallons", "gal");
 
@@ -625,8 +719,10 @@ WT_Unit.MPM = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.MINUTE], null, null,
 WT_Unit.MPS = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.SECOND]);
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");
 WT_Unit.FPS = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.SECOND]);
+WT_Unit.KGH = new WT_CompoundUnit([WT_Unit.KILOGRAM], [WT_Unit.HOUR], null, null, "kgh");
 WT_Unit.PPH = new WT_CompoundUnit([WT_Unit.POUND], [WT_Unit.HOUR], null, null, "pph");
-WT_Unit.GPH = new WT_CompoundUnit([WT_Unit.GALLON], [WT_Unit.HOUR], null, null, "gph");
+WT_Unit.LPH_FUEL = new WT_CompoundUnit([WT_Unit.LITER_FUEL], [WT_Unit.HOUR], null, null, "lph");
+WT_Unit.GPH_FUEL = new WT_CompoundUnit([WT_Unit.GALLON_FUEL], [WT_Unit.HOUR], null, null, "gph");
 
 /**
  * Generates formatted strings from WT_NumberUnit objects.
@@ -642,8 +738,8 @@ class WT_NumberFormatter {
     }
 
     /**
-     * @property {Number} - determines the rounding behavior of this formatter. A value of 0 indicates normal rounding.
-     *                      A positive value indicates always round up. A negative value indicates always round down.
+     * Determines the rounding behavior of this formatter. A value of 0 indicates normal rounding. A positive value
+     * indicates always round up. A negative value indicates always round down.
      * @type {Number}
      */
     get round() {
@@ -815,6 +911,9 @@ class WT_TimeFormatter extends WT_NumberFormatter {
     }
 
     getFormattedString(numberUnit) {
+        let savedPad = this.pad;
+        this.pad = 2;
+
         let hours;
         let min;
         let sec;
@@ -828,10 +927,9 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         hours = Math.floor(numberUnit.asUnit(WT_Unit.HOUR));
         if (this.timeFormat != WT_TimeFormatter.Format.MM_SS && !(this.timeFormat == WT_TimeFormatter.Format.HH_MM_OR_MM_SS && hours == 0)) {
             hoursText = hours.toFixed(0);
-            hoursText = hoursText.padStart(this.pad, "0");
             let delim = this.delim;
             if (this.delim === WT_TimeFormatter.Delim.COLON_OR_CROSS) {
-                if (this.timeFormat === WT_TimeFormatter.Format.HH_MM_OR_MM_SS || this.timeFormat === WT_TimeFormatter.Format.HH_MM ) {
+                if (this.timeFormat === WT_TimeFormatter.Format.HH_MM_OR_MM_SS || this.timeFormat === WT_TimeFormatter.Format.HH_MM) {
                     delim = delim[1];
                 } else {
                     delim = delim[0];
@@ -851,7 +949,6 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         } else {
             min = Math.floor(numberUnit.asUnit(WT_Unit.MINUTE) - hourSubtract * 60);
             minText = min.toFixed(0);
-            minText = minText.padStart(this._pad, "0");
             let delim = this.delim;
             if (this.delim === WT_TimeFormatter.Delim.COLON_OR_CROSS) {
                 delim = delim[0];
@@ -866,7 +963,6 @@ class WT_TimeFormatter extends WT_NumberFormatter {
         if (secText.replace(/\b0+/, "").substring(0, 2) == "60") {
             secText = this._formatNumber(parseFloat(secText) - 60);
             minText = `${parseInt(minText) + 1}`;
-            minText = minText.padStart(this._pad, "0");
         }
         if (minText.replace(/\b0+/, "").substring(0, 2) == "60" && hoursText) {
             if (secText) {
@@ -875,8 +971,18 @@ class WT_TimeFormatter extends WT_NumberFormatter {
                 minText = this._formatNumber(parseFloat(minText) - 60);
             }
             hoursText = `${(parseInt(hoursText) + 1)}`;
-            hoursText = hoursText.padStart(this._pad, "0");
         }
+
+        if (hoursText !== "") {
+            hoursText = hoursText.padStart(savedPad, "0");
+            if (secText !== "") {
+                minText = minText.padStart(2, "0");
+            }
+        } else {
+            minText = minText.padStart(savedPad, "0");
+        }
+
+        this.pad = savedPad;
 
         return hoursText + hoursUnitText + minText + minUnitText + secText + secUnitText;
     }
@@ -999,11 +1105,13 @@ WT_CoordinateFormatter.OPTIONS_DEFAULT = {
 };
 
 /**
- * Generates formatted html strings from WT_NumberUnit objects in which the number and unit parts are contained in their own <span>.
+ * Generates formatted html strings from WT_NumberUnit objects in which the number and unit parts are contained in
+ * their own <span>.
  */
 class WT_NumberHTMLFormatter {
     /**
-     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of WT_NumberUnit objects.
+     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of
+     *        WT_NumberUnit objects.
      * @param {object} opts - options definition object containing properties to initialize to the new formatter.
      */
     constructor(numberFormatter, opts = {}) {

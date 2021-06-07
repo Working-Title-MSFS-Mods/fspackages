@@ -83,7 +83,7 @@ class WT_G3x5_NavMap {
      * @type {WT_MapRangeSetting}
      */
     get rangeSetting() {
-        return this._rangeTargetRotationController.rangeSetting;
+        return this._settings.rangeSetting;
     }
 
     /**
@@ -91,7 +91,7 @@ class WT_G3x5_NavMap {
      * @type {WT_MapTerrainModeSetting}
      */
     get terrainSetting() {
-        return this._terrainSetting;
+        return this._settings.terrainModeSetting;
     }
 
     /**
@@ -99,7 +99,7 @@ class WT_G3x5_NavMap {
      * @type {WT_MapDCLTRSetting}
      */
     get dcltrSetting() {
-        return this._dcltrSetting;
+        return this._settings.dcltrSetting;
     }
 
     /**
@@ -107,7 +107,7 @@ class WT_G3x5_NavMap {
      * @type {WT_MapSymbolShowSetting}
      */
     get nexradShowSetting() {
-        return this._nexradShowSetting;
+        return this._settings.nexradShowSetting;
     }
 
     /**
@@ -115,7 +115,7 @@ class WT_G3x5_NavMap {
      * @type {WT_G3x5_NavMapTrafficShowSetting}
      */
     get trafficShowSetting() {
-        return this._trafficShowSetting;
+        return this._settings.trafficShowSetting;
     }
 
     _initUnitsModule() {
@@ -147,11 +147,15 @@ class WT_G3x5_NavMap {
         this.model.addModule(new WT_MapModelAltitudeInterceptModule());
         this.model.addModule(new WT_MapModelBordersModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
+        this.model.addModule(new WT_MapModelActiveFlightPlanModule());
+
         this.model.addModule(new WT_MapModelCitiesModule());
         if (this._layerOptions.roads) {
             this.model.addModule(new WT_MapModelRoadsModule());
         }
         this.model.addModule(this._createTrafficModule());
+
+        this.model.activeFlightPlan.flightPlanManager = this._fpm;
     }
 
     /**
@@ -177,7 +181,7 @@ class WT_G3x5_NavMap {
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
+        this.view.addLayer(new WT_MapViewActiveFlightPlanLayer(this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler(), true));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer(this._altimeterIndex));

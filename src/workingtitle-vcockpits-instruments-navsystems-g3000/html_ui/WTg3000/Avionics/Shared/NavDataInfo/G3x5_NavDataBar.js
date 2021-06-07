@@ -53,8 +53,8 @@ class WT_G3x5_NavDataBarModel {
                 }
             }, "GPS WP DESIRED TRACK", "degree")),
             END: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.END, new WT_NumberUnitModelAutoUpdated(WT_Unit.HOUR, {
-                tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
-                tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
+                tempGal: new WT_NumberUnit(0, WT_Unit.GALLON_FUEL),
+                tempGPH: new WT_NumberUnit(0, WT_Unit.GPH_FUEL),
                 updateValue(value) {
                     let fuelRemaining = airplane.engineering.fuelOnboard(this.tempGal);
                     let fuelFlow = airplane.engineering.fuelFlowTotal(this.tempGPH);
@@ -103,10 +103,10 @@ class WT_G3x5_NavDataBarModel {
                     }
                 }
             })),
-            FOB: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOB, new WT_NumberUnitModelSimVar(WT_Unit.GALLON, "FUEL TOTAL QUANTITY", "gallons")),
-            FOD: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOD, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON, {
-                tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
-                tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
+            FOB: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOB, new WT_NumberUnitModelSimVar(WT_Unit.GALLON_FUEL, "FUEL TOTAL QUANTITY", "gallons")),
+            FOD: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOD, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON_FUEL, {
+                tempGal: new WT_NumberUnit(0, WT_Unit.GALLON_FUEL),
+                tempGPH: new WT_NumberUnit(0, WT_Unit.GPH_FUEL),
                 updateValue(value) {
                     let fuelRemaining = airplane.engineering.fuelOnboard(this.tempGal);
                     let fuelFlow = airplane.engineering.fuelFlowTotal(this.tempGPH);
@@ -245,40 +245,35 @@ class WT_G3x5_NavDataBarView extends HTMLElement {
     }
 
     _initFormatters() {
-        let bearingOpts = {
+        let bearingFormatter = new WT_NumberFormatter({
             precision: 1,
             unitSpaceBefore: false
-        };
-        let bearingFormatter = new WT_NumberFormatter(bearingOpts);
+        });
 
-        let distanceOpts = {
+        let distanceFormatter = new WT_NumberFormatter({
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
-        }
-        let distanceFormatter = new WT_NumberFormatter(distanceOpts);
+        });
 
-        let volumeOpts = {
+        let fuelFormatter = new WT_NumberFormatter({
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
-        }
-        let volumeFormatter = new WT_NumberFormatter(volumeOpts);
+        });
 
-        let speedOpts = {
+        let speedFormatter = new WT_NumberFormatter({
             precision: 1,
             unitSpaceBefore: false,
             unitCaps: true
-        }
-        let speedFormatter = new WT_NumberFormatter(speedOpts);
+        });
 
-        let timeOpts = {
+        let durationFormatter = new WT_TimeFormatter({
             timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
             delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
-        }
-        let durationFormatter = new WT_TimeFormatter(timeOpts);
+        });
 
         this._formatters = {
             BRG: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
@@ -289,8 +284,8 @@ class WT_G3x5_NavDataBarView extends HTMLElement {
             ENR: new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__"),
             ETA: new WT_G3x5_NavDataInfoViewTimeFormatter(),
             ETE: new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__"),
-            FOB: new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter),
-            FOD: new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter),
+            FOB: new WT_G3x5_NavDataInfoViewNumberFormatter(fuelFormatter),
+            FOD: new WT_G3x5_NavDataInfoViewNumberFormatter(fuelFormatter),
             GS: new WT_G3x5_NavDataInfoViewNumberFormatter(speedFormatter),
             LDG: new WT_G3x5_NavDataInfoViewTimeFormatter(),
             TAS: new WT_G3x5_NavDataInfoViewNumberFormatter(speedFormatter),
@@ -453,3 +448,51 @@ class WT_G3x5_NavDataBarFieldSetting extends WT_G3x5_NavDataBarSetting {
     }
 }
 WT_G3x5_NavDataBarFieldSetting.KEY_ROOT = "WT_NavDataBar_FieldAssignment";
+
+class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
+    /**
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
+     * @param {WT_G3x5_NavDataBarModel} navDataBarModel
+     */
+    constructor(unitsSettingModel, navDataBarModel) {
+        super(unitsSettingModel);
+
+        this._navDataBarModel = navDataBarModel;
+        this._initListeners();
+        this._initModel();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NavDataBarModel}
+     */
+    get navDataBarModel() {
+        return this._navDataBarModel;
+    }
+
+    _updateBearing() {
+        let unit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
+        this.navDataBarModel.getNavDataInfo("BRG").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("DTK").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("TRK").setDisplayUnit(unit);
+    }
+
+    _updateDistance() {
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        this.navDataBarModel.getNavDataInfo("DIS").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("DTG").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("XTK").setDisplayUnit(unit);
+    }
+
+    _updateSpeed() {
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getSpeedUnit();
+        this.navDataBarModel.getNavDataInfo("GS").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("TAS").setDisplayUnit(unit);
+    }
+
+    _updateFuel() {
+        let unit = this.unitsSettingModel.fuelSetting.getUnit();
+        this.navDataBarModel.getNavDataInfo("FOB").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("FOD").setDisplayUnit(unit);
+    }
+}

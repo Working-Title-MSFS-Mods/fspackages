@@ -73,8 +73,8 @@ class WT_TSCScrollManager {
     }
 
     _scrollTo(x, y) {
-        this._scrollObjectiveX = x;
-        this._scrollObjectiveY = y;
+        this._scrollObjectiveX = Math.max(0, Math.min(this.scrollElement.scrollWidth, x));
+        this._scrollObjectiveY = Math.max(0, Math.min(this.scrollElement.scrollHeight, y));
         this._isScrollLocked = true;
     }
 

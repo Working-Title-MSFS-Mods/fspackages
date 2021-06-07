@@ -1,7 +1,8 @@
-class WT_G3x5_WaypointDisplay {
-    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
-        this._instrumentID = instrumentID;
-        this._settingModelID = this._getSettingModelID(instrumentID);
+class WT_G3x5_WaypointDisplayPane extends WT_G3x5_DisplayPane {
+    constructor(paneID, settings, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
+        super(paneID, settings);
+
+        this._settingModelID = this._getSettingModelID(paneID);
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
@@ -9,14 +10,6 @@ class WT_G3x5_WaypointDisplay {
         this._unitsSettingModel = unitsSettingModel;
 
         this._waypointRequestID = 0;
-    }
-
-    /**
-     * @readonly
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
     }
 
     /**
@@ -69,12 +62,12 @@ class WT_G3x5_WaypointDisplay {
         this.mapModel.terrain.mode = WT_MapModelTerrainModule.TerrainMode.OFF;
 
         this.mapModel.waypoints.airwayShow = false;
-        this.mapModel.waypoints.airportSmallRange = WT_G3x5_WaypointDisplay.AIRPORT_SMALL_RANGE;
-        this.mapModel.waypoints.airportMediumRange = WT_G3x5_WaypointDisplay.AIRPORT_MEDIUM_RANGE;
-        this.mapModel.waypoints.airportLargeRange = WT_G3x5_WaypointDisplay.AIRPORT_LARGE_RANGE;
-        this.mapModel.waypoints.vorRange = WT_G3x5_WaypointDisplay.VOR_RANGE;
-        this.mapModel.waypoints.ndbRange = WT_G3x5_WaypointDisplay.NDB_RANGE;
-        this.mapModel.waypoints.intRange = WT_G3x5_WaypointDisplay.INT_RANGE;
+        this.mapModel.waypoints.airportSmallRange = WT_G3x5_WaypointDisplayPane.AIRPORT_SMALL_RANGE;
+        this.mapModel.waypoints.airportMediumRange = WT_G3x5_WaypointDisplayPane.AIRPORT_MEDIUM_RANGE;
+        this.mapModel.waypoints.airportLargeRange = WT_G3x5_WaypointDisplayPane.AIRPORT_LARGE_RANGE;
+        this.mapModel.waypoints.vorRange = WT_G3x5_WaypointDisplayPane.VOR_RANGE;
+        this.mapModel.waypoints.ndbRange = WT_G3x5_WaypointDisplayPane.NDB_RANGE;
+        this.mapModel.waypoints.intRange = WT_G3x5_WaypointDisplayPane.INT_RANGE;
     }
 
     _initSettingValues() {
@@ -138,26 +131,17 @@ class WT_G3x5_WaypointDisplay {
     _onICAOSettingChanged(setting, newValue, oldValue) {
         this._setICAO(newValue);
     }
-
-    sleep() {
-    }
-
-    wake() {
-    }
-
-    update() {
-    }
 }
-WT_G3x5_WaypointDisplay.MAP_RANGE_LEVELS =
+WT_G3x5_WaypointDisplayPane.MAP_RANGE_LEVELS =
     [250, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
         [0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.NMILE))
     );
 
-WT_G3x5_WaypointDisplay.AIRPORT_LARGE_RANGE = WT_Unit.NMILE.createNumber(100);
-WT_G3x5_WaypointDisplay.AIRPORT_MEDIUM_RANGE = WT_Unit.NMILE.createNumber(25);
-WT_G3x5_WaypointDisplay.AIRPORT_SMALL_RANGE = WT_Unit.NMILE.createNumber(7.5);
-WT_G3x5_WaypointDisplay.VOR_RANGE = WT_Unit.NMILE.createNumber(50);
-WT_G3x5_WaypointDisplay.NDB_RANGE = WT_Unit.NMILE.createNumber(25);
-WT_G3x5_WaypointDisplay.INT_RANGE = WT_Unit.NMILE.createNumber(2.5);
+WT_G3x5_WaypointDisplayPane.AIRPORT_LARGE_RANGE = WT_Unit.NMILE.createNumber(100);
+WT_G3x5_WaypointDisplayPane.AIRPORT_MEDIUM_RANGE = WT_Unit.NMILE.createNumber(25);
+WT_G3x5_WaypointDisplayPane.AIRPORT_SMALL_RANGE = WT_Unit.NMILE.createNumber(7.5);
+WT_G3x5_WaypointDisplayPane.VOR_RANGE = WT_Unit.NMILE.createNumber(50);
+WT_G3x5_WaypointDisplayPane.NDB_RANGE = WT_Unit.NMILE.createNumber(25);
+WT_G3x5_WaypointDisplayPane.INT_RANGE = WT_Unit.NMILE.createNumber(2.5);
 
-WT_G3x5_WaypointDisplay.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
+WT_G3x5_WaypointDisplayPane.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];

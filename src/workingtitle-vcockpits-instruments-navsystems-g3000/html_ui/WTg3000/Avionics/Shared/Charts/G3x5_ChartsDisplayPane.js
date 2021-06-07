@@ -1,17 +1,22 @@
-class WT_G3x5_ChartsDisplay {
+class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
     /**
-     * @param {String} instrumentID
+     * @param {String} paneID
+     * @param {WT_G3x5_PaneSettings} settings
      * @param {WT_PlayerAirplane} airplane
-     * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_NavigraphNetworkAPI} navigraphNetworkAPI
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(instrumentID, airplane, navigraphAPI, unitsSettingModel) {
+    constructor(paneID, settings, airplane, navigraphNetworkAPI, unitsSettingModel) {
+        super();
+
+        this._paneID = paneID;
+        this._chartIDSetting = settings.chartID;
         this._airplane = airplane;
-        this._navigraphAPI = navigraphAPI;
+        this._navigraphNetworkAPI = navigraphNetworkAPI;
         this._unitsSettingModel = unitsSettingModel;
 
-        this._settingModelID = `${instrumentID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
-        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_${instrumentID}`;
+        this._settingModelID = paneID;
+        this._scrollEventKey = `${WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_KEY_PREFIX}_${paneID}`;
 
         this._tempVector2 = new WT_GVector2(0, 0);
         this._tempTransform = new WT_GTransform2();
@@ -52,6 +57,11 @@ class WT_G3x5_ChartsDisplay {
         return this._settingModel;
     }
 
+    getTitle() {
+        let chart = this.model.chart;
+        return chart ? `${this.model.airportIdent}–${chart.procedure_identifier}` : "Charts";
+    }
+
     _initView() {
         this.view.setContext({model: this.model});
     }
@@ -74,8 +84,7 @@ class WT_G3x5_ChartsDisplay {
         WT_CrossInstrumentEvent.addListener(this._scrollEventKey, this._onScrollEvent.bind(this));
     }
 
-    _initSettingModel() {
-        this.settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this.settingModel));
+    _initSettings() {
         this.settingModel.addSetting(this._lightModeSetting = new WT_G3x5_ChartsLightModeSetting(this.settingModel));
         this.settingModel.addSetting(this._lightThresholdSetting = new WT_G3x5_ChartsLightThresholdSetting(this.settingModel));
         this.settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this.settingModel));
@@ -85,6 +94,7 @@ class WT_G3x5_ChartsDisplay {
         this._initSettingValues();
         this._initSettingListeners();
 
+        this._chartIDSetting.init();
         this.settingModel.init();
     }
 
@@ -118,12 +128,12 @@ class WT_G3x5_ChartsDisplay {
     }
 
     init(viewElement) {
-        this._model = new WT_G3x5_ChartsModel(this._navigraphAPI);
+        this._model = new WT_G3x5_ChartsModel(this._navigraphNetworkAPI);
         this._view = viewElement;
         this._settingModel = new WT_DataStoreSettingModel(this.settingModelID);
 
         this._initView();
-        this._initSettingModel();
+        this._initSettings();
         this._initMap(viewElement);
     }
 
@@ -140,11 +150,15 @@ class WT_G3x5_ChartsDisplay {
     }
 
     _updateChartRotation() {
-        this.model.rotation = this._rotationSetting.getRotation();
+        if (this.model.chart) {
+            this.model.rotation = this._rotationSetting.getRotation();
+        }
     }
 
     _updateChartZoom() {
-        this.model.scaleFactor = this._zoomSetting.getScaleFactor();
+        if (this.model.chart) {
+            this.model.scaleFactor = this._zoomSetting.getScaleFactor();
+        }
     }
 
     _onChartIDSettingChanged(setting, newValue, oldValue) {
@@ -187,7 +201,7 @@ class WT_G3x5_ChartsDisplay {
     }
 
     _onScrollEvent(key, data) {
-        if (data === WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET) {
+        if (data === WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_RESET) {
             this.model.offset = this._tempVector2.set(0, 0);
         } else {
             let split = data.split(",");
@@ -230,9 +244,9 @@ class WT_G3x5_ChartsDisplay {
         this._mapView.update();
     }
 }
-WT_G3x5_ChartsDisplay.SETTING_MODEL_ID = "Charts";
-WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
-WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET = "RESET";
+WT_G3x5_ChartsDisplayPane.SETTING_MODEL_ID = "Charts";
+WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
+WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_RESET = "RESET";
 
 class WT_G3x5_ChartsMapController {
     /**

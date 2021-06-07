@@ -32,13 +32,10 @@ class WT_G5000_TSCSpeedBugs extends WT_G3x5_TSCSpeedBugs {
     }
 
     _autoSelectTab() {
-        let lastPageName = this.instrument.history[this.instrument.history.length - 1].pageName;
-        if (lastPageName == "PFD Home" || lastPageName == "MFD Home") {
-            if (this.instrument.airplane.sensors.isOnGround()) {
-                this.htmlElement.selectTab(WT_G5000_TSCSpeedBugs.TabIndex.TAKEOFF);
-            } else {
-                this.htmlElement.selectTab(WT_G5000_TSCSpeedBugs.TabIndex.LANDING);
-            }
+        if (this.instrument.airplane.sensors.isOnGround()) {
+            this.htmlElement.selectTab(WT_G5000_TSCSpeedBugs.TabIndex.TAKEOFF);
+        } else {
+            this.htmlElement.selectTab(WT_G5000_TSCSpeedBugs.TabIndex.LANDING);
         }
     }
 

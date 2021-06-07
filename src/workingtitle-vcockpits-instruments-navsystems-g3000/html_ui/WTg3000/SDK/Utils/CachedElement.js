@@ -7,12 +7,48 @@
 class WT_CachedElement {
     /**
      * @param {Element} element - the DOM element to be wrapped by the new wrapper.
+     * @param {Object} [options] - options with which to initialize the new wrapper.
      */
-    constructor(element) {
+    constructor(element, options) {
         this._element = element;
         this._cachedHTML = element.innerHTML;
         this._cachedText = element.textContent;
-        this._attributes = new Map();
+
+        this._initAttributeCache(options);
+    }
+
+    _initAttributeCache(options) {
+        if (!options || options.cacheAttributes) {
+            this._attributes = new Map();
+
+            this.getAttribute = function (name) {
+                let value;
+                if (!this._attributes.has(name)) {
+                    value = this.element.getAttribute(name);
+                    this._attributes.set(name, value);
+                } else {
+                    value = this._attributes.get(name);
+                }
+                return value;
+            };
+
+            this.setAttribute = function (name, value) {
+                if (this.getAttribute(name) === value) {
+                    return;
+                }
+
+                this._attributes.set(name, value);
+                this.element.setAttribute(name, value);
+            };
+        } else {
+            this.getAttribute = function (name) {
+                return this.element.getAttribute(name);
+            }
+
+            this.setAttribute = function (name, value) {
+                this.element.setAttribute(name, value);
+            }
+        }
     }
 
     /**
@@ -56,31 +92,5 @@ class WT_CachedElement {
 
         this._cachedText = text;
         this.element.textContent = text;
-    }
-
-    /**
-     * Gets the value of an attribute of the DOM element wrapped by this wrapper.
-     * @param {String} name - the name of the attribute.
-     * @returns {String} the value of the attribute.
-     */
-    getAttribute(name) {
-        let value;
-        if (!this._attributes.has(name)) {
-            value = this.element.getAttribute(name);
-            this._attributes.set(name, value);
-        } else {
-            value = this._attributes.get(name);
-        }
-        return value;
-    }
-
-    /**
-     * Sets the value of an attribute of the DOM element wrapped by this wrapper.
-     * @param {String} name - the name of the attribute.
-     * @param {String} value - the new value of the attribute.
-     */
-    setAttribute(name, value) {
-        this._attributes.set(name, value);
-        this.element.setAttribute(name, value);
     }
 }

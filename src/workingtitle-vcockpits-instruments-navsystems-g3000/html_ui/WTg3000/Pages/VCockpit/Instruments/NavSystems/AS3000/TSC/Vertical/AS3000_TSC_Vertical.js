@@ -28,6 +28,10 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", mapSettings);
     }
 
+    _createFlightPlanPage() {
+        return new WT_G5000_TSCFlightPlan("MFD", "MFD Home", this.instrumentIdentifier);
+    }
+
     _createAircraftSystemsPage() {
         return new WT_G5000_TSCAircraftSystems("MFD", "MFD Home");
     }
@@ -43,19 +47,18 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
     _initPopUpWindows() {
         super._initPopUpWindows();
 
-        this.transponderMode = new NavSystemElementContainer("Transponder Mode", "TransponderMode", new WT_G5000_TSCTransponderMode());
+        this.transponderMode = new WT_G3x5_TSCElementContainer("Transponder Mode", "TransponderMode", new WT_G5000_TSCTransponderMode());
         this.transponderMode.setGPS(this);
     }
 
     _initNavCom() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
+        this.addIndependentElementContainer(new WT_G3x5_TSCElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
     }
 
     connectedCallback() {
         super.connectedCallback();
 
         this._initNavCom();
-        this.getElementOfType(AS3000_TSC_ActiveFPL).setArrowSizes(5, 20, 10, 4, 8);
     }
 
     setMiddleKnobText(_text, _fromPopUp = false) {
@@ -91,10 +94,21 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
     }
 
     _initMFDPaneControlID() {
-        this._mfdPaneControlID = this.urlConfig.index === 1 ? 0 : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT;
+        this._mfdPaneControlID = this.urlConfig.index === 1 ? 0 : WT_G3x5_PaneControlSetting.Touchscreen.LEFT;
     }
 
     _initMFDPaneSelectDisplay() {
+    }
+
+    _initPaneControlSettings() {
+        this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`).control.setValue(WT_G3x5_PaneControlSetting.Touchscreen.LEFT);
+        this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`).control.setValue(0);
+    }
+
+    _initPaneControl() {
+        if (this.urlConfig.index === 2) {
+            this._setSelectedMFDHalfPane(WT_G3x5_MFDHalfPane.ID.LEFT);
+        }
     }
 
     _updateMFDPaneSelectDisplay() {
@@ -255,6 +269,10 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         let homePageName = homePageGroup + " Home";
         this.gps.audioRadioWindow.element.setContext(homePageGroup, homePageName);
         this.gps.switchToPopUpPage(this.gps.audioRadioWindow);
+    }
+
+    onEnter() {
+        this.setSoftkeysNames();
     }
 }
 

@@ -99,7 +99,7 @@ class WT_ICAOWaypointFactory {
      * @param {WT_ICAOWaypointFactoryCacheEntry} entry - the cache entry associated with the waypoint.
      */
     _addWaypointToCache(data, entry) {
-        switch(data.icao[0]) {
+        switch(WT_ICAOWaypoint.getICAOType(data.icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 entry.waypoint = new WT_Airport(data, WT_ICAOWaypoint.Type.AIRPORT);
                 entry.isReady = true;
@@ -253,7 +253,7 @@ class WT_ICAOWaypointFactory {
      */
     async _getWaypointEntry(icao) {
         let coherentCallName;
-        switch (icao[0]) {
+        switch (WT_ICAOWaypoint.getICAOType(icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 coherentCallName = WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS;
                 break;
@@ -294,7 +294,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve an airport waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return an airport waypoint.
+     * @returns {Promise<WT_Airport>} a Promise to return an airport waypoint.
      */
     async getAirport(icao) {
         let array = await this.getAirports([icao]);
@@ -311,13 +311,20 @@ class WT_ICAOWaypointFactory {
      * @returns {Promise<WT_ICAOWaypoint[]>} a Promise to return an array of airport waypoints.
      */
     async getAirports(icaos) {
+        icaos.forEach((icao, index, array) => {
+            if (icao[0] === "A" && icao[1] !== " ") {
+                // sometimes nav data contains airport ICAOs with region codes, which will cause Coherent lookup to fail,
+                // so we have to remove the region code
+                array[index] = "A  " + icao.substring(3);
+            }
+        });
         return this._retrieveWaypoints(icaos, WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS);
     }
 
     /**
      * Attempts to retrieve a VOR waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return a VOR waypoint.
+     * @returns {Promise<WT_VOR>} a Promise to return a VOR waypoint.
      */
     async getVOR(icao) {
         let array = await this.getVORs([icao]);
@@ -340,7 +347,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve an NDB waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return an NDB waypoint.
+     * @returns {Promise<WT_NDB>} a Promise to return an NDB waypoint.
      */
     async getNDB(icao) {
         let array = await this.getNDBs([icao]);
@@ -363,7 +370,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve an intersection waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return an intersection waypoint.
+     * @returns {Promise<WT_Intersection>} a Promise to return an intersection waypoint.
      */
     async getINT(icao) {
         let array = await this.getINTs([icao]);
@@ -384,12 +391,16 @@ class WT_ICAOWaypointFactory {
     }
 
     /**
-     * Attempts to retrieve a waypoint for an ICAO string.
+     * Attempts to retrieve a waypoint for an ICAO string. Returns null if the provided ICAO string is invalid.
      * @param {String} icao - the ICAO string for which to retrieve a waypoint.
      * @returns {Promise<WT_ICAOWaypoint>} a Promise to return a waypoint.
      */
     async getWaypoint(icao) {
-        switch (icao[0]) {
+        if (icao.length !== 12) {
+            return null;
+        }
+
+        switch (WT_ICAOWaypoint.getICAOType(icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 return this.getAirport(icao);
             case WT_ICAOWaypoint.Type.VOR:
@@ -399,7 +410,7 @@ class WT_ICAOWaypointFactory {
             case WT_ICAOWaypoint.Type.INT:
                 return this.getINT(icao);
             default:
-                throw new Error(`Invalid ICAO string: ${icao}`);
+                return null;
         }
     }
 
@@ -456,7 +467,7 @@ class WT_ICAOWaypointFactory {
         if (data.routes) {
             this._addAirwayDataToCache(data, entry);
         }
-        if (data.icao[0] === data.sentType) {
+        if (WT_ICAOWaypoint.getICAOType(data.icao) === data.sentType) {
             this._addWaypointToCache(data, entry);
         }
     }
