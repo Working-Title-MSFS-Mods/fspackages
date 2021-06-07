@@ -181,7 +181,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGLeftPart.setAttribute("id", "PressureSVGLeftPart");
         this.pressureSVGLeftPart.setAttribute("x", (posX - 59).toString());
         this.pressureSVGLeftPart.setAttribute("y", (posY + 30).toString());
-        this.pressureSVGLeftPart.setAttribute("fill", "cyan");
+        this.pressureSVGLeftPart.setAttribute("fill", "var(--cyan)");
         this.pressureSVGLeftPart.setAttribute("stroke", "black");
         this.pressureSVGLeftPart.setAttribute("stroke-width", "5px");
         this.pressureSVGLeftPart.setAttribute("font-size", (this.fontSize * 1.2).toString());
@@ -195,7 +195,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGCenterPart.setAttribute("id", "PressureSVGCenterPart");
         this.pressureSVGCenterPart.setAttribute("x", (posX - 39).toString());
         this.pressureSVGCenterPart.setAttribute("y", (posY + 30).toString());
-        this.pressureSVGCenterPart.setAttribute("fill", "cyan");
+        this.pressureSVGCenterPart.setAttribute("fill", "var(--cyan)");
         this.pressureSVGCenterPart.setAttribute("stroke", "black");
         this.pressureSVGCenterPart.setAttribute("stroke-width", "4px");
         this.pressureSVGCenterPart.setAttribute("font-size", (this.fontSize * 2.3).toString());
@@ -209,7 +209,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGRightPart.setAttribute("id", "PressureSVGRightPart");
         this.pressureSVGRightPart.setAttribute("x", (posX - 20).toString());
         this.pressureSVGRightPart.setAttribute("y", (posY + 30).toString());
-        this.pressureSVGRightPart.setAttribute("fill", "cyan");
+        this.pressureSVGRightPart.setAttribute("fill", "var(--cyan)");
         this.pressureSVGRightPart.setAttribute("stroke", "black");
         this.pressureSVGRightPart.setAttribute("stroke-width", "5px");
         this.pressureSVGRightPart.setAttribute("font-size", (this.fontSize * 1.2).toString());
@@ -223,7 +223,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGUnits.setAttribute("id", "PressureSVGUnits");
         this.pressureSVGUnits.setAttribute("x", (posX + 16).toString());
         this.pressureSVGUnits.setAttribute("y", (posY + 30).toString());
-        this.pressureSVGUnits.setAttribute("fill", "cyan");
+        this.pressureSVGUnits.setAttribute("fill", "var(--cyan)");
         this.pressureSVGUnits.setAttribute("stroke", "black");
         this.pressureSVGUnits.setAttribute("stroke-width", "5px");
         this.pressureSVGUnits.setAttribute("font-size", (this.fontSize * 1.0).toString());
@@ -255,13 +255,13 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             bg.setAttribute("width", _width.toString());
             bg.setAttribute("height", _height.toString());
             bg.setAttribute("fill", "black");
-            bg.setAttribute("fill-opacity", "0.5");
+            bg.setAttribute("fill-opacity", "0.4");
             this.centerSVG.appendChild(bg);
 
             this.radioMinsRect = document.createElementNS(Avionics.SVG.NS, "rect");
             this.radioMinsRect.setAttribute("id", "radioMins");
             this.radioMinsRect.setAttribute("fill", "none");
-            this.radioMinsRect.setAttribute("stroke", "cyan");
+            this.radioMinsRect.setAttribute("stroke", "var(--cyan)");
             this.radioMinsRect.setAttribute("stroke-width", "2");
             this.radioMinsRect.setAttribute("x", "4");
             this.radioMinsRect.setAttribute("y", "0");
@@ -447,7 +447,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 if (!this.targetAltitudeIndicatorSVGShape)
                     this.targetAltitudeIndicatorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.targetAltitudeIndicatorSVGShape.setAttribute("fill", "none");
-                this.targetAltitudeIndicatorSVGShape.setAttribute("stroke", "cyan");
+                this.targetAltitudeIndicatorSVGShape.setAttribute("stroke", "var(--cyan)");
                 this.targetAltitudeIndicatorSVGShape.setAttribute("stroke-width", "3");
                 this.targetAltitudeIndicatorSVGShape.setAttribute("d", "M 12 15 L 39 15 L 39 32 L 24 50 L 39 68 L 39 85 L 12 85");
                 this.targetAltitudeIndicatorSVG.appendChild(this.targetAltitudeIndicatorSVGShape);
@@ -474,9 +474,9 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.baroMinsPointer = document.createElementNS(Avionics.SVG.NS, "path");
                 this.baroMinsPointer.setAttribute("d", "M -50 50 L 24 50 L 39 30 L 39 70 L 24 50 Z");
                 this.baroMinsPointer.setAttribute("fill", "none");
-                this.baroMinsPointer.setAttribute("stroke", "cyan");
+                this.baroMinsPointer.setAttribute("stroke", "var(--cyan)");
                 this.baroMinsPointer.setAttribute("stroke-width", "2");
-                this.baroMinsPointer.setAttribute("fill", "cyan");
+                this.baroMinsPointer.setAttribute("fill", "var(--cyan)");
                 this.baroMinsSVG.appendChild(this.baroMinsPointer);
             }
             this.centerSVG.appendChild(this.baroMinsSVG);
@@ -499,7 +499,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeMTextSVG1.setAttribute("x", "92");
         this.targetAltitudeMTextSVG1.setAttribute("y", (posY - 10).toString());
         this.targetAltitudeMTextSVG1.setAttribute("width", _width.toString());
-        this.targetAltitudeMTextSVG1.setAttribute("fill", "cyan");
+        this.targetAltitudeMTextSVG1.setAttribute("fill", "var(--cyan)");
         this.targetAltitudeMTextSVG1.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.targetAltitudeMTextSVG1.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeMTextSVG1.setAttribute("text-anchor", "end");
@@ -509,7 +509,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeMTextSVG2.textContent = "M";
         this.targetAltitudeMTextSVG2.setAttribute("x", "107");
         this.targetAltitudeMTextSVG2.setAttribute("y", (posY - 10).toString());
-        this.targetAltitudeMTextSVG2.setAttribute("fill", "cyan");
+        this.targetAltitudeMTextSVG2.setAttribute("fill", "var(--cyan)");
         this.targetAltitudeMTextSVG2.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.targetAltitudeMTextSVG2.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeMTextSVG2.setAttribute("text-anchor", "end");
@@ -526,12 +526,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeBgSVG.setAttribute("y", (posY - 45).toString());
         this.targetAltitudeBgSVG.setAttribute("width", "110");
         this.targetAltitudeBgSVG.setAttribute("height", "43");
-        this.targetAltitudeBgSVG.setAttribute("fill-opacity", "0.5");
+        this.targetAltitudeBgSVG.setAttribute("fill-opacity", "0.4");
         this.targetAltitude.appendChild(this.targetAltitudeBgSVG);
         this.targetAltitudeTextSVG1 = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetAltitudeTextSVG1.setAttribute("x", "78");
         this.targetAltitudeTextSVG1.setAttribute("y", (posY - 5).toString());
-        this.targetAltitudeTextSVG1.setAttribute("fill", "cyan");
+        this.targetAltitudeTextSVG1.setAttribute("fill", "var(--cyan)");
         this.targetAltitudeTextSVG1.setAttribute("font-size", (this.fontSize * 1.7).toString());
         this.targetAltitudeTextSVG1.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeTextSVG1.setAttribute("letter-spacing", "2");
@@ -543,7 +543,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeTextSVG2.setAttribute("x", "30");
         this.targetAltitudeTextSVG2.setAttribute("y", (posY - 5).toString());
         this.targetAltitudeTextSVG2.setAttribute("width", _width.toString());
-        this.targetAltitudeTextSVG2.setAttribute("fill", "cyan");
+        this.targetAltitudeTextSVG2.setAttribute("fill", "var(--cyan)");
         this.targetAltitudeTextSVG2.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.targetAltitudeTextSVG2.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeTextSVG2.setAttribute("text-anchor", "start");

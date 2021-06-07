@@ -130,18 +130,18 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let x = 12;
                     let y = 20;
                     this.gs_cursorShapeUp = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
+                    this.gs_cursorShapeUp.setAttribute("fill", "var(--green)");
                     this.gs_cursorShapeUp.setAttribute("d", "M -12 0 L 0 -20 L 12 0 L 7 0 L 0 -13 L -7 0");
                     this.gs_cursorGroup.appendChild(this.gs_cursorShapeUp);
                     this.gs_cursorShapeDown = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
+                    this.gs_cursorShapeDown.setAttribute("fill", "var(--green)");
                     this.gs_cursorShapeDown.setAttribute("d", "M -12 0 L 0 20 L 12 0 L 7 0 L 0 14 L -7 0");
                     this.gs_cursorGroup.appendChild(this.gs_cursorShapeDown);
 
                     this.vertical_snowFlake = document.createElementNS(Avionics.SVG.NS, "path");
                     this.vertical_snowFlake.setAttribute("fill", "none");
                     this.vertical_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
-                    this.vertical_snowFlake.setAttribute("stroke", "magenta");
+                    this.vertical_snowFlake.setAttribute("stroke", "var(--magenta)");
                     this.vertical_snowFlake.setAttribute("stroke-width", "2.5");
                     this.snowflake_Group.appendChild(this.vertical_snowFlake);
                 }
@@ -213,18 +213,18 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let x = 20;
                     let y = 12;
                     this.loc_cursorShapeRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+                    this.loc_cursorShapeRight.setAttribute("fill", "var(--green)");
                     this.loc_cursorShapeRight.setAttribute("d", "M 0 -12 L -20 0 L 0 12 L 0 6 L -14 0 L 0 -7");
                     this.loc_cursorGroup.appendChild(this.loc_cursorShapeRight);
                     this.loc_cursorShapeLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
+                    this.loc_cursorShapeLeft.setAttribute("fill", "var(--green)");
                     this.loc_cursorShapeLeft.setAttribute("d", "M 0 -12 L 20 0 L 0 12 L 0 6 L 14 0 L 0 -7");
                     this.loc_cursorGroup.appendChild(this.loc_cursorShapeLeft);
 
                     this.lateral_snowFlake = document.createElementNS(Avionics.SVG.NS, "path");
                     this.lateral_snowFlake.setAttribute("fill", "none");
                     this.lateral_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
-                    this.lateral_snowFlake.setAttribute("stroke", "magenta");
+                    this.lateral_snowFlake.setAttribute("stroke", "var(--magenta)");
                     this.lateral_snowFlake.setAttribute("stroke-width", "2.5");
                     this.loc_ldevGroup.appendChild(this.lateral_snowFlake);
 
@@ -395,8 +395,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 break;
             case LDevState.ILS:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
-                this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
-                this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+                this.loc_cursorShapeLeft.setAttribute("fill", "var(--green)");
+                this.loc_cursorShapeRight.setAttribute("fill", "var(--green)");
                 break;
             case LDevState.LNAV:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
@@ -424,8 +424,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 break;
             case VDevState.ILS:
                 this.gs_mainGroup.setAttribute("visibility", "visible");
-                this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
-                this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
+                this.gs_cursorShapeDown.setAttribute("fill", "var(--green)");
+                this.gs_cursorShapeUp.setAttribute("fill", "var(--green)");
                 break;
             case VDevState.VNAV:
                 this.gs_mainGroup.setAttribute("visibility", "visible");

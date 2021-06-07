@@ -760,7 +760,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.DCAmpValueLeft.textContent = "0";
             this.DCAmpValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.3).toString());
             this.DCAmpValueLeft.setAttribute("y", startPosY.toString());
-            this.DCAmpValueLeft.setAttribute("fill", "#11d011");
+            this.DCAmpValueLeft.setAttribute("fill", "var(--green)");
             this.DCAmpValueLeft.setAttribute("font-size", "26");
             this.DCAmpValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.DCAmpValueLeft.setAttribute("text-anchor", "end");
@@ -770,7 +770,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.DCAmpValueRight.textContent = "0";
             this.DCAmpValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.DCAmpValueRight.setAttribute("y", startPosY.toString());
-            this.DCAmpValueRight.setAttribute("fill", "#11d011");
+            this.DCAmpValueRight.setAttribute("fill", "var(--green)");
             this.DCAmpValueRight.setAttribute("font-size", "26");
             this.DCAmpValueRight.setAttribute("font-family", "Roboto-Bold");
             this.DCAmpValueRight.setAttribute("text-anchor", "end");
@@ -791,7 +791,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.DCVoltValueLeft.textContent = "0";
             this.DCVoltValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.3).toString());
             this.DCVoltValueLeft.setAttribute("y", startPosY.toString());
-            this.DCVoltValueLeft.setAttribute("fill", "#11d011");
+            this.DCVoltValueLeft.setAttribute("fill", "var(--green)");
             this.DCVoltValueLeft.setAttribute("font-size", "26");
             this.DCVoltValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.DCVoltValueLeft.setAttribute("text-anchor", "end");
@@ -801,7 +801,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.DCVoltValueRight.textContent = "0";
             this.DCVoltValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.DCVoltValueRight.setAttribute("y", startPosY.toString());
-            this.DCVoltValueRight.setAttribute("fill", "#11d011");
+            this.DCVoltValueRight.setAttribute("fill", "var(--green)");
             this.DCVoltValueRight.setAttribute("font-size", "26");
             this.DCVoltValueRight.setAttribute("font-family", "Roboto-Bold");
             this.DCVoltValueRight.setAttribute("text-anchor", "end");
@@ -859,7 +859,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.BATAmpValue.textContent = "-7";
             this.BATAmpValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATAmpValue.setAttribute("y", startPosY.toString());
-            this.BATAmpValue.setAttribute("fill", "#11d011");
+            this.BATAmpValue.setAttribute("fill", "var(--green)");
             this.BATAmpValue.setAttribute("font-size", "26");
             this.BATAmpValue.setAttribute("font-family", "Roboto-Bold");
             this.BATAmpValue.setAttribute("text-anchor", "end");
@@ -880,7 +880,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.BATVoltValue.textContent = "24";
             this.BATVoltValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATVoltValue.setAttribute("y", startPosY.toString());
-            this.BATVoltValue.setAttribute("fill", "#11d011");
+            this.BATVoltValue.setAttribute("fill", "var(--green)");
             this.BATVoltValue.setAttribute("font-size", "26");
             this.BATVoltValue.setAttribute("font-family", "Roboto-Bold");
             this.BATVoltValue.setAttribute("text-anchor", "end");
@@ -901,7 +901,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.BATTempValue.textContent = "0";
             this.BATTempValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATTempValue.setAttribute("y", startPosY.toString());
-            this.BATTempValue.setAttribute("fill", "#11d011");
+            this.BATTempValue.setAttribute("fill", "var(--green)");
             this.BATTempValue.setAttribute("font-size", "26");
             this.BATTempValue.setAttribute("font-family", "Roboto-Bold");
             this.BATTempValue.setAttribute("text-anchor", "end");
@@ -953,14 +953,14 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             rect.setAttribute("y", gaugeStartY.toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.75).toString());
-            rect.setAttribute("fill", "#11d011");
+            rect.setAttribute("fill", "var(--green)");
             oxyGroup.appendChild(rect);
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
             rect.setAttribute("y", (gaugeStartY + gaugeHeight * 0.75).toString());
             rect.setAttribute("width", gaugeWidth.toString());
             rect.setAttribute("height", (gaugeHeight * 0.25).toString());
-            rect.setAttribute("fill", "darkorange");
+            rect.setAttribute("fill", "var(--dark-orange)");
             oxyGroup.appendChild(rect);
             var gradTexts = ["2400", "", "1200", "", "0"];
             var gradPercents = [0.0, 0.25, 0.5, 0.75, 1.0];
@@ -971,7 +971,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 line.setAttribute("y1", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
                 line.setAttribute("x2", gaugeStartX.toString());
                 line.setAttribute("y2", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
-                line.setAttribute("stroke", (i == 4) ? "darkorange" : "#11d011");
+                line.setAttribute("stroke", (i == 4) ? "var(--dark-orange)" : "var(--green)");
                 line.setAttribute("stroke-width", "2");
                 oxyGroup.appendChild(line);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
@@ -987,7 +987,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             }
             this.OXYCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.OXYCursor.setAttribute("transform", "translate (" + this.OXYCursorX + " " + this.OXYCursorY1 + ")");
-            this.OXYCursor.setAttribute("fill", "#11d011");
+            this.OXYCursor.setAttribute("fill", "var(--green)");
             this.OXYCursor.setAttribute("d", "M0 0 l15 5 l0 -10 l-15 5 Z");
             oxyGroup.appendChild(this.OXYCursor);
         }
@@ -1041,7 +1041,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.HYDPSIValueLeft.textContent = "0";
             this.HYDPSIValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.HYDPSIValueLeft.setAttribute("y", startPosY.toString());
-            this.HYDPSIValueLeft.setAttribute("fill", "#11d011");
+            this.HYDPSIValueLeft.setAttribute("fill", "var(--green)");
             this.HYDPSIValueLeft.setAttribute("font-size", "26");
             this.HYDPSIValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.HYDPSIValueLeft.setAttribute("text-anchor", "end");
@@ -1051,7 +1051,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.HYDPSIValueRight.textContent = "0";
             this.HYDPSIValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.HYDPSIValueRight.setAttribute("y", startPosY.toString());
-            this.HYDPSIValueRight.setAttribute("fill", "#11d011");
+            this.HYDPSIValueRight.setAttribute("fill", "var(--green)");
             this.HYDPSIValueRight.setAttribute("font-size", "26");
             this.HYDPSIValueRight.setAttribute("font-family", "Roboto-Bold");
             this.HYDPSIValueRight.setAttribute("text-anchor", "end");
@@ -1108,7 +1108,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.FUELPPHValueLeft.textContent = "0";
             this.FUELPPHValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FUELPPHValueLeft.setAttribute("y", startPosY.toString());
-            this.FUELPPHValueLeft.setAttribute("fill", "#11d011");
+            this.FUELPPHValueLeft.setAttribute("fill", "var(--green)");
             this.FUELPPHValueLeft.setAttribute("font-size", "26");
             this.FUELPPHValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.FUELPPHValueLeft.setAttribute("text-anchor", "end");
@@ -1118,7 +1118,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.FUELPPHValueRight.textContent = "0";
             this.FUELPPHValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.FUELPPHValueRight.setAttribute("y", startPosY.toString());
-            this.FUELPPHValueRight.setAttribute("fill", "#11d011");
+            this.FUELPPHValueRight.setAttribute("fill", "var(--green)");
             this.FUELPPHValueRight.setAttribute("font-size", "26");
             this.FUELPPHValueRight.setAttribute("font-family", "Roboto-Bold");
             this.FUELPPHValueRight.setAttribute("text-anchor", "end");
@@ -1139,7 +1139,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.FUELTempValueLeft.textContent = "15";
             this.FUELTempValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FUELTempValueLeft.setAttribute("y", startPosY.toString());
-            this.FUELTempValueLeft.setAttribute("fill", "#11d011");
+            this.FUELTempValueLeft.setAttribute("fill", "var(--green)");
             this.FUELTempValueLeft.setAttribute("font-size", "26");
             this.FUELTempValueLeft.setAttribute("font-family", "Roboto-Bold");
             this.FUELTempValueLeft.setAttribute("text-anchor", "end");
@@ -1149,7 +1149,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.FUELTempValueRight.textContent = "15";
             this.FUELTempValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.FUELTempValueRight.setAttribute("y", startPosY.toString());
-            this.FUELTempValueRight.setAttribute("fill", "#11d011");
+            this.FUELTempValueRight.setAttribute("fill", "var(--green)");
             this.FUELTempValueRight.setAttribute("font-size", "26");
             this.FUELTempValueRight.setAttribute("font-family", "Roboto-Bold");
             this.FUELTempValueRight.setAttribute("text-anchor", "end");
@@ -1302,14 +1302,14 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("y", blockPosY.toString());
                 rect.setAttribute("width", (gaugeWidth * 0.15).toString());
                 rect.setAttribute("height", gaugeHeight.toString());
-                rect.setAttribute("fill", "#11d011");
+                rect.setAttribute("fill", "var(--green)");
                 trimGroup.appendChild(rect);
                 var rect = document.createElementNS(Avionics.SVG.NS, "rect");
                 rect.setAttribute("x", blockPosX.toString());
                 rect.setAttribute("y", blockPosY.toString());
                 rect.setAttribute("width", (gaugeWidth * 0.15).toString());
                 rect.setAttribute("height", gaugeHeight.toString());
-                rect.setAttribute("fill", "#11d011");
+                rect.setAttribute("fill", "var(--green)");
                 trimGroup.appendChild(rect);
                 this.AileronCursorX1 = blockPosX - gaugeWidth * 0.5;
                 this.AileronCursorX2 = blockPosX + gaugeWidth * 0.5;
@@ -1361,14 +1361,14 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("y", blockPosY.toString());
                 rect.setAttribute("width", (gaugeWidth * 0.15).toString());
                 rect.setAttribute("height", gaugeHeight.toString());
-                rect.setAttribute("fill", "#11d011");
+                rect.setAttribute("fill", "var(--green)");
                 trimGroup.appendChild(rect);
                 var rect = document.createElementNS(Avionics.SVG.NS, "rect");
                 rect.setAttribute("x", blockPosX.toString());
                 rect.setAttribute("y", blockPosY.toString());
                 rect.setAttribute("width", (gaugeWidth * 0.15).toString());
                 rect.setAttribute("height", gaugeHeight.toString());
-                rect.setAttribute("fill", "#11d011");
+                rect.setAttribute("fill", "var(--green)");
                 trimGroup.appendChild(rect);
                 this.RudderCursorX1 = blockPosX - gaugeWidth * 0.5;
                 this.RudderCursorX2 = blockPosX + gaugeWidth * 0.5;
@@ -1447,7 +1447,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("y", posY.toString());
                 rect.setAttribute("width", gaugeWidth.toString());
                 rect.setAttribute("height", (gaugeHeight * 0.25).toString());
-                rect.setAttribute("fill", "#11d011");
+                rect.setAttribute("fill", "var(--green)");
                 trimGroup.appendChild(rect);
 
 

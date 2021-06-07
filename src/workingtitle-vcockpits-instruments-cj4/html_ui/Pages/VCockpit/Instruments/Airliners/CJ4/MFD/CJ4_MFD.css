@@ -1,5 +1,12 @@
 ﻿:root {
   --bodyHeightScale: 1;
+    --magenta:#FF73FF;
+    --cyan: #33FFFF;
+    --green: #5AF25A;
+    --red: #FF3333;
+    --dark-orange: #FFA333;
+    --horizon-blue: #1D72FC;
+    --horizon-brown: #B97D5F;
 }
 
 @keyframes TemporaryShow {
@@ -188,11 +195,11 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-previous-leg {
-  color: cyan;
+  color: var(--cyan);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-active-leg {
-  color: magenta;
+  color: var(--magenta);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-flightplan-leg {
@@ -574,29 +581,29 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Value {
   font-size: 18px;
-  fill: green;
+  fill: var(--green);
   text-anchor: end;
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Units {
   font-size: 18px;
-  fill: green;
+  fill: var(--green);
   text-anchor: end;
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Small {
   font-size: 18px;
-  fill: green;
+  fill: var(--green);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Large {
   font-size: 26px;
-  fill: green;
+  fill: var(--green);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Wind {
   font-size: 20px;
-  fill: magenta;
+  fill: var(--magenta);
   text-anchor: end;
 }
 
@@ -610,8 +617,8 @@ cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #Unit {
 }
 
 cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
-  color: cyan;
-  stroke: cyan;
+  color: var(--cyan);
+  stroke: var(--cyan);
 }
 
 cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
@@ -659,7 +666,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #Symbol
   height: 100%;
   font-family: 'Collins ProLine';
   font-size: 18px;
-  fill: cyan;
+  fill: var(--cyan);
   text-anchor: end;
 }
 
@@ -745,7 +752,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Diff {
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar .Modifiable {
-  color: green;
+  color: var(--green);
   margin-left: 8px;
   margin-right: 4px;
 }
@@ -791,17 +798,17 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #PopupMenu svg {
 }
 
 #Waypoint {
-  color: magenta;
+  color: var(--magenta);
 }
 
 #Approach,
 #AutopilotInfos,
 #Coms div.Modifiable {
-  color: #11d011 !important;
+  color: var(--green) !important;
 }
 
 #Coms #GS div.Modifiable {
-  color: magenta !important;
+  color: var(--magenta) !important;
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox {
@@ -851,7 +858,7 @@ cj4-mfd-element #Mainframe #MapOverlay #NDInfo #TopBox text.Wind {
 
 #MapOverlay #NDCompass #currentRefGroup text {
   font-size: 34px;
-  fill: #11d011;
+  fill: var(--green);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #Checklist {
@@ -939,7 +946,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay td {
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay tr.selected {
-  outline: 2px solid cyan;
+  outline: 2px solid var(--cyan);
   outline-offset: -2px;
 }
 
@@ -948,11 +955,11 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay.tableGap {
 }
 
 .magenta {
-  color: magenta;
+  color: var(--magenta);
 }
 
 .cyan {
-  color: cyan;
+  color: var(--cyan);
 }
 
 .white {
@@ -1040,7 +1047,7 @@ div#VORDMENavaid_Right {
 
 #TFC .active {
   font-size: 24px;
-  color: cyan;
+  color: var(--cyan);
 }
 
 #Symbols ul {
@@ -1056,12 +1063,12 @@ div#VORDMENavaid_Right {
 
 #Symbols .active {
   font-size: 24px;
-  color: cyan;
+  color: var(--cyan);
 }
 
 #Symbols .overlay-wx-line1,
 #Symbols .overlay-wx-line2 {
-  color: cyan;
+  color: var(--cyan);
 }
 
 .bearing-pointer-info {
