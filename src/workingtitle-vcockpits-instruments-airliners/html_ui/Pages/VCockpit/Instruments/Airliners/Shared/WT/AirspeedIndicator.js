@@ -211,7 +211,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     line.SVGLine.setAttribute("x", linePosX.toString());
                     line.SVGLine.setAttribute("width", lineWidth.toString());
                     line.SVGLine.setAttribute("height", lineHeight.toString());
-                    line.SVGLine.setAttribute("fill", "#cccac8");
+                    line.SVGLine.setAttribute("fill", "var(--light-grey)");
                     if (line.IsPrimary) {
                         line.SVGText1 = document.createElementNS(Avionics.SVG.NS, "text");
                         line.SVGText1.setAttribute("x", (linePosX - 4).toString());
@@ -229,7 +229,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.graduationVLine.setAttribute("y1", "0");
                 this.graduationVLine.setAttribute("x2", this.graduationScrollPosX.toString());
                 this.graduationVLine.setAttribute("y2", "0");
-                this.graduationVLine.setAttribute("stroke", "#cccac8");
+                this.graduationVLine.setAttribute("stroke", "var(--light-grey)");
                 this.graduationVLine.setAttribute("stroke-width", "2");
                 for (var i = 0; i < this.totalGraduations; i++) {
                     var line = this.graduations[i];
@@ -331,7 +331,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 {
                     let stripWidth = 9;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
-                    shape.setAttribute("fill", "var(--red)");
+                    shape.setAttribute("fill", "var(--lighter-red)");
                     shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
                     this.vMaxStripSVG.appendChild(shape);
                 }
@@ -341,7 +341,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 {
                     let stripWidth = 9;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
-                    shape.setAttribute("fill", "var(--red)");
+                    shape.setAttribute("fill", "var(--lighter-red)");
                     shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
                     this.stallStripSVG.appendChild(shape);
                 }
@@ -579,14 +579,14 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.targetSpeedIconSVG = document.createElementNS(Avionics.SVG.NS, "path");
         this.targetSpeedIconSVG.setAttribute("d", "M 21 19 l 19 -8 l 11 0 l 0 16 l -11 0 l -19 -8 z");
         this.targetSpeedIconSVG.setAttribute("fill", "none");
-        this.targetSpeedIconSVG.setAttribute("stroke", "cyan");
+        this.targetSpeedIconSVG.setAttribute("stroke", "var(--cyan)");
         this.targetSpeedIconSVG.setAttribute("stroke-width", "2");
         this.rootGroup.appendChild(this.targetSpeedIconSVG);
         this.targetSpeedSVG = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetSpeedSVG.textContent = "260";
         this.targetSpeedSVG.setAttribute("x", (posX - 12).toString());
         this.targetSpeedSVG.setAttribute("y", (posY - 8).toString());
-        this.targetSpeedSVG.setAttribute("fill", "cyan");
+        this.targetSpeedSVG.setAttribute("fill", "var(--cyan)");
         this.targetSpeedSVG.setAttribute("font-size", (this.fontSize * 0.5).toString());
         this.targetSpeedSVG.setAttribute("font-family", "Roboto-Bold");
         this.targetSpeedSVG.setAttribute("text-anchor", "start");
@@ -770,7 +770,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     let y = this.stripHeight - dashHeight;
                     while (y > 0) {
                         let rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                        rect.setAttribute("fill", "red");
+                        rect.setAttribute("fill", "var(--lighter-red)");
                         rect.setAttribute("x", "0");
                         rect.setAttribute("y", y.toString());
                         rect.setAttribute("width", stripWidth.toString());
@@ -806,7 +806,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     let y = 0;
                     while (y < this.stripHeight) {
                         let rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                        rect.setAttribute("fill", "red");
+                        rect.setAttribute("fill", "var(--lighter-red)");
                         rect.setAttribute("x", "0");
                         rect.setAttribute("y", y.toString());
                         rect.setAttribute("width", stripWidth.toString());
@@ -1753,7 +1753,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.rootSVG.appendChild(this.rootGroup);
         this.appendChild(this.rootSVG);
     }
-    createSpeedMarker(_text, _x, _y, _handler, _scale = 1.0, _textScale = 1.4, _color = "green", _bg = false, _params = [], lineLength, textOffset) {
+    createSpeedMarker(_text, _x, _y, _handler, _scale = 1.0, _textScale = 1.4, _color = "var(--green)", _bg = false, _params = [], lineLength, textOffset) {
         let svg = document.createElementNS(Avionics.SVG.NS, "svg");
         svg.setAttribute("id", _text + "_Marker");
         svg.setAttribute("x", _x.toString());

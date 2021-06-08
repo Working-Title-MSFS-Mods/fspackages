@@ -3,10 +3,15 @@
     --magenta:#FF73FF;
     --cyan: #33FFFF;
     --green: #5AF25A;
-    --red: #FF3333;
+    --lighter-red: #FF3333;
     --dark-orange: #FFA333;
     --horizon-blue: #1D72FC;
     --horizon-brown: #B97D5F;
+    --light-grey: #d3d2cf;
+    --dark-grey: #52504d;
+    --true-yellow: #ffff00;
+    --true-red: #ff0000;
+    --true-orange: #ffa500;
 }
 
 @keyframes TemporaryShow {
@@ -252,7 +257,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
     top: 8px;
     left: 0;
     width: 100%;
-    border-bottom: 3.5px solid #FFE133;
+    border-bottom: 3.5px solid #FFE133; /* one off color */
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #AutopilotBg {
@@ -508,22 +513,22 @@ cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations div {
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Warning,
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Warning_Blink {
-    color: red;
+    color: var(--true-red);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Caution,
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Caution_Blink {
-    color: yellow;
+    color: var(--true-yellow);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations[state=Blink] .Warning_Blink {
     color: white;
-    background-color: red;
+    background-color: var(--true-red);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations[state=Blink] .Caution_Blink {
     color: black;
-    background-color: yellow;
+    background-color: var(--true-yellow);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos[page=electrics] #SystemElectrics {
@@ -578,7 +583,7 @@ cj4-pfd-element #Mainframe #NDMap #MapOrientation {
     right: 0%;
     width: 10%;
     height: calc(3 * 1vh * var(--bodyHeightScale));
-    background-color: #1a1d21;
+    background-color: #1a1d21; /* one off color */
     color: white;
 }
 
@@ -595,8 +600,8 @@ cj4-pfd-element #Mainframe #NDMap #MapRange {
     right: 0%;
     width: 7%;
     height: calc(3 * 1vh * var(--bodyHeightScale));
-    background-color: #1a1d21;
-    color: #36c8d2;
+    background-color: #1a1d21; /* one off color */
+    color: #36c8d2; /* one off color */
 }
 
 cj4-pfd-element #Mainframe #NDMap #MapSVG,
@@ -1124,7 +1129,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #Altimeter #MeterUnit{
-    fill: #adadad !important;
+    fill: #adadad !important; /* one off color */
 }
 
 #Altimeter #CenterGroup #graduationGroup>text[font-size="25"] {
@@ -1188,7 +1193,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 .yellow {
-    color: yellow;
+    color: var(--true-yellow);
 }
 
 #NavPreset {

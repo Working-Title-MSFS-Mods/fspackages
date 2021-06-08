@@ -296,14 +296,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     dashLine.setAttribute("width", groundRibbonWidth.toString());
                     dashLine.setAttribute("height", dashHeight.toString());
                     dashLine.setAttribute("transform", "skewY(53)");
-                    dashLine.setAttribute("fill", "orange");
+                    dashLine.setAttribute("fill", "var(--true-orange)");
                     this.groundRibbonSVG.appendChild(dashLine);
                     dashPos += dashHeight * 6.5;
                 }
                 if (!this.groundRibbonSVGShape)
                     this.groundRibbonSVGShape = document.createElementNS(Avionics.SVG.NS, "rect");
-                this.groundRibbonSVGShape.setAttribute("fill", "orange");
-                this.groundRibbonSVGShape.setAttribute("stroke", "orange");
+                this.groundRibbonSVGShape.setAttribute("fill", "var(--true-orange)");
+                this.groundRibbonSVGShape.setAttribute("stroke", "var(--true-orange)");
                 this.groundRibbonSVGShape.setAttribute("stroke-width", "2");
                 this.groundRibbonSVGShape.setAttribute("width", groundRibbonWidth.toString());
                 this.groundRibbonSVGShape.setAttribute("height", "2");
@@ -393,10 +393,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 var _cursorPosY = cursorHeight * 0.5;
                 this.cursorSVGIntegralContainer = document.createElementNS(Avionics.SVG.NS, "g");
                 this.cursorSVGIntegralContainer.setAttribute("clip-path", "url(#AltCursorClip)");
-                this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 27, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 46, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 65, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 93, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
+                this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 27, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "var(--green)");
+                this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 46, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "var(--green)");
+                this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 65, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "var(--green)");
+                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 93, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "var(--green)");
                 this.cursorSVG.appendChild(this.cursorSVGIntegralContainer);
                 this.cursorM = document.createElementNS(Avionics.SVG.NS, "g");
                 this.cursorM.setAttribute("visibility", "hidden");
@@ -557,7 +557,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         borderline.setAttribute("y1", "37");
         borderline.setAttribute("x2", blx);
         borderline.setAttribute("y2", "453");
-        borderline.setAttribute("stroke", "#909090");
+        borderline.setAttribute("stroke", "#909090"); // one off color
         borderline.setAttribute("stroke-width", "3");
         this.rootGroup.appendChild(borderline);
 

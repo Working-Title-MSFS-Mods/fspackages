@@ -92,7 +92,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     circle.setAttribute("cy", "50");
                     circle.setAttribute("r", smallCircleRadius.toString());
                     circle.setAttribute("fill-opacity", "0");
-                    circle.setAttribute("stroke", "#cccac8");
+                    circle.setAttribute("stroke", "var(--light-grey)");
                     circle.setAttribute("stroke-width", "2");
                     circle.setAttribute("stroke-opacity", "1");
                     circle.setAttribute("clip-path", "url(#rangeClip)");
@@ -109,7 +109,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     dot.setAttribute("id", "weather_radar_bug");
                     dot.setAttribute("fill", "var(--cyan)");
                     dot.setAttribute("fill-opacity", "1");
-                    dot.setAttribute("stroke", "blue");
+                    dot.setAttribute("stroke", "blue"); // one off color
                     dot.setAttribute("stroke-width", "2");
                     dot.setAttribute("stroke-opacity", "0");
 
@@ -157,7 +157,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             line.setAttribute("x2", "50");
                             line.setAttribute("y2", lineEnd.toString());
                             line.setAttribute("transform", "rotate(" + (-degrees + 180) + " 50 50)");
-                            line.setAttribute("stroke", "#cccac8");
+                            line.setAttribute("stroke", "var(--light-grey)");
                             line.setAttribute("stroke-width", "3");
                             line.setAttribute("stroke-opacity", "0.8");
                             tfcGroup.appendChild(line);
@@ -427,7 +427,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     ilsBug.setAttribute("id", "ilsBug");
                     ilsBug.setAttribute("d", "M50 " + (50 + circleRadius) + " l0 40 M35 " + (50 + circleRadius + 10) + " l30 0");
                     ilsBug.setAttribute("fill", "transparent");
-                    ilsBug.setAttribute("stroke", "var(--red)");
+                    ilsBug.setAttribute("stroke", "var(--lighter-red)");
                     ilsBug.setAttribute("stroke-width", "3");
                     ilsBug.setAttribute("style", "display:none");
                     this.ilsGroup.appendChild(ilsBug);
@@ -1631,7 +1631,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 outerCircle.setAttribute("cy", "500");
                 outerCircle.setAttribute("r", circleRadius.toString());
                 outerCircle.setAttribute("fill", "none");
-                outerCircle.setAttribute("stroke", "#cccac8");
+                outerCircle.setAttribute("stroke", "var(--light-grey");
                 outerCircle.setAttribute("stroke-width", "4");
                 outerCircle.setAttribute("clip-path", "url(#rangeClip)");
                 circleGroup.appendChild(outerCircle);

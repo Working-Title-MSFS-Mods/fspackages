@@ -390,8 +390,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             case LDevState.GHOST_ONLY:
             case LDevState.GHOST_AND_LNAV:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
-                this.loc_cursorShapeLeft.setAttribute("fill", "cyan");
-                this.loc_cursorShapeRight.setAttribute("fill", "cyan");
+                this.loc_cursorShapeLeft.setAttribute("fill", "var(--cyan)");
+                this.loc_cursorShapeRight.setAttribute("fill", "var(--cyan)");
                 break;
             case LDevState.ILS:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
@@ -419,8 +419,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             case VDevState.GHOST_ONLY:
             case VDevState.GHOST_AND_VNAV:
                 this.gs_mainGroup.setAttribute("visibility", "visible");
-                this.gs_cursorShapeDown.setAttribute("fill", "cyan");
-                this.gs_cursorShapeUp.setAttribute("fill", "cyan");
+                this.gs_cursorShapeDown.setAttribute("fill", "var(--cyan)");
+                this.gs_cursorShapeUp.setAttribute("fill", "var(--cyan)");
                 break;
             case VDevState.ILS:
                 this.gs_mainGroup.setAttribute("visibility", "visible");

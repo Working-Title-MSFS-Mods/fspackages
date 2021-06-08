@@ -761,7 +761,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                     this.cursorSVGVerticalLine.setAttribute("y1", this.cursorPosY3.toString());
                     this.cursorSVGVerticalLine.setAttribute("y2", this.cursorPosY2.toString());
                     if (alert)
-                        this.cursorSVGLine.setAttribute("stroke", "orange");
+                        this.cursorSVGLine.setAttribute("stroke", "var(--true-orange)");
                     else
                         this.cursorSVGLine.setAttribute("stroke", this.cursorTextColor);
                 }
@@ -787,7 +787,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                         }
                     }
                     if (alert)
-                        this.cursorSVGText.setAttribute("fill", "orange");
+                        this.cursorSVGText.setAttribute("fill", "var(--true-orange)");
                     else
                         this.cursorSVGText.setAttribute("fill", this.cursorTextColor);
                 }

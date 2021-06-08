@@ -3,10 +3,15 @@
     --magenta:#FF73FF;
     --cyan: #33FFFF;
     --green: #5AF25A;
-    --red: #FF3333;
+    --lighter-red: #FF3333;
     --dark-orange: #FFA333;
     --horizon-blue: #1D72FC;
     --horizon-brown: #B97D5F;
+    --light-grey: #d3d2cf;
+    --dark-grey: #52504d;
+    --true-yellow: #ffff00;
+    --true-red: #ff0000;
+    --true-orange: #ffa500;
 }
 
 @keyframes TemporaryShow {
@@ -253,26 +258,26 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunc
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning_Blink,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning_Blink {
-  color: red;
+  color: var(--true-red);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution_Blink,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution_Blink {
-  color: yellow;
+  color: var(--true-yellow);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Warning_Blink,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Warning_Blink {
   color: white;
-  background-color: red;
+  background-color: var(--true-red);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Caution_Blink,
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Caution_Blink {
   color: black;
-  background-color: yellow;
+  background-color: var(--true-yellow);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings,
@@ -289,14 +294,14 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnin
 
   0%,
   45% {
-    background-color: red;
+    background-color: var(--true-red);
     color: white;
   }
 
   55%,
   100% {
     background-color: white;
-    color: red;
+    color: var(--true-red);
   }
 }
 
@@ -304,14 +309,14 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnin
 
   0%,
   45% {
-    background-color: yellow;
+    background-color: var(--true-yellow);
     color: black;
   }
 
   55%,
   100% {
     background-color: black;
-    color: yellow;
+    color: var(--true-yellow);
   }
 }
 
@@ -330,10 +335,10 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnin
   }
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Red],
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Red], /* Not a color? */
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Red] {
   animation: RedWarning 1s 5;
-  background-color: red;
+  background-color: var(--true-red);
   color: white;
 }
 
@@ -341,7 +346,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnin
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Yellow] {
   animation: YellowWarning 1s 5;
   background-color: black;
-  color: yellow;
+  color: var(--true-yellow);
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=White],
@@ -443,7 +448,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapOrientation {
   right: 0%;
   width: 10%;
   height: calc(3 * 1vh * var(--bodyHeightScale));
-  background-color: #1a1d21;
+  background-color: #1a1d21; /* one off color */
   color: white;
 }
 
@@ -460,8 +465,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapRange {
   right: 0%;
   width: 7%;
   height: calc(3 * 1vh * var(--bodyHeightScale));
-  background-color: #1a1d21;
-  color: #36c8d2;
+  background-color: #1a1d21; /* one off color */
+  color: #36c8d2; /* one off color */
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapSVG,
@@ -905,7 +910,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemHeade
   text-align: left;
   width: 100%;
   height: 30px;
-  background-color: dodgerblue;
+  background-color: dodgerblue; /* one off color */
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemBody {
@@ -932,7 +937,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay h4 {
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay mark {
-  background-color: #045CEB;
+  background-color: #045CEB; /* one off color */
   text-align: left;
   color: white;
 }
@@ -980,11 +985,11 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader 
   text-align: left;
   width: 100%;
   height: 30px;
-  background-color: #045CEB;
+  background-color: #045CEB; /* one off color */
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader.pale {
-  background-color: #699ae9;
+  background-color: #699ae9; /* one off color */
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartBody {
