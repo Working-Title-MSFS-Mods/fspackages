@@ -623,7 +623,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             this.cursorBox.setAttribute("visibility", "hidden");
             this.cursorBox.setAttribute("transform", "scale(0.55)");
             this.cursorBox.setAttribute("fill", "#11d011");
-            this.cursorBox.setAttribute("d", "M 18 55 L 7 70.5 L 7 82.5 L 26 55 Z M 29 55 L 7 87 L 7 99.5 L 36.834 55.017 Z M 40 55 L 7 104 L 15 104 L 48 55 Z M 48 59.5 L 18 104 L 26 104 L 48 72 Z M 48 76.5 L 29 104 L 37 104 L 48 88.5 Z");
+            this.cursorBox.setAttribute("d", "M 18 55 L 7 70.5 L 7 82.5 L 26 55 Z M 29 55 L 7 87 L 7 99.5 L 36.5 55 Z M 40 55 L 7 104 L 15 104 L 48 55 Z M 48 59.5 L 18 104 L 26 104 L 48 72 Z M 48 76.5 L 29 104 L 37 104 L 48 88.5 Z");
 
             if (!this.cursorSVGShape)
                 this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
