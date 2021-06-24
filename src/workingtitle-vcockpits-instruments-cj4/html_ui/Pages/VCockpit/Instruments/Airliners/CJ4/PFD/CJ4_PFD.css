@@ -925,7 +925,7 @@ cj4-pfd-element #Mainframe #NavBar #Cabs #Diff {
 }
 
 cj4-pfd-element #Mainframe #NavBar .Modifiable {
-    color: var(--green);
+    color: var(--green) !important;
     margin-left: 8px;
     margin-right: 4px;
 }
