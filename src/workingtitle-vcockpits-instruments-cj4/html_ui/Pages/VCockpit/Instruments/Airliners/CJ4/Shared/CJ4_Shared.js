@@ -5024,7 +5024,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                //this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
+                this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
                 this.addCheckbox("GEO-POL", this.textSize, null);
                 this.addCheckbox("AIRSPACE", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
                 this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);

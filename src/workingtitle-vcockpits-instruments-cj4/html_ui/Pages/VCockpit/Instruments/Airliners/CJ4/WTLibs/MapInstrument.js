@@ -569,6 +569,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.flightPlanManager.updateFlightPlan();
 
             if (!this.showConstraints && this.constraints && this.constraints.length > 0) {
+                console.log("this.showConstraints " + this.showConstraints);
                 this.constraints = [];
             }
             if (this.drawCounter === 45 || (this.showConstraints && (!this.constraints || this.constraints.length === 0))) {

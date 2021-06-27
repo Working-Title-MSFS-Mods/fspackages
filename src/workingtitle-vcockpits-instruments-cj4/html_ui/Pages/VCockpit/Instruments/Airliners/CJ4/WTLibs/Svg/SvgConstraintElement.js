@@ -43,7 +43,10 @@ class SvgConstraintElement extends SvgMapElement {
         let text = "CSTR";
         let speedText = "";
         if (this.source) {
-            text = (this.source.legAltitude1 / 10).toFixed(0) + "0";
+            text = this.parseConstraints(this.source);
+            console.log(this.source.ident + " " + text);
+
+            //text = (this.source.legAltitude1 / 10).toFixed(0) + "0";
         }
         if (this.source.speedConstraint > 10) {
             speedText = this.source.speedConstraint.toFixed(0) + "KT";
@@ -75,7 +78,7 @@ class SvgConstraintElement extends SvgMapElement {
                 context.fillStyle = "black";
                 context.fillRect(0, 0, this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight, this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom);
             }
-            context.fillStyle = "magenta";
+            context.fillStyle = "#11d011";
             context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
             context.fillText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
             if (this.source.speedConstraint > 0) {
@@ -144,7 +147,32 @@ class SvgConstraintElement extends SvgMapElement {
             }
         }
     }
-}
+    parseConstraints(waypoint) {
+        let constraintText = "";
+        const formatConstraints = (value) => {
+            if (value >= 18000) {
+                return "FL" + (value / 100).toFixed(0);
+            } else {
+                return value.toFixed(0);
+            }
+        };
+        console.log(waypoint.ident + " " + waypoint.legAltitudeDescription);
+        switch (waypoint.legAltitudeDescription) {
+            case 1:
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "";
+                break;
+            case 2:
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "A";
+                break;
+            case 3:
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "B";
+                break;
+            case 4:
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude2)) + "A" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "B";
+                break;
+        }
+        return constraintText;
+    }}
 SvgConstraintElement._ID = 0;
 class SvgTopOfXElement extends SvgMapElement {
     constructor(name, imageName) {

@@ -551,7 +551,16 @@ export class FlightPlanManager {
    * Gets the waypoints for the current flight plan with altitude constraints.
    */
   public getWaypointsWithAltitudeConstraints(): WayPoint[] {
-    return this._flightPlans[this._currentFlightPlanIndex].waypoints;
+    const waypointsWithConstraints = [];
+    const activeWaypointIndex = this.getActiveWaypointIndex();
+
+    for (let i = activeWaypointIndex - 1; i < this._flightPlans[this._currentFlightPlanIndex].waypoints.length; i++) {
+      if (this._flightPlans[this._currentFlightPlanIndex].waypoints[i].legAltitudeDescription > 0) {
+        waypointsWithConstraints.push(this._flightPlans[this._currentFlightPlanIndex].waypoints[i]);
+      }
+
+    }
+    return waypointsWithConstraints;
   }
 
   /**
