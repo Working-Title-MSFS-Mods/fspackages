@@ -1055,9 +1055,14 @@ class XMLHorizontalGauge extends XMLGauge {
         this.isReverseY = false;
         this.textIncrement = 1;
         this.textPrecision = 0;
+        this.forceTextColor = "";
     }
     setStyle(_styleElem) {
         if (_styleElem) {
+            let forceTextColorElem = _styleElem.getElementsByTagName("ForceTextColor");
+            if (forceTextColorElem.length > 0) {
+                this.forceTextColor = forceTextColorElem[0].textContent;
+            }
             let textIncrementElem = _styleElem.getElementsByTagName("TextIncrement");
             if (textIncrementElem.length > 0) {
                 this.textIncrement = parseFloat(textIncrementElem[0].textContent);
@@ -1270,16 +1275,20 @@ class XMLHorizontalGauge extends XMLGauge {
             this.lastValue = _value;
             if (this.valueText) {
                 this.valueText.textContent = this.textIncrement != 1 ? (Math.round(_value / this.textIncrement) * this.textIncrement).toFixed(this.textPrecision) : _value.toFixed(this.textPrecision);
-                let colorFound = false;
-                for (let i = this.colorZones.length - 1; i >= 0; i--) {
-                    if (_value >= this.colorZones[i].lastBegin && _value <= this.colorZones[i].lastEnd) {
-                        this.valueText.setAttribute("fill", this.colorZones[i].element.getAttribute("fill"));
-                        colorFound = true;
-                        break;
+                if (this.forceTextColor == "") {
+                    let colorFound = false;
+                    for (let i = this.colorZones.length - 1; i >= 0; i--) {
+                        if (_value >= this.colorZones[i].lastBegin && _value <= this.colorZones[i].lastEnd) {
+                            this.valueText.setAttribute("fill", this.colorZones[i].element.getAttribute("fill"));
+                            colorFound = true;
+                            break;
+                        }
                     }
-                }
-                if (!colorFound) {
-                    this.valueText.setAttribute("fill", "white");
+                    if (!colorFound) {
+                        this.valueText.setAttribute("fill", "white");
+                    }
+                } else {
+                    Avionics.Utils.diffAndSetAttribute(this.valueText, "fill", this.forceTextColor);
                 }
             }
             if (this.valueText) {
