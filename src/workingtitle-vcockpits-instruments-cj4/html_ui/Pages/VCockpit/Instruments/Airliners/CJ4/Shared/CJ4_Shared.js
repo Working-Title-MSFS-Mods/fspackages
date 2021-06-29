@@ -5543,3 +5543,56 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
         this.root.appendChild(page);
     }
 }
+class CJ4_AltitudeScroller extends Avionics.Scroller {
+    constructor(_nbItems, _spacing, _increment, _moduloValue, _notched = 0.0){
+        super(_nbItems, _increment, false, _moduloValue, _notched);
+        this.allTexts = [];
+        this.posX = 0;
+        this.posY = 0;
+        this.spacing = 0;
+        this.spacing = _spacing;
+    }
+    construct(_parent, _posX, _posY, _width, _fontFamily, _fontSize, _fontColor){
+        this.posX = _posX;
+        this.posY = _posY;
+        this.allTexts = [];
+        for (var i = 0; i < this._nbItems; i++) {
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.setAttribute("width", _width.toString());
+            text.setAttribute("fill", _fontColor);
+            text.setAttribute("font-size", _fontSize.toString());
+            text.setAttribute("font-family", _fontFamily);
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "central");
+            this.allTexts.push(text);
+            _parent.appendChild(text);
+        }
+    }
+    clear(_value = "") {
+        this.update(0);
+        for (var i = 0; i < this.allTexts.length; i++) {
+            this.allTexts[i].textContent = _value;
+        }
+    }
+    update(_value, _divider = 1, _hideIfLower = undefined, _customChar = "") {
+        super.scroll(Math.abs(_value) / _divider);
+        var currentVal = this.firstValue;
+        var currentY = this.posY + this.offsetY * this.spacing;
+        for (var i = 0; i < this.allTexts.length; i++) {
+            var posX = this.posX;
+            var posY = currentY;
+            if (currentVal <=0 && _hideIfLower != undefined && Math.abs(_value) < _hideIfLower) {
+                this.allTexts[i].textContent = _customChar;			
+            }
+            else if (currentVal == 0 && this._moduloValue == 100) {
+                this.allTexts[i].textContent = "00";
+            }
+            else {
+                this.allTexts[i].textContent = Math.abs(currentVal.toString());
+            }
+            this.allTexts[i].setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
+            currentY -= this.spacing;
+            currentVal = this.nextValue;    
+        }
+    }
+}
