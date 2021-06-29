@@ -451,7 +451,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.radioAltitude.setAttribute("font-family", "Roboto-Bold");
                 this.radioAltitude.setAttribute("fill", "var(--green)");
                 this.radioAltitude.setAttribute("stroke", "black");
-                this.radioAltitude.setAttribute("stroke-width", "3.5");
+                this.radioAltitude.setAttribute("stroke-width", "5");
                 this.radioAltitudeGroup.appendChild(this.radioAltitude);
             }
         }

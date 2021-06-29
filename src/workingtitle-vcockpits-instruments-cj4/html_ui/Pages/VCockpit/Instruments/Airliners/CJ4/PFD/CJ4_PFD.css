@@ -107,6 +107,13 @@ html body {
     font-style: normal;
 }
 
+@font-face {
+    font-family: "Custom Altimeter Collins ProLine";
+    src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Custom_Altimeter_CollinsProLine-LightCondensed.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
 .blinking {
     animation: blink 1.0s step-start 0s infinite;
     -webkit-animation: blink 1.0s step-start 0s infinite;
@@ -1066,8 +1073,12 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     font-size: 26px;
 }
 
-#Airspeed #CenterGroup #CursorGroup text,
+#Airspeed #CenterGroup #CursorGroup text {
+    fill: #11d011;
+}
+
 #Altimeter #CenterGroup #CursorGroup text {
+    font-family: "Custom Altimeter Collins ProLine" !important;
     fill: var(--green);
 }
 

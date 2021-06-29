@@ -4124,6 +4124,8 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_MISSEDAPPR"] = 50] = "MAP_SYMBOL_MISSEDAPPR";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_NDBS"] = 51] = "MAP_SYMBOL_NDBS";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_RNGSEL"] = 52] = "MAP_SYMBOL_RNGSEL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_TFC_OVERLAY"] = 53] = "PFD_TFC_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_TFC_OVERLAY"] = 54] = "MFD_TFC_OVERLAY";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Item {
     constructor(_type, _section, _y, _height) {
@@ -4552,7 +4554,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("BRG PTR 2", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
-                this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadio("ADF2", this.textSize, null); //[CJ4_PopupMenu_Key.BRG_PTR2_SRC]); -- not active in our version
             }
             this.endSection();
         }
@@ -4625,8 +4627,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("TFC", this.textSize, 0.18);
-                this.addRadio("OFF", this.textSize, null);
-                this.addRadio("ON", this.textSize, null);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.PFD_TFC_OVERLAY]);
+                this.addRadio("ON", this.textSize, [CJ4_PopupMenu_Key.PFD_TFC_OVERLAY]);
             }
             this.endSection();
         }
@@ -5026,8 +5028,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             {
                 //this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
                 this.addCheckbox("GEO-POL", this.textSize, null);
-                this.addCheckbox("AIRSPACE", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
-                this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);
+                this.addCheckbox("AIRSPACE", this.textSize, null); //[CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]); -- For Future Update
+                this.addCheckbox("AIRWAYS", this.textSize, null); //[CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);  -- For Future Update
                 this.addCheckbox("NEAREST APTS", this.textSize, null);
                 this.addCheckbox("HI NAVAIDS", this.textSize, null);
                 this.addCheckbox("LO NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
@@ -5079,8 +5081,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("TFC", this.textSize, 0.18);
-                this.addRadio("OFF", this.textSize, null);
-                this.addRadio("ON", this.textSize, null);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MFD_TFC_OVERLAY]);
+                this.addRadio("ON", this.textSize, [CJ4_PopupMenu_Key.MFD_TFC_OVERLAY]);
             }
             this.endSection();
         }
@@ -5539,5 +5541,58 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
+    }
+}
+class CJ4_AltitudeScroller extends Avionics.Scroller {
+    constructor(_nbItems, _spacing, _increment, _moduloValue, _notched = 0.0){
+        super(_nbItems, _increment, false, _moduloValue, _notched);
+        this.allTexts = [];
+        this.posX = 0;
+        this.posY = 0;
+        this.spacing = 0;
+        this.spacing = _spacing;
+    }
+    construct(_parent, _posX, _posY, _width, _fontFamily, _fontSize, _fontColor){
+        this.posX = _posX;
+        this.posY = _posY;
+        this.allTexts = [];
+        for (var i = 0; i < this._nbItems; i++) {
+            var text = document.createElementNS(Avionics.SVG.NS, "text");
+            text.setAttribute("width", _width.toString());
+            text.setAttribute("fill", _fontColor);
+            text.setAttribute("font-size", _fontSize.toString());
+            text.setAttribute("font-family", _fontFamily);
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("alignment-baseline", "central");
+            this.allTexts.push(text);
+            _parent.appendChild(text);
+        }
+    }
+    clear(_value = "") {
+        this.update(0);
+        for (var i = 0; i < this.allTexts.length; i++) {
+            this.allTexts[i].textContent = _value;
+        }
+    }
+    update(_value, _divider = 1, _hideIfLower = undefined, _customChar = "") {
+        super.scroll(Math.abs(_value) / _divider);
+        var currentVal = this.firstValue;
+        var currentY = this.posY + this.offsetY * this.spacing;
+        for (var i = 0; i < this.allTexts.length; i++) {
+            var posX = this.posX;
+            var posY = currentY;
+            if (currentVal <=0 && _hideIfLower != undefined && Math.abs(_value) < _hideIfLower) {
+                this.allTexts[i].textContent = _customChar;			
+            }
+            else if (currentVal == 0 && this._moduloValue == 100) {
+                this.allTexts[i].textContent = "00";
+            }
+            else {
+                this.allTexts[i].textContent = Math.abs(currentVal.toString());
+            }
+            this.allTexts[i].setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
+            currentY -= this.spacing;
+            currentVal = this.nextValue;    
+        }
     }
 }
