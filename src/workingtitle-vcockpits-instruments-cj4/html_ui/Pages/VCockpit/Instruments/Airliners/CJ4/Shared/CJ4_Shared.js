@@ -4124,6 +4124,8 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_MISSEDAPPR"] = 50] = "MAP_SYMBOL_MISSEDAPPR";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_NDBS"] = 51] = "MAP_SYMBOL_NDBS";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_RNGSEL"] = 52] = "MAP_SYMBOL_RNGSEL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_TFC_OVERLAY"] = 53] = "PFD_TFC_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_TFC_OVERLAY"] = 54] = "MFD_TFC_OVERLAY";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Item {
     constructor(_type, _section, _y, _height) {
@@ -4552,7 +4554,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("BRG PTR 2", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
-                this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadio("ADF2", this.textSize, null); //[CJ4_PopupMenu_Key.BRG_PTR2_SRC]); -- not active in our version
             }
             this.endSection();
         }
@@ -4625,8 +4627,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("TFC", this.textSize, 0.18);
-                this.addRadio("OFF", this.textSize, null);
-                this.addRadio("ON", this.textSize, null);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.PFD_TFC_OVERLAY]);
+                this.addRadio("ON", this.textSize, [CJ4_PopupMenu_Key.PFD_TFC_OVERLAY]);
             }
             this.endSection();
         }
@@ -5026,8 +5028,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             {
                 //this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
                 this.addCheckbox("GEO-POL", this.textSize, null);
-                this.addCheckbox("AIRSPACE", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
-                this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);
+                this.addCheckbox("AIRSPACE", this.textSize, null); //[CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]); -- For Future Update
+                this.addCheckbox("AIRWAYS", this.textSize, null); //[CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);  -- For Future Update
                 this.addCheckbox("NEAREST APTS", this.textSize, null);
                 this.addCheckbox("HI NAVAIDS", this.textSize, null);
                 this.addCheckbox("LO NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
@@ -5079,8 +5081,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("TFC", this.textSize, 0.18);
-                this.addRadio("OFF", this.textSize, null);
-                this.addRadio("ON", this.textSize, null);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MFD_TFC_OVERLAY]);
+                this.addRadio("ON", this.textSize, [CJ4_PopupMenu_Key.MFD_TFC_OVERLAY]);
             }
             this.endSection();
         }

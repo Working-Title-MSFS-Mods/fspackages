@@ -474,6 +474,12 @@ class CJ4_PFD extends BaseAirliners {
             this.showTerrain = false;
             this.showWeather = false;
         }
+        const overlayTfc = _dict.get(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY);
+        if (overlayTfc == "ON") {
+            this.showTfc = true;
+        } else {
+            this.showTfc = false;
+        }
 
         const navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
         if (navSrc == "FMS1") {
@@ -668,6 +674,12 @@ class CJ4_PFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "OFF");
         }
 
+        if (this.showTfc) {
+            _dict.set(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY, "ON");
+        } else {
+            _dict.set(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY, "OFF");
+        }
+
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
         } else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
@@ -791,8 +803,7 @@ class CJ4_AOA extends NavSystemElement {
     onUpdate(_deltaTime) {
         var angle = Simplane.getAngleOfAttack();
         this.aoaStyle = WTDataStore.get('WT_CJ4_aoaStyle');
-        let seconds = _deltaTime / 10;
-        this._angle = Utils.SmoothSin(0.0, angle, 0.5, seconds);
+        this._angle = Utils.SmoothSin(this._angle, angle, 0.4, _deltaTime / 1000);
         //AoA only visible when flaps 35
         this.aoa.setAttribute("angle", this._angle);
         const flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
