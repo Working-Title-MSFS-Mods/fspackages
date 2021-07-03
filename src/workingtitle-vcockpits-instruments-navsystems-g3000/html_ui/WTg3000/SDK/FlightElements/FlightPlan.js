@@ -136,6 +136,62 @@ class WT_FlightPlan {
     }
 
     /**
+     *
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {Number} index
+     * @returns {WT_FlightPlanLeg}
+     */
+    getPreviousLeg(segment, index) {
+        let previousLegSegment = segment;
+        let segmentElement = this.getSegment(previousLegSegment);
+        index = Math.min(index, segmentElement.elements.length);
+        let element;
+        if (segmentElement.elements.length > 0) {
+            element = segmentElement.elements.get(index - 1);
+        }
+        while (!element && previousLegSegment > 0) {
+            previousLegSegment--;
+            segmentElement = this.getSegment(previousLegSegment);
+            if (segmentElement) {
+                element = segmentElement.elements.last();
+            }
+        }
+        let previousLeg;
+        if (element) {
+            previousLeg = element.legs.last();
+        }
+        return previousLeg;
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {Number} index
+     * @returns {WT_FlightPlanLeg}
+     */
+    getNextLeg(segment, index) {
+        let nextLegSegment = segment;
+        let segmentElement = this.getSegment(nextLegSegment);
+        index = Math.min(index, segmentElement.elements.length);
+        let element;
+        if (segmentElement.elements.length > 0) {
+            element = segmentElement.elements.get(index + 1);
+        }
+        while (!element && nextLegSegment < WT_FlightPlan.Segment.DESTINATION) {
+            nextLegSegment++;
+            segmentElement = this.getSegment(nextLegSegment);
+            if (segmentElement) {
+                element = segmentElement.elements.first();
+            }
+        }
+        let nextLeg;
+        if (element) {
+            nextLeg = element.legs.first();
+        }
+        return nextLeg;
+    }
+
+    /**
      * @returns {WT_NumberUnitReadOnly}
      */
     totalDistance() {
