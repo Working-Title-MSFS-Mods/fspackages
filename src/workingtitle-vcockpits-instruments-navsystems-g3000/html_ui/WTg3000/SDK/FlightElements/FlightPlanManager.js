@@ -1240,7 +1240,7 @@ class WT_FlightPlanManager {
         }
 
         let activeVNAVPath = this._getActiveVNAVPath();
-        if (activeVNAVPath) {
+        if (activeVNAVPath && activeVNAVPath.deltaAltitude.number !== 0) {
             return this._distanceToActiveVNAVWaypoint(reference).subtract(activeVNAVPath.getTotalDistance());
         } else {
             return undefined;
