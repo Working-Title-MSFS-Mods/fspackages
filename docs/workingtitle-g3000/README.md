@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.7.2
+### Latest version: v0.7.3
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.7.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.3.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -31,12 +31,15 @@ During a flight, you can check your Navigraph account link status in the GTC Dat
 
 ### Release Highlights for v0.7.2
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Added support for advisory VNAV guidance. The FMS can now calculate VNAV descent profiles and provide information on top of descent, bottom of descent, required vertical speed, and vertical path deviation. The autopilot still does not support V PATH mode.
+- Added the Enroute Options menu to the GTC Flight Plan page, which allows you to add waypoints and airways directly to the beginning of the Enroute segment.
+- Enabled the ability to zoom and scroll the Flight Plan and Procedure Preview panes.
 
 **Fixes**
-- \[FPLN\] Fixed a bug that prevented editing of the active flight plan under certain circumstances.
-- \[PFD\] Autopilot display now correctly shows ALTS armed indication while in PITCH mode.
-- \[NavMap\] Flight Plan Text Inset now displays cumulative ETE instead of leg ETE when CUM mode is selected.
+- \[FPLN\] VNAV indications will no longer display "NaN" for vertical deviation when the current VNAV leg is flat.
+- \[MFD\] The Navigation Data Bar BRG field now correctly displays the bearing to the active waypoint instead of the airplane's heading.
+- \[GTC\] Fixed behavior of Back button in the G3000 Transponder page.
+- \[NavMap\] The range compass now displays "360" instead of "000" for north heading.
+- \[Charts\] Fixed a freeze that could occur when attempting to display certain Navigraph charts with malformed georeferencing data.
 
 ### Known Issues
 - \[FPLN\] There is currently a bug with the sim's built-in flight plan management system which prevents waypoints from being properly added to the flight plan while an approach is loaded. As a result, inserting waypoints or airways into the Enroute segment of the active flight plan with an approach loaded will desynchronize the FMS flight plan from the sim's flight plan and lead to unexpected behavior. As a workaround, enter waypoints _before_ loading an approach. If you need to enter waypoints after an approach has been loaded, remove the approach, make the necessary edits, then reload the approach. Lastly, if the FMS active flight plan becomes desynchronized, you can fix it by deleting the active flight plan via the Flight Plan Options menu.

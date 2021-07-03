@@ -1,5 +1,22 @@
 # Changelog
 
+### v0.7.3
+**Changed Features**
+- \[FPLN\] Enabled the ability to zoom and scroll the Flight Plan and Procedure Preview panes (uses the same controls as zooming and scrolling the navigation map).
+- \[FPLN\] The Flight Plan and Procedure Preview panes now display borders and cities.
+- \[GTC\] Selecting the Enroute header in the Flight Plan page will now open the Enroute Options menu.
+  - Selecting Insert Waypoint from this menu will insert a waypoint at the beginning of the Enroute segment.
+  - Selecting Load Airway from this menu will insert an airway at the beginning of the Enroute segment. This button is only enabled when the last leg prior to the Enroute segment (either the last leg of the Departure or the Origin) terminates in a valid airway entry waypoint.
+  - In conjunction with the above, the Enroute header will now automatically be displayed if the "Load Airway" option is enabled, even if there are no existing legs in the Enroute segment.
+- \[GTC\] Added various confirmation pop-ups when making flight plan modifications in the Flight Plan and Procedures pages.
+
+**Fixes**
+- \[FPLN\] VNAV indications will no longer display "NaN" for vertical deviation when the current VNAV leg is flat.
+- \[MFD\] The Navigation Data Bar BRG field now correctly displays the bearing to the active waypoint instead of the airplane's heading.
+- \[GTC\] Fixed behavior of Back button in the G3000 Transponder page.
+- \[NavMap\] The range compass now displays "360" instead of "000" for north heading.
+- \[Charts\] Fixed a freeze that could occur when attempting to display certain Navigraph charts with malformed georeferencing data.
+
 ### v0.7.2
 **New Features**
 - \[FPLN\] Added support for advisory VNAV guidance. The FMS can now calculate VNAV descent profiles and provide information on top of descent, bottom of descent, required vertical speed, and vertical path deviation. The autopilot still does not support V PATH mode.
