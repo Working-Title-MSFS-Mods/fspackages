@@ -5,14 +5,18 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {WT_FlightPlanManager} flightPlanManager
+     * @param {WT_CitySearchHandler} citySearcher
+     * @param {WT_MapViewBorderData} borderData
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(paneID, paneSettings, airplane, icaoWaypointFactory, flightPlanManager, unitsSettingModel) {
+    constructor(paneID, paneSettings, airplane, icaoWaypointFactory, flightPlanManager, citySearcher, borderData, unitsSettingModel) {
         super(paneID, paneSettings);
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._fpm = flightPlanManager;
+        this._citySearcher = citySearcher;
+        this._borderData = borderData;
         this._unitsSettingModel = unitsSettingModel;
         this._mapID = `${paneID}_${WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX}`;
 
@@ -29,7 +33,7 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     _initFlightPlanPreview() {
-        this._flightPlanPreview = new WT_G3x5_FlightPlanPreview(this._mapModel, this._mapView, this._mapSettingModel, this._icaoWaypointFactory, this._unitsSettingModel, this._mapID, this.paneID);
+        this._flightPlanPreview = new WT_G3x5_FlightPlanPreview(this._mapModel, this._mapView, this._mapSettingModel, this._icaoWaypointFactory, this._citySearcher, this._borderData, this._unitsSettingModel, this._mapID, this.paneID);
         this._flightPlanPreview.init();
     }
 

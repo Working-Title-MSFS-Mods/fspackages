@@ -334,15 +334,15 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_FlightPlanDisplayPane}
      */
-    _createFlightPlanDisplayPane(airplane, icaoWaypointFactory, flightPlanManager, unitsSettingModel) {
-        return new WT_G3x5_FlightPlanDisplayPane(this.paneID, this.settings, airplane, icaoWaypointFactory, flightPlanManager, unitsSettingModel);
+    _createFlightPlanDisplayPane(airplane, icaoWaypointFactory, flightPlanManager, citySearcher, borderData, unitsSettingModel) {
+        return new WT_G3x5_FlightPlanDisplayPane(this.paneID, this.settings, airplane, icaoWaypointFactory, flightPlanManager, citySearcher, borderData, unitsSettingModel);
     }
 
     /**
      * @returns {WT_G3x5_ProcedureDisplayPane}
      */
-    _createProcedureDisplayPane(airplane, icaoWaypointFactory, unitsSettingModel) {
-        return new WT_G3x5_ProcedureDisplayPane(this.paneID, this.settings, airplane, icaoWaypointFactory, unitsSettingModel);
+    _createProcedureDisplayPane(airplane, icaoWaypointFactory, citySearcher, borderData, unitsSettingModel) {
+        return new WT_G3x5_ProcedureDisplayPane(this.paneID, this.settings, airplane, icaoWaypointFactory, citySearcher, borderData, unitsSettingModel);
     }
 
     /**
@@ -369,8 +369,8 @@ class WT_G3x5_MFDHalfPane {
         this._navMapPane = new WT_G3x5_NavMapDisplayPane(this.paneID, this.settings, this._instrument, this._createNavMap(data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this.paneID, this.settings, this._createTrafficMap(data.airplane, data.trafficSystem, data.unitsSettingModel));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this.paneID, this.settings, this._createWeatherRadar(data.airplane));
-        this._flightPlanPane = this._createFlightPlanDisplayPane(data.airplane, data.icaoWaypointFactory, data.flightPlanManager, data.unitsSettingModel);
-        this._procedurePane = this._createProcedureDisplayPane(data.airplane, data.icaoWaypointFactory, data.unitsSettingModel);
+        this._flightPlanPane = this._createFlightPlanDisplayPane(data.airplane, data.icaoWaypointFactory, data.flightPlanManager, data.citySearcher, data.borderData, data.unitsSettingModel);
+        this._procedurePane = this._createProcedureDisplayPane(data.airplane, data.icaoWaypointFactory, data.citySearcher, data.borderData, data.unitsSettingModel);
         this._chartsPane = this._createChartsDisplayPane(data.airplane, data.navigraphNetworkAPI, data.unitsSettingModel);
         this._waypointInfoPane = this._createWaypointInfoDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);
         this._nearestWaypointPane = this._createNearestWaypointDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);

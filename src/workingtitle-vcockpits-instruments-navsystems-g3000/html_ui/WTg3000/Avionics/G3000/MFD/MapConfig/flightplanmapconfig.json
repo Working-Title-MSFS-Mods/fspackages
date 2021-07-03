@@ -114,5 +114,11 @@
     "flightPlan": {
         "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map",
         "waypointLabelFontSize": 20
+    },
+
+    "cities": {
+        "iconFillColor": ["#7b8083", "#7b8083", "#7b8083"],
+        "iconOutlineColor": ["#3f3f3f", "#3f3f3f", "#3f3f3f"],
+        "labelFontSize": [20, 20, 20]
     }
 }

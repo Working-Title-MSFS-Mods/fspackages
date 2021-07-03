@@ -4,16 +4,20 @@ class WT_G3x5_FlightPlanPreview {
      * @param {WT_MapView} mapView - the view object of the map to use for the new preview.
      * @param {WT_MapSettingModel} mapSettingModel - the settings model of the map to use for the new preview.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory with which the new preview will use to create
-     *                                                       ICAO waypoints.
+     * ICAO waypoints.
+     * @param {WT_CitySearchHandler} citySearcher - the city searcher to use.
+     * @param {WT_MapViewBorderData} borderData - the border data to use.
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel - the units settings model to use for the new preview.
      * @param {String} mapID - the ID of the map.
      * @param {String} bingMapID - the ID to use for the Bing layer of the new preview's map.
      */
-    constructor(mapModel, mapView, mapSettingModel, icaoWaypointFactory, unitsSettingModel, mapID, bingMapID) {
+    constructor(mapModel, mapView, mapSettingModel, icaoWaypointFactory, citySearcher, borderData, unitsSettingModel, mapID, bingMapID) {
         this._mapModel = mapModel;
         this._mapView = mapView;
         this._mapSettingModel = mapSettingModel;
         this._icaoWaypointFactory = icaoWaypointFactory;
+        this._citySearcher = citySearcher;
+        this._borderData = borderData;
         this._unitsSettingModel = unitsSettingModel;
         this._mapID = mapID;
         this._bingMapID = bingMapID;
@@ -77,10 +81,19 @@ class WT_G3x5_FlightPlanPreview {
         this.mapModel.addModule(new WT_G3x5_MapModelPointerModule());
         this.mapModel.addModule(new WT_MapModelRangeRingModule());
         this.mapModel.addModule(new WT_MapModelFlightPlanModule());
+        this.mapModel.addModule(new WT_MapModelBordersModule());
+        this.mapModel.addModule(new WT_MapModelCitiesModule());
         this.mapModel.addModule(new WT_G3x5_MapModelWaypointDisplayModule());
 
         this.mapModel.crosshair.show = true;
         this.mapModel.terrain.mode = WT_MapModelTerrainModule.TerrainMode.OFF;
+
+        this.mapModel.borders.stateBorderRange = WT_G3x5_FlightPlanPreview.STATE_BORDER_RANGE;
+
+        this.mapModel.cities.show = true;
+        this.mapModel.cities.largeRange = WT_G3x5_FlightPlanPreview.CITY_LARGE_RANGE;
+        this.mapModel.cities.mediumRange = WT_G3x5_FlightPlanPreview.CITY_MEDIUM_RANGE;
+        this.mapModel.cities.smallRange = WT_G3x5_FlightPlanPreview.CITY_SMALL_RANGE;
     }
 
     _initMapView() {
@@ -88,6 +101,8 @@ class WT_G3x5_FlightPlanPreview {
         this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
         this.mapView.addLayer(this._bingLayer = new WT_MapViewBingLayer(this._bingMapID));
+        this.mapView.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_FlightPlanPreview.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
+        this.mapView.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.mapView.addLayer(new WT_MapViewFlightPlanLayer(this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.mapView.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.mapView.addLayer(new WT_MapViewRangeRingLayer());
@@ -181,6 +196,18 @@ class WT_G3x5_FlightPlanPreview {
         this._waypointRenderer.update(this.mapView.state);
     }
 }
+WT_G3x5_FlightPlanPreview.BORDER_LOD_RESOLUTION_THRESHOLDS = [
+    WT_Unit.NMILE.createNumber(0),
+    WT_Unit.NMILE.createNumber(0.06),
+    WT_Unit.NMILE.createNumber(0.3),
+    WT_Unit.NMILE.createNumber(0.9),
+    WT_Unit.NMILE.createNumber(3)
+];
+WT_G3x5_FlightPlanPreview.STATE_BORDER_RANGE = WT_Unit.NMILE.createNumber(400);
+
+WT_G3x5_FlightPlanPreview.CITY_LARGE_RANGE = WT_Unit.NMILE.createNumber(100);
+WT_G3x5_FlightPlanPreview.CITY_MEDIUM_RANGE = WT_Unit.NMILE.createNumber(50);
+WT_G3x5_FlightPlanPreview.CITY_SMALL_RANGE = WT_Unit.NMILE.createNumber(10);
 
 WT_G3x5_FlightPlanPreview.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
 

@@ -43,4 +43,4 @@ WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS =
     [250, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
         [0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.NMILE))
     );
-WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
+WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1);
