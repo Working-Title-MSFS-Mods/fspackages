@@ -447,6 +447,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_FlightPlanLeg} leg
      */
     _removeLeg(leg) {
+        if (leg.flightPlan !== this._displayedFlightPlan) {
+            return false;
+        }
+
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
                 switch (leg.segment) {
@@ -484,7 +488,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_FlightPlanAirwaySequence} sequence
      */
     _removeAirwaySequence(sequence) {
-        if (sequence.segment !== WT_FlightPlan.Segment.ENROUTE) {
+        if (sequence.flightPlan !== this._displayedFlightPlan || sequence.segment !== WT_FlightPlan.Segment.ENROUTE) {
             return false;
         }
 
@@ -882,7 +886,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _onOriginRemoveButtonPressed(event) {
-        this._removeOrigin();
+        this._openConfirmationTextPopUp(`Remove Origin – ${this._displayedFlightPlan.getOrigin().waypoint.ident}?`, this._removeOrigin.bind(this));
     }
 
     _onOriginInfoButtonPressed(event) {
@@ -905,7 +909,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _onDestinationRemoveButtonPressed(event) {
-        this._removeDestination();
+        this._openConfirmationTextPopUp(`Remove Destination – ${this._displayedFlightPlan.getDestination().waypoint.ident}?`, this._removeDestination.bind(this));
     }
 
     _onDestinationInfoButtonPressed(event) {
@@ -974,7 +978,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onWaypointRemoveButtonPressed(event) {
-        this._removeLeg(event.leg);
+        this._openConfirmationTextPopUp(`Remove ${event.leg.fix.ident}?`, this._removeLeg.bind(this, event.leg));
     }
 
     /**
@@ -1022,7 +1026,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onAirwayRemoveButtonPressed(event) {
-        this._removeAirwaySequence(event.sequence);
+        this._openConfirmationTextPopUp(`Remove Airway – ${WT_G3x5_FlightPlanTextFormatting.getAirwaySequenceIdent(event.sequence)}?`, this._removeAirwaySequence.bind(this, event.sequence));
     }
 
     /**
@@ -4508,7 +4512,7 @@ class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRend
     _drawHeader() {
         super._drawHeader();
 
-        this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.last().fix.ident}${this._shouldCollapse ? " (collapsed)": ""}`);
+        this._headerModeHTMLElement.setTitleText(`Airway – ${WT_G3x5_FlightPlanTextFormatting.getAirwaySequenceIdent(this.element)}${this._shouldCollapse ? " (collapsed)": ""}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
 }
@@ -4570,12 +4574,7 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
     _drawHeader() {
         super._drawHeader();
 
-        let departure = this.element.procedure;
-        let rwyTransition = departure.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
-        let enrouteTransition = departure.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
-        let prefix = `${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}.`;
-        let suffix = (enrouteTransition && this.element.legs.length > 0) ? `.${this.element.legs.last().fix.ident}` : "";
-        this._headerModeHTMLElement.setTitleText(`Departure –<br>${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
+        this._headerModeHTMLElement.setTitleText(`Departure –<br>${WT_G3x5_FlightPlanTextFormatting.getDepartureIdent(this.element)}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
 }
@@ -4625,12 +4624,7 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
     _drawHeader() {
         super._drawHeader();
 
-        let arrival = this.element.procedure;
-        let enrouteTransition = arrival.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
-        let rwyTransition = arrival.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
-        let prefix = (enrouteTransition && this.element.legs.length > 0) ? `${this.element.legs.first().fix.ident}.` : "";
-        let suffix = `.${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}`;
-        this._headerModeHTMLElement.setTitleText(`Arrival –<br>${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
+        this._headerModeHTMLElement.setTitleText(`Arrival –<br>${WT_G3x5_FlightPlanTextFormatting.getArrivalIdent(this.element)}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
 }
@@ -4642,8 +4636,7 @@ class WT_G3x5_TSCFlightPlanApproachRenderer extends WT_G3x5_TSCFlightPlanSegment
     _drawHeader() {
         super._drawHeader();
 
-        let approach = this.element.procedure;
-        this._headerModeHTMLElement.setTitleText(`Approach –<br>${approach.airport.ident}–${approach.name}`);
+        this._headerModeHTMLElement.setTitleText(`Approach –<br>${WT_G3x5_FlightPlanTextFormatting.getApproachIdent(this.element)}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
 }
