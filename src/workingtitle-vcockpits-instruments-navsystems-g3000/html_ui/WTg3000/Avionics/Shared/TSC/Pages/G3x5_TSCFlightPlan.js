@@ -1097,7 +1097,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     onExit() {
         this.htmlElement.close();
-        this._deactivateFlightPlanPreview();
+        //this._deactivateFlightPlanPreview();
     }
 
     _onUpPressed() {

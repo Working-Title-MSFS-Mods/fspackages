@@ -101,6 +101,11 @@
         "iconAnchor": [0.5, 0]
     },
 
+    "pointer": {
+        "size": 20,
+        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_CURSOR.svg"
+    },
+
     "waypoints": {
         "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map",
         "waypointLabelFontSize": 20

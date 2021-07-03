@@ -1,4 +1,4 @@
-class WT_G3x5_NavMapPointerController {
+class WT_G3x5_MapPointerController {
     /**
      * @param {WT_MapModel} mapModel
      * @param {WT_MapView} mapView
@@ -15,7 +15,7 @@ class WT_G3x5_NavMapPointerController {
 
         this._lastShow = false;
 
-        this._optsManager = new WT_OptionsManager(this, WT_G3x5_NavMapPointerController.OPTION_DEFS);
+        this._optsManager = new WT_OptionsManager(this, WT_G3x5_MapPointerController.OPTION_DEFS);
         if (options) {
             this._optsManager.setOptions(options);
         }
@@ -40,7 +40,7 @@ class WT_G3x5_NavMapPointerController {
 
     _onPointerControlEvent(source, event) {
         switch (event.type) {
-            case WT_G3x5_NavMapPointerEventHandler.EventType.SCROLL:
+            case WT_G3x5_MapPointerEventHandler.EventType.SCROLL:
                 this._scroll(event.delta);
                 break;
         }
@@ -76,6 +76,6 @@ class WT_G3x5_NavMapPointerController {
         this._lastShow = show;
     }
 }
-WT_G3x5_NavMapPointerController.OPTION_DEFS = {
+WT_G3x5_MapPointerController.OPTION_DEFS = {
     edgeBuffer: {default: {x: 0.05, y: 0.05}, auto: true}
 };

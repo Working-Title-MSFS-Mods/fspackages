@@ -2,16 +2,20 @@ class WT_G3x5_FlightPlanPreview {
     /**
      * @param {WT_MapModel} mapModel - the model of the map to use for the new preview.
      * @param {WT_MapView} mapView - the view object of the map to use for the new preview.
+     * @param {WT_MapSettingModel} mapSettingModel - the settings model of the map to use for the new preview.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory with which the new preview will use to create
      *                                                       ICAO waypoints.
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel - the units settings model to use for the new preview.
+     * @param {String} mapID - the ID of the map.
      * @param {String} bingMapID - the ID to use for the Bing layer of the new preview's map.
      */
-    constructor(mapModel, mapView, icaoWaypointFactory, unitsSettingModel, bingMapID) {
+    constructor(mapModel, mapView, mapSettingModel, icaoWaypointFactory, unitsSettingModel, mapID, bingMapID) {
         this._mapModel = mapModel;
         this._mapView = mapView;
+        this._mapSettingModel = mapSettingModel;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._unitsSettingModel = unitsSettingModel;
+        this._mapID = mapID;
         this._bingMapID = bingMapID;
 
         /**
@@ -54,6 +58,15 @@ class WT_G3x5_FlightPlanPreview {
         return this._mapView;
     }
 
+    /**
+     * This preview's map setting model.
+     * @readonly
+     * @type {WT_MapSettingModel}
+     */
+    get mapSettingModel() {
+        return this._mapSettingModel;
+    }
+
     _initMapModel() {
         this._unitsAdapter = new WT_G3x5_UnitsSettingModelMapModelAdapter(this._unitsSettingModel, this.mapModel);
         this.mapModel.addModule(new WT_MapModelCrosshairModule());
@@ -61,6 +74,7 @@ class WT_G3x5_FlightPlanPreview {
         this.mapModel.addModule(new WT_MapModelTerrainModule());
         this.mapModel.addModule(new WT_MapModelWeatherDisplayModule());
         this.mapModel.addModule(new WT_MapModelOrientationModule());
+        this.mapModel.addModule(new WT_G3x5_MapModelPointerModule());
         this.mapModel.addModule(new WT_MapModelRangeRingModule());
         this.mapModel.addModule(new WT_MapModelFlightPlanModule());
         this.mapModel.addModule(new WT_G3x5_MapModelWaypointDisplayModule());
@@ -79,12 +93,25 @@ class WT_G3x5_FlightPlanPreview {
         this.mapView.addLayer(new WT_MapViewRangeRingLayer());
         this.mapView.addLayer(new WT_MapViewCrosshairLayer());
         this.mapView.addLayer(new WT_MapViewAirplaneLayer());
+        this.mapView.addLayer(new WT_G3x5_MapViewPointerLayer());
         this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_FlightPlanPreview.ORIENTATION_DISPLAY_TEXT));
         this.mapView.addLayer(new WT_MapViewMiniCompassLayer());
+        this.mapView.addLayer(new WT_G3x5_MapViewPointerInfoLayer());
+    }
+
+    _initMapSettingModel() {
+        this._mapSettings = new WT_G3x5_FlightPlanPreviewSettings(this.mapSettingModel, true);
+
+        this.mapSettingModel.init();
+        this.mapSettingModel.update();
+    }
+
+    _initPointerController() {
+        this._pointerController = new WT_G3x5_MapPointerController(this.mapModel, this.mapView, new WT_G3x5_MapPointerEventHandler(this._mapID));
     }
 
     _initRangeTargetController() {
-        this._rangeTargetController = new WT_G3x5_FlightPlanPreviewRangeTargetController(this._focusReadOnly, this.mapModel, this.mapView, WT_G3x5_FlightPlanPreview.MAP_RANGE_LEVELS, WT_G3x5_FlightPlanPreview.MAP_RANGE_DEFAULT);
+        this._rangeTargetController = new WT_G3x5_FlightPlanPreviewRangeTargetController(this._focusReadOnly, this.mapModel, this.mapView, this._mapSettings.rangeSetting, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_DEFAULT);
     }
 
     /**
@@ -95,6 +122,8 @@ class WT_G3x5_FlightPlanPreview {
     init() {
         this._initMapModel();
         this._initMapView();
+        this._initMapSettingModel();
+        this._initPointerController();
         this._initRangeTargetController();
         this._isInit = true;
         this._updateFromFlightPlan();
@@ -146,17 +175,12 @@ class WT_G3x5_FlightPlanPreview {
             return;
         }
 
+        this._pointerController.update();
         this._rangeTargetController.update();
         this.mapView.update();
         this._waypointRenderer.update(this.mapView.state);
     }
 }
-
-WT_G3x5_FlightPlanPreview.MAP_RANGE_LEVELS =
-    [250, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
-        [0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.NMILE))
-    );
-WT_G3x5_FlightPlanPreview.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1);
 
 WT_G3x5_FlightPlanPreview.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
 
@@ -165,17 +189,18 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
      * @param {WT_ReadOnlyArray<WT_FlightPlanLeg>} focus
      * @param {WT_MapModel} mapModel
      * @param {WT_MapView} mapView
+     * @param {WT_MapRangeSetting} rangeSetting
      * @param {WT_NumberUnit[]} rangeLevels
      * @param {WT_NumberUnit} defaultRange
      */
-     constructor(focus, mapModel, mapView, rangeLevels, defaultRange) {
+     constructor(focus, mapModel, mapView, rangeSetting, defaultRange) {
         this._mapModel = mapModel;
         this._mapView = mapView;
 
         mapView.setTargetOffsetHandler(this);
         mapView.setRangeInterpreter(this);
 
-        this._rangeLevels = rangeLevels;
+        this._rangeSetting = rangeSetting;
         this._rangeIndexDefault = this._findRangeIndex(defaultRange);
 
         /**
@@ -184,13 +209,19 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         this._flightPlan = null;
         this._focus = focus;
         this._aspectRatio = 0;
-        this._needUpdate = false;
+        this._needAutoUpdate = false;
 
         this._flightPlanListener = this._onFlightPlanChanged.bind(this);
+
+        this._initSettingListeners();
 
         this._tempVector3 = new WT_GVector3(0, 0, 0);
         this._tempNM = WT_Unit.NMILE.createNumber(0);
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
+    }
+
+    _initSettingListeners() {
+        this._rangeSetting.addListener(this._onRangeSettingChanged.bind(this));
     }
 
     _cleanUpFromFlightPlan() {
@@ -217,7 +248,7 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         this._cleanUpFromFlightPlan();
         this._flightPlan = flightPlan;
         this._initFromFlightPlan();
-        this._needUpdate = true;
+        this._needAutoUpdate = true;
     }
 
     /**
@@ -239,12 +270,12 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
     }
 
     onFocusChanged() {
-        this._needUpdate = true;
+        this._needAutoUpdate = true;
     }
 
     _findRangeIndex(minRange) {
-        let index = this._rangeLevels.findIndex(range => range.compare(minRange) >= 0);
-        return index >= 0 ? index : (this._rangeLevels.length - 1);
+        let index = this._rangeSetting.ranges.findIndex(range => range.compare(minRange) >= 0);
+        return index >= 0 ? index : (this._rangeSetting.ranges.length - 1);
     }
 
     /**
@@ -315,9 +346,9 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
      * @param {WT_NumberUnit} boundingRadius
      * @param {Number} aspectRatio
      */
-    _calculateMapRange(boundingRadius, aspectRatio) {
+    _calculateMapRangeIndex(boundingRadius, aspectRatio) {
         if (boundingRadius.number === 0) {
-            return this._rangeLevels[this._rangeIndexDefault];
+            return this._rangeIndexDefault;
         }
 
         let range = this._tempNM.set(boundingRadius);
@@ -327,7 +358,7 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
 
         // aspect ratio compensation
         range.scale(1 / Math.min(1, aspectRatio), true);
-        return this._rangeLevels[this._findRangeIndex(range)];
+        return this._findRangeIndex(range);
     }
 
     /**
@@ -352,10 +383,17 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
 
         let boundingCircle = this._findBoundingCircle();
         let mapTarget = this._tempGeoPoint.set(boundingCircle.center);
-        let mapRange = this._calculateMapRange(boundingCircle.radius, this._aspectRatio);
+        let mapRangeIndex = this._calculateMapRangeIndex(boundingCircle.radius, this._aspectRatio);
+        let mapRange = this._rangeSetting.ranges.get(mapRangeIndex);
         this._handleLatitudeCompensation(mapTarget, mapRange);
+
         this._mapModel.target = mapTarget;
-        this._mapModel.range = mapRange;
+        this._rangeSetting.setValue(mapRangeIndex);
+
+        if (this._mapModel.pointer.show) {
+            this._mapModel.pointer.position = this._mapView.projection.absXYToRelXY(this._mapView.projection.viewTarget);
+            this._mapModel.pointer.target = mapTarget;
+        }
     }
 
     updateFromFlightPlan() {
@@ -368,8 +406,22 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
      */
     _onFlightPlanChanged(event) {
         if (event.types !== WT_FlightPlanEvent.Type.LEG_ALTITUDE_CHANGED) {
-            this._needUpdate = true;
+            this._needAutoUpdate = true;
         }
+    }
+
+    /**
+     *
+     * @param {WT_MapRangeSetting} setting
+     * @param {Number} newValue
+     * @param {Number} oldValue
+     */
+    _onRangeSettingChanged(setting, newValue, oldValue) {
+        this._mapModel.range = setting.getRange();
+    }
+
+    _updateFromPointer() {
+        this._mapModel.target = this._mapModel.pointer.target;
     }
 
     _updateAspectRatio() {
@@ -379,15 +431,19 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         }
         if (aspectRatio !== this._aspectRatio) {
             this._aspectRatio = aspectRatio;
-            this._needUpdate = true;
+            this._needAutoUpdate = true;
         }
     }
 
     update() {
+        if (this._mapModel.pointer.show) {
+            this._updateFromPointer();
+        }
+
         this._updateAspectRatio();
-        if (this._needUpdate) {
+        if (this._needAutoUpdate) {
             this._updateTargetRange();
-            this._needUpdate = false;
+            this._needAutoUpdate = false;
         }
     }
 }

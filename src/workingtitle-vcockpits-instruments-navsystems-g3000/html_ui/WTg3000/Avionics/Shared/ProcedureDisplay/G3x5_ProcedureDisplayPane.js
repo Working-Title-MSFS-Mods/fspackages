@@ -12,21 +12,13 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._unitsSettingModel = unitsSettingModel;
+        this._mapID = `${paneID}_${WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX}`;
 
         this._flightPlan = new WT_FlightPlan(icaoWaypointFactory);
         this._procedureSegment = null;
         this._procedureName = "Procedure";
 
         this._airportRequestID = 0;
-    }
-
-    /**
-     * The setting model associated with this procedure display.
-     * @readonly
-     * @type {WT_MapSettingModel}
-     */
-    get settingModel() {
-        return this._settingModel;
     }
 
     getTitle() {
@@ -43,7 +35,7 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     _initFlightPlanPreview() {
-        this._flightPlanPreview = new WT_G3x5_FlightPlanPreview(this._mapModel, this._mapView, this._icaoWaypointFactory, this._unitsSettingModel, this.paneID);
+        this._flightPlanPreview = new WT_G3x5_FlightPlanPreview(this._mapModel, this._mapView, this._mapSettingModel, this._icaoWaypointFactory, this._unitsSettingModel, this._mapID, this.paneID);
         this._flightPlanPreview.setFlightPlan(this._flightPlan);
         this._flightPlanPreview.init();
     }
@@ -63,6 +55,7 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
         this._mapModel = new WT_MapModel(this._airplane);
         this._mapView = viewElement;
         this._mapView.setModel(this._mapModel);
+        this._mapSettingModel = new WT_MapSettingModel(this._mapID, this._mapModel, this._mapView);
 
         this._initFlightPlanPreview();
         this._initSettings();
@@ -183,3 +176,4 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
         this._flightPlanPreview.update();
     }
 }
+WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX = "Procedure";

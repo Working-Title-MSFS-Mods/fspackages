@@ -227,7 +227,7 @@ class WT_G3x5_NavMap {
     }
 
     _initPointerController() {
-        this._pointerController = new WT_G3x5_NavMapPointerController(this.model, this.view, new WT_G3x5_NavMapPointerEventHandler(this.instrumentID));
+        this._pointerController = new WT_G3x5_MapPointerController(this.model, this.view, new WT_G3x5_MapPointerEventHandler(this.instrumentID));
     }
 
     _initRangeTargetRotationController() {

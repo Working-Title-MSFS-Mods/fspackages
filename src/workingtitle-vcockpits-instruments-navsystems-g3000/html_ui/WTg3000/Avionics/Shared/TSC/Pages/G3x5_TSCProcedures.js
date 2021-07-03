@@ -655,7 +655,7 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
     onExit() {
         this.htmlElement.close();
         this._cleanUpFromPaneSettings();
-        this._deactivateProcedurePreview();
+        //this._deactivateProcedurePreview();
     }
 
     _onUpPressed() {

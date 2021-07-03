@@ -5,9 +5,25 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
         this._instrumentID = instrumentID;
         this._halfPaneID = halfPaneID;
 
-        let mapID = `${instrumentID}-${halfPaneID}`;
-        this._mapSettingModelID = mapID;
-        this._eventHandler = new WT_G3x5_NavMapPointerEventHandler(mapID);
+        this._mapSettingModelIDs = this._createMapSettingModelIDs();
+        this._eventHandlers = this._createEventHandlers();
+        this._controlledPane = 0;
+    }
+
+    _createMapSettingModelIDs() {
+        return {
+            [WT_G3x5_PaneDisplaySetting.Mode.NAVMAP]: `${this._instrumentID}-${this._halfPaneID}`,
+            [WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN]: `${this._instrumentID}-${this._halfPaneID}_${WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX}`,
+            [WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE]: `${this._instrumentID}-${this._halfPaneID}_${WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX}`
+        };
+    }
+
+    _createEventHandlers() {
+        return {
+            [WT_G3x5_PaneDisplaySetting.Mode.NAVMAP]: new WT_G3x5_MapPointerEventHandler(`${this._instrumentID}-${this._halfPaneID}`),
+            [WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN]: new WT_G3x5_MapPointerEventHandler(`${this._instrumentID}-${this._halfPaneID}_${WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX}`),
+            [WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE]: new WT_G3x5_MapPointerEventHandler(`${this._instrumentID}-${this._halfPaneID}_${WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX}`)
+        };
     }
 
     /**
@@ -36,10 +52,18 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
 
     /**
      *
+     * @param {WT_G3x5_PaneDisplaySetting.Mode} mode
+     */
+    setControlledPane(mode) {
+        this._controlledPane = mode;
+    }
+
+    /**
+     *
      * @param {WT_TSCTouchPadEvent} event
      */
     _onTouchEvent(event) {
-        this._eventHandler.fireScrollEvent(event.deltaPos);
+        this._eventHandlers[this._controlledPane].fireScrollEvent(event.deltaPos);
     }
 
     _activateLabelBar() {
@@ -66,12 +90,12 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
 
     onEnter() {
         this.htmlElement.open();
-        WT_MapSettingModel.setSettingValue(this._mapSettingModelID, WT_G3x5_MapPointerShowSetting.KEY, true);
+        WT_MapSettingModel.setSettingValue(this._mapSettingModelIDs[this._controlledPane], WT_G3x5_MapPointerShowSetting.KEY, true);
     }
 
     onExit() {
         this.htmlElement.close();
-        WT_MapSettingModel.setSettingValue(this._mapSettingModelID, WT_G3x5_MapPointerShowSetting.KEY, false);
+        WT_MapSettingModel.setSettingValue(this._mapSettingModelIDs[this._controlledPane], WT_G3x5_MapPointerShowSetting.KEY, false);
     }
 
     onEvent(event) {

@@ -638,6 +638,20 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _onMFDPaneFlightPlanDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Map Pointer Control")) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
+    _onMFDPaneProcedureDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Map Pointer Control")) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
         if (!this._isChangingPages && setting === this.getSelectedPaneSettings().display) {
             let currentPageGroup = this.getCurrentPageGroup();
@@ -654,6 +668,12 @@ class AS3000_TSC extends NavSystemTouch {
                     break;
                 case WT_G3x5_PaneDisplaySetting.Mode.CHARTS:
                     this._onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                    this._onMFDPaneFlightPlanDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
+                    this._onMFDPaneProcedureDisplaySwitch(currentPageGroup, currentPage);
                     break;
             }
         }
@@ -709,6 +729,20 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    /**
+     *
+     * @param {String} suffix
+     * @param {Number} maxIndex
+     * @param {Number} deltaIndex
+     * @param {Boolean} isSyncable
+     */
+    _changeMapRange(suffix, maxIndex, deltaIndex, isSyncable) {
+        let id = `MFD-${this.getSelectedMFDPane()}_${suffix}`;
+        let currentIndex = WT_MapSettingModel.getSettingValue(id, WT_MapRangeSetting.KEY_DEFAULT, 0);
+        let toIndex = Math.max(0, Math.min(maxIndex, currentIndex + deltaIndex));
+        WT_MapSettingModel.setSettingValue(id, WT_MapRangeSetting.KEY_DEFAULT, toIndex, isSyncable);
+    }
+
     _handleZoomEventMFD(event) {
         switch (this.getSelectedPaneSettings().display.mode) {
             case WT_G3x5_PaneDisplaySetting.Mode.NAVMAP:
@@ -748,6 +782,26 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                     case "BottomKnob_Small_DEC":
                         this.getSelectedMFDPanePages().charts.element.changeZoom(1);
+                        break;
+                }
+                break;
+            case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this._changeMapRange(WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, 1, false);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this._changeMapRange(WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, -1, false);
+                        break;
+                }
+                break;
+            case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this._changeMapRange(WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, 1, false);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this._changeMapRange(WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, -1, false);
                         break;
                 }
                 break;
@@ -806,9 +860,18 @@ class AS3000_TSC extends NavSystemTouch {
     _handleMapPointerControlNavigationEvent(event) {
         if (this.getCurrentPage().title === "Map Pointer Control") {
             this.goBack();
-        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedPaneSettings().display.mode === WT_G3x5_PaneDisplaySetting.Mode.NAVMAP) {
-            this.closePopUpElement();
-            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
+        } else if (this.getCurrentPageGroup().name === "MFD") {
+            let displayMode = this.getSelectedPaneSettings().display.mode;
+            switch (displayMode) {
+                case WT_G3x5_PaneDisplaySetting.Mode.NAVMAP:
+                case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
+                    this.closePopUpElement();
+                    let controlPage = this.getSelectedMFDPanePages().mapPointerControl;
+                    controlPage.element.setControlledPane(displayMode);
+                    this.SwitchToPageName("MFD", controlPage.name);
+                    break;
+            }
         }
     }
 

@@ -3,16 +3,16 @@
  * registered to every event handler associated with the same map ID across all instruments will be notified of the
  * event.
  */
-class WT_G3x5_NavMapPointerEventHandler {
+class WT_G3x5_MapPointerEventHandler {
     /**
      * @param {String} mapID - the ID of the map associated with the new event handler.
      */
     constructor(mapID) {
         this._mapID = mapID;
-        this._keyRoot = `${WT_G3x5_NavMapPointerEventHandler.EVENT_KEY_PREFIX}_${mapID}`;
+        this._keyRoot = `${WT_G3x5_MapPointerEventHandler.EVENT_KEY_PREFIX}_${mapID}`;
 
         /**
-         * @type {((source:WT_G3x5_NavMapPointerEventHandler, event:WT_G3x5_NavMapPointerEvent) => void)[]}
+         * @type {((source:WT_G3x5_MapPointerEventHandler, event:WT_G3x5_NavMapPointerEvent) => void)[]}
          */
         this._listeners = [];
 
@@ -20,7 +20,7 @@ class WT_G3x5_NavMapPointerEventHandler {
     }
 
     _initCrossInstrumentEventListeners() {
-        Object.values(WT_G3x5_NavMapPointerEventHandler.EventType).forEach(eventType => {
+        Object.values(WT_G3x5_MapPointerEventHandler.EventType).forEach(eventType => {
             WT_CrossInstrumentEvent.addListener(this._getEventKey(eventType), this._onCrossInstrumentEvent.bind(this, eventType));
         });
     }
@@ -41,7 +41,7 @@ class WT_G3x5_NavMapPointerEventHandler {
     _parseScrollEvent(data) {
         let [x, y] = data.split(",").map(component => parseFloat(component));
         let event = {
-            type: WT_G3x5_NavMapPointerEventHandler.EventType.SCROLL,
+            type: WT_G3x5_MapPointerEventHandler.EventType.SCROLL,
             delta: new WT_GVector2(x, y).readonly()
         }
         this._notifyListeners(event);
@@ -49,7 +49,7 @@ class WT_G3x5_NavMapPointerEventHandler {
 
     _onCrossInstrumentEvent(eventType, key, data) {
         switch (eventType) {
-            case WT_G3x5_NavMapPointerEventHandler.EventType.SCROLL:
+            case WT_G3x5_MapPointerEventHandler.EventType.SCROLL:
                 this._parseScrollEvent(data);
                 break;
         }
@@ -57,11 +57,11 @@ class WT_G3x5_NavMapPointerEventHandler {
 
     /**
      *
-     * @param {WT_G3x5_NavMapPointerEventHandler.EventType} eventType
+     * @param {WT_G3x5_MapPointerEventHandler.EventType} eventType
      * @returns {String}
      */
     _getEventKey(eventType) {
-        return `${this._keyRoot}_${WT_G3x5_NavMapPointerEventHandler.EVENT_KEY_SUFFIXES[eventType]}`;
+        return `${this._keyRoot}_${WT_G3x5_MapPointerEventHandler.EVENT_KEY_SUFFIXES[eventType]}`;
     }
 
     _fireEvent(eventType, data) {
@@ -73,12 +73,12 @@ class WT_G3x5_NavMapPointerEventHandler {
      * @param {WT_GVector2} delta - the scroll vector.
      */
     fireScrollEvent(delta) {
-        this._fireEvent(WT_G3x5_NavMapPointerEventHandler.EventType.SCROLL, `${delta.x},${delta.y}`)
+        this._fireEvent(WT_G3x5_MapPointerEventHandler.EventType.SCROLL, `${delta.x},${delta.y}`)
     }
 
     /**
      * Add a listener to this event handler. The listener function will be called every time an event is fired.
-     * @param {(source:WT_G3x5_NavMapPointerEventHandler, event:WT_G3x5_NavMapPointerEvent) => void} listener - the listener to add.
+     * @param {(source:WT_G3x5_MapPointerEventHandler, event:WT_G3x5_NavMapPointerEvent) => void} listener - the listener to add.
      */
     addListener(listener) {
         this._listeners.push(listener);
@@ -86,7 +86,7 @@ class WT_G3x5_NavMapPointerEventHandler {
 
     /**
      * Removes a previously added listener from this event handler.
-     * @param {(source:WT_G3x5_NavMapPointerEventHandler, event:WT_G3x5_NavMapPointerEvent) => void} listener - the listener to remove.
+     * @param {(source:WT_G3x5_MapPointerEventHandler, event:WT_G3x5_NavMapPointerEvent) => void} listener - the listener to remove.
      */
     removeListener(listener) {
         let index = this._listeners.indexOf(listener);
@@ -98,15 +98,15 @@ class WT_G3x5_NavMapPointerEventHandler {
 /**
  * @enum {Number}
  */
-WT_G3x5_NavMapPointerEventHandler.EventType = {
+ WT_G3x5_MapPointerEventHandler.EventType = {
     SCROLL: 0
 };
-WT_G3x5_NavMapPointerEventHandler.EVENT_KEY_PREFIX = "WT_MapPointer";
-WT_G3x5_NavMapPointerEventHandler.EVENT_KEY_SUFFIXES = [
+WT_G3x5_MapPointerEventHandler.EVENT_KEY_PREFIX = "WT_MapPointer";
+WT_G3x5_MapPointerEventHandler.EVENT_KEY_SUFFIXES = [
     "Scroll"
 ];
 
 /**
- * @typedef WT_G3x5_NavMapPointerEvent
- * @property {WT_G3x5_NavMapPointerEventHandler.EventType} type - the type of this event.
+ * @typedef WT_G3x5_MapPointerEvent
+ * @property {WT_G3x5_MapPointerEventHandler.EventType} type - the type of this event.
  */
