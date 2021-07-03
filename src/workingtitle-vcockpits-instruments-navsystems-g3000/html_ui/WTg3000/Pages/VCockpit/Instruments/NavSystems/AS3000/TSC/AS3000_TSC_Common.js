@@ -2051,15 +2051,15 @@ class AS3000_TSC_Transponder extends NavSystemTouch_Transponder {
     }
 
     _activateNavButtons() {
-        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), true, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "ICON_TSC_BUTTONBAR_HOME.png");
         this.gps.activateNavButton(6, "Enter", this.validateCode.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
     }
 
     _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.gps.deactivateNavButton(6);
     }
 
     onFocusGained() {
