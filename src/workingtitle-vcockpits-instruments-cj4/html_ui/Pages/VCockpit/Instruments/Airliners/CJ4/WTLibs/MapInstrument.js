@@ -1082,12 +1082,12 @@ class MapInstrument extends ISvgMapRootElement {
             if (this.showRangeDisplay) {
                 const currentRange = this.getDisplayRange();
                 if (this.rangeValue != currentRange) {
-                    Avionics.Utils.diffAndSet(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange));
+                    diffAndSetText(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange));
                     this.rangeValue = currentRange;
                 }
-                Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Active");
+                diffAndSetAttribute(this.mapRangeElement, "state", "Active");
             } else {
-                Avionics.Utils.diffAndSetAttribute(this.mapRangeElement, "state", "Inactive");
+                diffAndSetAttribute(this.mapRangeElement, "state", "Inactive");
             }
         }
         if (this.navMap) {

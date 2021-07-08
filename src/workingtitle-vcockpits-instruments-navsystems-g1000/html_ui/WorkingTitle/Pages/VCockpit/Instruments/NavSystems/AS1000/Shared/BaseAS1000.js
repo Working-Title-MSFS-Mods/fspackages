@@ -83,7 +83,7 @@ var AS1000;
                             this.nav1ActiveValue = nav1ActiveValue;
                     }
                 }
-                Avionics.Utils.diffAndSet(this.nav1IdentElement, SimVar.GetSimVarValue("NAV SIGNAL:1", "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:1", "string") : "");
+                diffAndSetText(this.nav1IdentElement, SimVar.GetSimVarValue("NAV SIGNAL:1", "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:1", "string") : "");
                 var nav2Active = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz");
                 if (nav2Active) {
                     var nav2ActiveValue = nav2Active.toFixed(2);
@@ -92,7 +92,7 @@ var AS1000;
                         this.nav2ActiveValue = nav2ActiveValue;
                     }
                 }
-                Avionics.Utils.diffAndSet(this.nav2IdentElement, SimVar.GetSimVarValue("NAV SIGNAL:2", "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:2", "string") : "");
+                diffAndSetText(this.nav2IdentElement, SimVar.GetSimVarValue("NAV SIGNAL:2", "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:2", "string") : "");
                 var nav1Sby = SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz");
                 if (nav1Sby) {
                     var nav1SbyValue = nav1Sby.toFixed(2);
@@ -943,14 +943,14 @@ class AS1000_PFD_TMRREF extends NavSystemElement {
             this.searchField.Update();
         }
         else {
-            Avionics.Utils.diffAndSet(this.time, this.backgroundTimer.formatTimeFromMS(this.backgroundTimer.getCurrentDisplay()));
+            diffAndSetText(this.time, this.backgroundTimer.formatTimeFromMS(this.backgroundTimer.getCurrentDisplay()));
         }
-        Avionics.Utils.diffAndSet(this.direction, this.backgroundTimer.getIsCountingDown() ? "DN" : "UP");
-        Avionics.Utils.diffAndSet(this.startStop, this.backgroundTimer.getIsCounting() ? "STOP?" : (this.backgroundTimer.getWillReset() ? "RESET?" : "START?"));
+        diffAndSetText(this.direction, this.backgroundTimer.getIsCountingDown() ? "DN" : "UP");
+        diffAndSetText(this.startStop, this.backgroundTimer.getIsCounting() ? "STOP?" : (this.backgroundTimer.getWillReset() ? "RESET?" : "START?"));
         let displayedBugs = "";
         for (let i = 0; i < this.references.length; i++) {
-            Avionics.Utils.diffAndSet(this.references[i].valueElement, Math.round(this.references[i].displayedSpeed) + (this.references[i].displayedSpeed == this.references[i].refSpeed ? "kt" : "kt*"));
-            Avionics.Utils.diffAndSet(this.references[i].statusElement, this.references[i].isDisplayed ? "ON" : "OFF");
+            diffAndSetText(this.references[i].valueElement, Math.round(this.references[i].displayedSpeed) + (this.references[i].displayedSpeed == this.references[i].refSpeed ? "kt" : "kt*"));
+            diffAndSetText(this.references[i].statusElement, this.references[i].isDisplayed ? "ON" : "OFF");
             if (this.references[i].isDisplayed) {
                 if (displayedBugs != "") {
                     displayedBugs += ";";
@@ -958,23 +958,23 @@ class AS1000_PFD_TMRREF extends NavSystemElement {
                 displayedBugs += this.references[i].displayName + ":" + this.references[i].displayedSpeed;
             }
         }
-        Avionics.Utils.diffAndSetAttribute(this.airspeedIndicator, "reference-bugs", displayedBugs);
+        diffAndSetAttribute(this.airspeedIndicator, "reference-bugs", displayedBugs);
         let source = SimVar.GetSimVarValue("L:AS3000_MinimalsMode", "number");
         switch (source) {
             case 0:
-                Avionics.Utils.diffAndSet(this.minimumsSourceElement, "OFF");
+                diffAndSetText(this.minimumsSourceElement, "OFF");
                 break;
             case 1:
-                Avionics.Utils.diffAndSet(this.minimumsSourceElement, "BARO");
+                diffAndSetText(this.minimumsSourceElement, "BARO");
                 break;
             case 2:
-                Avionics.Utils.diffAndSet(this.minimumsSourceElement, "TEMP&nbsp;COMP");
+                diffAndSetText(this.minimumsSourceElement, "TEMP&nbsp;COMP");
                 break;
             case 3:
-                Avionics.Utils.diffAndSet(this.minimumsSourceElement, "RADIO&nbsp;ALT");
+                diffAndSetText(this.minimumsSourceElement, "RADIO&nbsp;ALT");
                 break;
         }
-        Avionics.Utils.diffAndSet(this.minimumsValueElement, SimVar.GetSimVarValue("L:AS3000_MinimalsValue", "number") + "FT");
+        diffAndSetText(this.minimumsValueElement, SimVar.GetSimVarValue("L:AS3000_MinimalsValue", "number") + "FT");
     }
     onExit() {
         this.window.setAttribute("state", "Inactive");

@@ -433,13 +433,13 @@ class XMLTextZone extends HTMLElement {
             this.setRightText(this.rightCallback.getValueAsString(_context));
         }
         if (this.leftColor) {
-            Avionics.Utils.diffAndSetAttribute(this.leftText, "fill", this.leftColor.getValueAsString(_context));
+            diffAndSetAttribute(this.leftText, "fill", this.leftColor.getValueAsString(_context));
         }
         if (this.centerColor) {
-            Avionics.Utils.diffAndSetAttribute(this.centerText, "fill", this.centerColor.getValueAsString(_context));
+            diffAndSetAttribute(this.centerText, "fill", this.centerColor.getValueAsString(_context));
         }
         if (this.rightColor) {
-            Avionics.Utils.diffAndSetAttribute(this.rightText, "fill", this.rightColor.getValueAsString(_context));
+            diffAndSetAttribute(this.rightText, "fill", this.rightColor.getValueAsString(_context));
         }
     }
 }
@@ -940,17 +940,17 @@ class XMLCircularGauge extends XMLGauge {
                 let colorFound = false;
                 for (let i = this.colorZones.length - 1; i >= 0; i--) {
                     if (_value >= this.colorZones[i].lastBegin && _value <= this.colorZones[i].lastEnd) {
-                        Avionics.Utils.diffAndSetAttribute(this.valueText, "fill", this.colorZones[i].element.getAttribute("fill"));
+                        diffAndSetAttribute(this.valueText, "fill", this.colorZones[i].element.getAttribute("fill"));
                         colorFound = true;
                         break;
                     }
                 }
                 if (!colorFound) {
-                    Avionics.Utils.diffAndSetAttribute(this.valueText, "fill", "white");
+                    diffAndSetAttribute(this.valueText, "fill", "white");
                 }
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.valueText, "fill", this.forceTextColor);
+                diffAndSetAttribute(this.valueText, "fill", this.forceTextColor);
             }
             if (this.valueText) {
                 let valueBbox = this.valueText.getBBox();

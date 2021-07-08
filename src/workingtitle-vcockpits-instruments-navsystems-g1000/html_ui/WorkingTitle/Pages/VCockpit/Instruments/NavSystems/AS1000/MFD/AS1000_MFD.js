@@ -171,8 +171,8 @@ class AS1000_MFD_NavStatus extends NavSystemElement {
             }
         }
         else {
-            Avionics.Utils.diffAndSet(this.desiredTrack, "___°");
-            Avionics.Utils.diffAndSet(this.eteElement, "__:__");
+            diffAndSetText(this.desiredTrack, "___°");
+            diffAndSetText(this.eteElement, "__:__");
         }
     }
     onExit() {
@@ -1067,7 +1067,7 @@ class AS1000_MFD_SystemSetupElement extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        Avionics.Utils.diffAndSet(this.channelSpacing, SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? "25 kHz" : "8.33 kHz");
+        diffAndSetText(this.channelSpacing, SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? "25 kHz" : "8.33 kHz");
     }
     onExit() {
     }

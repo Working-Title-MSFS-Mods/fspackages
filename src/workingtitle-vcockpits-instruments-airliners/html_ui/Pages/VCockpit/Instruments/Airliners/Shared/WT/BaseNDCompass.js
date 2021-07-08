@@ -338,7 +338,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.showSelectedHeadingTimer = 0;
                 }
 
-                let selectedHeading = Math.round(simSelectedHeading).toString().padStart(3, "0");
+                let selectedHeading = Math.round(simSelectedHeading);
                 let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
                 this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
                 if (this.selectedHeadingGroup)
@@ -363,7 +363,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.selectedTrackGroup.classList.toggle('hide', true);
                 if (this.selectedRefGroup) {
                     if (this.selectedRefValue)
-                        this.selectedRefValue.textContent = selectedHeading.toString();
+                        this.selectedRefValue.textContent = selectedHeading.toString().padStart(3, "0");
                     this.selectedRefGroup.classList.toggle('hide', false);
                 }
             }

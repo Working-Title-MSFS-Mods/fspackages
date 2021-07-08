@@ -670,11 +670,11 @@ class NavSystemTouch_SelectionList extends NavSystemElement {
                 this.gps.makeButton(elem.button, this.onElemClick.bind(this, i));
                 this.buttons.push(elem);
             }
-            Avionics.Utils.diffAndSetAttribute(this.buttons[i].button, "state", "Active");
-            Avionics.Utils.diffAndSet(this.buttons[i].value, _elements[i]);
+            diffAndSetAttribute(this.buttons[i].button, "state", "Active");
+            diffAndSetText(this.buttons[i].value, _elements[i]);
         }
         for (let i = _elements.length; i < this.buttons.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.buttons[i].button, "state", "Inactive");
+            diffAndSetAttribute(this.buttons[i].button, "state", "Inactive");
         }
     }
     onElemClick(_id) {
