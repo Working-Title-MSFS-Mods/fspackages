@@ -250,12 +250,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var _width = width;
             var _height = height;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "black");
-            bg.setAttribute("fill-opacity", "0.5");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", _top.toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "black");
+            diffAndSetAttribute(bg, "fill-opacity", "0.5");
             this.centerSVG.appendChild(bg);
 
             this.radioMinsRect = document.createElementNS(Avionics.SVG.NS, "rect");
@@ -291,12 +291,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 var dashPos = -240;
                 while (dashPos < dashEndPos) {
                     let dashLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                    dashLine.setAttribute("x", "0");
-                    dashLine.setAttribute("y", dashPos.toString());
-                    dashLine.setAttribute("width", groundRibbonWidth.toString());
-                    dashLine.setAttribute("height", dashHeight.toString());
-                    dashLine.setAttribute("transform", "skewY(53)");
-                    dashLine.setAttribute("fill", "orange");
+                    diffAndSetAttribute(dashLine, "x", "0");
+                    diffAndSetAttribute(dashLine, "y", dashPos.toString());
+                    diffAndSetAttribute(dashLine, "width", groundRibbonWidth.toString());
+                    diffAndSetAttribute(dashLine, "height", dashHeight.toString());
+                    diffAndSetAttribute(dashLine, "transform", "skewY(53)");
+                    diffAndSetAttribute(dashLine, "fill", "orange");
                     this.groundRibbonSVG.appendChild(dashLine);
                     dashPos += dashHeight * 6.5;
                 }
@@ -346,7 +346,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.graduations.push(line);
             }
             var graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            graduationGroup.setAttribute("id", "graduationGroup");
+            diffAndSetAttribute(graduationGroup, "id", "graduationGroup");
             for (var i = 0; i < this.totalGraduations; i++) {
                 var line = this.graduations[i];
                 graduationGroup.appendChild(line.SVGLine);
@@ -553,12 +553,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
         let borderline = document.createElementNS(Avionics.SVG.NS, "line");
         let blx = "140";
-        borderline.setAttribute("x1", blx);
-        borderline.setAttribute("y1", "37");
-        borderline.setAttribute("x2", blx);
-        borderline.setAttribute("y2", "453");
-        borderline.setAttribute("stroke", "#909090");
-        borderline.setAttribute("stroke-width", "3");
+        diffAndSetAttribute(borderline, "x1", blx);
+        diffAndSetAttribute(borderline, "y1", "37");
+        diffAndSetAttribute(borderline, "x2", blx);
+        diffAndSetAttribute(borderline, "y2", "453");
+        diffAndSetAttribute(borderline, "stroke", "#909090");
+        diffAndSetAttribute(borderline, "stroke-width", "3");
         this.rootGroup.appendChild(borderline);
 
         this.rootSVG.appendChild(this.rootGroup);
@@ -629,11 +629,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var _width = width;
             var _height = height;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "#343B51");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", _top.toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "#343B51");
             this.centerSVG.appendChild(bg);
             this.graduationScrollPosX = _left;
             this.graduationScrollPosY = _top + _height * 0.5;
@@ -695,12 +695,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 var dashPos = -100;
                 while (dashPos < (dashEndPos - dashHeight * 2)) {
                     let dashLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                    dashLine.setAttribute("x", "0");
-                    dashLine.setAttribute("y", dashPos.toString());
-                    dashLine.setAttribute("width", groundRibbonWidth.toString());
-                    dashLine.setAttribute("height", dashHeight.toString());
-                    dashLine.setAttribute("transform", "skewY(45)");
-                    dashLine.setAttribute("fill", "orange");
+                    diffAndSetAttribute(dashLine, "x", "0");
+                    diffAndSetAttribute(dashLine, "y", dashPos.toString());
+                    diffAndSetAttribute(dashLine, "width", groundRibbonWidth.toString());
+                    diffAndSetAttribute(dashLine, "height", dashHeight.toString());
+                    diffAndSetAttribute(dashLine, "transform", "skewY(45)");
+                    diffAndSetAttribute(dashLine, "fill", "orange");
                     this.groundRibbonSVG.appendChild(dashLine);
                     dashPos += dashHeight * 2;
                 }
@@ -733,18 +733,18 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.groundLineSVG.setAttribute("viewBox", "0 0 " + groundStripWidth + " " + this.groundLineSVGHeight);
             {
                 let whiteLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                whiteLine.setAttribute("fill", "white");
-                whiteLine.setAttribute("x", "0");
-                whiteLine.setAttribute("y", "0");
-                whiteLine.setAttribute("width", "5");
-                whiteLine.setAttribute("height", singleLineHeight.toString());
+                diffAndSetAttribute(whiteLine, "fill", "white");
+                diffAndSetAttribute(whiteLine, "x", "0");
+                diffAndSetAttribute(whiteLine, "y", "0");
+                diffAndSetAttribute(whiteLine, "width", "5");
+                diffAndSetAttribute(whiteLine, "height", singleLineHeight.toString());
                 this.groundLineSVG.appendChild(whiteLine);
                 let amberLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                amberLine.setAttribute("fill", "orange");
-                amberLine.setAttribute("x", "0");
-                amberLine.setAttribute("y", singleLineHeight.toString());
-                amberLine.setAttribute("width", "5");
-                amberLine.setAttribute("height", singleLineHeight.toString());
+                diffAndSetAttribute(amberLine, "fill", "orange");
+                diffAndSetAttribute(amberLine, "x", "0");
+                diffAndSetAttribute(amberLine, "y", singleLineHeight.toString());
+                diffAndSetAttribute(amberLine, "width", "5");
+                diffAndSetAttribute(amberLine, "height", singleLineHeight.toString());
                 this.groundLineSVG.appendChild(amberLine);
             }
             this.centerSVG.appendChild(this.groundLineSVG);
@@ -752,20 +752,20 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.thousandIndicator.setAttribute("id", "thousandGroup");
             {
                 let topLine = document.createElementNS(Avionics.SVG.NS, "line");
-                topLine.setAttribute("x1", (_left + 5).toString());
-                topLine.setAttribute("y1", "-18");
-                topLine.setAttribute("x2", _width.toString());
-                topLine.setAttribute("y2", "-18");
-                topLine.setAttribute("stroke", "white");
-                topLine.setAttribute("stroke-width", "3");
+                diffAndSetAttribute(topLine, "x1", (_left + 5).toString());
+                diffAndSetAttribute(topLine, "y1", "-18");
+                diffAndSetAttribute(topLine, "x2", _width.toString());
+                diffAndSetAttribute(topLine, "y2", "-18");
+                diffAndSetAttribute(topLine, "stroke", "white");
+                diffAndSetAttribute(topLine, "stroke-width", "3");
                 this.thousandIndicator.appendChild(topLine);
                 let bottomLine = document.createElementNS(Avionics.SVG.NS, "line");
-                bottomLine.setAttribute("x1", (_left + 5).toString());
-                bottomLine.setAttribute("y1", "18");
-                bottomLine.setAttribute("x2", _width.toString());
-                bottomLine.setAttribute("y2", "18");
-                bottomLine.setAttribute("stroke", "white");
-                bottomLine.setAttribute("stroke-width", "3");
+                diffAndSetAttribute(bottomLine, "x1", (_left + 5).toString());
+                diffAndSetAttribute(bottomLine, "y1", "18");
+                diffAndSetAttribute(bottomLine, "x2", _width.toString());
+                diffAndSetAttribute(bottomLine, "y2", "18");
+                diffAndSetAttribute(bottomLine, "stroke", "white");
+                diffAndSetAttribute(bottomLine, "stroke-width", "3");
                 this.thousandIndicator.appendChild(bottomLine);
             }
             this.centerSVG.appendChild(this.thousandIndicator);
@@ -834,7 +834,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
         this.rootGroup.appendChild(this.centerSVG);
         let mtrsGroup = document.createElementNS(Avionics.SVG.NS, "g");
-        mtrsGroup.setAttribute("id", "MetersGroup");
+        diffAndSetAttribute(mtrsGroup, "id", "MetersGroup");
         {
             this.mtrsSelectedGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.mtrsSelectedGroup.setAttribute("id", "SelectedGroup");
@@ -849,14 +849,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.mtrsSelectedSVGText.setAttribute("alignment-baseline", "bottom");
                 this.mtrsSelectedGroup.appendChild(this.mtrsSelectedSVGText);
                 var mtrsSelectedSVGUnit = document.createElementNS(Avionics.SVG.NS, "text");
-                mtrsSelectedSVGUnit.textContent = "M";
-                mtrsSelectedSVGUnit.setAttribute("x", "158");
-                mtrsSelectedSVGUnit.setAttribute("y", (sideTextHeight * 0.5).toString());
-                mtrsSelectedSVGUnit.setAttribute("fill", "cyan");
-                mtrsSelectedSVGUnit.setAttribute("font-size", (this.fontSize * 0.9).toString());
-                mtrsSelectedSVGUnit.setAttribute("font-family", "Roboto-Bold");
-                mtrsSelectedSVGUnit.setAttribute("text-anchor", "start");
-                mtrsSelectedSVGUnit.setAttribute("alignment-baseline", "bottom");
+                diffAndSetText(mtrsSelectedSVGUnit, "M");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "x", "158");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "y", (sideTextHeight * 0.5).toString());
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "fill", "cyan");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "font-size", (this.fontSize * 0.9).toString());
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "text-anchor", "start");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "alignment-baseline", "bottom");
                 this.mtrsSelectedGroup.appendChild(mtrsSelectedSVGUnit);
             }
             mtrsGroup.appendChild(this.mtrsSelectedGroup);
@@ -873,10 +873,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.mtrsCursorGroup.setAttribute("viewBox", "0 0 " + mtrsCursorWidth + " " + mtrsCursorHeight);
             {
                 var mtrsCursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
-                mtrsCursorSVGShape.setAttribute("fill", "black");
-                mtrsCursorSVGShape.setAttribute("d", "M 15 0 L 130 0 L 130 36 L 15 36 Z");
-                mtrsCursorSVGShape.setAttribute("stroke", "white");
-                mtrsCursorSVGShape.setAttribute("stroke-width", this.strokeSize);
+                diffAndSetAttribute(mtrsCursorSVGShape, "fill", "black");
+                diffAndSetAttribute(mtrsCursorSVGShape, "d", "M 15 0 L 130 0 L 130 36 L 15 36 Z");
+                diffAndSetAttribute(mtrsCursorSVGShape, "stroke", "white");
+                diffAndSetAttribute(mtrsCursorSVGShape, "stroke-width", this.strokeSize);
                 this.mtrsCursorGroup.appendChild(mtrsCursorSVGShape);
                 this.mtrsCursorSVGText = document.createElementNS(Avionics.SVG.NS, "text");
                 this.mtrsCursorSVGText.setAttribute("x", "110");
@@ -888,14 +888,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.mtrsCursorSVGText.setAttribute("alignment-baseline", "bottom");
                 this.mtrsCursorGroup.appendChild(this.mtrsCursorSVGText);
                 let mtrsCursorSVGUnit = document.createElementNS(Avionics.SVG.NS, "text");
-                mtrsCursorSVGUnit.textContent = "M";
-                mtrsCursorSVGUnit.setAttribute("x", "110");
-                mtrsCursorSVGUnit.setAttribute("y", (mtrsCursorHeight * 0.84).toString());
-                mtrsCursorSVGUnit.setAttribute("fill", "cyan");
-                mtrsCursorSVGUnit.setAttribute("font-size", (this.fontSize * 0.9).toString());
-                mtrsCursorSVGUnit.setAttribute("font-family", "Roboto-Bold");
-                mtrsCursorSVGUnit.setAttribute("text-anchor", "start");
-                mtrsCursorSVGUnit.setAttribute("alignment-baseline", "bottom");
+                diffAndSetText(mtrsCursorSVGUnit, "M");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "x", "110");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "y", (mtrsCursorHeight * 0.84).toString());
+                diffAndSetAttribute(mtrsCursorSVGUnit, "fill", "cyan");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "font-size", (this.fontSize * 0.9).toString());
+                diffAndSetAttribute(mtrsCursorSVGUnit, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "text-anchor", "start");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "alignment-baseline", "bottom");
                 this.mtrsCursorGroup.appendChild(mtrsCursorSVGUnit);
             }
             mtrsGroup.appendChild(this.mtrsCursorGroup);
@@ -990,38 +990,38 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var _height = height;
             if (this.isHud) {
                 var topLine = document.createElementNS(Avionics.SVG.NS, "line");
-                topLine.setAttribute("x1", _left.toString());
-                topLine.setAttribute("y1", _top.toString());
-                topLine.setAttribute("x2", (_left + _width).toString());
-                topLine.setAttribute("y2", _top.toString());
-                topLine.setAttribute("stroke", "lime");
-                topLine.setAttribute("stroke-width", "6");
+                diffAndSetAttribute(topLine, "x1", _left.toString());
+                diffAndSetAttribute(topLine, "y1", _top.toString());
+                diffAndSetAttribute(topLine, "x2", (_left + _width).toString());
+                diffAndSetAttribute(topLine, "y2", _top.toString());
+                diffAndSetAttribute(topLine, "stroke", "lime");
+                diffAndSetAttribute(topLine, "stroke-width", "6");
                 this.centerSVG.appendChild(topLine);
                 var verticalLine = document.createElementNS(Avionics.SVG.NS, "line");
-                verticalLine.setAttribute("x1", _left.toString());
-                verticalLine.setAttribute("y1", _top.toString());
-                verticalLine.setAttribute("x2", _left.toString());
-                verticalLine.setAttribute("y2", (_top + _height).toString());
-                verticalLine.setAttribute("stroke", "lime");
-                verticalLine.setAttribute("stroke-width", "6");
+                diffAndSetAttribute(verticalLine, "x1", _left.toString());
+                diffAndSetAttribute(verticalLine, "y1", _top.toString());
+                diffAndSetAttribute(verticalLine, "x2", _left.toString());
+                diffAndSetAttribute(verticalLine, "y2", (_top + _height).toString());
+                diffAndSetAttribute(verticalLine, "stroke", "lime");
+                diffAndSetAttribute(verticalLine, "stroke-width", "6");
                 this.centerSVG.appendChild(verticalLine);
                 var bottomLine = document.createElementNS(Avionics.SVG.NS, "line");
-                bottomLine.setAttribute("x1", _left.toString());
-                bottomLine.setAttribute("y1", (_top + _height).toString());
-                bottomLine.setAttribute("x2", (_left + _width).toString());
-                bottomLine.setAttribute("y2", (_top + _height).toString());
-                bottomLine.setAttribute("stroke", "lime");
-                bottomLine.setAttribute("stroke-width", "6");
+                diffAndSetAttribute(bottomLine, "x1", _left.toString());
+                diffAndSetAttribute(bottomLine, "y1", (_top + _height).toString());
+                diffAndSetAttribute(bottomLine, "x2", (_left + _width).toString());
+                diffAndSetAttribute(bottomLine, "y2", (_top + _height).toString());
+                diffAndSetAttribute(bottomLine, "stroke", "lime");
+                diffAndSetAttribute(bottomLine, "stroke-width", "6");
                 this.centerSVG.appendChild(bottomLine);
             }
             else {
                 var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-                bg.setAttribute("x", _left.toString());
-                bg.setAttribute("y", _top.toString());
-                bg.setAttribute("width", _width.toString());
-                bg.setAttribute("height", _height.toString());
-                bg.setAttribute("fill", "black");
-                bg.setAttribute("fill-opacity", "0.3");
+                diffAndSetAttribute(bg, "x", _left.toString());
+                diffAndSetAttribute(bg, "y", _top.toString());
+                diffAndSetAttribute(bg, "width", _width.toString());
+                diffAndSetAttribute(bg, "height", _height.toString());
+                diffAndSetAttribute(bg, "fill", "black");
+                diffAndSetAttribute(bg, "fill-opacity", "0.3");
                 this.centerSVG.appendChild(bg);
             }
             this.graduationScrollPosX = _left;
@@ -1084,12 +1084,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 var dashPos = -100;
                 while (dashPos < (dashEndPos - dashHeight * 2)) {
                     let dashLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                    dashLine.setAttribute("x", "0");
-                    dashLine.setAttribute("y", dashPos.toString());
-                    dashLine.setAttribute("width", groundRibbonWidth.toString());
-                    dashLine.setAttribute("height", dashHeight.toString());
-                    dashLine.setAttribute("transform", "skewY(45)");
-                    dashLine.setAttribute("fill", (this.isHud) ? "lime" : "orange");
+                    diffAndSetAttribute(dashLine, "x", "0");
+                    diffAndSetAttribute(dashLine, "y", dashPos.toString());
+                    diffAndSetAttribute(dashLine, "width", groundRibbonWidth.toString());
+                    diffAndSetAttribute(dashLine, "height", dashHeight.toString());
+                    diffAndSetAttribute(dashLine, "transform", "skewY(45)");
+                    diffAndSetAttribute(dashLine, "fill", (this.isHud) ? "lime" : "orange");
                     this.groundRibbonSVG.appendChild(dashLine);
                     dashPos += dashHeight * 2;
                 }
@@ -1122,18 +1122,18 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.groundLineSVG.setAttribute("viewBox", "0 0 " + groundStripWidth + " " + this.groundLineSVGHeight);
             {
                 let whiteLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                whiteLine.setAttribute("fill", (this.isHud) ? "lime" : "white");
-                whiteLine.setAttribute("x", "0");
-                whiteLine.setAttribute("y", "0");
-                whiteLine.setAttribute("width", "6");
-                whiteLine.setAttribute("height", singleLineHeight.toString());
+                diffAndSetAttribute(whiteLine, "fill", (this.isHud) ? "lime" : "white");
+                diffAndSetAttribute(whiteLine, "x", "0");
+                diffAndSetAttribute(whiteLine, "y", "0");
+                diffAndSetAttribute(whiteLine, "width", "6");
+                diffAndSetAttribute(whiteLine, "height", singleLineHeight.toString());
                 this.groundLineSVG.appendChild(whiteLine);
                 let amberLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                amberLine.setAttribute("fill", (this.isHud) ? "lime" : "orange");
-                amberLine.setAttribute("x", "0");
-                amberLine.setAttribute("y", singleLineHeight.toString());
-                amberLine.setAttribute("width", "6");
-                amberLine.setAttribute("height", singleLineHeight.toString());
+                diffAndSetAttribute(amberLine, "fill", (this.isHud) ? "lime" : "orange");
+                diffAndSetAttribute(amberLine, "x", "0");
+                diffAndSetAttribute(amberLine, "y", singleLineHeight.toString());
+                diffAndSetAttribute(amberLine, "width", "6");
+                diffAndSetAttribute(amberLine, "height", singleLineHeight.toString());
                 this.groundLineSVG.appendChild(amberLine);
             }
             this.centerSVG.appendChild(this.groundLineSVG);
@@ -1141,20 +1141,20 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.thousandIndicator.setAttribute("id", "thousandGroup");
             {
                 let topLine = document.createElementNS(Avionics.SVG.NS, "line");
-                topLine.setAttribute("x1", (_left + 5).toString());
-                topLine.setAttribute("y1", "-18");
-                topLine.setAttribute("x2", _width.toString());
-                topLine.setAttribute("y2", "-18");
-                topLine.setAttribute("stroke", (this.isHud) ? "lime" : "white");
-                topLine.setAttribute("stroke-width", "3");
+                diffAndSetAttribute(topLine, "x1", (_left + 5).toString());
+                diffAndSetAttribute(topLine, "y1", "-18");
+                diffAndSetAttribute(topLine, "x2", _width.toString());
+                diffAndSetAttribute(topLine, "y2", "-18");
+                diffAndSetAttribute(topLine, "stroke", (this.isHud) ? "lime" : "white");
+                diffAndSetAttribute(topLine, "stroke-width", "3");
                 this.thousandIndicator.appendChild(topLine);
                 let bottomLine = document.createElementNS(Avionics.SVG.NS, "line");
-                bottomLine.setAttribute("x1", (_left + 5).toString());
-                bottomLine.setAttribute("y1", "18");
-                bottomLine.setAttribute("x2", _width.toString());
-                bottomLine.setAttribute("y2", "18");
-                bottomLine.setAttribute("stroke", (this.isHud) ? "lime" : "white");
-                bottomLine.setAttribute("stroke-width", "3");
+                diffAndSetAttribute(bottomLine, "x1", (_left + 5).toString());
+                diffAndSetAttribute(bottomLine, "y1", "18");
+                diffAndSetAttribute(bottomLine, "x2", _width.toString());
+                diffAndSetAttribute(bottomLine, "y2", "18");
+                diffAndSetAttribute(bottomLine, "stroke", (this.isHud) ? "lime" : "white");
+                diffAndSetAttribute(bottomLine, "stroke-width", "3");
                 this.thousandIndicator.appendChild(bottomLine);
             }
             this.centerSVG.appendChild(this.thousandIndicator);
@@ -1223,19 +1223,19 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
         this.rootGroup.appendChild(this.centerSVG);
         let mtrsGroup = document.createElementNS(Avionics.SVG.NS, "g");
-        mtrsGroup.setAttribute("id", "MetersGroup");
+        diffAndSetAttribute(mtrsGroup, "id", "MetersGroup");
         {
             this.mtrsSelectedGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.mtrsSelectedGroup.setAttribute("id", "SelectedGroup");
             {
                 if (!this.isHud) {
                     let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-                    bg.setAttribute("x", "67");
-                    bg.setAttribute("y", "0");
-                    bg.setAttribute("width", "105");
-                    bg.setAttribute("height", "30");
-                    bg.setAttribute("fill", "black");
-                    bg.setAttribute("fill-opacity", "0.5");
+                    diffAndSetAttribute(bg, "x", "67");
+                    diffAndSetAttribute(bg, "y", "0");
+                    diffAndSetAttribute(bg, "width", "105");
+                    diffAndSetAttribute(bg, "height", "30");
+                    diffAndSetAttribute(bg, "fill", "black");
+                    diffAndSetAttribute(bg, "fill-opacity", "0.5");
                     this.mtrsSelectedGroup.appendChild(bg);
                 }
                 this.mtrsSelectedSVGText = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1248,14 +1248,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.mtrsSelectedSVGText.setAttribute("alignment-baseline", "bottom");
                 this.mtrsSelectedGroup.appendChild(this.mtrsSelectedSVGText);
                 var mtrsSelectedSVGUnit = document.createElementNS(Avionics.SVG.NS, "text");
-                mtrsSelectedSVGUnit.textContent = "M";
-                mtrsSelectedSVGUnit.setAttribute("x", "158");
-                mtrsSelectedSVGUnit.setAttribute("y", "25");
-                mtrsSelectedSVGUnit.setAttribute("fill", (this.isHud) ? "lime" : "cyan");
-                mtrsSelectedSVGUnit.setAttribute("font-size", (this.fontSize * 0.9).toString());
-                mtrsSelectedSVGUnit.setAttribute("font-family", "Roboto-Bold");
-                mtrsSelectedSVGUnit.setAttribute("text-anchor", "start");
-                mtrsSelectedSVGUnit.setAttribute("alignment-baseline", "bottom");
+                diffAndSetText(mtrsSelectedSVGUnit, "M");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "x", "158");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "y", "25");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "fill", (this.isHud) ? "lime" : "cyan");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "font-size", (this.fontSize * 0.9).toString());
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "text-anchor", "start");
+                diffAndSetAttribute(mtrsSelectedSVGUnit, "alignment-baseline", "bottom");
                 this.mtrsSelectedGroup.appendChild(mtrsSelectedSVGUnit);
             }
             mtrsGroup.appendChild(this.mtrsSelectedGroup);
@@ -1272,10 +1272,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.mtrsCursorGroup.setAttribute("viewBox", "0 0 " + mtrsCursorWidth + " " + mtrsCursorHeight);
             {
                 var mtrsCursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
-                mtrsCursorSVGShape.setAttribute("fill", "black");
-                mtrsCursorSVGShape.setAttribute("d", "M 15 0 L 130 0 L 130 36 L 15 36 Z");
-                mtrsCursorSVGShape.setAttribute("stroke", (this.isHud) ? "lime" : "white");
-                mtrsCursorSVGShape.setAttribute("stroke-width", this.strokeSize);
+                diffAndSetAttribute(mtrsCursorSVGShape, "fill", "black");
+                diffAndSetAttribute(mtrsCursorSVGShape, "d", "M 15 0 L 130 0 L 130 36 L 15 36 Z");
+                diffAndSetAttribute(mtrsCursorSVGShape, "stroke", (this.isHud) ? "lime" : "white");
+                diffAndSetAttribute(mtrsCursorSVGShape, "stroke-width", this.strokeSize);
                 this.mtrsCursorGroup.appendChild(mtrsCursorSVGShape);
                 this.mtrsCursorSVGText = document.createElementNS(Avionics.SVG.NS, "text");
                 this.mtrsCursorSVGText.setAttribute("x", "110");
@@ -1287,14 +1287,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.mtrsCursorSVGText.setAttribute("alignment-baseline", "bottom");
                 this.mtrsCursorGroup.appendChild(this.mtrsCursorSVGText);
                 let mtrsCursorSVGUnit = document.createElementNS(Avionics.SVG.NS, "text");
-                mtrsCursorSVGUnit.textContent = "M";
-                mtrsCursorSVGUnit.setAttribute("x", "110");
-                mtrsCursorSVGUnit.setAttribute("y", (mtrsCursorHeight * 0.84).toString());
-                mtrsCursorSVGUnit.setAttribute("fill", (this.isHud) ? "lime" : "cyan");
-                mtrsCursorSVGUnit.setAttribute("font-size", (this.fontSize * 0.9).toString());
-                mtrsCursorSVGUnit.setAttribute("font-family", "Roboto-Bold");
-                mtrsCursorSVGUnit.setAttribute("text-anchor", "start");
-                mtrsCursorSVGUnit.setAttribute("alignment-baseline", "bottom");
+                diffAndSetText(mtrsCursorSVGUnit, "M");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "x", "110");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "y", (mtrsCursorHeight * 0.84).toString());
+                diffAndSetAttribute(mtrsCursorSVGUnit, "fill", (this.isHud) ? "lime" : "cyan");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "font-size", (this.fontSize * 0.9).toString());
+                diffAndSetAttribute(mtrsCursorSVGUnit, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "text-anchor", "start");
+                diffAndSetAttribute(mtrsCursorSVGUnit, "alignment-baseline", "bottom");
                 this.mtrsCursorGroup.appendChild(mtrsCursorSVGUnit);
             }
             mtrsGroup.appendChild(this.mtrsCursorGroup);
@@ -1357,27 +1357,27 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var _width = width;
             var _height = height;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "#343B51");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", _top.toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "#343B51");
             this.centerSVG.appendChild(bg);
             var topLine = document.createElementNS(Avionics.SVG.NS, "line");
-            topLine.setAttribute("x1", _left.toString());
-            topLine.setAttribute("y1", (_top + 2).toString());
-            topLine.setAttribute("x2", (_left + _width + arcWidth).toString());
-            topLine.setAttribute("y2", (_top + 2).toString());
-            topLine.setAttribute("stroke", "white");
-            topLine.setAttribute("stroke-width", "4");
+            diffAndSetAttribute(topLine, "x1", _left.toString());
+            diffAndSetAttribute(topLine, "y1", (_top + 2).toString());
+            diffAndSetAttribute(topLine, "x2", (_left + _width + arcWidth).toString());
+            diffAndSetAttribute(topLine, "y2", (_top + 2).toString());
+            diffAndSetAttribute(topLine, "stroke", "white");
+            diffAndSetAttribute(topLine, "stroke-width", "4");
             this.centerSVG.appendChild(topLine);
             var bottomLine = document.createElementNS(Avionics.SVG.NS, "line");
-            bottomLine.setAttribute("x1", _left.toString());
-            bottomLine.setAttribute("y1", (_top + _height - 2).toString());
-            bottomLine.setAttribute("x2", (_left + _width + arcWidth).toString());
-            bottomLine.setAttribute("y2", (_top + _height - 2).toString());
-            bottomLine.setAttribute("stroke", "white");
-            bottomLine.setAttribute("stroke-width", "4");
+            diffAndSetAttribute(bottomLine, "x1", _left.toString());
+            diffAndSetAttribute(bottomLine, "y1", (_top + _height - 2).toString());
+            diffAndSetAttribute(bottomLine, "x2", (_left + _width + arcWidth).toString());
+            diffAndSetAttribute(bottomLine, "y2", (_top + _height - 2).toString());
+            diffAndSetAttribute(bottomLine, "stroke", "white");
+            diffAndSetAttribute(bottomLine, "stroke-width", "4");
             this.centerSVG.appendChild(bottomLine);
             this.graduationScrollPosX = 0;
             this.graduationScrollPosY = _top + _height * 0.5;
@@ -1459,11 +1459,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.targetAltitudeIndicatorSVGShape.setAttribute("d", "M 0 0 L 35 0 L 35 100 L 0 100 L 0 55 L 6 50 L 0 45 Z");
                 this.targetAltitudeIndicatorSVG.appendChild(this.targetAltitudeIndicatorSVGShape);
                 let textBg = document.createElementNS(Avionics.SVG.NS, "rect");
-                textBg.setAttribute("x", "8");
-                textBg.setAttribute("y", "35");
-                textBg.setAttribute("width", (_width + 2).toString());
-                textBg.setAttribute("height", "30");
-                textBg.setAttribute("fill", "black");
+                diffAndSetAttribute(textBg, "x", "8");
+                diffAndSetAttribute(textBg, "y", "35");
+                diffAndSetAttribute(textBg, "width", (_width + 2).toString());
+                diffAndSetAttribute(textBg, "height", "30");
+                diffAndSetAttribute(textBg, "fill", "black");
                 this.targetAltitudeIndicatorSVG.appendChild(textBg);
                 this.targetAltitudeIndicatorSVGText = document.createElementNS(Avionics.SVG.NS, "text");
                 this.targetAltitudeIndicatorSVGText.textContent = "35000";
@@ -1503,11 +1503,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorSVGShape.setAttribute("stroke-width", this.strokeSize);
                 this.cursorSVG.appendChild(this.cursorSVGShape);
                 let integralsGroup = document.createElementNS(Avionics.SVG.NS, "svg");
-                integralsGroup.setAttribute("x", "0");
-                integralsGroup.setAttribute("y", "20");
-                integralsGroup.setAttribute("width", cursorWidth.toString());
-                integralsGroup.setAttribute("height", (cursorHeight - 40).toString());
-                integralsGroup.setAttribute("viewBox", "0 0 " + cursorWidth + " " + cursorHeight);
+                diffAndSetAttribute(integralsGroup, "x", "0");
+                diffAndSetAttribute(integralsGroup, "y", "20");
+                diffAndSetAttribute(integralsGroup, "width", cursorWidth.toString());
+                diffAndSetAttribute(integralsGroup, "height", (cursorHeight - 40).toString());
+                diffAndSetAttribute(integralsGroup, "viewBox", "0 0 " + cursorWidth + " " + cursorHeight);
                 this.cursorSVG.appendChild(integralsGroup);
                 {
                     this.cursorIntegrals[0].construct(integralsGroup, _cursorPosX - 5, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 3.35, "rgb(36,255,0)");
