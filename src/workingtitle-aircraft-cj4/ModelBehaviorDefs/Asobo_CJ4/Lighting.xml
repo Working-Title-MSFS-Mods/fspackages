@@ -72,17 +72,17 @@
 
     <!-- Lights ################################################################ -->
 
-    <Template Name="ASOBO_LIGHTING_Switch_Light_Template">
+    <Template Name="ASOBO_LIGHTING_Push_Light_Template">
         <DefaultTemplateParameters>
             <ID>1</ID>
             <SIMVAR_INDEX>0</SIMVAR_INDEX>
-            <INTERACTION>Switch</INTERACTION>
+            <INTERACTION>Push</INTERACTION>
         </DefaultTemplateParameters>
         <OverrideTemplateParameters>
             <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
             <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </OverrideTemplateParameters>
-        <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SubTemplate">
+        <UseTemplate Name="ASOBO_LIGHTING_Push_Light_SubTemplate">
         </UseTemplate>
     </Template>
 
@@ -132,6 +132,9 @@
             <KNOB_POSITION_VAR>#NODE_ID#</KNOB_POSITION_VAR>
             <KNOB_SPEED>10</KNOB_SPEED>
             <WRAP>False</WRAP>
+            <WWISE_EVENT>lighting_master_knob</WWISE_EVENT>
+            <TOOLTIP_TITLE>@TT_Package.LIGHTING_KNOB_PANEL_TITLE</TOOLTIP_TITLE>	
+			<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_KNOB_PANEL_ACTION</TT_DESCRIPTION_ID>	
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_GT_Update">
             <FREQUENCY>2</FREQUENCY>
