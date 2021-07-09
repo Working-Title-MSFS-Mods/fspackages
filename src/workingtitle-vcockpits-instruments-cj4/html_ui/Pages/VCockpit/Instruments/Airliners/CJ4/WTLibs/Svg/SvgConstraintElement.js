@@ -67,8 +67,8 @@ class SvgConstraintElement extends SvgMapElement {
             this._label.setAttribute("width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
             this._label.setAttribute("height", (this._textHeight * (this.source.speedConstraint > 0 ? 2.2 : 1) + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
             let canvas = document.createElement("canvas");
-            canvas.setAttribute("width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
-            canvas.setAttribute("height", (this._textHeight * (this.source.speedConstraint > 0 ? 2.2 : 1) + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
+            diffAndSetAttribute(canvas, "width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
+            diffAndSetAttribute(canvas, "height", (this._textHeight * (this.source.speedConstraint > 0 ? 2.2 : 1) + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
             this._label.appendChild(canvas);
             let context = canvas.getContext("2d");
             if (map.config.waypointLabelUseBackground) {
@@ -170,8 +170,8 @@ class SvgTopOfXElement extends SvgMapElement {
         let container = document.createElementNS(Avionics.SVG.NS, "image");
         container.id = this.id(map);
         container.classList.add("map-city-icon");
-        container.setAttribute("width", fastToFixed(map.config.waypointIconSize * 2, 0));
-        container.setAttribute("height", fastToFixed(map.config.waypointIconSize * 2, 0));
+        diffAndSetAttribute(container, "width", fastToFixed(map.config.waypointIconSize * 2, 0));
+        diffAndSetAttribute(container, "height", fastToFixed(map.config.waypointIconSize * 2, 0));
         container.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName());
         return container;
     }

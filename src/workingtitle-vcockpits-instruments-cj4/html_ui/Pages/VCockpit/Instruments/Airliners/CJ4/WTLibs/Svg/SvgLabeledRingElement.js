@@ -14,11 +14,11 @@ class SvgLabeledRingElement extends SvgMapElement {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
 
-        container.setAttribute("x", 0);
-        container.setAttribute("y", 0);
-        container.setAttribute("width", 1000);
-        container.setAttribute("height", 1000);
-        container.setAttribute("overflow", "hidden");
+        diffAndSetAttribute(container, "x", 0);
+        diffAndSetAttribute(container, "y", 0);
+        diffAndSetAttribute(container, "width", 1000);
+        diffAndSetAttribute(container, "height", 1000);
+        diffAndSetAttribute(container, "overflow", "hidden");
 
         this.rangeRing = this.createRing(map);
         container.appendChild(this.rangeRing);
@@ -48,7 +48,7 @@ class SvgLabeledRingElement extends SvgMapElement {
 
     createRing(map) {
         let rangeRing = document.createElementNS(Avionics.SVG.NS, "circle");
-        rangeRing.setAttribute("fill-opacity", "0");
+        diffAndSetAttribute(rangeRing, "fill-opacity", "0");
         return rangeRing;
     }
 

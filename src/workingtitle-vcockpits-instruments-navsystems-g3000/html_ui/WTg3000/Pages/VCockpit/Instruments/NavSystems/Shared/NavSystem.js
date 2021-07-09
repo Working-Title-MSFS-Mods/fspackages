@@ -291,7 +291,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
                 if (event == "ElementSetAttribute" && _args.length >= 4) {
                     let element = this.getChildById(_args[1]);
                     if (element) {
-                        Avionics.Utils.diffAndSetAttribute(element, _args[2], _args[3]);
+                        diffAndSetAttribute(element, _args[2], _args[3]);
                     }
                 }
                 else {
@@ -1495,7 +1495,7 @@ class MapInstrumentElement extends NavSystemElement {
                 }
             }
             if (this.fuelRangeCircle && this.fuelRangeOn) {
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "state", "Active");
+                diffAndSetAttribute(this.fuelRangeCircle, "state", "Active");
                 let size = Math.max(this.instrument.clientHeight, this.instrument.clientWidth);
                 this.fuelRangeCircle.style.height = size + "px";
                 this.fuelRangeCircle.style.width = size + "px";
@@ -1510,17 +1510,17 @@ class MapInstrumentElement extends NavSystemElement {
                 let timeToReserve = Math.max(0, timeToEmpty - this.fuelRangeReserveMinutes);
                 let distanceToReserve = timeToReserve * this.smoothedSpeed;
                 let distanceToEmpty = timeToEmpty * this.smoothedSpeed;
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "radius-reserve", Math.min(2000, distanceToEmpty * 1000 / this.instrument.getDisplayRange()).toString());
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "inner-radius", Math.min(2000, distanceToReserve * 1000 / this.instrument.getDisplayRange()).toString());
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "time-to-reserve", (timeToReserve).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "radius-reserve", Math.min(2000, distanceToEmpty * 1000 / this.instrument.getDisplayRange()).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "inner-radius", Math.min(2000, distanceToReserve * 1000 / this.instrument.getDisplayRange()).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "time-to-reserve", (timeToReserve).toString());
                 let offset = this.instrument.getPlaneCoords();
                 offset.y = (offset.y - 500) * this.instrument.getOverdrawFactor();
                 offset.x = (offset.x - 500) * this.instrument.getOverdrawFactor();
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "offset-x", (offset.x).toString());
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "offset-y", (offset.y).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "offset-x", (offset.x).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "offset-y", (offset.y).toString());
             }
             else if (this.fuelRangeCircle) {
-                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "state", "Inactive");
+                diffAndSetAttribute(this.fuelRangeCircle, "state", "Inactive");
             }
         }
     }
@@ -1956,7 +1956,7 @@ class SoftKeyHtmlElement {
             _elem.state = "Greyed";
         }
         if (_elem.state) {
-            Avionics.Utils.diffAndSetAttribute(this.Element, "state", _elem.state);
+            diffAndSetAttribute(this.Element, "state", _elem.state);
         }
     }
 }

@@ -72,12 +72,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.gs_mainGroup.setAttribute("id", "GlideSlopeGroup");
             {
                 let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-                bg.setAttribute("x", posX.toString());
-                bg.setAttribute("y", posY.toString());
-                bg.setAttribute("width", width.toString());
-                bg.setAttribute("height", height.toString());
-                bg.setAttribute("fill", "black");
-                bg.setAttribute("fill-opacity", "0.3");
+                diffAndSetAttribute(bg, "x", posX.toString());
+                diffAndSetAttribute(bg, "y", posY.toString());
+                diffAndSetAttribute(bg, "width", width.toString());
+                diffAndSetAttribute(bg, "height", height.toString());
+                diffAndSetAttribute(bg, "fill", "black");
+                diffAndSetAttribute(bg, "fill-opacity", "0.3");
                 this.gs_mainGroup.appendChild(bg);
                 let rangeFactor = 0.85;
                 let nbCircles = 2;
@@ -88,32 +88,32 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 for (let i = 0; i < nbCircles; i++) {
                     let y = posY + (height * 0.5) + ((rangeFactor * height * 0.5) * (i + 1)) / nbCircles;
                     let circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", this.gs_cursorPosX.toString());
-                    circle.setAttribute("cy", y.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", this.gs_cursorPosX.toString());
+                    diffAndSetAttribute(circle, "cy", y.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.gs_mainGroup.appendChild(circle);
                     y = posY + (height * 0.5) - ((rangeFactor * height * 0.5) * (i + 1)) / nbCircles;
                     circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", this.gs_cursorPosX.toString());
-                    circle.setAttribute("cy", y.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", this.gs_cursorPosX.toString());
+                    diffAndSetAttribute(circle, "cy", y.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.gs_mainGroup.appendChild(circle);
                 }
 
                 let neutralLine = document.createElementNS(Avionics.SVG.NS, "line");
-                neutralLine.setAttribute("id", "NeutralLine");
-                neutralLine.setAttribute("x1", (posX + 5).toString());
-                neutralLine.setAttribute("y1", (posY + height * 0.5).toString());
-                neutralLine.setAttribute("x2", (posX + width - 5).toString());
-                neutralLine.setAttribute("y2", (posY + height * 0.5).toString());
-                neutralLine.setAttribute("stroke", "white");
-                neutralLine.setAttribute("stroke-width", "2");
+                diffAndSetAttribute(neutralLine, "id", "NeutralLine");
+                diffAndSetAttribute(neutralLine, "x1", (posX + 5).toString());
+                diffAndSetAttribute(neutralLine, "y1", (posY + height * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "x2", (posX + width - 5).toString());
+                diffAndSetAttribute(neutralLine, "y2", (posY + height * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "stroke", "white");
+                diffAndSetAttribute(neutralLine, "stroke-width", "2");
                 this.gs_mainGroup.appendChild(neutralLine);
 
                 this.gs_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -155,12 +155,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.loc_mainGroup.setAttribute("id", "LocalizerGroup");
             {
                 let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-                bg.setAttribute("x", posX.toString());
-                bg.setAttribute("y", posY.toString());
-                bg.setAttribute("width", width.toString());
-                bg.setAttribute("height", height.toString());
-                bg.setAttribute("fill", "black");
-                bg.setAttribute("fill-opacity", "0.3");
+                diffAndSetAttribute(bg, "x", posX.toString());
+                diffAndSetAttribute(bg, "y", posY.toString());
+                diffAndSetAttribute(bg, "width", width.toString());
+                diffAndSetAttribute(bg, "height", height.toString());
+                diffAndSetAttribute(bg, "fill", "black");
+                diffAndSetAttribute(bg, "fill-opacity", "0.3");
                 this.loc_mainGroup.appendChild(bg);
                 let rangeFactor = 0.85;
                 let nbCircles = 2;
@@ -171,32 +171,32 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 for (let i = 0; i < nbCircles; i++) {
                     let x = posX + (width * 0.5) + ((rangeFactor * width * 0.5) * (i + 1)) / nbCircles;
                     let circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", x.toString());
-                    circle.setAttribute("cy", this.loc_cursorPosY.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", x.toString());
+                    diffAndSetAttribute(circle, "cy", this.loc_cursorPosY.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.loc_mainGroup.appendChild(circle);
                     x = posX + (width * 0.5) - ((rangeFactor * width * 0.5) * (i + 1)) / nbCircles;
                     circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", x.toString());
-                    circle.setAttribute("cy", this.loc_cursorPosY.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", x.toString());
+                    diffAndSetAttribute(circle, "cy", this.loc_cursorPosY.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.loc_mainGroup.appendChild(circle);
                 }
 
                 let neutralLine = document.createElementNS(Avionics.SVG.NS, "line");
-                neutralLine.setAttribute("id", "NeutralLine");
-                neutralLine.setAttribute("x1", (posX + width * 0.5).toString());
-                neutralLine.setAttribute("y1", (posY + 5).toString());
-                neutralLine.setAttribute("x2", (posX + width * 0.5).toString());
-                neutralLine.setAttribute("y2", (posY + height - 5).toString());
-                neutralLine.setAttribute("stroke", "white");
-                neutralLine.setAttribute("stroke-width", "2");
+                diffAndSetAttribute(neutralLine, "id", "NeutralLine");
+                diffAndSetAttribute(neutralLine, "x1", (posX + width * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "y1", (posY + 5).toString());
+                diffAndSetAttribute(neutralLine, "x2", (posX + width * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "y2", (posY + height - 5).toString());
+                diffAndSetAttribute(neutralLine, "stroke", "white");
+                diffAndSetAttribute(neutralLine, "stroke-width", "2");
                 this.loc_mainGroup.appendChild(neutralLine);
 
                 this.loc_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");

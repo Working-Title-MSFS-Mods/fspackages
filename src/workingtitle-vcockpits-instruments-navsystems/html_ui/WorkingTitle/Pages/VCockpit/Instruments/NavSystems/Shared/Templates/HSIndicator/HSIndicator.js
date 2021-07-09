@@ -1162,7 +1162,7 @@ class HSIndicator extends HTMLElement {
         else {
             this.crossTrackCurrent += toAdd;
         }
-        Avionics.Utils.diffAndSetAttribute(this.CDI, "transform", "translate(" + this.crossTrackCurrent + " 0)");
+        diffAndSetAttribute(this.CDI, "transform", "translate(" + this.crossTrackCurrent + " 0)");
     }
     onExit() {
     }

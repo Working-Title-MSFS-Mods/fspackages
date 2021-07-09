@@ -326,7 +326,7 @@ class SvgMap {
         }
         for (let svgLayer of this.svgLayersToUpdate) {
             for (let child of svgLayer.children) {
-                child.setAttribute("needDeletion", "true");
+                diffAndSetAttribute(child, "needDeletion", "true");
             }
         }
 
@@ -337,7 +337,7 @@ class SvgMap {
         let newElementsWithTextBox = new Set();
         for (let i = 0; i < this.mapElements.length; i++) {
             let svgElement = this.mapElements[i].draw(this);
-            svgElement.setAttribute("needDeletion", "false");
+            diffAndSetAttribute(svgElement, "needDeletion", "false");
 
             // if (this.mapElements[i].hasTextBox) {
             //     this.mapElements[i].getLabelElement().draw(this);

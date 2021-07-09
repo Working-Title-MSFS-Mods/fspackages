@@ -22,11 +22,11 @@ class SvgAirplaneElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("x", fastToFixed(((1000 - map.config.airplaneIconSize) * 0.5), 0));
-        container.setAttribute("y", fastToFixed(((1000 - map.config.airplaneIconSize) * 0.5), 0));
-        container.setAttribute("width", fastToFixed(map.config.airplaneIconSize, 0));
-        container.setAttribute("height", fastToFixed(map.config.airplaneIconSize, 0));
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "x", fastToFixed(((1000 - map.config.airplaneIconSize) * 0.5), 0));
+        diffAndSetAttribute(container, "y", fastToFixed(((1000 - map.config.airplaneIconSize) * 0.5), 0));
+        diffAndSetAttribute(container, "width", fastToFixed(map.config.airplaneIconSize, 0));
+        diffAndSetAttribute(container, "height", fastToFixed(map.config.airplaneIconSize, 0));
+        diffAndSetAttribute(container, "overflow", "visible");
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", this.getIconPath(map));
         var newScale = 100 * this._scale;
@@ -259,9 +259,9 @@ class SvgNPCAirplaneElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("width", fastToFixed(this._size, 0));
-        container.setAttribute("height", fastToFixed(this._size, 0));
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "width", fastToFixed(this._size, 0));
+        diffAndSetAttribute(container, "height", fastToFixed(this._size, 0));
+        diffAndSetAttribute(container, "overflow", "visible");
         let iconPath = map.config.imagesDir;
         iconPath += "ICON_MAP_TCAS_OT"; //map.config.airplaneIcon1;
         iconPath += ".svg";
@@ -284,8 +284,8 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         this._arrImage.setAttribute("stroke-width", "2");
         container.appendChild(this._arrImage);
 
-        container.setAttribute("x", fastToFixed(((1000 - this._size) * 0.5), 0));
-        container.setAttribute("y", fastToFixed(((1000 - this._size) * 0.5), 0));
+        diffAndSetAttribute(container, "x", fastToFixed(((1000 - this._size) * 0.5), 0));
+        diffAndSetAttribute(container, "y", fastToFixed(((1000 - this._size) * 0.5), 0));
         this._isCreated = true;
         return container;
     }

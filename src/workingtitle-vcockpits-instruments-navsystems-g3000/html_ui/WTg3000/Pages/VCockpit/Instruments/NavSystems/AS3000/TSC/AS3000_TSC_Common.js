@@ -546,19 +546,19 @@ class AS3000_TSC extends NavSystemTouch {
     _updateSoftkeyLabels() {
         switch (this.getCurrentPageGroup().name) {
             case "PFD":
-                Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "Selected");
-                Avionics.Utils.diffAndSetAttribute(this.mfdSoftkey, "state", "");
-                Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "");
+                diffAndSetAttribute(this.pfdSoftkey, "state", "Selected");
+                diffAndSetAttribute(this.mfdSoftkey, "state", "");
+                diffAndSetAttribute(this.navcomSoftkey, "state", "");
                 break;
             case "MFD":
-                Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "");
-                Avionics.Utils.diffAndSetAttribute(this.mfdSoftkey, "state", "Selected");
-                Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "");
+                diffAndSetAttribute(this.pfdSoftkey, "state", "");
+                diffAndSetAttribute(this.mfdSoftkey, "state", "Selected");
+                diffAndSetAttribute(this.navcomSoftkey, "state", "");
                 break;
             case "NavCom":
-                Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "");
-                Avionics.Utils.diffAndSetAttribute(this.mfdSoftkey, "state", "");
-                Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "Selected");
+                diffAndSetAttribute(this.pfdSoftkey, "state", "");
+                diffAndSetAttribute(this.mfdSoftkey, "state", "");
+                diffAndSetAttribute(this.navcomSoftkey, "state", "Selected");
                 break;
         }
     }
@@ -1076,50 +1076,50 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
 
     onUpdate(_deltaTime) {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-            Avionics.Utils.diffAndSet(this.NavSourceButton_Value, "FMS");
+            diffAndSetText(this.NavSourceButton_Value, "FMS");
         }
         else {
             if (SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number") == 1) {
-                Avionics.Utils.diffAndSet(this.NavSourceButton_Value, "NAV1");
+                diffAndSetText(this.NavSourceButton_Value, "NAV1");
             }
             else {
-                Avionics.Utils.diffAndSet(this.NavSourceButton_Value, "NAV2");
+                diffAndSetText(this.NavSourceButton_Value, "NAV2");
             }
         }
         let brg1Src = SimVar.GetSimVarValue("L:PFD_BRG1_Source", "number");
         switch (brg1Src) {
             case 0:
-                Avionics.Utils.diffAndSet(this.Bearing1Button_Value, "OFF");
+                diffAndSetText(this.Bearing1Button_Value, "OFF");
                 break;
             case 1:
-                Avionics.Utils.diffAndSet(this.Bearing1Button_Value, "NAV1");
+                diffAndSetText(this.Bearing1Button_Value, "NAV1");
                 break;
             case 2:
-                Avionics.Utils.diffAndSet(this.Bearing1Button_Value, "NAV2");
+                diffAndSetText(this.Bearing1Button_Value, "NAV2");
                 break;
             case 3:
-                Avionics.Utils.diffAndSet(this.Bearing1Button_Value, "GPS");
+                diffAndSetText(this.Bearing1Button_Value, "GPS");
                 break;
             case 4:
-                Avionics.Utils.diffAndSet(this.Bearing1Button_Value, "ADF");
+                diffAndSetText(this.Bearing1Button_Value, "ADF");
                 break;
         }
         let brg2Src = SimVar.GetSimVarValue("L:PFD_BRG2_Source", "number");
         switch (brg2Src) {
             case 0:
-                Avionics.Utils.diffAndSet(this.Bearing2Button_Value, "OFF");
+                diffAndSetText(this.Bearing2Button_Value, "OFF");
                 break;
             case 1:
-                Avionics.Utils.diffAndSet(this.Bearing2Button_Value, "NAV1");
+                diffAndSetText(this.Bearing2Button_Value, "NAV1");
                 break;
             case 2:
-                Avionics.Utils.diffAndSet(this.Bearing2Button_Value, "NAV2");
+                diffAndSetText(this.Bearing2Button_Value, "NAV2");
                 break;
             case 3:
-                Avionics.Utils.diffAndSet(this.Bearing2Button_Value, "GPS");
+                diffAndSetText(this.Bearing2Button_Value, "GPS");
                 break;
             case 4:
-                Avionics.Utils.diffAndSet(this.Bearing2Button_Value, "ADF");
+                diffAndSetText(this.Bearing2Button_Value, "ADF");
                 break;
         }
     }
@@ -1402,28 +1402,28 @@ class AS3000_TSC_WeatherSelection extends NavSystemElement {
     updateWeatherMapButtons(_newIndex = undefined) {
         let currMap = _newIndex == undefined ? SimVar.GetSimVarValue("L:AS3000_MFD_Current_WeatherMap", "number") : _newIndex;
         if (currMap == 0) {
-            Avionics.Utils.diffAndSet(this.nexradButton_text, "NEXRAD Settings");
-            Avionics.Utils.diffAndSetAttribute(this.nexradButton, "state", "Active");
+            diffAndSetText(this.nexradButton_text, "NEXRAD Settings");
+            diffAndSetAttribute(this.nexradButton, "state", "Active");
         }
         else {
-            Avionics.Utils.diffAndSet(this.nexradButton_text, "NEXRAD");
-            Avionics.Utils.diffAndSetAttribute(this.nexradButton, "state", "");
+            diffAndSetText(this.nexradButton_text, "NEXRAD");
+            diffAndSetAttribute(this.nexradButton, "state", "");
         }
         if (currMap == 1) {
-            Avionics.Utils.diffAndSet(this.wxRadarButton_text, "WX RADAR Settings");
-            Avionics.Utils.diffAndSetAttribute(this.wxRadarButton, "state", "Active");
+            diffAndSetText(this.wxRadarButton_text, "WX RADAR Settings");
+            diffAndSetAttribute(this.wxRadarButton, "state", "Active");
         }
         else {
-            Avionics.Utils.diffAndSet(this.wxRadarButton_text, "WX RADAR Horizontal");
-            Avionics.Utils.diffAndSetAttribute(this.wxRadarButton, "state", "");
+            diffAndSetText(this.wxRadarButton_text, "WX RADAR Horizontal");
+            diffAndSetAttribute(this.wxRadarButton, "state", "");
         }
         if (currMap == 2) {
-            Avionics.Utils.diffAndSet(this.wxRadarVertButton_text, "WX RADAR Settings");
-            Avionics.Utils.diffAndSetAttribute(this.wxRadarVertButton, "state", "Active");
+            diffAndSetText(this.wxRadarVertButton_text, "WX RADAR Settings");
+            diffAndSetAttribute(this.wxRadarVertButton, "state", "Active");
         }
         else {
-            Avionics.Utils.diffAndSet(this.wxRadarVertButton_text, "WX RADAR Vertical");
-            Avionics.Utils.diffAndSetAttribute(this.wxRadarVertButton, "state", "");
+            diffAndSetText(this.wxRadarVertButton_text, "WX RADAR Vertical");
+            diffAndSetAttribute(this.wxRadarVertButton, "state", "");
         }
     }
 }
@@ -1490,7 +1490,7 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
     updateSlider() {
         let currValue = SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") * 100;
         let displayValue = fastToFixed(currValue, 0)
-        Avionics.Utils.diffAndSet(this.displayValue, currValue.toFixed(0) + "%"); // update readout display
+        diffAndSetText(this.displayValue, currValue.toFixed(0) + "%"); // update readout display
         this.slider.value = currValue;
         this.sliderBackground.style.webkitClipPath = "polygon(0 0, " + displayValue + "% 0, " + displayValue + "% 100%, 0 100%)"; // update the range slider's track background to only show on the left of the thumb
     }
@@ -1814,10 +1814,10 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
     _updateXPDRIdent() {
         if (this.identTime > 0) {
             this.identTime -= this.gps.deltaTime;
-            Avionics.Utils.diffAndSetAttribute(this.XPDRIdent, "state", "Active");
+            diffAndSetAttribute(this.XPDRIdent, "state", "Active");
         }
         else {
-            Avionics.Utils.diffAndSetAttribute(this.XPDRIdent, "state", "");
+            diffAndSetAttribute(this.XPDRIdent, "state", "");
         }
     }
 
@@ -1828,12 +1828,12 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
     }
 
     _updateMonitors() {
-        Avionics.Utils.diffAndSetAttribute(this.Mic_Com1_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "visible" : "hidden");
-        Avionics.Utils.diffAndSetAttribute(this.Com1Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.Mic_Com2_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "visible" : "hidden");
-        Avionics.Utils.diffAndSetAttribute(this.Com2Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.Mon_Com1_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:1", "Bool") ? "visible" : "hidden");
-        Avionics.Utils.diffAndSetAttribute(this.Mon_Com2_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:2", "Bool") ? "visible" : "hidden");
+        diffAndSetAttribute(this.Mic_Com1_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "visible" : "hidden");
+        diffAndSetAttribute(this.Com1Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "Active" : "");
+        diffAndSetAttribute(this.Mic_Com2_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "visible" : "hidden");
+        diffAndSetAttribute(this.Com2Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "Active" : "");
+        diffAndSetAttribute(this.Mon_Com1_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:1", "Bool") ? "visible" : "hidden");
+        diffAndSetAttribute(this.Mon_Com2_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:2", "Bool") ? "visible" : "hidden");
     }
 
     onUpdate(_deltaTime) {
@@ -2222,18 +2222,18 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
         }
         this.scrollElement.update();
 
-        Avionics.Utils.diffAndSet(this.Nav1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2));
-        Avionics.Utils.diffAndSet(this.Nav1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz"), 2));
-        Avionics.Utils.diffAndSet(this.Nav1_ID, SimVar.GetSimVarValue("NAV IDENT:1", "string"));
-        Avionics.Utils.diffAndSet(this.Nav2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz"), 2));
-        Avionics.Utils.diffAndSet(this.Nav2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:2", "MHz"), 2));
-        Avionics.Utils.diffAndSet(this.Nav2_ID, SimVar.GetSimVarValue("NAV IDENT:2", "string"));
-        Avionics.Utils.diffAndSet(this.Com1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
-        Avionics.Utils.diffAndSet(this.Com1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
-        Avionics.Utils.diffAndSet(this.Com2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
-        Avionics.Utils.diffAndSet(this.Com2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
-        Avionics.Utils.diffAndSet(this.Adf_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
-        Avionics.Utils.diffAndSet(this.Adf_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF STANDBY FREQUENCY:1", "KHz"), 1));
+        diffAndSetText(this.Nav1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2));
+        diffAndSetText(this.Nav1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz"), 2));
+        diffAndSetText(this.Nav1_ID, SimVar.GetSimVarValue("NAV IDENT:1", "string"));
+        diffAndSetText(this.Nav2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz"), 2));
+        diffAndSetText(this.Nav2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:2", "MHz"), 2));
+        diffAndSetText(this.Nav2_ID, SimVar.GetSimVarValue("NAV IDENT:2", "string"));
+        diffAndSetText(this.Com1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        diffAndSetText(this.Com1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        diffAndSetText(this.Com2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+        diffAndSetText(this.Com2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+        diffAndSetText(this.Adf_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
+        diffAndSetText(this.Adf_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF STANDBY FREQUENCY:1", "KHz"), 1));
     }
     onExit() {
         this.window.setAttribute("state", "Inactive");
@@ -2791,13 +2791,13 @@ class AS3000_TSC_InsertBeforeWaypoint extends NavSystemElement {
                 this.elements.push(newElem);
             }
             let infos = this.gps.currFlightPlanManager.getWaypoint(i).infos;
-            Avionics.Utils.diffAndSet(this.elements[i].ident, infos.ident);
-            Avionics.Utils.diffAndSet(this.elements[i].name, infos.name);
+            diffAndSetText(this.elements[i].ident, infos.ident);
+            diffAndSetText(this.elements[i].name, infos.name);
             let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.elements[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.elements[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
         }
         for (let i = this.gps.currFlightPlanManager.getWaypointsCount(); i < this.elements.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.elements[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.elements[i].base, "state", "Inactive");
         }
     }
     onExit() {
@@ -2912,12 +2912,12 @@ class AS3000_TSC_Minimums extends NavSystemElement {
                 display += this.digits[i].toString();
             }
             display += '</span><span class="Writing">' + this.digits[this.digits.length - 1] + '</span><span class="Writed">FT</span>';
-            Avionics.Utils.diffAndSet(this.display, display);
+            diffAndSetText(this.display, display);
         }
         else {
             let display = '<span class="Initial">';
             display += SimVar.GetSimVarValue("L:AS3000_MinimalsValue", "number");
-            Avionics.Utils.diffAndSet(this.display, display + "FT</span>");
+            diffAndSetText(this.display, display + "FT</span>");
         }
     }
 
@@ -2955,7 +2955,7 @@ class AS3000_TSC_Minimums extends NavSystemElement {
     }
     setMode(_mode) {
         this.currentMode = _mode;
-        Avionics.Utils.diffAndSetAttribute(this.tempAtDestButton, "state", (_mode == 2 ? "Active" : "Inactive"));
+        diffAndSetAttribute(this.tempAtDestButton, "state", (_mode == 2 ? "Active" : "Inactive"));
         let newValue = "";
         switch (_mode) {
             case 0:
@@ -2971,7 +2971,7 @@ class AS3000_TSC_Minimums extends NavSystemElement {
                 newValue = "Radio Alt";
                 break;
         }
-        Avionics.Utils.diffAndSet(this.typeButtonValue, newValue);
+        diffAndSetText(this.typeButtonValue, newValue);
     }
     cancelEdit() {
         this.gps.goBack();

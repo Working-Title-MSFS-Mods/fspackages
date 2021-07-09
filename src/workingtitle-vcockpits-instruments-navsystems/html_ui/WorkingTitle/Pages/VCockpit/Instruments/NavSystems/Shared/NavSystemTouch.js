@@ -970,9 +970,9 @@ class NavSystemTouch_DupWPLine {
         }
     }
     onEndGeoCalcCompute() {
-        Avionics.Utils.diffAndSetAttribute(this.bearingArrow, "style", "transform: rotate(" + fastToFixed(this.geoCalc.bearing, 3) + "deg)");
-        Avionics.Utils.diffAndSet(this.bearingText, fastToFixed(this.geoCalc.bearing, 0) + "°");
-        Avionics.Utils.diffAndSet(this.distance, fastToFixed(this.geoCalc.distance, 0) + "NM");
+        diffAndSetAttribute(this.bearingArrow, "style", "transform: rotate(" + fastToFixed(this.geoCalc.bearing, 3) + "deg)");
+        diffAndSetText(this.bearingText, fastToFixed(this.geoCalc.bearing, 0) + "°");
+        diffAndSetText(this.distance, fastToFixed(this.geoCalc.distance, 0) + "NM");
     }
 }
 class NavSystemTouch_DuplicateWaypointSelection extends NavSystemElement {
@@ -1033,11 +1033,11 @@ class NavSystemTouch_DuplicateWaypointSelection extends NavSystemElement {
         this.scrollElement.update();
         for (let i = 0; i < this.wayPoints.length; i++) {
             let infos = this.wayPoints[i].GetInfos();
-            Avionics.Utils.diffAndSet(this.lines[i].identButton_Ident, infos.ident);
-            Avionics.Utils.diffAndSet(this.lines[i].identButton_Name, infos.name);
-            Avionics.Utils.diffAndSet(this.lines[i].identButton_City, infos.city + "," + infos.region);
+            diffAndSetText(this.lines[i].identButton_Ident, infos.ident);
+            diffAndSetText(this.lines[i].identButton_Name, infos.name);
+            diffAndSetText(this.lines[i].identButton_City, infos.city + "," + infos.region);
             let logo = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].identButton_Logo, "src", logo == "" ? "" : "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
+            diffAndSetAttribute(this.lines[i].identButton_Logo, "src", logo == "" ? "" : "/Pages/VCockpit/Instruments/Shared/Map/Images/" + logo);
             if (infos.coordinates && infos.coordinates.lat) {
                 this.lines[i].geoCalc.SetParams(SimVar.GetSimVarValue("PLANE LATITUDE", "degree", this.gps.instrumentIdentifier), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree", this.gps.instrumentIdentifier), infos.coordinates.lat, infos.coordinates.long, true);
                 this.lines[i].geoCalc.Compute(this.lines[i].onEndGeoCalcCompute.bind(this.lines[i]));
@@ -1142,18 +1142,18 @@ class NavSystemTouch_NRST_Airport extends NavSystemElement {
                 this.airportLines.push(newLine);
             }
             let infos = this.nearestAirports.airports[i];
-            Avionics.Utils.diffAndSet(this.airportLines[i].ident, infos.ident);
-            Avionics.Utils.diffAndSet(this.airportLines[i].name, infos.name);
+            diffAndSetText(this.airportLines[i].ident, infos.ident);
+            diffAndSetText(this.airportLines[i].name, infos.name);
             let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.airportLines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            Avionics.Utils.diffAndSetAttribute(this.airportLines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
-            Avionics.Utils.diffAndSet(this.airportLines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
-            Avionics.Utils.diffAndSet(this.airportLines[i].distance, fastToFixed(infos.distance, 1) + "NM");
-            Avionics.Utils.diffAndSet(this.airportLines[i].runway, fastToFixed(infos.longestRunwayLength, 0) + "FT");
-            Avionics.Utils.diffAndSet(this.airportLines[i].appr, infos.bestApproach);
+            diffAndSetAttribute(this.airportLines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.airportLines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
+            diffAndSetText(this.airportLines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
+            diffAndSetText(this.airportLines[i].distance, fastToFixed(infos.distance, 1) + "NM");
+            diffAndSetText(this.airportLines[i].runway, fastToFixed(infos.longestRunwayLength, 0) + "FT");
+            diffAndSetText(this.airportLines[i].appr, infos.bestApproach);
         }
         for (let i = this.nearestAirports.airports.length; i < this.airportLines.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.airportLines[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.airportLines[i].base, "state", "Inactive");
         }
     }
     onExit() {
@@ -1181,7 +1181,7 @@ class NavSystemTouch_NRST_Airport extends NavSystemElement {
                 this.airportLines[this.selectedElement].identButton.setAttribute("state", "None");
             }
             this.selectedElement = _index;
-            Avionics.Utils.diffAndSetAttribute(this.menu, "state", "Active");
+            diffAndSetAttribute(this.menu, "state", "Active");
             this.airportLines[_index].identButton.setAttribute("state", "SelectedWP");
         }
         if (this.showOnMap) {
@@ -1297,15 +1297,15 @@ class NavSystemTouch_NRST_Intersection extends NavSystemElement {
                 this.lines.push(newLine);
             }
             let infos = this.nearest.intersections[i];
-            Avionics.Utils.diffAndSet(this.lines[i].ident, infos.ident);
+            diffAndSetText(this.lines[i].ident, infos.ident);
             let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
-            Avionics.Utils.diffAndSet(this.lines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
-            Avionics.Utils.diffAndSet(this.lines[i].distance, fastToFixed(infos.distance, 1) + "NM");
+            diffAndSetAttribute(this.lines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.lines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
+            diffAndSetText(this.lines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
+            diffAndSetText(this.lines[i].distance, fastToFixed(infos.distance, 1) + "NM");
         }
         for (let i = this.nearest.intersections.length; i < this.lines.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.lines[i].base, "state", "Inactive");
         }
     }
     onExit() {
@@ -1330,7 +1330,7 @@ class NavSystemTouch_NRST_Intersection extends NavSystemElement {
                 this.lines[this.selectedElement].identButton.setAttribute("state", "None");
             }
             this.selectedElement = _index;
-            Avionics.Utils.diffAndSetAttribute(this.menu, "state", "Active");
+            diffAndSetAttribute(this.menu, "state", "Active");
             this.lines[_index].identButton.setAttribute("state", "SelectedWP");
         }
     }
@@ -1440,17 +1440,17 @@ class NavSystemTouch_NRST_VOR extends NavSystemElement {
                 this.lines.push(newLine);
             }
             let infos = this.nearest.vors[i];
-            Avionics.Utils.diffAndSet(this.lines[i].ident, infos.ident);
+            diffAndSetText(this.lines[i].ident, infos.ident);
             let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
-            Avionics.Utils.diffAndSet(this.lines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
-            Avionics.Utils.diffAndSet(this.lines[i].distance, fastToFixed(infos.distance, 1) + "NM");
-            Avionics.Utils.diffAndSet(this.lines[i].name, infos.name);
-            Avionics.Utils.diffAndSet(this.lines[i].frequency, infos.frequencyMHz.toFixed(2));
+            diffAndSetAttribute(this.lines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.lines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
+            diffAndSetText(this.lines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
+            diffAndSetText(this.lines[i].distance, fastToFixed(infos.distance, 1) + "NM");
+            diffAndSetText(this.lines[i].name, infos.name);
+            diffAndSetText(this.lines[i].frequency, infos.frequencyMHz.toFixed(2));
         }
         for (let i = this.nearest.vors.length; i < this.lines.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.lines[i].base, "state", "Inactive");
         }
     }
     onExit() {
@@ -1475,7 +1475,7 @@ class NavSystemTouch_NRST_VOR extends NavSystemElement {
                 this.lines[this.selectedElement].identButton.setAttribute("state", "None");
             }
             this.selectedElement = _index;
-            Avionics.Utils.diffAndSetAttribute(this.menu, "state", "Active");
+            diffAndSetAttribute(this.menu, "state", "Active");
             this.lines[_index].identButton.setAttribute("state", "SelectedWP");
         }
     }
@@ -1581,17 +1581,17 @@ class NavSystemTouch_NRST_NDB extends NavSystemElement {
                 this.lines.push(newLine);
             }
             let infos = this.nearest.ndbs[i];
-            Avionics.Utils.diffAndSet(this.lines[i].ident, infos.ident);
+            diffAndSetText(this.lines[i].ident, infos.ident);
             let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
-            Avionics.Utils.diffAndSet(this.lines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
-            Avionics.Utils.diffAndSet(this.lines[i].distance, fastToFixed(infos.distance, 1) + "NM");
-            Avionics.Utils.diffAndSet(this.lines[i].name, infos.name);
-            Avionics.Utils.diffAndSet(this.lines[i].frequency, infos.frequencyMHz.toFixed(1));
+            diffAndSetAttribute(this.lines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.lines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
+            diffAndSetText(this.lines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
+            diffAndSetText(this.lines[i].distance, fastToFixed(infos.distance, 1) + "NM");
+            diffAndSetText(this.lines[i].name, infos.name);
+            diffAndSetText(this.lines[i].frequency, infos.frequencyMHz.toFixed(1));
         }
         for (let i = this.nearest.ndbs.length; i < this.lines.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.lines[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.lines[i].base, "state", "Inactive");
         }
     }
     onExit() {
@@ -1616,7 +1616,7 @@ class NavSystemTouch_NRST_NDB extends NavSystemElement {
                 this.lines[this.selectedElement].identButton.setAttribute("state", "None");
             }
             this.selectedElement = _index;
-            Avionics.Utils.diffAndSetAttribute(this.menu, "state", "Active");
+            diffAndSetAttribute(this.menu, "state", "Active");
             this.lines[_index].identButton.setAttribute("state", "SelectedWP");
         }
     }
@@ -1861,12 +1861,12 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
     }
     updateDisplay() {
         if (this.gps.currFlightPlanManager.getWaypointsCount() < 3) {
-            Avionics.Utils.diffAndSetAttribute(this.AFPL_EnRouteAdd, "state", "Active");
+            diffAndSetAttribute(this.AFPL_EnRouteAdd, "state", "Active");
         }
         let name = (this.gps.currFlightPlanManager.getWaypointsCount() > 0 && this.gps.currFlightPlanManager.getWaypoint(0) != undefined ? this.gps.currFlightPlanManager.getWaypoint(0).infos.ident : "______");
         name += "/";
         name += (this.gps.currFlightPlanManager.getWaypointsCount() > 1 && this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1) != undefined ? this.gps.currFlightPlanManager.getWaypoint(this.gps.currFlightPlanManager.getWaypointsCount() - 1).infos.ident : "______");
-        Avionics.Utils.diffAndSet(this.fplName, name);
+        diffAndSetText(this.fplName, name);
         let departure = this.gps.currFlightPlanManager.getDepartureWaypointsMap();
         let arrival = this.gps.currFlightPlanManager.getArrivalWaypointsMap();
         let approach = this.gps.currFlightPlanManager.getApproachWaypoints();
@@ -1876,18 +1876,18 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
         let destination = this.gps.currFlightPlanManager.getDestination();
         if (origin && origin != undefined) {
             if (departure.length > 0) {
-                Avionics.Utils.diffAndSet(this.origin_mainValue, "Departure - " + this.gps.currFlightPlanManager.getDeparture().name);
+                diffAndSetText(this.origin_mainValue, "Departure - " + this.gps.currFlightPlanManager.getDeparture().name);
             }
             else {
-                Avionics.Utils.diffAndSet(this.origin_mainValue, "Origin - " + origin.infos.ident);
+                diffAndSetText(this.origin_mainValue, "Origin - " + origin.infos.ident);
             }
-            Avionics.Utils.diffAndSet(this.origin_mainText, "");
-            Avionics.Utils.diffAndSetAttribute(this.origin_wayPoint.base, "state", "Active");
+            diffAndSetText(this.origin_mainText, "");
+            diffAndSetAttribute(this.origin_wayPoint.base, "state", "Active");
             let originInfo = this.gps.currFlightPlanManager.getWaypoint(0).infos;
-            Avionics.Utils.diffAndSet(this.origin_wayPoint.identButton_Ident, originInfo.ident);
-            Avionics.Utils.diffAndSet(this.origin_wayPoint.identButton_Name, originInfo.name);
+            diffAndSetText(this.origin_wayPoint.identButton_Ident, originInfo.ident);
+            diffAndSetText(this.origin_wayPoint.identButton_Name, originInfo.name);
             let symbol = originInfo.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.origin_wayPoint.identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.origin_wayPoint.identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
             for (let i = 0; i < departure.length; i++) {
                 if (this.departureWaypoints.length <= i) {
                     this.departureWaypoints.push(new NavSystemTouch_FPLWaypointLine());
@@ -1897,7 +1897,7 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                         {
                             this.departureWaypoints[i].identButton = document.createElement("div");
                             {
-                                Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].identButton, "class", "gradientButton Waypoint");
+                                diffAndSetAttribute(this.departureWaypoints[i].identButton, "class", "gradientButton Waypoint");
                                 this.departureWaypoints[i].identButton_Ident = document.createElement("div");
                                 {
                                     this.departureWaypoints[i].identButton_Ident.setAttribute("class", "mainValue");
@@ -1921,11 +1921,11 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                         {
                             this.departureWaypoints[i].altButton = document.createElement("div");
                             {
-                                Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton, "class", "gradientButton");
+                                diffAndSetAttribute(this.departureWaypoints[i].altButton, "class", "gradientButton");
                                 this.departureWaypoints[i].altButton_Value = document.createElement("div");
                                 {
-                                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "class", "mainValue");
-                                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].altButton_Value, "_____FT");
+                                    diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "class", "mainValue");
+                                    diffAndSetText(this.departureWaypoints[i].altButton_Value, "_____FT");
                                 }
                                 this.departureWaypoints[i].altButton.appendChild(this.departureWaypoints[i].altButton_Value);
                             }
@@ -1935,10 +1935,10 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                         let td3 = document.createElement("td");
                         {
                             this.departureWaypoints[i].dtk = document.createElement("div");
-                            Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].dtk, "class", "DTK");
+                            diffAndSetAttribute(this.departureWaypoints[i].dtk, "class", "DTK");
                             td3.appendChild(this.departureWaypoints[i].dtk);
                             this.departureWaypoints[i].distance = document.createElement("div");
-                            Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].distance, "class", "DIS");
+                            diffAndSetAttribute(this.departureWaypoints[i].distance, "class", "DIS");
                             td3.appendChild(this.departureWaypoints[i].distance);
                         }
                         this.departureWaypoints[i].base.appendChild(td3);
@@ -1949,46 +1949,46 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                 }
                 this.departureWaypoints[i].index = i + (origin ? 1 : 0);
                 if (!this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() == this.departureWaypoints[i].index) {
-                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].base, "state", "CurrentLeg");
+                    diffAndSetAttribute(this.departureWaypoints[i].base, "state", "CurrentLeg");
                 }
                 else {
-                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].base, "state", "Active");
+                    diffAndSetAttribute(this.departureWaypoints[i].base, "state", "Active");
                 }
                 if (departure[i] && departure[i] != undefined) {
                     let infos = departure[i].infos;
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : departure[i].ident);
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Name, infos.name);
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].altButton_Value, departure[i].altitudeinFP ? fastToFixed(Math.round(departure[i].altitudeinFP), 0) + "FT" : "_____FT");
-                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", departure[i].altitudeModeinFP);
+                    diffAndSetText(this.departureWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : departure[i].ident);
+                    diffAndSetText(this.departureWaypoints[i].identButton_Name, infos.name);
+                    diffAndSetText(this.departureWaypoints[i].altButton_Value, departure[i].altitudeinFP ? fastToFixed(Math.round(departure[i].altitudeinFP), 0) + "FT" : "_____FT");
+                    diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", departure[i].altitudeModeinFP);
                     let symbol = infos.imageFileName();
-                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].dtk, fastToFixed(departure[i].bearingInFP, 0) + "°");
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].distance, fastToFixed(departure[i].distanceInFP, 0) + "NM");
+                    diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+                    diffAndSetText(this.departureWaypoints[i].dtk, fastToFixed(departure[i].bearingInFP, 0) + "°");
+                    diffAndSetText(this.departureWaypoints[i].distance, fastToFixed(departure[i].distanceInFP, 0) + "NM");
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Ident, "");
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Name, "");
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].altButton_Value, "_____FT");
-                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", "");
-                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", "");
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].dtk, "___°");
-                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].distance, "_____NM");
+                    diffAndSetText(this.departureWaypoints[i].identButton_Ident, "");
+                    diffAndSetText(this.departureWaypoints[i].identButton_Name, "");
+                    diffAndSetText(this.departureWaypoints[i].altButton_Value, "_____FT");
+                    diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", "");
+                    diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", "");
+                    diffAndSetText(this.departureWaypoints[i].dtk, "___°");
+                    diffAndSetText(this.departureWaypoints[i].distance, "_____NM");
                 }
             }
         }
         else {
-            Avionics.Utils.diffAndSet(this.origin_mainValue, "");
-            Avionics.Utils.diffAndSet(this.origin_mainText, "Add Origin");
-            Avionics.Utils.diffAndSetAttribute(this.origin_wayPoint.base, "state", "Inactive");
+            diffAndSetText(this.origin_mainValue, "");
+            diffAndSetText(this.origin_mainText, "Add Origin");
+            diffAndSetAttribute(this.origin_wayPoint.base, "state", "Inactive");
         }
         for (let i = departure.length; i < this.departureWaypoints.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.departureWaypoints[i].base, "state", "Inactive");
         }
         if (enroute.length > 0) {
-            Avionics.Utils.diffAndSetAttribute(this.enRoute, "state", "Active");
+            diffAndSetAttribute(this.enRoute, "state", "Active");
         }
         else {
-            Avionics.Utils.diffAndSetAttribute(this.enRoute, "state", "Inactive");
+            diffAndSetAttribute(this.enRoute, "state", "Inactive");
         }
         for (let i = 0; i < enroute.length; i++) {
             if (this.enRouteWaypoints.length <= i) {
@@ -1999,7 +1999,7 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                     {
                         this.enRouteWaypoints[i].identButton = document.createElement("div");
                         {
-                            Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].identButton, "class", "gradientButton Waypoint");
+                            diffAndSetAttribute(this.enRouteWaypoints[i].identButton, "class", "gradientButton Waypoint");
                             this.enRouteWaypoints[i].identButton_Ident = document.createElement("div");
                             {
                                 this.enRouteWaypoints[i].identButton_Ident.setAttribute("class", "mainValue");
@@ -2023,11 +2023,11 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                     {
                         this.enRouteWaypoints[i].altButton = document.createElement("div");
                         {
-                            Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton, "class", "gradientButton");
+                            diffAndSetAttribute(this.enRouteWaypoints[i].altButton, "class", "gradientButton");
                             this.enRouteWaypoints[i].altButton_Value = document.createElement("div");
                             {
-                                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "class", "mainValue");
-                                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].altButton_Value, "_____FT");
+                                diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "class", "mainValue");
+                                diffAndSetText(this.enRouteWaypoints[i].altButton_Value, "_____FT");
                             }
                             this.enRouteWaypoints[i].altButton.appendChild(this.enRouteWaypoints[i].altButton_Value);
                         }
@@ -2037,10 +2037,10 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                     let td3 = document.createElement("td");
                     {
                         this.enRouteWaypoints[i].dtk = document.createElement("div");
-                        Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].dtk, "class", "DTK");
+                        diffAndSetAttribute(this.enRouteWaypoints[i].dtk, "class", "DTK");
                         td3.appendChild(this.enRouteWaypoints[i].dtk);
                         this.enRouteWaypoints[i].distance = document.createElement("div");
-                        Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].distance, "class", "DIS");
+                        diffAndSetAttribute(this.enRouteWaypoints[i].distance, "class", "DIS");
                         td3.appendChild(this.enRouteWaypoints[i].distance);
                     }
                     this.enRouteWaypoints[i].base.appendChild(td3);
@@ -2051,54 +2051,54 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
             }
             this.enRouteWaypoints[i].index = i + departure.length + (origin ? 1 : 0);
             if (!this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() == this.enRouteWaypoints[i].index) {
-                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "CurrentLeg");
+                diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "CurrentLeg");
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "Active");
+                diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "Active");
             }
             if (enroute[i] && enroute[i] != undefined) {
                 let infos = enroute[i].infos;
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : enroute[i].ident);
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Name, infos.name);
+                diffAndSetText(this.enRouteWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : enroute[i].ident);
+                diffAndSetText(this.enRouteWaypoints[i].identButton_Name, infos.name);
                 let symbol = infos.imageFileName();
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].altButton_Value, enroute[i].altitudeinFP ? fastToFixed(Math.round(enroute[i].altitudeinFP), 0) + "FT" : "_____FT");
-                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", enroute[i].altitudeModeinFP);
-                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].dtk, fastToFixed(enroute[i].bearingInFP, 0) + "°");
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].distance, fastToFixed(enroute[i].distanceInFP, 0) + "NM");
+                diffAndSetText(this.enRouteWaypoints[i].altButton_Value, enroute[i].altitudeinFP ? fastToFixed(Math.round(enroute[i].altitudeinFP), 0) + "FT" : "_____FT");
+                diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", enroute[i].altitudeModeinFP);
+                diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+                diffAndSetText(this.enRouteWaypoints[i].dtk, fastToFixed(enroute[i].bearingInFP, 0) + "°");
+                diffAndSetText(this.enRouteWaypoints[i].distance, fastToFixed(enroute[i].distanceInFP, 0) + "NM");
             }
             else {
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Ident, "");
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Name, "");
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].altButton_Value, "_____FT");
-                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", "");
-                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", "");
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].dtk, "___°");
-                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].distance, "_____NM");
+                diffAndSetText(this.enRouteWaypoints[i].identButton_Ident, "");
+                diffAndSetText(this.enRouteWaypoints[i].identButton_Name, "");
+                diffAndSetText(this.enRouteWaypoints[i].altButton_Value, "_____FT");
+                diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", "");
+                diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", "");
+                diffAndSetText(this.enRouteWaypoints[i].dtk, "___°");
+                diffAndSetText(this.enRouteWaypoints[i].distance, "_____NM");
             }
         }
         for (let i = enroute.length; i < this.enRouteWaypoints.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "Inactive");
         }
         if (destination && destination != undefined) {
             if (arrival.length > 0) {
-                Avionics.Utils.diffAndSet(this.destination_mainValue, "Arrival - " + this.gps.currFlightPlanManager.getArrival().name);
+                diffAndSetText(this.destination_mainValue, "Arrival - " + this.gps.currFlightPlanManager.getArrival().name);
             }
             else {
-                Avionics.Utils.diffAndSet(this.destination_mainValue, "Destination - " + destination.infos.ident);
+                diffAndSetText(this.destination_mainValue, "Destination - " + destination.infos.ident);
             }
-            Avionics.Utils.diffAndSet(this.destination_mainText, "");
-            Avionics.Utils.diffAndSetAttribute(this.destination_wayPoint.base, "state", "Active");
+            diffAndSetText(this.destination_mainText, "");
+            diffAndSetAttribute(this.destination_wayPoint.base, "state", "Active");
             this.destination_wayPoint.index = this.gps.currFlightPlanManager.getWaypointsCount() - 1;
             let destinationInfo = destination.infos;
-            Avionics.Utils.diffAndSet(this.destination_wayPoint.identButton_Ident, destinationInfo.ident);
-            Avionics.Utils.diffAndSet(this.destination_wayPoint.identButton_Name, destinationInfo.name);
-            Avionics.Utils.diffAndSet(this.destination_wayPoint.dtk, fastToFixed(destination.bearingInFP, 0) + "°");
-            Avionics.Utils.diffAndSet(this.destination_wayPoint.distance, fastToFixed(destination.distanceInFP, 0) + "NM");
-            Avionics.Utils.diffAndSet(this.destination_wayPoint.altButton_Value, destination.altitudeinFP ? fastToFixed(Math.round(destination.altitudeinFP), 0) + "FT" : "_____FT");
-            Avionics.Utils.diffAndSetAttribute(this.destination_wayPoint.altButton_Value, "altitudeMode", destination.altitudeModeinFP);
+            diffAndSetText(this.destination_wayPoint.identButton_Ident, destinationInfo.ident);
+            diffAndSetText(this.destination_wayPoint.identButton_Name, destinationInfo.name);
+            diffAndSetText(this.destination_wayPoint.dtk, fastToFixed(destination.bearingInFP, 0) + "°");
+            diffAndSetText(this.destination_wayPoint.distance, fastToFixed(destination.distanceInFP, 0) + "NM");
+            diffAndSetText(this.destination_wayPoint.altButton_Value, destination.altitudeinFP ? fastToFixed(Math.round(destination.altitudeinFP), 0) + "FT" : "_____FT");
+            diffAndSetAttribute(this.destination_wayPoint.altButton_Value, "altitudeMode", destination.altitudeModeinFP);
             let symbol = destinationInfo.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.destination_wayPoint.identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.destination_wayPoint.identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
             for (let i = 0; i < arrival.length; i++) {
                 if (this.arrivalWaypoints.length <= i) {
                     this.arrivalWaypoints.push(new NavSystemTouch_FPLWaypointLine());
@@ -2108,7 +2108,7 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                         {
                             this.arrivalWaypoints[i].identButton = document.createElement("div");
                             {
-                                Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].identButton, "class", "gradientButton Waypoint");
+                                diffAndSetAttribute(this.arrivalWaypoints[i].identButton, "class", "gradientButton Waypoint");
                                 this.arrivalWaypoints[i].identButton_Ident = document.createElement("div");
                                 {
                                     this.arrivalWaypoints[i].identButton_Ident.setAttribute("class", "mainValue");
@@ -2132,11 +2132,11 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                         {
                             this.arrivalWaypoints[i].altButton = document.createElement("div");
                             {
-                                Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton, "class", "gradientButton");
+                                diffAndSetAttribute(this.arrivalWaypoints[i].altButton, "class", "gradientButton");
                                 this.arrivalWaypoints[i].altButton_Value = document.createElement("div");
                                 {
-                                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "class", "mainValue");
-                                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].altButton_Value, "_____FT");
+                                    diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "class", "mainValue");
+                                    diffAndSetText(this.arrivalWaypoints[i].altButton_Value, "_____FT");
                                 }
                                 this.arrivalWaypoints[i].altButton.appendChild(this.arrivalWaypoints[i].altButton_Value);
                             }
@@ -2146,10 +2146,10 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                         let td3 = document.createElement("td");
                         {
                             this.arrivalWaypoints[i].dtk = document.createElement("div");
-                            Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].dtk, "class", "DTK");
+                            diffAndSetAttribute(this.arrivalWaypoints[i].dtk, "class", "DTK");
                             td3.appendChild(this.arrivalWaypoints[i].dtk);
                             this.arrivalWaypoints[i].distance = document.createElement("div");
-                            Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].distance, "class", "DIS");
+                            diffAndSetAttribute(this.arrivalWaypoints[i].distance, "class", "DIS");
                             td3.appendChild(this.arrivalWaypoints[i].distance);
                         }
                         this.arrivalWaypoints[i].base.appendChild(td3);
@@ -2160,34 +2160,34 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                 }
                 this.arrivalWaypoints[i].index = i + departure.length + (origin ? 1 : 0) + enroute.length;
                 if (!this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() == this.arrivalWaypoints[i].index) {
-                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "CurrentLeg");
+                    diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "CurrentLeg");
                 }
                 else {
-                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "Active");
+                    diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "Active");
                 }
                 if (arrival[i] && arrival[i] != undefined) {
                     let infos = arrival[i].infos;
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : arrival[i].ident);
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Name, infos.name);
+                    diffAndSetText(this.arrivalWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : arrival[i].ident);
+                    diffAndSetText(this.arrivalWaypoints[i].identButton_Name, infos.name);
                     let symbol = infos.imageFileName();
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].altButton_Value, arrival[i].altitudeinFP ? fastToFixed(Math.round(arrival[i].altitudeinFP), 0) + "FT" : "_____FT");
-                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", arrival[i].altitudeModeinFP);
-                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].dtk, fastToFixed(arrival[i].bearingInFP, 0) + "°");
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].distance, fastToFixed(arrival[i].distanceInFP, 0) + "NM");
+                    diffAndSetText(this.arrivalWaypoints[i].altButton_Value, arrival[i].altitudeinFP ? fastToFixed(Math.round(arrival[i].altitudeinFP), 0) + "FT" : "_____FT");
+                    diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", arrival[i].altitudeModeinFP);
+                    diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+                    diffAndSetText(this.arrivalWaypoints[i].dtk, fastToFixed(arrival[i].bearingInFP, 0) + "°");
+                    diffAndSetText(this.arrivalWaypoints[i].distance, fastToFixed(arrival[i].distanceInFP, 0) + "NM");
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Ident, "");
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Name, "");
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].altButton_Value, "_____FT");
-                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", "");
-                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", "");
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].dtk, "___°");
-                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].distance, "_____NM");
+                    diffAndSetText(this.arrivalWaypoints[i].identButton_Ident, "");
+                    diffAndSetText(this.arrivalWaypoints[i].identButton_Name, "");
+                    diffAndSetText(this.arrivalWaypoints[i].altButton_Value, "_____FT");
+                    diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", "");
+                    diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", "");
+                    diffAndSetText(this.arrivalWaypoints[i].dtk, "___°");
+                    diffAndSetText(this.arrivalWaypoints[i].distance, "_____NM");
                 }
             }
             if (approach && approach.length > 0) {
-                Avionics.Utils.diffAndSet(this.approach_mainValue, "Approach - " + approachInfos.name);
+                diffAndSetText(this.approach_mainValue, "Approach - " + approachInfos.name);
                 for (let i = 0; i < approach.length; i++) {
                     if (i >= this.approachWaypoints.length) {
                         this.approachWaypoints.push(new NavSystemTouch_FPLWaypointLine());
@@ -2197,7 +2197,7 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                             {
                                 this.approachWaypoints[i].identButton = document.createElement("div");
                                 {
-                                    Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].identButton, "class", "gradientButton Waypoint");
+                                    diffAndSetAttribute(this.approachWaypoints[i].identButton, "class", "gradientButton Waypoint");
                                     this.approachWaypoints[i].identButton_Ident = document.createElement("div");
                                     {
                                         this.approachWaypoints[i].identButton_Ident.setAttribute("class", "mainValue");
@@ -2221,11 +2221,11 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                             {
                                 this.approachWaypoints[i].altButton = document.createElement("div");
                                 {
-                                    Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].altButton, "class", "gradientButton");
+                                    diffAndSetAttribute(this.approachWaypoints[i].altButton, "class", "gradientButton");
                                     this.approachWaypoints[i].altButton_Value = document.createElement("div");
                                     {
-                                        Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].altButton_Value, "class", "mainValue");
-                                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].altButton_Value, "_____FT");
+                                        diffAndSetAttribute(this.approachWaypoints[i].altButton_Value, "class", "mainValue");
+                                        diffAndSetText(this.approachWaypoints[i].altButton_Value, "_____FT");
                                     }
                                     this.approachWaypoints[i].altButton.appendChild(this.approachWaypoints[i].altButton_Value);
                                 }
@@ -2235,10 +2235,10 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                             let td3 = document.createElement("td");
                             {
                                 this.approachWaypoints[i].dtk = document.createElement("div");
-                                Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].dtk, "class", "DTK");
+                                diffAndSetAttribute(this.approachWaypoints[i].dtk, "class", "DTK");
                                 td3.appendChild(this.approachWaypoints[i].dtk);
                                 this.approachWaypoints[i].distance = document.createElement("div");
-                                Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].distance, "class", "DIS");
+                                diffAndSetAttribute(this.approachWaypoints[i].distance, "class", "DIS");
                                 td3.appendChild(this.approachWaypoints[i].distance);
                             }
                             this.approachWaypoints[i].base.appendChild(td3);
@@ -2249,47 +2249,47 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                     }
                     this.approachWaypoints[i].index = i;
                     if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() == this.approachWaypoints[i].index) {
-                        Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].base, "state", "CurrentLeg");
+                        diffAndSetAttribute(this.approachWaypoints[i].base, "state", "CurrentLeg");
                     }
                     else {
-                        Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Active");
+                        diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Active");
                     }
                     if (approach[i] && approach[i] != undefined) {
                         let infos = approach[i];
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Ident, infos.ident);
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Name, infos.ident);
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].altButton_Value, approach[i].altitudeinFP ? fastToFixed(approach[i].altitudeinFP, 0) + "FT" : "_____FT");
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].dtk, infos.bearingInFP ? fastToFixed(infos.bearingInFP, 0) + "°" : "");
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].distance, infos.distanceInFP ? fastToFixed(infos.distanceInFP, 0) + "NM" : "");
+                        diffAndSetText(this.approachWaypoints[i].identButton_Ident, infos.ident);
+                        diffAndSetText(this.approachWaypoints[i].identButton_Name, infos.ident);
+                        diffAndSetText(this.approachWaypoints[i].altButton_Value, approach[i].altitudeinFP ? fastToFixed(approach[i].altitudeinFP, 0) + "FT" : "_____FT");
+                        diffAndSetText(this.approachWaypoints[i].dtk, infos.bearingInFP ? fastToFixed(infos.bearingInFP, 0) + "°" : "");
+                        diffAndSetText(this.approachWaypoints[i].distance, infos.distanceInFP ? fastToFixed(infos.distanceInFP, 0) + "NM" : "");
                     }
                     else {
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Ident, "");
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Name, "");
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].altButton_Value, "_____FT");
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].dtk, "___°");
-                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].distance, "_____NM");
+                        diffAndSetText(this.approachWaypoints[i].identButton_Ident, "");
+                        diffAndSetText(this.approachWaypoints[i].identButton_Name, "");
+                        diffAndSetText(this.approachWaypoints[i].altButton_Value, "_____FT");
+                        diffAndSetText(this.approachWaypoints[i].dtk, "___°");
+                        diffAndSetText(this.approachWaypoints[i].distance, "_____NM");
                     }
                 }
                 for (let i = approach.length; i < this.approachWaypoints.length; i++) {
-                    Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Inactive");
+                    diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Inactive");
                 }
-                Avionics.Utils.diffAndSetAttribute(this.approach, "state", "Active");
+                diffAndSetAttribute(this.approach, "state", "Active");
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.approach, "state", "Inactive");
+                diffAndSetAttribute(this.approach, "state", "Inactive");
                 for (let i = 0; i < this.approachWaypoints.length; i++) {
-                    Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Inactive");
+                    diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Inactive");
                 }
             }
         }
         else {
-            Avionics.Utils.diffAndSet(this.destination_mainValue, "");
-            Avionics.Utils.diffAndSet(this.destination_mainText, "Add Destination");
-            Avionics.Utils.diffAndSetAttribute(this.destination_wayPoint.base, "state", "Inactive");
-            Avionics.Utils.diffAndSetAttribute(this.approach, "state", "Inactive");
+            diffAndSetText(this.destination_mainValue, "");
+            diffAndSetText(this.destination_mainText, "Add Destination");
+            diffAndSetAttribute(this.destination_wayPoint.base, "state", "Inactive");
+            diffAndSetAttribute(this.approach, "state", "Inactive");
         }
         for (let i = arrival.length; i < this.arrivalWaypoints.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "Inactive");
         }
         if (this.gps.currFlightPlanManager.getActiveWaypointIndex() > 0 && origin != null) {
             let activeIndex = this.gps.currFlightPlanManager.getActiveWaypointIndex();
@@ -2312,14 +2312,14 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                 let lineWidth = this.arrowLineWidth;
                 let lineDistance = this.arrowLineDistance;
                 let headWidth = this.arrowHeadWidth;
-                Avionics.Utils.diffAndSetAttribute(this.CurrentLegArrow, "d", "M" + x + " " + (y1 - lineWidth / 2) + " L" + x + " " + (y1 + lineWidth / 2) + " L" + (x - lineDistance) + " " + (y1 + lineWidth / 2) + " L" + (x - lineDistance) + " " + (y2 - lineWidth / 2) + " L" + (x - headWidth) + " " + (y2 - lineWidth / 2) + " L" + (x - headWidth) + " " + (y2 - lineWidth * 1.5) + " L" + x + " " + y2 + " L" + (x - headWidth) + " " + (y2 + lineWidth * 1.5) + " L" + (x - headWidth) + " " + (y2 + lineWidth / 2) + " L" + (x - lineDistance - lineWidth) + " " + (y2 + lineWidth / 2) + " L" + (x - lineDistance - lineWidth) + " " + (y1 - lineWidth / 2) + "Z");
+                diffAndSetAttribute(this.CurrentLegArrow, "d", "M" + x + " " + (y1 - lineWidth / 2) + " L" + x + " " + (y1 + lineWidth / 2) + " L" + (x - lineDistance) + " " + (y1 + lineWidth / 2) + " L" + (x - lineDistance) + " " + (y2 - lineWidth / 2) + " L" + (x - headWidth) + " " + (y2 - lineWidth / 2) + " L" + (x - headWidth) + " " + (y2 - lineWidth * 1.5) + " L" + x + " " + y2 + " L" + (x - headWidth) + " " + (y2 + lineWidth * 1.5) + " L" + (x - headWidth) + " " + (y2 + lineWidth / 2) + " L" + (x - lineDistance - lineWidth) + " " + (y2 + lineWidth / 2) + " L" + (x - lineDistance - lineWidth) + " " + (y1 - lineWidth / 2) + "Z");
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.CurrentLegArrow, "d", "");
+                diffAndSetAttribute(this.CurrentLegArrow, "d", "");
             }
         }
         else {
-            Avionics.Utils.diffAndSetAttribute(this.CurrentLegArrow, "d", "");
+            diffAndSetAttribute(this.CurrentLegArrow, "d", "");
         }
         this.updateAltitudeRoles();
     }
@@ -2344,10 +2344,10 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
     }
     updateWaypoint(_waypoint, _elements) {
         let infos = _waypoint.GetInfos();
-        Avionics.Utils.diffAndSet(_elements.identButton_Ident, infos.ident);
-        Avionics.Utils.diffAndSet(_elements.identButton_Name, infos.name);
-        Avionics.Utils.diffAndSet(_elements.altButton_Value, _waypoint.altitudeinFP ? fastToFixed(Math.round(_waypoint.altitudeinFP), 0) + "FT" : "_____FT");
-        Avionics.Utils.diffAndSetAttribute(_elements.altButton_Value, "altitudeMode", _waypoint.altitudeModeinFP);
+        diffAndSetText(_elements.identButton_Ident, infos.ident);
+        diffAndSetText(_elements.identButton_Name, infos.name);
+        diffAndSetText(_elements.altButton_Value, _waypoint.altitudeinFP ? fastToFixed(Math.round(_waypoint.altitudeinFP), 0) + "FT" : "_____FT");
+        diffAndSetAttribute(_elements.altButton_Value, "altitudeMode", _waypoint.altitudeModeinFP);
     }
     originWaypointClick() {
         if (this.selectedGroup == 0 && this.currentMenu == 1) {
@@ -2518,28 +2518,28 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
     updateMenu() {
         if (this.currentMenu == 1) {
             if (this.selectedGroup == 0) {
-                Avionics.Utils.diffAndSetAttribute(this.insertBefore_Button, "state", "Greyed");
-                Avionics.Utils.diffAndSetAttribute(this.insertAfter_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.activateLegTo_Button, "state", "Greyed");
-                Avionics.Utils.diffAndSetAttribute(this.removeWaypoint_Button, "state", "None");
+                diffAndSetAttribute(this.insertBefore_Button, "state", "Greyed");
+                diffAndSetAttribute(this.insertAfter_Button, "state", "None");
+                diffAndSetAttribute(this.activateLegTo_Button, "state", "Greyed");
+                diffAndSetAttribute(this.removeWaypoint_Button, "state", "None");
             }
             else if (this.selectedGroup == 4) {
-                Avionics.Utils.diffAndSetAttribute(this.insertBefore_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.insertAfter_Button, "state", "Greyed");
-                Avionics.Utils.diffAndSetAttribute(this.activateLegTo_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.removeWaypoint_Button, "state", "None");
+                diffAndSetAttribute(this.insertBefore_Button, "state", "None");
+                diffAndSetAttribute(this.insertAfter_Button, "state", "Greyed");
+                diffAndSetAttribute(this.activateLegTo_Button, "state", "None");
+                diffAndSetAttribute(this.removeWaypoint_Button, "state", "None");
             }
             else if (this.selectedGroup == 5) {
-                Avionics.Utils.diffAndSetAttribute(this.insertBefore_Button, "state", "Greyed");
-                Avionics.Utils.diffAndSetAttribute(this.insertAfter_Button, "state", "Greyed");
-                Avionics.Utils.diffAndSetAttribute(this.activateLegTo_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.removeWaypoint_Button, "state", "Greyed");
+                diffAndSetAttribute(this.insertBefore_Button, "state", "Greyed");
+                diffAndSetAttribute(this.insertAfter_Button, "state", "Greyed");
+                diffAndSetAttribute(this.activateLegTo_Button, "state", "None");
+                diffAndSetAttribute(this.removeWaypoint_Button, "state", "Greyed");
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.insertBefore_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.insertAfter_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.activateLegTo_Button, "state", "None");
-                Avionics.Utils.diffAndSetAttribute(this.removeWaypoint_Button, "state", "None");
+                diffAndSetAttribute(this.insertBefore_Button, "state", "None");
+                diffAndSetAttribute(this.insertAfter_Button, "state", "None");
+                diffAndSetAttribute(this.activateLegTo_Button, "state", "None");
+                diffAndSetAttribute(this.removeWaypoint_Button, "state", "None");
             }
         }
     }
@@ -2559,7 +2559,7 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
         this.gps.currFlightPlanManager.addWaypoint(_icao, position);
     }
     enrouteDone() {
-        Avionics.Utils.diffAndSetAttribute(this.AFPL_EnRouteAdd, "state", "Inactive");
+        diffAndSetAttribute(this.AFPL_EnRouteAdd, "state", "Inactive");
     }
     editAltitude(_index, _group) {
         this.selectedGroup = _group;
@@ -2871,26 +2871,26 @@ class NavSystemTouch_Procedures extends NavSystemElement {
         }
         let departure = this.gps.currFlightPlanManager.getDeparture();
         if (departure) {
-            Avionics.Utils.diffAndSet(this.departureButton_value, departure.name);
+            diffAndSetText(this.departureButton_value, departure.name);
         }
         else {
-            Avionics.Utils.diffAndSet(this.departureButton_value, "____");
+            diffAndSetText(this.departureButton_value, "____");
         }
         let arrival = this.gps.currFlightPlanManager.getArrival();
         if (arrival) {
-            Avionics.Utils.diffAndSet(this.arrivalButton_value, arrival.name);
+            diffAndSetText(this.arrivalButton_value, arrival.name);
         }
         else {
-            Avionics.Utils.diffAndSet(this.arrivalButton_value, "____");
+            diffAndSetText(this.arrivalButton_value, "____");
         }
         let approach = this.gps.currFlightPlanManager.getAirportApproach();
         if (approach) {
-            Avionics.Utils.diffAndSet(this.approachButton_value, approach.name);
+            diffAndSetText(this.approachButton_value, approach.name);
         }
         else {
-            Avionics.Utils.diffAndSet(this.approachButton_value, "____");
+            diffAndSetText(this.approachButton_value, "____");
         }
-        Avionics.Utils.diffAndSetAttribute(this.activateApproachButton, "state", this.gps.currFlightPlanManager.isLoadedApproach() ? "" : "Greyed");
+        diffAndSetAttribute(this.activateApproachButton, "state", this.gps.currFlightPlanManager.isLoadedApproach() ? "" : "Greyed");
     }
     onExit() {
     }
@@ -3013,37 +3013,37 @@ class NavSystemTouch_DepartureSelection extends NavSystemElement {
     onUpdate(_deltaTime) {
         this.scrollElement.update();
         if (this.gps.currFlightPlanManager.getDeparture() != null) {
-            Avionics.Utils.diffAndSetAttribute(this.remove, "state", "");
+            diffAndSetAttribute(this.remove, "state", "");
         }
         else {
-            Avionics.Utils.diffAndSetAttribute(this.remove, "state", "Greyed");
+            diffAndSetAttribute(this.remove, "state", "Greyed");
         }
         if (this.selectedAirport) {
-            Avionics.Utils.diffAndSetAttribute(this.load, "state", "");
+            diffAndSetAttribute(this.load, "state", "");
             let infos = this.selectedAirport.GetInfos();
             let departure = this.getSelectedDeparture(infos);
-            Avionics.Utils.diffAndSet(this.airportIdent, infos.ident);
-            Avionics.Utils.diffAndSet(this.airportName, infos.name);
+            diffAndSetText(this.airportIdent, infos.ident);
+            diffAndSetText(this.airportName, infos.name);
             if (departure) {
-                Avionics.Utils.diffAndSet(this.departureValue, departure.name);
+                diffAndSetText(this.departureValue, departure.name);
                 if (departure.enRouteTransitions && this.selectedTransition >= 0 && this.selectedTransition < departure.enRouteTransitions.length) {
-                    Avionics.Utils.diffAndSet(this.transitionValue, departure.enRouteTransitions[this.selectedTransition].name);
+                    diffAndSetText(this.transitionValue, departure.enRouteTransitions[this.selectedTransition].name);
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.transitionValue, "None");
+                    diffAndSetText(this.transitionValue, "None");
                 }
                 if (departure.runwayTransitions && this.selectedRunway >= 0 && this.selectedRunway < departure.runwayTransitions.length) {
-                    Avionics.Utils.diffAndSet(this.runwayValue, departure.runwayTransitions[this.selectedRunway].name);
+                    diffAndSetText(this.runwayValue, departure.runwayTransitions[this.selectedRunway].name);
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.runwayValue, "All");
+                    diffAndSetText(this.runwayValue, "All");
                 }
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.load, "state", "Greyed");
-                Avionics.Utils.diffAndSet(this.departureValue, "None");
-                Avionics.Utils.diffAndSet(this.transitionValue, "None");
-                Avionics.Utils.diffAndSet(this.runwayValue, "None");
+                diffAndSetAttribute(this.load, "state", "Greyed");
+                diffAndSetText(this.departureValue, "None");
+                diffAndSetText(this.transitionValue, "None");
+                diffAndSetText(this.runwayValue, "None");
             }
             let offset = 0;
             if (departure) {
@@ -3054,8 +3054,8 @@ class NavSystemTouch_DepartureSelection extends NavSystemElement {
                             this.sequenceContent.appendChild(elem);
                             this.sequenceElements.push(elem);
                         }
-                        Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Active");
-                        Avionics.Utils.diffAndSet(this.sequenceElements[i], departure.runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5));
+                        diffAndSetAttribute(this.sequenceElements[i], "state", "Active");
+                        diffAndSetText(this.sequenceElements[i], departure.runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5));
                     }
                     offset += departure.runwayTransitions[this.selectedRunway].legs.length;
                 }
@@ -3065,8 +3065,8 @@ class NavSystemTouch_DepartureSelection extends NavSystemElement {
                         this.sequenceContent.appendChild(elem);
                         this.sequenceElements.push(elem);
                     }
-                    Avionics.Utils.diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
-                    Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], departure.commonLegs[i].fixIcao.substr(7, 5));
+                    diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
+                    diffAndSetText(this.sequenceElements[offset + i], departure.commonLegs[i].fixIcao.substr(7, 5));
                 }
                 offset += departure.commonLegs.length;
                 if (departure.enRouteTransitions && this.selectedTransition >= 0 && this.selectedTransition < departure.enRouteTransitions.length) {
@@ -3076,14 +3076,14 @@ class NavSystemTouch_DepartureSelection extends NavSystemElement {
                             this.sequenceContent.appendChild(elem);
                             this.sequenceElements.push(elem);
                         }
-                        Avionics.Utils.diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
-                        Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], departure.enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5));
+                        diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
+                        diffAndSetText(this.sequenceElements[offset + i], departure.enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5));
                     }
                     offset += departure.enRouteTransitions[this.selectedTransition].legs.length;
                 }
             }
             for (let i = offset; i < this.sequenceElements.length; i++) {
-                Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
+                diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
             }
         }
         else {
@@ -3093,7 +3093,7 @@ class NavSystemTouch_DepartureSelection extends NavSystemElement {
                 this.selectedAirport.UpdateInfos();
             }
             for (let i = 0; i < this.sequenceElements.length; i++) {
-                Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
+                diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
             }
         }
     }
@@ -3215,37 +3215,37 @@ class NavSystemTouch_ArrivalSelection extends NavSystemElement {
     onUpdate(_deltaTime) {
         this.scrollElement.update();
         if (this.gps.currFlightPlanManager.getArrival() != null) {
-            Avionics.Utils.diffAndSetAttribute(this.remove, "state", "");
+            diffAndSetAttribute(this.remove, "state", "");
         }
         else {
-            Avionics.Utils.diffAndSetAttribute(this.remove, "state", "Greyed");
+            diffAndSetAttribute(this.remove, "state", "Greyed");
         }
         if (this.selectedAirport) {
-            Avionics.Utils.diffAndSetAttribute(this.load, "state", "");
+            diffAndSetAttribute(this.load, "state", "");
             let infos = this.selectedAirport.GetInfos();
             let arrival = this.getSelectedArrival(infos);
-            Avionics.Utils.diffAndSet(this.airportIdent, infos.ident);
-            Avionics.Utils.diffAndSet(this.airportName, infos.name);
+            diffAndSetText(this.airportIdent, infos.ident);
+            diffAndSetText(this.airportName, infos.name);
             if (arrival) {
-                Avionics.Utils.diffAndSet(this.arrivalValue, arrival.name);
+                diffAndSetText(this.arrivalValue, arrival.name);
                 if (arrival.enRouteTransitions && arrival.enRouteTransitions.length > 0) {
-                    Avionics.Utils.diffAndSet(this.transitionValue, arrival.enRouteTransitions[this.selectedTransition].name);
+                    diffAndSetText(this.transitionValue, arrival.enRouteTransitions[this.selectedTransition].name);
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.transitionValue, "None");
+                    diffAndSetText(this.transitionValue, "None");
                 }
                 if (arrival.runwayTransitions && arrival.runwayTransitions.length > 0) {
-                    Avionics.Utils.diffAndSet(this.runwayValue, arrival.runwayTransitions[this.selectedRunway].name);
+                    diffAndSetText(this.runwayValue, arrival.runwayTransitions[this.selectedRunway].name);
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.runwayValue, "All");
+                    diffAndSetText(this.runwayValue, "All");
                 }
             }
             else {
-                Avionics.Utils.diffAndSetAttribute(this.load, "state", "Greyed");
-                Avionics.Utils.diffAndSet(this.arrivalValue, "None");
-                Avionics.Utils.diffAndSet(this.transitionValue, "None");
-                Avionics.Utils.diffAndSet(this.runwayValue, "None");
+                diffAndSetAttribute(this.load, "state", "Greyed");
+                diffAndSetText(this.arrivalValue, "None");
+                diffAndSetText(this.transitionValue, "None");
+                diffAndSetText(this.runwayValue, "None");
             }
             let offset = 0;
             if (arrival) {
@@ -3256,8 +3256,8 @@ class NavSystemTouch_ArrivalSelection extends NavSystemElement {
                             this.sequenceContent.appendChild(elem);
                             this.sequenceElements.push(elem);
                         }
-                        Avionics.Utils.diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
-                        Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], arrival.enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5));
+                        diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
+                        diffAndSetText(this.sequenceElements[offset + i], arrival.enRouteTransitions[this.selectedTransition].legs[i].fixIcao.substr(7, 5));
                     }
                     offset += arrival.enRouteTransitions[this.selectedTransition].legs.length;
                 }
@@ -3267,8 +3267,8 @@ class NavSystemTouch_ArrivalSelection extends NavSystemElement {
                         this.sequenceContent.appendChild(elem);
                         this.sequenceElements.push(elem);
                     }
-                    Avionics.Utils.diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
-                    Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], arrival.commonLegs[i].fixIcao.substr(7, 5));
+                    diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
+                    diffAndSetText(this.sequenceElements[offset + i], arrival.commonLegs[i].fixIcao.substr(7, 5));
                 }
                 offset += arrival.commonLegs.length;
                 if (arrival.runwayTransitions && this.selectedRunway >= 0 && this.selectedRunway < arrival.runwayTransitions.length) {
@@ -3278,14 +3278,14 @@ class NavSystemTouch_ArrivalSelection extends NavSystemElement {
                             this.sequenceContent.appendChild(elem);
                             this.sequenceElements.push(elem);
                         }
-                        Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Active");
-                        Avionics.Utils.diffAndSet(this.sequenceElements[i], arrival.runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5));
+                        diffAndSetAttribute(this.sequenceElements[i], "state", "Active");
+                        diffAndSetText(this.sequenceElements[i], arrival.runwayTransitions[this.selectedRunway].legs[i].fixIcao.substr(7, 5));
                     }
                     offset += arrival.runwayTransitions[this.selectedRunway].legs.length;
                 }
             }
             for (let i = offset; i < this.sequenceElements.length; i++) {
-                Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
+                diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
             }
         }
         else {
@@ -3295,7 +3295,7 @@ class NavSystemTouch_ArrivalSelection extends NavSystemElement {
                 this.selectedAirport.UpdateInfos();
             }
             for (let i = 0; i < this.sequenceElements.length; i++) {
-                Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
+                diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
             }
         }
     }
@@ -3412,28 +3412,28 @@ class NavSystemTouch_ApproachSelection extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
         if (this.gps.currFlightPlanManager.getApproach() != null) {
-            Avionics.Utils.diffAndSetAttribute(this.remove, "state", "");
+            diffAndSetAttribute(this.remove, "state", "");
         }
         else {
-            Avionics.Utils.diffAndSetAttribute(this.remove, "state", "Greyed");
+            diffAndSetAttribute(this.remove, "state", "Greyed");
         }
         if (this.selectedAirport) {
-            Avionics.Utils.diffAndSet(this.airport_ident, this.selectedAirport.infos.ident);
-            Avionics.Utils.diffAndSet(this.airport_name, this.selectedAirport.infos.name);
+            diffAndSetText(this.airport_ident, this.selectedAirport.infos.ident);
+            diffAndSetText(this.airport_name, this.selectedAirport.infos.name);
             let infos = this.selectedAirport.GetInfos();
             let approach = this.getSelectedApproach(infos);
             if (approach) {
-                Avionics.Utils.diffAndSet(this.approach_value, approach.name);
+                diffAndSetText(this.approach_value, approach.name);
                 if (approach.transitions && this.selectedTransition >= 0 && this.selectedTransition < approach.transitions.length) {
-                    Avionics.Utils.diffAndSet(this.transition_value, approach.transitions[this.selectedTransition].name);
+                    diffAndSetText(this.transition_value, approach.transitions[this.selectedTransition].name);
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.transition_value, "None");
+                    diffAndSetText(this.transition_value, "None");
                 }
             }
             else {
-                Avionics.Utils.diffAndSet(this.approach_value, "____");
-                Avionics.Utils.diffAndSet(this.transition_value, "____");
+                diffAndSetText(this.approach_value, "____");
+                diffAndSetText(this.transition_value, "____");
             }
             let offset = 0;
             if (approach) {
@@ -3444,12 +3444,12 @@ class NavSystemTouch_ApproachSelection extends NavSystemElement {
                             this.sequenceContent.appendChild(elem);
                             this.sequenceElements.push(elem);
                         }
-                        Avionics.Utils.diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
+                        diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
                         if (approach.transitions[this.selectedTransition].waypoints[i]) {
-                            Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], approach.transitions[this.selectedTransition].waypoints[i].ident);
+                            diffAndSetText(this.sequenceElements[offset + i], approach.transitions[this.selectedTransition].waypoints[i].ident);
                         }
                         else {
-                            Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], "");
+                            diffAndSetText(this.sequenceElements[offset + i], "");
                         }
                     }
                     offset += approach.transitions[this.selectedTransition].waypoints.length;
@@ -3460,13 +3460,13 @@ class NavSystemTouch_ApproachSelection extends NavSystemElement {
                         this.sequenceContent.appendChild(elem);
                         this.sequenceElements.push(elem);
                     }
-                    Avionics.Utils.diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
-                    Avionics.Utils.diffAndSet(this.sequenceElements[offset + i], approach.wayPoints[i].ident);
+                    diffAndSetAttribute(this.sequenceElements[offset + i], "state", "Active");
+                    diffAndSetText(this.sequenceElements[offset + i], approach.wayPoints[i].ident);
                 }
                 offset += approach.wayPoints.length;
             }
             for (let i = offset; i < this.sequenceElements.length; i++) {
-                Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
+                diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
             }
         }
         else {
@@ -3476,7 +3476,7 @@ class NavSystemTouch_ApproachSelection extends NavSystemElement {
                 this.selectedAirport.UpdateInfos();
             }
             for (let i = 0; i < this.sequenceElements.length; i++) {
-                Avionics.Utils.diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
+                diffAndSetAttribute(this.sequenceElements[i], "state", "Inactive");
             }
         }
     }
@@ -3531,11 +3531,11 @@ class NavSystemTouch_SelectionList extends NavSystemElement {
                 this.gps.makeButton(elem.button, this.onElemClick.bind(this, i));
                 this.buttons.push(elem);
             }
-            Avionics.Utils.diffAndSetAttribute(this.buttons[i].button, "state", "Active");
-            Avionics.Utils.diffAndSet(this.buttons[i].value, _elements[i]);
+            diffAndSetAttribute(this.buttons[i].button, "state", "Active");
+            diffAndSetText(this.buttons[i].value, _elements[i]);
         }
         for (let i = _elements.length; i < this.buttons.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.buttons[i].button, "state", "Inactive");
+            diffAndSetAttribute(this.buttons[i].button, "state", "Inactive");
         }
     }
     onElemClick(_id) {
