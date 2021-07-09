@@ -150,7 +150,6 @@
             <HTML_EVENT_ID>CLR</HTML_EVENT_ID>
             <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>
             <HAS_LONG_PRESS>True</HAS_LONG_PRESS>
-            <LONG_CLICK_CODE>(&gt;H:1_BTN_CLR_Long)</LONG_CLICK_CODE>
             <NODE_ID>#NODE_ID_CLR#</NODE_ID>
             <ANIM_NAME>#ANIM_NAME_CLR#</ANIM_NAME>
         </UseTemplate>
