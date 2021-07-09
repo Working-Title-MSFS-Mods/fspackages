@@ -216,7 +216,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "overflow", "visible");
         return container;
     }
     setVisible(_visible) {

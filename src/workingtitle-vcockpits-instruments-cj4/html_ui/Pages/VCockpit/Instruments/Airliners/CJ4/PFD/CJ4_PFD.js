@@ -141,7 +141,7 @@ class CJ4_PFD extends BaseAirliners {
             const vnavAltEl = document.getElementById("VnavAlt");
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
-                vnavAltEl.textContent = localStorage.getItem("WT_CJ4_CONSTRAINT");
+                diffAndSetText(vnavAltEl, localStorage.getItem("WT_CJ4_CONSTRAINT"));
             }
 
             this.map.setMode(this.mapDisplayMode);

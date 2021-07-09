@@ -536,7 +536,7 @@ class WT_FMC_Renderer {
             while (match != null) {
                 const el = document.createElement("span");
 
-                el.textContent = match[1].replace("__LSB", "[").replace("__RSB", "]");
+                diffAndSetText(el, match[1].replace("__LSB", "[").replace("__RSB", "]"));
 
                 if (match[2]) {
                     // eslint-disable-next-line no-useless-escape

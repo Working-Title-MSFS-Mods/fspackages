@@ -397,7 +397,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.navMap = new SvgMap(this, { svgElement: this.getElementsByTagName("svg")[0], configPath: this.configPath });
             this.navMap.lineCanvas = this.lineCanvas;
             var mapSVG = this.querySelector("#MapSVG");
-            mapSVG.setAttribute("display", "visible");
+            diffAndSetAttribute(mapSVG, "display", "visible");
             this.insertBefore(this.lineCanvas, mapSVG);
             this.wpt = this.querySelector("#WPT");
             this.dtkMap = this.querySelector("#DTKMap");
@@ -1319,7 +1319,7 @@ class MapInstrument extends ISvgMapRootElement {
         bot.llaRequested = new LatLongAlt(_lat, _long);
         bot.targetWaypoint = this.flightPlanManager.getActiveWaypoint();
         this.setCenter(bot.llaRequested);
-        this.setAttribute("show-airplane", "true");
+        diffAndSetAttribute(this, "show-airplane", "true");
         if (bot.targetWaypoint) {
             if (this.backOnTracks.indexOf(bot) === -1) {
                 this.backOnTracks.push(bot);

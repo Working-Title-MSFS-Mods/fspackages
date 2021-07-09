@@ -103,11 +103,11 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             var _width = width;
             var _height = height;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "#30323d");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", _top.toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "#30323d");
             this.centerSVG.appendChild(bg);
 
             this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -223,8 +223,8 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 {
                     let stripWidth = 10;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
-                    shape.setAttribute("fill", "red");
-                    shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
+                    diffAndSetAttribute(shape, "fill", "red");
+                    diffAndSetAttribute(shape, "d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
                     this.vMaxStripSVG.appendChild(shape);
                 }
                 this.stripsSVG.appendChild(this.vMaxStripSVG);
@@ -233,8 +233,8 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 {
                     let stripWidth = 10;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
-                    shape.setAttribute("fill", "red");
-                    shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
+                    diffAndSetAttribute(shape, "fill", "red");
+                    diffAndSetAttribute(shape, "d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
                     this.stallStripSVG.appendChild(shape);
                 }
                 this.stripsSVG.appendChild(this.stallStripSVG);
@@ -531,11 +531,11 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             var _width = width;
             var _height = height;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "#30323d");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", _top.toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "#30323d");
             this.centerSVG.appendChild(bg);
             if (!this.graduationBarSVG)
                 this.graduationBarSVG = document.createElementNS(Avionics.SVG.NS, "path");
@@ -579,7 +579,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
                 this.graduations.push(line);
             }
             var graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            graduationGroup.setAttribute("id", "graduationGroup");
+            diffAndSetAttribute(graduationGroup, "id", "graduationGroup");
             for (var i = 0; i < this.totalGraduations; i++) {
                 var line = this.graduations[i];
                 graduationGroup.appendChild(line.SVGLine);
@@ -609,7 +609,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         {
             let _scale = 0.6;
             var trs = document.createElementNS(Avionics.SVG.NS, "g");
-            trs.setAttribute("transform", "scale(" + _scale + ")");
+            diffAndSetAttribute(trs, "transform", "scale(" + _scale + ")");
             this.cursorSVG.appendChild(trs);
 
             this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "path");
@@ -631,11 +631,11 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             var _cursorPosX = 3;
             var _cursorPosY = _cursorHeight * 0.5;
             let integralsGroup = document.createElementNS(Avionics.SVG.NS, "svg");
-            integralsGroup.setAttribute("x", "0");
-            integralsGroup.setAttribute("y", "28");
-            integralsGroup.setAttribute("width", _cursorWidth.toString());
-            integralsGroup.setAttribute("height", (_cursorHeight - 42).toString());
-            integralsGroup.setAttribute("viewBox", "0 0 " + (_cursorWidth) + " " + (_cursorHeight));
+            diffAndSetAttribute(integralsGroup, "x", "0");
+            diffAndSetAttribute(integralsGroup, "y", "28");
+            diffAndSetAttribute(integralsGroup, "width", _cursorWidth.toString());
+            diffAndSetAttribute(integralsGroup, "height", (_cursorHeight - 42).toString());
+            diffAndSetAttribute(integralsGroup, "viewBox", "0 0 " + (_cursorWidth) + " " + (_cursorHeight));
             trs.appendChild(integralsGroup);
             {
                 this.cursorIntegrals[0].construct(integralsGroup, _cursorPosX - 27, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.4, "#11d011");
@@ -647,7 +647,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             this.rootGroup.appendChild(this.cursorSVG);
         }
         var baroGroup = document.createElementNS(Avionics.SVG.NS, "g");
-        baroGroup.setAttribute("id", "Barometer");
+        diffAndSetAttribute(baroGroup, "id", "Barometer");
         this.rootGroup.appendChild(baroGroup);
         {
             var x = posX - 12;
@@ -655,11 +655,11 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             var w = width;
             var h = 22;
             var baroBg = document.createElementNS(Avionics.SVG.NS, "rect");
-            baroBg.setAttribute("x", x.toString());
-            baroBg.setAttribute("y", y.toString());
-            baroBg.setAttribute("width", "67".toString());
-            baroBg.setAttribute("height", h.toString());
-            baroBg.setAttribute("fill", "black");
+            diffAndSetAttribute(baroBg, "x", x.toString());
+            diffAndSetAttribute(baroBg, "y", y.toString());
+            diffAndSetAttribute(baroBg, "width", "67".toString());
+            diffAndSetAttribute(baroBg, "height", h.toString());
+            diffAndSetAttribute(baroBg, "fill", "black");
             baroGroup.appendChild(baroBg);
             if (!this.pressureSVG)
                 this.pressureSVG = document.createElementNS(Avionics.SVG.NS, "text");
@@ -818,16 +818,16 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
             this.horizonBottom.setAttribute("height", "3000");
             this.bottomPart.appendChild(this.horizonBottom);
             let separator = document.createElementNS(Avionics.SVG.NS, "rect");
-            separator.setAttribute("fill", "#e0e0e0");
-            separator.setAttribute("x", "-1500");
-            separator.setAttribute("y", "-3");
-            separator.setAttribute("width", "3000");
-            separator.setAttribute("height", "6");
+            diffAndSetAttribute(separator, "fill", "#e0e0e0");
+            diffAndSetAttribute(separator, "x", "-1500");
+            diffAndSetAttribute(separator, "y", "-3");
+            diffAndSetAttribute(separator, "width", "3000");
+            diffAndSetAttribute(separator, "height", "6");
             this.bottomPart.appendChild(separator);
         }
         {
             let pitchContainer = document.createElement("div");
-            pitchContainer.setAttribute("id", "Pitch");
+            diffAndSetAttribute(pitchContainer, "id", "Pitch");
             pitchContainer.style.top = "-15.5%";
             pitchContainer.style.left = "-10%";
             pitchContainer.style.width = "120%";
@@ -843,9 +843,9 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
             this.pitch_root.setAttribute("style", "position:absolute; z-index: -2;");
             let pitchSvgDefs = document.createElementNS(Avionics.SVG.NS, "defs");
             let pitchSvgClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
-            pitchSvgClip.setAttribute("id", "pitchClip");
+            diffAndSetAttribute(pitchSvgClip, "id", "pitchClip");
             let attitudePitchContainerShape = document.createElementNS(Avionics.SVG.NS, "path");
-            attitudePitchContainerShape.setAttribute("d", "M 0 -130 L -120 -70 L -120 70 L 0 130 L 120 70 L 120 -70 Z");
+            diffAndSetAttribute(attitudePitchContainerShape, "d", "M 0 -130 L -120 -70 L -120 70 L 0 130 L 120 70 L 120 -70 Z");
             pitchSvgClip.appendChild(attitudePitchContainerShape);
             pitchSvgDefs.appendChild(pitchSvgClip);
             this.pitch_root.appendChild(pitchSvgDefs);
@@ -858,15 +858,15 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 var w = 240;
                 var h = 270;              
                 let attitudePitchContainer = document.createElementNS(Avionics.SVG.NS, "svg");
-                attitudePitchContainer.setAttribute("width", w.toString());
-                attitudePitchContainer.setAttribute("height", h.toString());
-                attitudePitchContainer.setAttribute("x", x.toString());
-                attitudePitchContainer.setAttribute("y", y.toString());
-                attitudePitchContainer.setAttribute("viewBox", x + " " + y + " " + w + " " + h);
-                attitudePitchContainer.setAttribute("overflow", "hidden");
+                diffAndSetAttribute(attitudePitchContainer, "width", w.toString());
+                diffAndSetAttribute(attitudePitchContainer, "height", h.toString());
+                diffAndSetAttribute(attitudePitchContainer, "x", x.toString());
+                diffAndSetAttribute(attitudePitchContainer, "y", y.toString());
+                diffAndSetAttribute(attitudePitchContainer, "viewBox", x + " " + y + " " + w + " " + h);
+                diffAndSetAttribute(attitudePitchContainer, "overflow", "hidden");
                 this.pitch_root_group.appendChild(attitudePitchContainer);
                 let attitudePitchInnerContainer = document.createElementNS(Avionics.SVG.NS, "g");
-                attitudePitchInnerContainer.setAttribute("clip-path", "url(#pitchClip)");
+                diffAndSetAttribute(attitudePitchInnerContainer, "clip-path", "url(#pitchClip)");
                 attitudePitchContainer.appendChild(attitudePitchInnerContainer);
                 {
                     this.attitude_pitch = document.createElementNS(Avionics.SVG.NS, "g");
@@ -926,30 +926,30 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                         }
                         if (angle != 0) {
                             let rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                            rect.setAttribute("fill", "white");
-                            rect.setAttribute("x", (-width / 2).toString());
-                            rect.setAttribute("y", (this.bankSizeRatio * angle - height / 2).toString());
-                            rect.setAttribute("width", width.toString());
-                            rect.setAttribute("height", height.toString());
+                            diffAndSetAttribute(rect, "fill", "white");
+                            diffAndSetAttribute(rect, "x", (-width / 2).toString());
+                            diffAndSetAttribute(rect, "y", (this.bankSizeRatio * angle - height / 2).toString());
+                            diffAndSetAttribute(rect, "width", width.toString());
+                            diffAndSetAttribute(rect, "height", height.toString());
                             this.attitude_pitch.appendChild(rect);
                             if (text) {
                                 let leftText = document.createElementNS(Avionics.SVG.NS, "text");
-                                leftText.textContent = Math.abs(angle).toString();
-                                leftText.setAttribute("x", ((-width / 2) - 2).toString());
-                                leftText.setAttribute("y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) + 1).toString());
-                                leftText.setAttribute("text-anchor", "end");
-                                leftText.setAttribute("font-size", (fontSize * 1.6).toString());
-                                leftText.setAttribute("font-family", "Jost-Medium");
-                                leftText.setAttribute("fill", "white");
+                                diffAndSetText(leftText, Math.abs(angle).toString());
+                                diffAndSetAttribute(leftText, "x", ((-width / 2) - 2).toString());
+                                diffAndSetAttribute(leftText, "y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) + 1).toString());
+                                diffAndSetAttribute(leftText, "text-anchor", "end");
+                                diffAndSetAttribute(leftText, "font-size", (fontSize * 1.6).toString());
+                                diffAndSetAttribute(leftText, "font-family", "Jost-Medium");
+                                diffAndSetAttribute(leftText, "fill", "white");
                                 this.attitude_pitch.appendChild(leftText);
                                 let rightText = document.createElementNS(Avionics.SVG.NS, "text");
-                                rightText.textContent = Math.abs(angle).toString();
-                                rightText.setAttribute("x", ((width / 2) + 2).toString());
-                                rightText.setAttribute("y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) + 1).toString());
-                                rightText.setAttribute("text-anchor", "start");
-                                rightText.setAttribute("font-size", (fontSize * 1.6).toString());
-                                rightText.setAttribute("font-family", "Jost-Medium");
-                                rightText.setAttribute("fill", "white");
+                                diffAndSetText(rightText, Math.abs(angle).toString());
+                                diffAndSetAttribute(rightText, "x", ((width / 2) + 2).toString());
+                                diffAndSetAttribute(rightText, "y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) + 1).toString());
+                                diffAndSetAttribute(rightText, "text-anchor", "start");
+                                diffAndSetAttribute(rightText, "font-size", (fontSize * 1.6).toString());
+                                diffAndSetAttribute(rightText, "font-family", "Jost-Medium");
+                                diffAndSetAttribute(rightText, "fill", "white");
                                 this.attitude_pitch.appendChild(rightText);
                             }
                             if (angle < unusualAttitudeLowerLimit) {
@@ -958,8 +958,8 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                                 path += "L" + bigWidth / 2 + " " + (this.bankSizeRatio * angle - bigHeight / 2) + " l" + -smallWidth + " 0 ";
                                 path += "L0 " + (this.bankSizeRatio * nextAngle + 20) + " ";
                                 path += "L" + (-bigWidth / 2 + smallWidth) + " " + (this.bankSizeRatio * angle - bigHeight / 2) + " l" + -smallWidth + " 0 Z";
-                                chevron.setAttribute("d", path);
-                                chevron.setAttribute("fill", "red");
+                                diffAndSetAttribute(chevron, "d", path);
+                                diffAndSetAttribute(chevron, "fill", "red");
                                 this.attitude_pitch.appendChild(chevron);
                             }
                             if (angle >= unusualAttitudeUpperLimit && nextAngle <= maxDash) {
@@ -968,8 +968,8 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                                 path += "L" + (bigWidth / 2) + " " + (this.bankSizeRatio * nextAngle + bigHeight / 2) + " l" + -smallWidth + " 0 ";
                                 path += "L0 " + (this.bankSizeRatio * angle - 20) + " ";
                                 path += "L" + (-bigWidth / 2 + smallWidth) + " " + (this.bankSizeRatio * nextAngle + bigHeight / 2) + " l" + -smallWidth + " 0 Z";
-                                chevron.setAttribute("d", path);
-                                chevron.setAttribute("fill", "red");
+                                diffAndSetAttribute(chevron, "d", path);
+                                diffAndSetAttribute(chevron, "fill", "red");
                                 this.attitude_pitch.appendChild(chevron);
                             }
                         }
@@ -980,7 +980,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
         }
         {
             let attitudeContainer = document.createElement("div");
-            attitudeContainer.setAttribute("id", "Attitude");
+            diffAndSetAttribute(attitudeContainer, "id", "Attitude");
             attitudeContainer.style.top = "-15.5%";
             attitudeContainer.style.left = "-10%";
             attitudeContainer.style.width = "120%";
@@ -999,69 +999,69 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 this.attitude_bank = document.createElementNS(Avionics.SVG.NS, "g");
                 this.attitude_root.appendChild(this.attitude_bank);
                 let topTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                topTriangle.setAttribute("d", "M0 -160 l-13 -20 l26 0 Z");
-                topTriangle.setAttribute("fill", "white");
-                topTriangle.setAttribute("stroke", "white");
-                topTriangle.setAttribute("stroke-width", "1");
-                topTriangle.setAttribute("stroke-opacity", "1");
+                diffAndSetAttribute(topTriangle, "d", "M0 -160 l-13 -20 l26 0 Z");
+                diffAndSetAttribute(topTriangle, "fill", "white");
+                diffAndSetAttribute(topTriangle, "stroke", "white");
+                diffAndSetAttribute(topTriangle, "stroke-width", "1");
+                diffAndSetAttribute(topTriangle, "stroke-opacity", "1");
                 this.attitude_bank.appendChild(topTriangle);
                 let smallDashesAngle = [-60, -30, -20, -10, 10, 20, 30, 60];
                 let smallDashesHeight = [18, 30, 18, 18, 18, 18, 30, 18];
                 let radius = 160;
                 for (let i = 0; i < smallDashesAngle.length; i++) {
                     let dash = document.createElementNS(Avionics.SVG.NS, "line");
-                    dash.setAttribute("x1", "0");
-                    dash.setAttribute("y1", (-radius).toString());
-                    dash.setAttribute("x2", "0");
-                    dash.setAttribute("y2", (-radius - smallDashesHeight[i]).toString());
-                    dash.setAttribute("fill", "none");
-                    dash.setAttribute("stroke", "white");
-                    dash.setAttribute("stroke-width", "3");
-                    dash.setAttribute("transform", "rotate(" + smallDashesAngle[i] + ",0,0)");
+                    diffAndSetAttribute(dash, "x1", "0");
+                    diffAndSetAttribute(dash, "y1", (-radius).toString());
+                    diffAndSetAttribute(dash, "x2", "0");
+                    diffAndSetAttribute(dash, "y2", (-radius - smallDashesHeight[i]).toString());
+                    diffAndSetAttribute(dash, "fill", "none");
+                    diffAndSetAttribute(dash, "stroke", "white");
+                    diffAndSetAttribute(dash, "stroke-width", "3");
+                    diffAndSetAttribute(dash, "transform", "rotate(" + smallDashesAngle[i] + ",0,0)");
                     this.attitude_bank.appendChild(dash);
                 }
             }
             {
                 let leftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                leftTriangle.setAttribute("d", "M 0 -160 l -8 -10 l 15 0 Z");
-                leftTriangle.setAttribute("fill", "white");
-                leftTriangle.setAttribute("stroke", "white");
-                leftTriangle.setAttribute("stroke-width", "2");
-                leftTriangle.setAttribute("stroke-opacity", "1");
-                leftTriangle.setAttribute("transform", "rotate(45,0,0)");
+                diffAndSetAttribute(leftTriangle, "d", "M 0 -160 l -8 -10 l 15 0 Z");
+                diffAndSetAttribute(leftTriangle, "fill", "white");
+                diffAndSetAttribute(leftTriangle, "stroke", "white");
+                diffAndSetAttribute(leftTriangle, "stroke-width", "2");
+                diffAndSetAttribute(leftTriangle, "stroke-opacity", "1");
+                diffAndSetAttribute(leftTriangle, "transform", "rotate(45,0,0)");
                 this.attitude_bank.appendChild(leftTriangle);
                 let rightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                rightTriangle.setAttribute("d", "M 0 -160 l -8 -10 l 15 0 Z");
-                rightTriangle.setAttribute("fill", "white");
-                rightTriangle.setAttribute("stroke", "white");
-                rightTriangle.setAttribute("stroke-width", "2");
-                rightTriangle.setAttribute("stroke-opacity", "1");
-                rightTriangle.setAttribute("transform", "rotate(-45,0,0)");
+                diffAndSetAttribute(rightTriangle, "d", "M 0 -160 l -8 -10 l 15 0 Z");
+                diffAndSetAttribute(rightTriangle, "fill", "white");
+                diffAndSetAttribute(rightTriangle, "stroke", "white");
+                diffAndSetAttribute(rightTriangle, "stroke-width", "2");
+                diffAndSetAttribute(rightTriangle, "stroke-opacity", "1");
+                diffAndSetAttribute(rightTriangle, "transform", "rotate(-45,0,0)");
                 this.attitude_bank.appendChild(rightTriangle);
         
                 let cursors = document.createElementNS(Avionics.SVG.NS, "g");
                 this.attitude_root.appendChild(cursors);
                 let leftUpper = document.createElementNS(Avionics.SVG.NS, "path");
-                leftUpper.setAttribute("d", "M-100 5 l0 -10 l55 0 l0 32 l-10 0 l0 -22 l-40 0 Z");
-                leftUpper.setAttribute("fill", "black");
-                leftUpper.setAttribute("stroke", "white");
-                leftUpper.setAttribute("stroke-width", "3");
-                leftUpper.setAttribute("stroke-opacity", "1.0");
+                diffAndSetAttribute(leftUpper, "d", "M-100 5 l0 -10 l55 0 l0 32 l-10 0 l0 -22 l-40 0 Z");
+                diffAndSetAttribute(leftUpper, "fill", "black");
+                diffAndSetAttribute(leftUpper, "stroke", "white");
+                diffAndSetAttribute(leftUpper, "stroke-width", "3");
+                diffAndSetAttribute(leftUpper, "stroke-opacity", "1.0");
                 cursors.appendChild(leftUpper);
                 let rightUpper = document.createElementNS(Avionics.SVG.NS, "path");
-                rightUpper.setAttribute("d", "M100 5 l0 -10 l-55 0 l0 32 l10 0 l0 -22 l40 0 Z");
-                rightUpper.setAttribute("fill", "black");
-                rightUpper.setAttribute("stroke", "white");
-                rightUpper.setAttribute("stroke-width", "3");
-                rightUpper.setAttribute("stroke-opacity", "1.0");
+                diffAndSetAttribute(rightUpper, "d", "M100 5 l0 -10 l-55 0 l0 32 l10 0 l0 -22 l40 0 Z");
+                diffAndSetAttribute(rightUpper, "fill", "black");
+                diffAndSetAttribute(rightUpper, "stroke", "white");
+                diffAndSetAttribute(rightUpper, "stroke-width", "3");
+                diffAndSetAttribute(rightUpper, "stroke-opacity", "1.0");
                 cursors.appendChild(rightUpper);
                 let centerRect = document.createElementNS(Avionics.SVG.NS, "rect");
-                centerRect.setAttribute("x", "-4");
-                centerRect.setAttribute("y", "-5");
-                centerRect.setAttribute("height", "10");
-                centerRect.setAttribute("width", "10");
-                centerRect.setAttribute("stroke", "white");
-                centerRect.setAttribute("stroke-width", "3");
+                diffAndSetAttribute(centerRect, "x", "-4");
+                diffAndSetAttribute(centerRect, "y", "-5");
+                diffAndSetAttribute(centerRect, "height", "10");
+                diffAndSetAttribute(centerRect, "width", "10");
+                diffAndSetAttribute(centerRect, "stroke", "white");
+                diffAndSetAttribute(centerRect, "stroke-width", "3");
                 cursors.appendChild(centerRect);
                 this.slipSkidTriangle = document.createElementNS(Avionics.SVG.NS, "path");
                 this.slipSkidTriangle.setAttribute("d", "M0 -160 l-13 20 l26 0 Z");
@@ -1185,11 +1185,11 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
             var _width = width;
             var _height = 80;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "white");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", _top.toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "white");
             bg.setAttribute("fill-opacity", 0.15)
             this.centerSVG.appendChild(bg);
             var cursorPosX = _width * 0.5;
@@ -1209,14 +1209,14 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
             this.cursorSVG.setAttribute("viewBox", "0 0 " + cursorWidth + " " + cursorHeight);
             {
                 let cursorShape = document.createElementNS(Avionics.SVG.NS, "path");
-                cursorShape.setAttribute("fill", "white");
-                cursorShape.setAttribute("fill-opacity", this.cursorOpacity);
-                cursorShape.setAttribute("d", "M 19 1 L 20 1 L 20 62 L 18 62 L 18 20 L 18 1 Z");
+                diffAndSetAttribute(cursorShape, "fill", "white");
+                diffAndSetAttribute(cursorShape, "fill-opacity", this.cursorOpacity);
+                diffAndSetAttribute(cursorShape, "d", "M 19 1 L 20 1 L 20 62 L 18 62 L 18 20 L 18 1 Z");
                 this.cursorSVG.appendChild(cursorShape);
             }
             this.centerSVG.appendChild(this.cursorSVG);
             var graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            graduationGroup.setAttribute("id", "Graduations");
+            diffAndSetAttribute(graduationGroup, "id", "Graduations");
             {
                 this.graduationScrollPosX = _left + _width * 0.5;
                 this.graduationScrollPosY = _top;
