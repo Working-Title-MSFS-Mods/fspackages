@@ -120,8 +120,8 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     constructMinimized() {
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
-        rootSVG.setAttribute("id", "Minimized");
-        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        diffAndSetAttribute(rootSVG, "id", "Minimized");
+        diffAndSetAttribute(rootSVG, "viewBox", "0 0 1000 1000");
         this.root.appendChild(rootSVG);
         {
             var n1Group = document.createElementNS(Avionics.SVG.NS, "g");
@@ -274,7 +274,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var ittGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            ittGroup.setAttribute("id", "ITT");
+            diffAndSetAttribute(ittGroup, "id", "ITT");
             rootSVG.appendChild(ittGroup);
             var startPosX = 350;
             var startPosY = 30;
@@ -505,7 +505,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var oilGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            oilGroup.setAttribute("id", "OilGroup");
+            diffAndSetAttribute(oilGroup, "id", "OilGroup");
             rootSVG.appendChild(oilGroup);
             var startPosX = 580;
             var startPosY = 90;
@@ -576,7 +576,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            fuelGroup.setAttribute("id", "FuelGroup");
+            diffAndSetAttribute(fuelGroup, "id", "FuelGroup");
             rootSVG.appendChild(fuelGroup);
             var startPosX = 580;
             var startPosY = 165;
@@ -644,7 +644,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var trimGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            trimGroup.setAttribute("id", "TrimGroup");
+            diffAndSetAttribute(trimGroup, "id", "TrimGroup");
             rootSVG.appendChild(trimGroup);
             var startPosX = 760;
             var startPosY = 30;
@@ -926,8 +926,8 @@ class CJ4_SystemEngines extends NavSystemElement {
     }
     constructDefault() {
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
-        rootSVG.setAttribute("id", "Standard");
-        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        diffAndSetAttribute(rootSVG, "id", "Standard");
+        diffAndSetAttribute(rootSVG, "viewBox", "0 0 1000 1000");
         this.root.appendChild(rootSVG);
         {
             var n1Group = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1054,7 +1054,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var ittGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            ittGroup.setAttribute("id", "ITT");
+            diffAndSetAttribute(ittGroup, "id", "ITT");
             rootSVG.appendChild(ittGroup);
             var startPosX = 390;
             var startPosY = 30;
@@ -1295,7 +1295,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var oilGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            oilGroup.setAttribute("id", "OilGroup");
+            diffAndSetAttribute(oilGroup, "id", "OilGroup");
             rootSVG.appendChild(oilGroup);
             var startPosX = 630;
             var startPosY = 75;
@@ -1348,11 +1348,11 @@ class CJ4_SystemEngines extends NavSystemElement {
                 for (var i = 0; i < psiRects.length; i++) {
                     var h = (this.OilPSI1CursorY1 - this.OilPSI1CursorY2) * psiRects[i];
                     var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", x.toString());
-                    rect.setAttribute("y", y.toString());
-                    rect.setAttribute("width", gaugeWidth.toString());
-                    rect.setAttribute("height", h.toString());
-                    rect.setAttribute("fill", psiColors[i]);
+                    diffAndSetAttribute(rect, "x", x.toString());
+                    diffAndSetAttribute(rect, "y", y.toString());
+                    diffAndSetAttribute(rect, "width", gaugeWidth.toString());
+                    diffAndSetAttribute(rect, "height", h.toString());
+                    diffAndSetAttribute(rect, "fill", psiColors[i]);
                     oilGroup.appendChild(rect);
                     y += h;
                 }
@@ -1379,11 +1379,11 @@ class CJ4_SystemEngines extends NavSystemElement {
                 for (var i = 0; i < psiRects.length; i++) {
                     var h = (this.OilPSI2CursorY1 - this.OilPSI2CursorY2) * psiRects[i];
                     var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", x.toString());
-                    rect.setAttribute("y", y.toString());
-                    rect.setAttribute("width", gaugeWidth.toString());
-                    rect.setAttribute("height", h.toString());
-                    rect.setAttribute("fill", psiColors[i]);
+                    diffAndSetAttribute(rect, "x", x.toString());
+                    diffAndSetAttribute(rect, "y", y.toString());
+                    diffAndSetAttribute(rect, "width", gaugeWidth.toString());
+                    diffAndSetAttribute(rect, "height", h.toString());
+                    diffAndSetAttribute(rect, "fill", psiColors[i]);
                     oilGroup.appendChild(rect);
                     y += h;
                 }
@@ -1424,11 +1424,11 @@ class CJ4_SystemEngines extends NavSystemElement {
                 for (var i = 0; i < tempRects.length; i++) {
                     var h = (this.OilTemp1CursorY1 - this.OilTemp1CursorY2) * tempRects[i];
                     var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", x.toString());
-                    rect.setAttribute("y", y.toString());
-                    rect.setAttribute("width", gaugeWidth.toString());
-                    rect.setAttribute("height", h.toString());
-                    rect.setAttribute("fill", tempColors[i]);
+                    diffAndSetAttribute(rect, "x", x.toString());
+                    diffAndSetAttribute(rect, "y", y.toString());
+                    diffAndSetAttribute(rect, "width", gaugeWidth.toString());
+                    diffAndSetAttribute(rect, "height", h.toString());
+                    diffAndSetAttribute(rect, "fill", tempColors[i]);
                     oilGroup.appendChild(rect);
                     y += h;
                 }
@@ -1455,11 +1455,11 @@ class CJ4_SystemEngines extends NavSystemElement {
                 for (var i = 0; i < tempRects.length; i++) {
                     var h = (this.OilTemp2CursorY1 - this.OilTemp2CursorY2) * tempRects[i];
                     var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", x.toString());
-                    rect.setAttribute("y", y.toString());
-                    rect.setAttribute("width", gaugeWidth.toString());
-                    rect.setAttribute("height", h.toString());
-                    rect.setAttribute("fill", tempColors[i]);
+                    diffAndSetAttribute(rect, "x", x.toString());
+                    diffAndSetAttribute(rect, "y", y.toString());
+                    diffAndSetAttribute(rect, "width", gaugeWidth.toString());
+                    diffAndSetAttribute(rect, "height", h.toString());
+                    diffAndSetAttribute(rect, "fill", tempColors[i]);
                     oilGroup.appendChild(rect);
                     y += h;
                 }
@@ -1482,7 +1482,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            fuelGroup.setAttribute("id", "FuelGroup");
+            diffAndSetAttribute(fuelGroup, "id", "FuelGroup");
             rootSVG.appendChild(fuelGroup);
             var startPosX = 630;
             var startPosY = 220;
@@ -1614,7 +1614,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
         {
             var trimGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            trimGroup.setAttribute("id", "TrimGroup");
+            diffAndSetAttribute(trimGroup, "id", "TrimGroup");
             rootSVG.appendChild(trimGroup);
             var startPosX = 875;
             var startPosY = 30;
@@ -2146,24 +2146,24 @@ class CJ4_SystemElectrics extends NavSystemElement {
             return;
         Utils.RemoveAllChildren(this.root);
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
-        rootSVG.setAttribute("id", "Standard");
-        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        diffAndSetAttribute(rootSVG, "id", "Standard");
+        diffAndSetAttribute(rootSVG, "viewBox", "0 0 1000 1000");
         this.root.appendChild(rootSVG);
         {
             var dcGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            dcGroup.setAttribute("id", "dcGroup");
+            diffAndSetAttribute(dcGroup, "id", "dcGroup");
             rootSVG.appendChild(dcGroup);
             var startPosX = 155;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "DC ELEC";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "DC ELEC");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
             lineLeft.setAttribute("x1", (startPosX - 110).toString());
@@ -2186,14 +2186,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "AMP";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "AMP");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             this.DCAmpValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.DCAmpValueLeft.textContent = "0";
@@ -2217,14 +2217,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             dcGroup.appendChild(this.DCAmpValueRight);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "VOLT";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "VOLT");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             this.DCVoltValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.DCVoltValueLeft.textContent = "0";
@@ -2249,19 +2249,19 @@ class CJ4_SystemElectrics extends NavSystemElement {
         }
         {
             var batteryGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            batteryGroup.setAttribute("id", "batteryGroup");
+            diffAndSetAttribute(batteryGroup, "id", "batteryGroup");
             rootSVG.appendChild(batteryGroup);
             var startPosX = 400;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "BATT";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "BATT");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
             lineLeft.setAttribute("x1", (startPosX - 110).toString());
@@ -2285,14 +2285,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             startPosX -= 35;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "AMP";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "AMP");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             this.BATAmpValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.BATAmpValue.textContent = "-7";
@@ -2306,14 +2306,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             batteryGroup.appendChild(this.BATAmpValue);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "VOLT";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "VOLT");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             this.BATVoltValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.BATVoltValue.textContent = "24";
@@ -2327,14 +2327,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             batteryGroup.appendChild(this.BATVoltValue);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "TEMP °C";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "TEMP °C");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             this.BATTempValue = document.createElementNS(Avionics.SVG.NS, "text");
             this.BATTempValue.textContent = "0";
@@ -2349,19 +2349,19 @@ class CJ4_SystemElectrics extends NavSystemElement {
         }
         {
             var oxyGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            oxyGroup.setAttribute("id", "oxyGroup");
+            diffAndSetAttribute(oxyGroup, "id", "oxyGroup");
             rootSVG.appendChild(oxyGroup);
             var startPosX = 620;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "OXY PSI";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "OXY PSI");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             oxyGroup.appendChild(titleText);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
             lineLeft.setAttribute("x1", (startPosX - 80).toString());
@@ -2414,14 +2414,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
                 line.setAttribute("stroke-width", "2");
                 oxyGroup.appendChild(line);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = gradTexts[i];
-                text.setAttribute("x", (gaugeStartX - gradLength[i] - 10).toString());
-                text.setAttribute("y", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
-                text.setAttribute("fill", "white");
-                text.setAttribute("font-size", "22");
-                text.setAttribute("font-family", "Roboto-Light");
-                text.setAttribute("text-anchor", "end");
-                text.setAttribute("alignment-baseline", "central");
+                diffAndSetText(text, gradTexts[i]);
+                diffAndSetAttribute(text, "x", (gaugeStartX - gradLength[i] - 10).toString());
+                diffAndSetAttribute(text, "y", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
+                diffAndSetAttribute(text, "fill", "white");
+                diffAndSetAttribute(text, "font-size", "22");
+                diffAndSetAttribute(text, "font-family", "Roboto-Light");
+                diffAndSetAttribute(text, "text-anchor", "end");
+                diffAndSetAttribute(text, "alignment-baseline", "central");
                 oxyGroup.appendChild(text);
             }
             this.OXYCursor = document.createElementNS(Avionics.SVG.NS, "path");
@@ -2432,19 +2432,19 @@ class CJ4_SystemElectrics extends NavSystemElement {
         }
         {
             var hydroGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            hydroGroup.setAttribute("id", "HydroGroup");
+            diffAndSetAttribute(hydroGroup, "id", "HydroGroup");
             rootSVG.appendChild(hydroGroup);
             var startPosX = 840;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "HYD";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "HYD");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             hydroGroup.appendChild(titleText);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
             lineLeft.setAttribute("x1", (startPosX - 110).toString());
@@ -2467,14 +2467,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PSI";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "PSI");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             hydroGroup.appendChild(titleText);
             this.HYDPSIValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.HYDPSIValueLeft.textContent = "0";
@@ -2499,19 +2499,19 @@ class CJ4_SystemElectrics extends NavSystemElement {
         }
         {
             var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            fuelGroup.setAttribute("id", "FuelGroup");
+            diffAndSetAttribute(fuelGroup, "id", "FuelGroup");
             rootSVG.appendChild(fuelGroup);
             var startPosX = 840;
             var startPosY = 110;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "FUEL";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "FUEL");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             fuelGroup.appendChild(titleText);
             var lineLeft = document.createElementNS(Avionics.SVG.NS, "line");
             lineLeft.setAttribute("x1", (startPosX - 110).toString());
@@ -2534,14 +2534,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, WT_ConvertUnit.isMetric() ? "KG/H" : "PPH");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             fuelGroup.appendChild(titleText);
             this.FUELPPHValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.FUELPPHValueLeft.textContent = "0";
@@ -2565,14 +2565,14 @@ class CJ4_SystemElectrics extends NavSystemElement {
             fuelGroup.appendChild(this.FUELPPHValueRight);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "°C";
-            titleText.setAttribute("x", startPosX.toString());
-            titleText.setAttribute("y", startPosY.toString());
-            titleText.setAttribute("fill", "white");
-            titleText.setAttribute("font-size", "22");
-            titleText.setAttribute("font-family", "Roboto-Light");
-            titleText.setAttribute("text-anchor", "middle");
-            titleText.setAttribute("alignment-baseline", "central");
+            diffAndSetText(titleText, "°C");
+            diffAndSetAttribute(titleText, "x", startPosX.toString());
+            diffAndSetAttribute(titleText, "y", startPosY.toString());
+            diffAndSetAttribute(titleText, "fill", "white");
+            diffAndSetAttribute(titleText, "font-size", "22");
+            diffAndSetAttribute(titleText, "font-family", "Roboto-Light");
+            diffAndSetAttribute(titleText, "text-anchor", "middle");
+            diffAndSetAttribute(titleText, "alignment-baseline", "central");
             fuelGroup.appendChild(titleText);
             this.FUELTempValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
             this.FUELTempValueLeft.textContent = "15";
@@ -2845,29 +2845,29 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 .textContent = "";
 
                             const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavTODorDirect.textContent = "";
+                            diffAndSetText(vnavTODorDirect, "");
 
                             const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavFix.textContent = "";
+                            diffAndSetText(vnavFix, "");
 
                             this._destinationWaypointContainer
                                 .querySelector(".cj4x-navigation-data-waypoint-eta")
                                 .textContent = "";
 
                             const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
-                            vnavFixETADist.textContent = "";
+                            diffAndSetText(vnavFixETADist, "");
 
                             const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
-                            vnavFixConstraint.textContent = "";
+                            diffAndSetText(vnavFixConstraint, "");
 
                             const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
-                            vnavFixAngleRate.textContent = "";
+                            diffAndSetText(vnavFixAngleRate, "");
 
                             const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavAdvisoryDescent.textContent = "";
+                            diffAndSetText(vnavAdvisoryDescent, "");
 
                             const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
-                            vnavAdvisoryDescentTimeDistance.textContent = "";
+                            diffAndSetText(vnavAdvisoryDescentTimeDistance, "");
 
                             const data = JSON.parse(localStorage.getItem("VNAVWINDOWDATA"));
 
@@ -2975,17 +2975,17 @@ class CJ4_SystemFMS extends NavSystemElement {
                                     vnavTODorDirect.setAttribute("style", "color: var(--green)");
 
                                     const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                                    vnavAdvisoryDescent.textContent = "";
+                                    diffAndSetText(vnavAdvisoryDescent, "");
 
                                     const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
-                                    vnavAdvisoryDescentTimeDistance.textContent = "";
+                                    diffAndSetText(vnavAdvisoryDescentTimeDistance, "");
                                 } else if (isClimb) {
                                     const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
                                     vnavTODorDirect.textContent = "CLIMB";
                                     vnavTODorDirect.setAttribute("style", "color: var(--green)");
                                 } else {
                                     const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                                    vnavTODorDirect.textContent = "";
+                                    diffAndSetText(vnavTODorDirect, "");
                                 }
                             } else if (advDesActive) {
 
@@ -3012,27 +3012,27 @@ class CJ4_SystemFMS extends NavSystemElement {
                         } else {
 
                             const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavFix.setAttribute("style", "color: white");
+                            diffAndSetAttribute(vnavFix, "style", "color: white");
 
                             const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
                             vnavTODorDirect.setAttribute("style", "color: var(--magenta)");
 
                             const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
-                            vnavFixConstraint.textContent = "";
-                            vnavFixConstraint.setAttribute("style", "color: white");
+                            diffAndSetText(vnavFixConstraint, "");
+                            diffAndSetAttribute(vnavFixConstraint, "style", "color: white");
 
                             const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
-                            vnavFixAngleRate.textContent = "";
-                            vnavFixAngleRate.setAttribute("style", "color: white");
+                            diffAndSetText(vnavFixAngleRate, "");
+                            diffAndSetAttribute(vnavFixAngleRate, "style", "color: white");
 
                             const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavAdvisoryDescent.textContent = "";
+                            diffAndSetText(vnavAdvisoryDescent, "");
 
                             const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
-                            vnavAdvisoryDescentTimeDistance.textContent = "";
+                            diffAndSetText(vnavAdvisoryDescentTimeDistance, "");
 
                             const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
-                            vnavFixETADist.setAttribute("style", "color: white");
+                            diffAndSetAttribute(vnavFixETADist, "style", "color: white");
 
                         }
                     }
@@ -4187,13 +4187,13 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     }
     endSection() {
         let stroke = document.createElementNS(Avionics.SVG.NS, "rect");
-        stroke.setAttribute("x", "0");
-        stroke.setAttribute("y", this.section.startY.toString());
-        stroke.setAttribute("width", this.menuWidth.toString());
-        stroke.setAttribute("height", (this.section.endY - this.section.startY).toString());
-        stroke.setAttribute("fill", "none");
-        stroke.setAttribute("stroke", "white");
-        stroke.setAttribute("stroke-width", this.sectionBorderSize.toString());
+        diffAndSetAttribute(stroke, "x", "0");
+        diffAndSetAttribute(stroke, "y", this.section.startY.toString());
+        diffAndSetAttribute(stroke, "width", this.menuWidth.toString());
+        diffAndSetAttribute(stroke, "height", (this.section.endY - this.section.startY).toString());
+        diffAndSetAttribute(stroke, "fill", "none");
+        diffAndSetAttribute(stroke, "stroke", "white");
+        diffAndSetAttribute(stroke, "stroke-width", this.sectionBorderSize.toString());
         this.sectionRoot.appendChild(stroke);
         let defaultRadio = null;
         for (let i = 0; i < this.section.items.length; i++) {
@@ -4378,62 +4378,62 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
         if (this.shape3D && enabled) {
             let b = this.shape3DBorderSize;
             let topLeftBorder = document.createElementNS(Avionics.SVG.NS, "path");
-            topLeftBorder.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy - size * 0.5) + " l" + (size) + " 0 l" + (-b) + " " + (b) + " l" + (-(size - b * 2)) + " 0 l0 " + (size - b * 2) + " l" + (-b) + " " + (b) + " Z");
-            topLeftBorder.setAttribute("fill", this.shape3DBorderLeft);
+            diffAndSetAttribute(topLeftBorder, "d", "M" + (cx - size * 0.5) + " " + (cy - size * 0.5) + " l" + (size) + " 0 l" + (-b) + " " + (b) + " l" + (-(size - b * 2)) + " 0 l0 " + (size - b * 2) + " l" + (-b) + " " + (b) + " Z");
+            diffAndSetAttribute(topLeftBorder, "fill", this.shape3DBorderLeft);
             this.sectionRoot.appendChild(topLeftBorder);
             let bottomRightBorder = document.createElementNS(Avionics.SVG.NS, "path");
-            bottomRightBorder.setAttribute("d", "M" + (cx + size * 0.5) + " " + (cy + size * 0.5) + " l" + (-size) + " 0 l" + (b) + " " + (-b) + " l" + (size - b * 2) + " 0 l0 " + (-(size - b * 2)) + " l" + (b) + " " + (-b) + " Z");
-            bottomRightBorder.setAttribute("fill", this.shape3DBorderRight);
+            diffAndSetAttribute(bottomRightBorder, "d", "M" + (cx + size * 0.5) + " " + (cy + size * 0.5) + " l" + (-size) + " 0 l" + (b) + " " + (-b) + " l" + (size - b * 2) + " 0 l0 " + (-(size - b * 2)) + " l" + (b) + " " + (-b) + " Z");
+            diffAndSetAttribute(bottomRightBorder, "fill", this.shape3DBorderRight);
             this.sectionRoot.appendChild(bottomRightBorder);
             shape = document.createElementNS(Avionics.SVG.NS, "rect");
-            shape.setAttribute("x", (cx - size * 0.5 + b).toString());
-            shape.setAttribute("y", (cy - size * 0.5 + b).toString());
-            shape.setAttribute("width", (size - b * 2).toString());
-            shape.setAttribute("height", (size - b * 2).toString());
-            shape.setAttribute("fill", this.shapeFillColor);
+            diffAndSetAttribute(shape, "x", (cx - size * 0.5 + b).toString());
+            diffAndSetAttribute(shape, "y", (cy - size * 0.5 + b).toString());
+            diffAndSetAttribute(shape, "width", (size - b * 2).toString());
+            diffAndSetAttribute(shape, "height", (size - b * 2).toString());
+            diffAndSetAttribute(shape, "fill", this.shapeFillColor);
             this.sectionRoot.appendChild(shape);
         }
         else {
             shape = document.createElementNS(Avionics.SVG.NS, "rect");
-            shape.setAttribute("x", (cx - size * 0.5).toString());
-            shape.setAttribute("y", (cy - size * 0.5).toString());
-            shape.setAttribute("width", size.toString());
-            shape.setAttribute("height", size.toString());
-            shape.setAttribute("fill", (enabled) ? this.shapeFillColor : ((this.shapeFillIfDisabled) ? this.disabledColor : "none"));
-            shape.setAttribute("stroke", (enabled) ? "white" : this.disabledColor);
-            shape.setAttribute("stroke-width", "1");
+            diffAndSetAttribute(shape, "x", (cx - size * 0.5).toString());
+            diffAndSetAttribute(shape, "y", (cy - size * 0.5).toString());
+            diffAndSetAttribute(shape, "width", size.toString());
+            diffAndSetAttribute(shape, "height", size.toString());
+            diffAndSetAttribute(shape, "fill", (enabled) ? this.shapeFillColor : ((this.shapeFillIfDisabled) ? this.disabledColor : "none"));
+            diffAndSetAttribute(shape, "stroke", (enabled) ? "white" : this.disabledColor);
+            diffAndSetAttribute(shape, "stroke-width", "1");
             this.sectionRoot.appendChild(shape);
         }
         let tick = document.createElementNS(Avionics.SVG.NS, "path");
-        tick.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy) + " l" + (size * 0.4) + " " + (size * 0.5) + " l" + (size * 0.6) + " " + (-size));
-        tick.setAttribute("fill", "none");
-        tick.setAttribute("stroke", this.interactionColor);
-        tick.setAttribute("stroke-width", "4");
-        tick.setAttribute("visibility", "hidden");
+        diffAndSetAttribute(tick, "d", "M" + (cx - size * 0.5) + " " + (cy) + " l" + (size * 0.4) + " " + (size * 0.5) + " l" + (size * 0.6) + " " + (-size));
+        diffAndSetAttribute(tick, "fill", "none");
+        diffAndSetAttribute(tick, "stroke", this.interactionColor);
+        diffAndSetAttribute(tick, "stroke-width", "4");
+        diffAndSetAttribute(tick, "visibility", "hidden");
         this.sectionRoot.appendChild(tick);
         let text = document.createElementNS(Avionics.SVG.NS, "text");
-        text.textContent = _text;
-        text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
-        text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-        text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-        text.setAttribute("font-size", _textSize.toString());
-        text.setAttribute("font-family", this.textStyle);
-        text.setAttribute("alignment-baseline", "central");
+        diffAndSetText(text, _text);
+        diffAndSetAttribute(text, "x", (this.columnLeft2 + this.textMarginX).toString());
+        diffAndSetAttribute(text, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+        diffAndSetAttribute(text, "fill", (enabled) ? "white" : this.disabledColor);
+        diffAndSetAttribute(text, "font-size", _textSize.toString());
+        diffAndSetAttribute(text, "font-family", this.textStyle);
+        diffAndSetAttribute(text, "alignment-baseline", "central");
         this.sectionRoot.appendChild(text); let hl = document.createElementNS(Avionics.SVG.NS, "rect");
-        hl.setAttribute("x", (this.columnLeft3 - 2).toString());
-        hl.setAttribute("y", (this.section.endY + 2).toString());
-        hl.setAttribute("width", (this.menuWidth - 2 - (this.columnLeft3 - 2)).toString());
-        hl.setAttribute("height", ((this.section.endY + this.lineHeight - 2) - (this.section.endY + 2)).toString());
-        hl.setAttribute("fill", this.interactionColor);
-        hl.setAttribute("visibility", "hidden");
+        diffAndSetAttribute(hl, "x", (this.columnLeft3 - 2).toString());
+        diffAndSetAttribute(hl, "y", (this.section.endY + 2).toString());
+        diffAndSetAttribute(hl, "width", (this.menuWidth - 2 - (this.columnLeft3 - 2)).toString());
+        diffAndSetAttribute(hl, "height", ((this.section.endY + this.lineHeight - 2) - (this.section.endY + 2)).toString());
+        diffAndSetAttribute(hl, "fill", this.interactionColor);
+        diffAndSetAttribute(hl, "visibility", "hidden");
         this.sectionRoot.appendChild(hl);
         let range = document.createElementNS(Avionics.SVG.NS, "text");
-        range.setAttribute("x", this.columnLeft3.toString());
-        range.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-        range.setAttribute("fill", (enabled) ? this.interactionColor : this.disabledColor);
-        range.setAttribute("font-size", _textSize.toString());
-        range.setAttribute("font-family", this.textStyle);
-        range.setAttribute("alignment-baseline", "central");
+        diffAndSetAttribute(range, "x", this.columnLeft3.toString());
+        diffAndSetAttribute(range, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+        diffAndSetAttribute(range, "fill", (enabled) ? this.interactionColor : this.disabledColor);
+        diffAndSetAttribute(range, "font-size", _textSize.toString());
+        diffAndSetAttribute(range, "font-family", this.textStyle);
+        diffAndSetAttribute(range, "alignment-baseline", "central");
         this.sectionRoot.appendChild(range);
         let item = new CJ4_PopupMenu_Item(PopupMenu_ItemType.CHECKBOX_RANGE, this.section, this.section.endY, this.lineHeight);
         item.autodeselect = _autodeselect;
@@ -4470,8 +4470,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showMainPage(_highlight = 0) {
         this._isOnMainPage = true;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4526,8 +4526,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showNavPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4567,8 +4567,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showConfigPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4602,8 +4602,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showOverlaysPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4641,8 +4641,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showRadarPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4688,8 +4688,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showRadarFunctionPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4733,8 +4733,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showRefPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4780,8 +4780,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showTAWSPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4812,8 +4812,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
     showBaroSetPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4862,8 +4862,8 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
     showMainPage() {
         this._isOnMainPage = true;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4919,8 +4919,8 @@ class CJ4_PopupMenu_UPPER extends CJ4_PopupMenu_Handler {
     showMainPage() {
         this._isOnMainPage = true;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -4963,8 +4963,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
     showMainPage(_highlight = 0) {
         this._isOnMainPage = true;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -5010,8 +5010,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
     showMapSymbolsPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -5056,8 +5056,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
     showOverlaysPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -5095,8 +5095,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
     showSystemTestPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -5299,8 +5299,8 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         this.currentMenu = this.showMainPage.bind(this, 0);
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();
@@ -5332,8 +5332,8 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         this.totalPages = Math.ceil(_checklist.sections.length / this.maximumItemsPerPage);
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
 
         let sectionRoot = this.openMenu();
         {
@@ -5374,8 +5374,8 @@ class CJ4_MFDChecklist extends WTMenu.Checklist_Menu_Handler {
         // (this.totalPages - (_checklist.sections[_section_id].checklistItems.length / 7)).toFixed(2)) == 0.16
 
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
 
         let sectionRoot = this.openMenu();
         {
@@ -5513,8 +5513,8 @@ class CJ4_PassengerBrief extends WTMenu.PassengerBrief_Menu_Handler {
     }
     showMainPage(_highlight = 0) {
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
-        page.setAttribute("id", "ViewBox");
-        page.setAttribute("viewBox", "0 0 500 500");
+        diffAndSetAttribute(page, "id", "ViewBox");
+        diffAndSetAttribute(page, "viewBox", "0 0 500 500");
         let sectionRoot = this.openMenu();
         {
             this.beginSection();

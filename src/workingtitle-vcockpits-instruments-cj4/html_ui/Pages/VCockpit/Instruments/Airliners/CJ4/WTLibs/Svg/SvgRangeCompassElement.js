@@ -94,11 +94,11 @@ class SvgRangeCompassElement extends SvgMapElement {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
 
-        container.setAttribute("x", 0);
-        container.setAttribute("y", 0);
-        container.setAttribute("width", 1000);
-        container.setAttribute("height", 1000);
-        container.setAttribute("overflow", "hidden");
+        diffAndSetAttribute(container, "x", 0);
+        diffAndSetAttribute(container, "y", 0);
+        diffAndSetAttribute(container, "width", 1000);
+        diffAndSetAttribute(container, "height", 1000);
+        diffAndSetAttribute(container, "overflow", "hidden");
 
         this.compassLayer = document.createElementNS(Avionics.SVG.NS, "g");
         this.labelLayer = document.createElementNS(Avionics.SVG.NS, "g");
@@ -240,31 +240,31 @@ class SvgRangeCompassElement extends SvgMapElement {
 
     createBearingTickMinor() {
         let bearingTick = document.createElementNS(Avionics.SVG.NS, "path");
-        bearingTick.setAttribute("fill-opacity", "0");
-        bearingTick.setAttribute("stroke", this.bearingTickMinorColor);
-        bearingTick.setAttribute("stroke-width", this.bearingTickMinorStrokeWidth);
-        bearingTick.setAttribute("stroke-opacity", "1");
+        diffAndSetAttribute(bearingTick, "fill-opacity", "0");
+        diffAndSetAttribute(bearingTick, "stroke", this.bearingTickMinorColor);
+        diffAndSetAttribute(bearingTick, "stroke-width", this.bearingTickMinorStrokeWidth);
+        diffAndSetAttribute(bearingTick, "stroke-opacity", "1");
         return bearingTick;
     }
 
     createBearingTickMajor() {
         let bearingTick = document.createElementNS(Avionics.SVG.NS, "path");
-        bearingTick.setAttribute("fill-opacity", "0");
-        bearingTick.setAttribute("stroke", this.bearingTickMajorColor);
-        bearingTick.setAttribute("stroke-width", this.bearingTickMajorStrokeWidth);
-        bearingTick.setAttribute("stroke-opacity", "1");
+        diffAndSetAttribute(bearingTick, "fill-opacity", "0");
+        diffAndSetAttribute(bearingTick, "stroke", this.bearingTickMajorColor);
+        diffAndSetAttribute(bearingTick, "stroke-width", this.bearingTickMajorStrokeWidth);
+        diffAndSetAttribute(bearingTick, "stroke-opacity", "1");
         return bearingTick;
     }
 
     createBearingLabel() {
         let bearingLabel = document.createElementNS(Avionics.SVG.NS, "text");
-        bearingLabel.setAttribute("fill", this.bearingLabelFontColor);
-        bearingLabel.setAttribute("text-anchor", "middle");
-        bearingLabel.setAttribute("dominant-baseline", "middle");
-        bearingLabel.setAttribute("stroke", this.bearingLabelFontOutlineColor);
-        bearingLabel.setAttribute("stroke-width", this.bearingLabelFontOutlineWidth);
-        bearingLabel.setAttribute("font-size", this.bearingLabelFontSize);
-        bearingLabel.setAttribute("font-family", this.bearingLabelFont);
+        diffAndSetAttribute(bearingLabel, "fill", this.bearingLabelFontColor);
+        diffAndSetAttribute(bearingLabel, "text-anchor", "middle");
+        diffAndSetAttribute(bearingLabel, "dominant-baseline", "middle");
+        diffAndSetAttribute(bearingLabel, "stroke", this.bearingLabelFontOutlineColor);
+        diffAndSetAttribute(bearingLabel, "stroke-width", this.bearingLabelFontOutlineWidth);
+        diffAndSetAttribute(bearingLabel, "font-size", this.bearingLabelFontSize);
+        diffAndSetAttribute(bearingLabel, "font-family", this.bearingLabelFont);
         return bearingLabel;
     }
 

@@ -118,30 +118,34 @@
 
     <!-- FMS ########################################### -->
     <Template Name="ASOBO_FMC_Common_Params_Template">
-        <DefaultTemplateParameters>
+        <Parameters Type="Default">
             <DONT_OVERRIDE_BASE_EMISSIVE>True</DONT_OVERRIDE_BASE_EMISSIVE>
             <SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
             <WWISE_EVENT_1>WT_fmc_push_button_on</WWISE_EVENT_1>
-            <NORMALIZED_TIME_1>0.05</NORMALIZED_TIME_1>
+			<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
             <NO_SEQ2/>
-        </DefaultTemplateParameters>
-
-        <UseTemplate Name="#TEMPLATE_TO_CALL#">
-        </UseTemplate>
+			<FMC_TEMPLATE_TO_CALL>ASOBO_FMC_#TYPE#_SubTemplate</FMC_TEMPLATE_TO_CALL>
+			<FMC_NAME>CDU</FMC_NAME>
+			<INPUT_EVENT_ID_SOURCE>FMC_#TYPE#_#ID#</INPUT_EVENT_ID_SOURCE>
+        </Parameters>
+		<Parameters Type="Override">
+			<Switch Param="ID">
+				<Case Value="1">
+					<TT_FMS_INDEX>(R:1:@TT_Package.GT_STATE_#FMC_NAME#) (R:1:@TT_Package.GT_STATE_PILOT_FMS) @sprintf</TT_FMS_INDEX>
+				</Case>
+				<Case Value="2">
+					<TT_FMS_INDEX>(R:1:@TT_Package.GT_STATE_#FMC_NAME#) (R:1:@TT_Package.GT_STATE_COPILOT_FMS) @sprintf</TT_FMS_INDEX>
+				</Case>
+			</Switch>
+		</Parameters>
+        <UseTemplate Name="#FMC_TEMPLATE_TO_CALL#" />
     </Template>
 
     <Template Name="ASOBO_FMC_Push_CLR_Template">
-        <DefaultTemplateParameters>
+        <Parameters Type="Default">
             <NODE_ID_CLR>#FMC_NAME#_Push_CLR#SUFFIX_ID#</NODE_ID_CLR>
             <ANIM_NAME_CLR>#FMC_NAME#_Push_CLR#SUFFIX_ID#</ANIM_NAME_CLR>
-        </DefaultTemplateParameters>
-        <EditableTemplateParameters>
-            <AddParams>
-                <NODE_ID_CLR></NODE_ID_CLR>
-                <ANIM_NAME_CLR></ANIM_NAME_CLR>
-            </AddParams>
-        </EditableTemplateParameters>
-
+        </Parameters>
         <UseTemplate Name="ASOBO_FMC_PushButton">
             <HTML_EVENT_ID>CLR</HTML_EVENT_ID>
             <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>

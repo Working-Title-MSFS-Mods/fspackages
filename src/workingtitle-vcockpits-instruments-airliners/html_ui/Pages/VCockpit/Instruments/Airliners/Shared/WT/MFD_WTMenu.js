@@ -127,11 +127,11 @@ var WTMenu;
         }
         closeMenu() {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", "0");
-            bg.setAttribute("y", "0");
-            bg.setAttribute("width", this.menuWidth.toString());
-            bg.setAttribute("height", this.height.toString());
-            bg.setAttribute("fill", "black");
+            diffAndSetAttribute(bg, "x", "0");
+            diffAndSetAttribute(bg, "y", "0");
+            diffAndSetAttribute(bg, "width", this.menuWidth.toString());
+            diffAndSetAttribute(bg, "height", this.height.toString());
+            diffAndSetAttribute(bg, "fill", "black");
             this.sectionRoot.insertBefore(bg, this.sectionRoot.firstChild);
             this.highlightElem = document.createElementNS(Avionics.SVG.NS, "rect");
             this.highlightElem.setAttribute("x", "0");
@@ -168,39 +168,39 @@ var WTMenu;
         }
         addChecklistTitle(_text, _textSize, _bgFactor, _pageNumber = undefined, _totalPages = undefined, _alignment = "center") {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", "0");
-            bg.setAttribute("y", this.section.endY.toString());
-            bg.setAttribute("width", (this.menuWidth * _bgFactor).toString());
-            bg.setAttribute("height", this.lineHeight.toString());
+            diffAndSetAttribute(bg, "x", "0");
+            diffAndSetAttribute(bg, "y", this.section.endY.toString());
+            diffAndSetAttribute(bg, "width", (this.menuWidth * _bgFactor).toString());
+            diffAndSetAttribute(bg, "height", this.lineHeight.toString());
             this.sectionRoot.appendChild(bg);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
+            diffAndSetText(text, _text);
             if(_alignment == "left"){
-                text.setAttribute("x", (this.columnLeft1).toString());
-                text.setAttribute("text-anchor", "left");
+                diffAndSetAttribute(text, "x", (this.columnLeft1).toString());
+                diffAndSetAttribute(text, "text-anchor", "left");
             }
             else{
-                text.setAttribute("x", "175");
-                text.setAttribute("text-anchor", "middle");
+                diffAndSetAttribute(text, "x", "175");
+                diffAndSetAttribute(text, "text-anchor", "middle");
             }
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
+            diffAndSetAttribute(text, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(text, "fill", "white");
+            diffAndSetAttribute(text, "font-size", _textSize.toString());
+            diffAndSetAttribute(text, "font-family", this.textStyle);
+            diffAndSetAttribute(text, "alignment-baseline", "central");
 
             this.sectionRoot.appendChild(text);
 
             if(_pageNumber && _totalPages && _totalPages > 1){
                 let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
-                pageNumber.textContent = "PG " + _pageNumber.toString() + "/" + _totalPages.toString();
-                pageNumber.setAttribute("x", "305");
-                pageNumber.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-                pageNumber.setAttribute("fill", "white");
-                pageNumber.setAttribute("font-size", _textSize.toString());
-                pageNumber.setAttribute("font-family", this.textStyle);
-                pageNumber.setAttribute("alignment-baseline", "central");
-                pageNumber.setAttribute("text-anchor", "right");
+                diffAndSetText(pageNumber, "PG " + _pageNumber.toString() + "/" + _totalPages.toString());
+                diffAndSetAttribute(pageNumber, "x", "305");
+                diffAndSetAttribute(pageNumber, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+                diffAndSetAttribute(pageNumber, "fill", "white");
+                diffAndSetAttribute(pageNumber, "font-size", _textSize.toString());
+                diffAndSetAttribute(pageNumber, "font-family", this.textStyle);
+                diffAndSetAttribute(pageNumber, "alignment-baseline", "central");
+                diffAndSetAttribute(pageNumber, "text-anchor", "right");
                 this.sectionRoot.appendChild(pageNumber);
             }
 
@@ -216,32 +216,32 @@ var WTMenu;
             let cy = this.section.endY + this.lineHeight * 0.5;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "path");
-            tick.setAttribute("d", "M" + (cx - size * 0.1) + " " + (cy - 0.2) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.18) + " " + (-size));
-            tick.setAttribute("fill", "none");
-            tick.setAttribute("stroke", "white");
-            tick.setAttribute("stroke-width", "2");
-            tick.setAttribute("visibility", "hidden");
+            diffAndSetAttribute(tick, "d", "M" + (cx - size * 0.1) + " " + (cy - 0.2) + " l" + (size * 0.1) + " " + (size * 0.5) + " l" + (size * 0.18) + " " + (-size));
+            diffAndSetAttribute(tick, "fill", "none");
+            diffAndSetAttribute(tick, "stroke", "white");
+            diffAndSetAttribute(tick, "stroke-width", "2");
+            diffAndSetAttribute(tick, "visibility", "hidden");
             this.sectionRoot.appendChild(tick);
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _checklistItem.name;
-            text.setAttribute("x", (this.columnLeft2 - 7).toString());
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
+            diffAndSetText(text, _checklistItem.name);
+            diffAndSetAttribute(text, "x", (this.columnLeft2 - 7).toString());
+            diffAndSetAttribute(text, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(text, "fill", (enabled) ? "white" : this.disabledColor);
+            diffAndSetAttribute(text, "font-size", _textSize.toString());
+            diffAndSetAttribute(text, "font-family", this.textStyle);
+            diffAndSetAttribute(text, "alignment-baseline", "central");
             this.sectionRoot.appendChild(text);
 
             let value = document.createElementNS(Avionics.SVG.NS, "text");
-            value.textContent = _checklistItem.value;
-            value.setAttribute("x", (350 - this.textMarginX).toString());
-            value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            value.setAttribute("font-size", _textSize.toString());
-            value.setAttribute("font-family", this.textStyle);
-            value.setAttribute("alignment-baseline", "central");
-            value.setAttribute("text-anchor", "end");
+            diffAndSetText(value, _checklistItem.value);
+            diffAndSetAttribute(value, "x", (350 - this.textMarginX).toString());
+            diffAndSetAttribute(value, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(value, "fill", (enabled) ? "white" : this.disabledColor);
+            diffAndSetAttribute(value, "font-size", _textSize.toString());
+            diffAndSetAttribute(value, "font-family", this.textStyle);
+            diffAndSetAttribute(value, "alignment-baseline", "central");
+            diffAndSetAttribute(value, "text-anchor", "end");
             this.sectionRoot.appendChild(value);
 
             let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
@@ -256,13 +256,13 @@ var WTMenu;
         addSubMenu(_text, _textSize, _callback, _textColour = "white") {
             let enabled = (_callback != null) ? true : false;
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
-            text.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? _textColour : this.disabledColor);
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
+            diffAndSetText(text, _text);
+            diffAndSetAttribute(text, "x", (this.columnLeft1 + this.textMarginX).toString());
+            diffAndSetAttribute(text, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(text, "fill", (enabled) ? _textColour : this.disabledColor);
+            diffAndSetAttribute(text, "font-size", _textSize.toString());
+            diffAndSetAttribute(text, "font-family", this.textStyle);
+            diffAndSetAttribute(text, "alignment-baseline", "central");
             this.sectionRoot.appendChild(text);
             let item = new Menu_Item(Menu_ItemType.SUBMENU, this.section, this.section.endY, this.lineHeight);
             item.subMenu = _callback;
@@ -340,12 +340,12 @@ var WTMenu;
         }
         registerWithMouse(_item) {
             let mouseFrame = document.createElementNS(Avionics.SVG.NS, "rect");
-            mouseFrame.setAttribute("x", this.menuLeft.toString());
-            mouseFrame.setAttribute("y", this.section.endY.toString());
-            mouseFrame.setAttribute("width", this.menuWidth.toString());
-            mouseFrame.setAttribute("height", this.lineHeight.toString());
-            mouseFrame.setAttribute("fill", "none");
-            mouseFrame.setAttribute("pointer-events", "visible");
+            diffAndSetAttribute(mouseFrame, "x", this.menuLeft.toString());
+            diffAndSetAttribute(mouseFrame, "y", this.section.endY.toString());
+            diffAndSetAttribute(mouseFrame, "width", this.menuWidth.toString());
+            diffAndSetAttribute(mouseFrame, "height", this.lineHeight.toString());
+            diffAndSetAttribute(mouseFrame, "fill", "none");
+            diffAndSetAttribute(mouseFrame, "pointer-events", "visible");
             this.sectionRoot.appendChild(mouseFrame);
             mouseFrame.addEventListener("mouseover", this.onMouseOver.bind(this, _item));
             mouseFrame.addEventListener("mouseup", this.onMousePress.bind(this, _item));
@@ -471,11 +471,11 @@ var WTMenu;
         }
         closeMenu() {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", "0");
-            bg.setAttribute("y", "0");
-            bg.setAttribute("width", this.menuWidth.toString());
-            bg.setAttribute("height", this.height.toString());
-            bg.setAttribute("fill", "black");
+            diffAndSetAttribute(bg, "x", "0");
+            diffAndSetAttribute(bg, "y", "0");
+            diffAndSetAttribute(bg, "width", this.menuWidth.toString());
+            diffAndSetAttribute(bg, "height", this.height.toString());
+            diffAndSetAttribute(bg, "fill", "black");
             this.sectionRoot.insertBefore(bg, this.sectionRoot.firstChild);
             this.highlightElem = document.createElementNS(Avionics.SVG.NS, "rect");
             this.highlightElem.setAttribute("x", "0");
@@ -512,20 +512,20 @@ var WTMenu;
         }
         addPassBriefTitle(_text, _textSize, _bgFactor) {
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", "0");
-            bg.setAttribute("y", this.section.endY.toString());
-            bg.setAttribute("width", (this.menuWidth * _bgFactor).toString());
-            bg.setAttribute("height", this.lineHeight.toString());
+            diffAndSetAttribute(bg, "x", "0");
+            diffAndSetAttribute(bg, "y", this.section.endY.toString());
+            diffAndSetAttribute(bg, "width", (this.menuWidth * _bgFactor).toString());
+            diffAndSetAttribute(bg, "height", this.lineHeight.toString());
             this.sectionRoot.appendChild(bg);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
-            text.setAttribute("x", "175");
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
-            text.setAttribute("text-anchor", "middle");
+            diffAndSetText(text, _text);
+            diffAndSetAttribute(text, "x", "175");
+            diffAndSetAttribute(text, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(text, "fill", "white");
+            diffAndSetAttribute(text, "font-size", _textSize.toString());
+            diffAndSetAttribute(text, "font-family", this.textStyle);
+            diffAndSetAttribute(text, "alignment-baseline", "central");
+            diffAndSetAttribute(text, "text-anchor", "middle");
             this.sectionRoot.appendChild(text);
 
             let item = new Menu_Item(Menu_ItemType.TITLE, this.section, this.section.endY, this.lineHeight);
@@ -536,24 +536,24 @@ var WTMenu;
             let enabled = true;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "text");
-            tick.textContent = "-";
-            tick.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
-            tick.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            tick.setAttribute("fill", "white");
-            tick.setAttribute("visibility", "hidden");
-            tick.setAttribute("font-size", _textSize.toString());
-            tick.setAttribute("font-family", this.textStyle);
-            tick.setAttribute("alignment-baseline", "central");
+            diffAndSetText(tick, "-");
+            diffAndSetAttribute(tick, "x", (this.columnLeft1 + this.textMarginX).toString());
+            diffAndSetAttribute(tick, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(tick, "fill", "white");
+            diffAndSetAttribute(tick, "visibility", "hidden");
+            diffAndSetAttribute(tick, "font-size", _textSize.toString());
+            diffAndSetAttribute(tick, "font-family", this.textStyle);
+            diffAndSetAttribute(tick, "alignment-baseline", "central");
             this.sectionRoot.appendChild(tick);
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _title;
-            text.setAttribute("x", (this.columnLeft2 - 7).toString());
-            text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
-            text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
-            text.setAttribute("font-size", _textSize.toString());
-            text.setAttribute("font-family", this.textStyle);
-            text.setAttribute("alignment-baseline", "central");
+            diffAndSetText(text, _title);
+            diffAndSetAttribute(text, "x", (this.columnLeft2 - 7).toString());
+            diffAndSetAttribute(text, "y", (this.section.endY + this.lineHeight * 0.5).toString());
+            diffAndSetAttribute(text, "fill", (enabled) ? "white" : this.disabledColor);
+            diffAndSetAttribute(text, "font-size", _textSize.toString());
+            diffAndSetAttribute(text, "font-family", this.textStyle);
+            diffAndSetAttribute(text, "alignment-baseline", "central");
             this.sectionRoot.appendChild(text);
 
             let item = new Menu_Item(Menu_ItemType.CHECKBOX, this.section, this.section.endY, this.lineHeight);
@@ -633,12 +633,12 @@ var WTMenu;
         }
         registerWithMouse(_item) {
             let mouseFrame = document.createElementNS(Avionics.SVG.NS, "rect");
-            mouseFrame.setAttribute("x", this.menuLeft.toString());
-            mouseFrame.setAttribute("y", this.section.endY.toString());
-            mouseFrame.setAttribute("width", this.menuWidth.toString());
-            mouseFrame.setAttribute("height", this.lineHeight.toString());
-            mouseFrame.setAttribute("fill", "none");
-            mouseFrame.setAttribute("pointer-events", "visible");
+            diffAndSetAttribute(mouseFrame, "x", this.menuLeft.toString());
+            diffAndSetAttribute(mouseFrame, "y", this.section.endY.toString());
+            diffAndSetAttribute(mouseFrame, "width", this.menuWidth.toString());
+            diffAndSetAttribute(mouseFrame, "height", this.lineHeight.toString());
+            diffAndSetAttribute(mouseFrame, "fill", "none");
+            diffAndSetAttribute(mouseFrame, "pointer-events", "visible");
             this.sectionRoot.appendChild(mouseFrame);
             mouseFrame.addEventListener("mouseover", this.onMouseOver.bind(this, _item));
             mouseFrame.addEventListener("mouseup", this.onMousePress.bind(this, _item));

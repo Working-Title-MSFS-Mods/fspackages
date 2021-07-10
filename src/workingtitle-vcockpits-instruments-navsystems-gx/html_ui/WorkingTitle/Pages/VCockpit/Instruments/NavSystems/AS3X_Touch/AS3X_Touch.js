@@ -268,13 +268,13 @@ class AS3X_Touch extends NavSystemTouch {
             this.currentPageName.textContent = this.getCurrentPageGroup().pages[this.lastPageIndex].name;
             this.pageNames[this.lastPageIndex].setAttribute("state", "Selected");
         }
-        Avionics.Utils.diffAndSet(this.botLineTimer, this.pfdMenu.element.getTimerValue());
-        Avionics.Utils.diffAndSet(this.botLineOat, fastToFixed(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), 0) + "°C");
+        diffAndSetText(this.botLineTimer, this.pfdMenu.element.getTimerValue());
+        diffAndSetText(this.botLineOat, fastToFixed(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), 0) + "°C");
         let time = SimVar.GetSimVarValue("E:LOCAL TIME", "seconds");
         let seconds = Math.floor(time % 60);
         let minutes = Math.floor((time / 60) % 60);
         let hours = Math.floor(Math.min(time / 3600, 99));
-        Avionics.Utils.diffAndSet(this.botLineLocalTime, (hours < 10 ? "0" : "") + hours + (minutes < 10 ? ":0" : ":") + minutes + (seconds < 10 ? ":0" : ":") + seconds);
+        diffAndSetText(this.botLineLocalTime, (hours < 10 ? "0" : "") + hours + (minutes < 10 ? ":0" : ":") + minutes + (seconds < 10 ? ":0" : ":") + seconds);
         let timeOfDay = SimVar.GetSimVarValue("E:TIME OF DAY", "number");
         let autoBright = (timeOfDay == 1 ? 1 : timeOfDay == 3 ? 0.1 : 0.35);
         SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Auto", "number", autoBright);
@@ -287,34 +287,34 @@ class AS3X_Touch extends NavSystemTouch {
     }
     updateKnobsLabels() {
         if (this.displayMode == "MFD") {
-            Avionics.Utils.diffAndSet(this.leftInnerKnobText, "Zoom Map");
+            diffAndSetText(this.leftInnerKnobText, "Zoom Map");
             this.leftInnerKnobCB = this.zoomMapMain_CB.bind(this);
-            Avionics.Utils.diffAndSet(this.leftOuterKnobText, "");
+            diffAndSetText(this.leftOuterKnobText, "");
             this.leftOuterKnobCB = this.zoomMapMain_CB.bind(this);
         }
         else {
-            Avionics.Utils.diffAndSet(this.leftInnerKnobText, "Heading");
+            diffAndSetText(this.leftInnerKnobText, "Heading");
             this.leftInnerKnobCB = this.heading_CB.bind(this);
-            Avionics.Utils.diffAndSet(this.leftOuterKnobText, "Altitude");
+            diffAndSetText(this.leftOuterKnobText, "Altitude");
             this.leftOuterKnobCB = this.altitude_CB.bind(this);
         }
         if (this.isSplit()) {
-            Avionics.Utils.diffAndSet(this.rightInnerKnobText, "Zoom Map");
+            diffAndSetText(this.rightInnerKnobText, "Zoom Map");
             this.rightInnerKnobCB = this.zoomMap_CB.bind(this);
-            Avionics.Utils.diffAndSet(this.rightOuterKnobText, "Select Page");
+            diffAndSetText(this.rightOuterKnobText, "Select Page");
             this.rightOuterKnobCB = this.selectPage_CB.bind(this);
         }
         else {
             if (this.displayMode == "MFD") {
-                Avionics.Utils.diffAndSet(this.rightInnerKnobText, "Zoom Map");
+                diffAndSetText(this.rightInnerKnobText, "Zoom Map");
                 this.rightInnerKnobCB = this.zoomMapMain_CB.bind(this);
-                Avionics.Utils.diffAndSet(this.rightOuterKnobText, "");
+                diffAndSetText(this.rightOuterKnobText, "");
                 this.rightOuterKnobCB = this.zoomMapMain_CB.bind(this);
             }
             else {
-                Avionics.Utils.diffAndSet(this.rightInnerKnobText, "Course");
+                diffAndSetText(this.rightInnerKnobText, "Course");
                 this.rightInnerKnobCB = this.crs_CB.bind(this);
-                Avionics.Utils.diffAndSet(this.rightOuterKnobText, "Baro");
+                diffAndSetText(this.rightOuterKnobText, "Baro");
                 this.rightOuterKnobCB = this.baro_CB.bind(this);
             }
         }
@@ -489,21 +489,21 @@ class AS3X_Touch extends NavSystemTouch {
     switchToPopUpPage(_pageContainer, _PopUpCloseCallback = null) {
         super.switchToPopUpPage(_pageContainer, _PopUpCloseCallback);
         if (!this.m_isSplit) {
-            Avionics.Utils.diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
-            Avionics.Utils.diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
+            diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
+            diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
         }
     }
     closePopUpElement() {
         super.closePopUpElement();
         if (!this.m_isSplit) {
-            Avionics.Utils.diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Full" : "FullNoEngine");
-            Avionics.Utils.diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Hide" : "HideNoEngine");
+            diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Full" : "FullNoEngine");
+            diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Hide" : "HideNoEngine");
         }
     }
     switchHalfFull() {
         this.m_isSplit = !this.m_isSplit;
-        Avionics.Utils.diffAndSetAttribute(this.mainDisplay, "state", this.m_isSplit || this.popUpElement != null ? this.engineDisplayed ? "Half" : "HalfNoEngine" : this.engineDisplayed ? "Full" : "FullNoEngine");
-        Avionics.Utils.diffAndSetAttribute(this.mfd, "state", this.m_isSplit || this.popUpElement != null ? this.engineDisplayed ? "Half" : "HalfNoEngine" : this.engineDisplayed ? "Hide" : "HideNoEngine");
+        diffAndSetAttribute(this.mainDisplay, "state", this.m_isSplit || this.popUpElement != null ? this.engineDisplayed ? "Half" : "HalfNoEngine" : this.engineDisplayed ? "Full" : "FullNoEngine");
+        diffAndSetAttribute(this.mfd, "state", this.m_isSplit || this.popUpElement != null ? this.engineDisplayed ? "Half" : "HalfNoEngine" : this.engineDisplayed ? "Hide" : "HideNoEngine");
         this.updateKnobsLabels();
         this.topBar.updateFullSplitButton();
     }
@@ -518,12 +518,12 @@ class AS3X_Touch extends NavSystemTouch {
     SwitchToMenuName(_name) {
         super.SwitchToMenuName(_name);
         if (!this.m_isSplit && _name != "MFD") {
-            Avionics.Utils.diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
-            Avionics.Utils.diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
+            diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
+            diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Half" : "HalfNoEngine");
         }
         else if (!this.m_isSplit) {
-            Avionics.Utils.diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Full" : "FullNoEngine");
-            Avionics.Utils.diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Hide" : "HideNoEngine");
+            diffAndSetAttribute(this.mainDisplay, "state", this.engineDisplayed ? "Full" : "FullNoEngine");
+            diffAndSetAttribute(this.mfd, "state", this.engineDisplayed ? "Hide" : "HideNoEngine");
         }
         this.updatePageList();
     }
@@ -649,45 +649,45 @@ class AS3X_Touch_TopBar extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        Avionics.Utils.diffAndSet(this.comActiveFreq, SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz").toFixed(3));
-        Avionics.Utils.diffAndSet(this.comStbyFreq, SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz").toFixed(3));
-        Avionics.Utils.diffAndSet(this.comActiveIdent, SimVar.GetSimVarValue("HSI STATION IDENT", "string"));
-        Avionics.Utils.diffAndSet(this.xpdrCode, ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4));
+        diffAndSetText(this.comActiveFreq, SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz").toFixed(3));
+        diffAndSetText(this.comStbyFreq, SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz").toFixed(3));
+        diffAndSetText(this.comActiveIdent, SimVar.GetSimVarValue("HSI STATION IDENT", "string"));
+        diffAndSetText(this.xpdrCode, ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4));
         let xpdrState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         switch (xpdrState) {
             case 0:
-                Avionics.Utils.diffAndSet(this.xpdrMode, "OFF");
+                diffAndSetText(this.xpdrMode, "OFF");
                 SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", 1);
                 break;
             case 1:
-                Avionics.Utils.diffAndSet(this.xpdrMode, "STBY");
+                diffAndSetText(this.xpdrMode, "STBY");
                 break;
             case 2:
-                Avionics.Utils.diffAndSet(this.xpdrMode, "TEST");
+                diffAndSetText(this.xpdrMode, "TEST");
                 break;
             case 3:
-                Avionics.Utils.diffAndSet(this.xpdrMode, "ON");
+                diffAndSetText(this.xpdrMode, "ON");
                 break;
             case 4:
-                Avionics.Utils.diffAndSet(this.xpdrMode, "ALT");
+                diffAndSetText(this.xpdrMode, "ALT");
                 break;
         }
         let nextWaypoint = this.gps.currFlightPlanManager.getActiveWaypoint(false, true);
         if (nextWaypoint) {
-            Avionics.Utils.diffAndSet(this.wpt, nextWaypoint.ident);
-            Avionics.Utils.diffAndSet(this.brg, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(), 0) + "°m");
-            Avionics.Utils.diffAndSet(this.dist, this.gps.currFlightPlanManager.getDistanceToActiveWaypoint().toFixed(1) + "nm");
+            diffAndSetText(this.wpt, nextWaypoint.ident);
+            diffAndSetText(this.brg, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(), 0) + "°m");
+            diffAndSetText(this.dist, this.gps.currFlightPlanManager.getDistanceToActiveWaypoint().toFixed(1) + "nm");
             var ete = this.gps.currFlightPlanManager.getETEToActiveWaypoint();
-            Avionics.Utils.diffAndSet(this.ete, ete >= 60 * 60 ? Math.floor(ete / 3600) + "+" + ((ete % 3600 / 60) < 10 ? "0" : "") + Math.floor(ete % 3600 / 60) : Math.floor(ete / 60) + ":" + (ete % 60 < 10 ? "0" : "") + ete % 60);
+            diffAndSetText(this.ete, ete >= 60 * 60 ? Math.floor(ete / 3600) + "+" + ((ete % 3600 / 60) < 10 ? "0" : "") + Math.floor(ete % 3600 / 60) : Math.floor(ete / 60) + ":" + (ete % 60 < 10 ? "0" : "") + ete % 60);
         }
         else {
-            Avionics.Utils.diffAndSet(this.wpt, "____");
-            Avionics.Utils.diffAndSet(this.brg, "___°m");
-            Avionics.Utils.diffAndSet(this.dist, "__._nm");
-            Avionics.Utils.diffAndSet(this.ete, "__:__");
+            diffAndSetText(this.wpt, "____");
+            diffAndSetText(this.brg, "___°m");
+            diffAndSetText(this.dist, "__._nm");
+            diffAndSetText(this.ete, "__:__");
         }
-        Avionics.Utils.diffAndSet(this.gs, SimVar.GetSimVarValue("GPS GROUND SPEED", "knots").toFixed(1) + "kt");
-        Avionics.Utils.diffAndSet(this.trk, fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"), 0) + "°m");
+        diffAndSetText(this.gs, SimVar.GetSimVarValue("GPS GROUND SPEED", "knots").toFixed(1) + "kt");
+        diffAndSetText(this.trk, fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"), 0) + "°m");
         if (this.isIdent) {
             if (Date.now() - this.identStartTime > 17000 || SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") < 3) {
                 this.isIdent = false;
@@ -1058,40 +1058,40 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.gps.makeButton(this.moreOptions_WindMode_SpeedDir, this.switchToWindMode.bind(this, 3));
         this.gps.makeButton(this.moreOptions_WindMode_HeadXWind, this.switchToWindMode.bind(this, 1));
         this.gps.makeButton(this.moreOptions_WindMode_Off, this.switchToWindMode.bind(this, 0));
-        Avionics.Utils.diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
+        diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
         this.closeMoreOptions();
     }
     onUpdate(_deltaTime) {
-        Avionics.Utils.diffAndSet(this.cdiSource_value, this.hsi.getAttribute("nav_source"));
+        diffAndSetText(this.cdiSource_value, this.hsi.getAttribute("nav_source"));
         if (this.hsi && this.hsi.getAttribute("show_bearing1") == "true") {
-            Avionics.Utils.diffAndSet(this.leftBearing_value, this.hsi.getAttribute("bearing1_source"));
+            diffAndSetText(this.leftBearing_value, this.hsi.getAttribute("bearing1_source"));
         }
         else {
-            Avionics.Utils.diffAndSet(this.leftBearing_value, "Off");
+            diffAndSetText(this.leftBearing_value, "Off");
         }
         if (this.hsi && this.hsi.getAttribute("show_bearing2") == "true") {
-            Avionics.Utils.diffAndSet(this.rightBearing_value, this.hsi.getAttribute("bearing2_source"));
+            diffAndSetText(this.rightBearing_value, this.hsi.getAttribute("bearing2_source"));
         }
         else {
-            Avionics.Utils.diffAndSet(this.rightBearing_value, "Off");
+            diffAndSetText(this.rightBearing_value, "Off");
         }
-        Avionics.Utils.diffAndSet(this.timerStartStop_value, this.getTimerValue());
+        diffAndSetText(this.timerStartStop_value, this.getTimerValue());
         let windMode = SimVar.GetSimVarValue("L:Glasscockpit_Wind_Mode", "number");
         switch (windMode) {
             case 0:
-                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Off");
+                diffAndSetText(this.moreOptions_WindMode_Status, "Off");
                 break;
             case 1:
-                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Head/X-Wind");
+                diffAndSetText(this.moreOptions_WindMode_Status, "Head/X-Wind");
                 break;
             case 2:
-                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Off");
+                diffAndSetText(this.moreOptions_WindMode_Status, "Off");
                 break;
             case 3:
-                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Speed/Dir");
+                diffAndSetText(this.moreOptions_WindMode_Status, "Speed/Dir");
                 break;
         }
     }
@@ -1142,10 +1142,10 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.timerStartStop_action.textContent = "Start";
     }
     openMoreOptions() {
-        Avionics.Utils.diffAndSetAttribute(this.moreOptions_Window, "state", "Active");
+        diffAndSetAttribute(this.moreOptions_Window, "state", "Active");
     }
     closeMoreOptions() {
-        Avionics.Utils.diffAndSetAttribute(this.moreOptions_Window, "state", "Inactive");
+        diffAndSetAttribute(this.moreOptions_Window, "state", "Inactive");
     }
     toggleSyntheticVision() {
         console.log('toggling synvis');
@@ -1156,12 +1156,12 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         if (attitude) {
             console.log('we have an attitude.')
             attitude.setSyntheticVisionEnabled(this.syntheticVision);
-            // Avionics.Utils.diffAndSetAttribute(attitude.svg, "background", (this.syntheticVision ? "false" : "true"));
+            // diffAndSetAttribute(attitude.svg, "background", (this.syntheticVision ? "false" : "true"));
         }
         if (this.syntheticVisionElement) {
             this.syntheticVisionElement.style.display = (this.syntheticVision ? "Block" : "None");
         }
-        Avionics.Utils.diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
+        diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
         SimVar.SetSimVarValue("L:Glasscockpit_SVTTerrain", "number", (this.syntheticVision ? 1 : 0));
     }
     openWindModeOptions() {
@@ -1303,13 +1303,13 @@ class AS3X_Touch_InsertBeforeWaypoint extends NavSystemElement {
                 this.elements.push(newElem);
             }
             let infos = this.gps.currFlightPlanManager.getWaypoint(i).infos;
-            Avionics.Utils.diffAndSet(this.elements[i].ident, infos.ident);
-            Avionics.Utils.diffAndSet(this.elements[i].name, infos.name);
+            diffAndSetText(this.elements[i].ident, infos.ident);
+            diffAndSetText(this.elements[i].name, infos.name);
             let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.elements[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+            diffAndSetAttribute(this.elements[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
         }
         for (let i = this.gps.currFlightPlanManager.getWaypointsCount(); i < this.elements.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.elements[i].base, "state", "Inactive");
+            diffAndSetAttribute(this.elements[i].base, "state", "Inactive");
         }
     }
     onExit() {
@@ -1395,13 +1395,13 @@ class AS3X_Touch_AudioPanel extends NavSystemElement {
         this.root.setAttribute("state", "Active");
     }
     onUpdate(_deltaTime) {
-        Avionics.Utils.diffAndSetAttribute(this.com1, "state", SimVar.GetSimVarValue("COM RECEIVE:1", "bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.com2, "state", SimVar.GetSimVarValue("COM RECEIVE:2", "bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.com1Mic, "state", SimVar.GetSimVarValue("COM TRANSMIT:1", "bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.com2Mic, "state", SimVar.GetSimVarValue("COM TRANSMIT:2", "bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.nav1, "state", SimVar.GetSimVarValue("NAV SOUND:1", "bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.nav2, "state", SimVar.GetSimVarValue("NAV SOUND:2", "bool") ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.speaker, "state", SimVar.GetSimVarValue("SPEAKER ACTIVE", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.com1, "state", SimVar.GetSimVarValue("COM RECEIVE:1", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.com2, "state", SimVar.GetSimVarValue("COM RECEIVE:2", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.com1Mic, "state", SimVar.GetSimVarValue("COM TRANSMIT:1", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.com2Mic, "state", SimVar.GetSimVarValue("COM TRANSMIT:2", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.nav1, "state", SimVar.GetSimVarValue("NAV SOUND:1", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.nav2, "state", SimVar.GetSimVarValue("NAV SOUND:2", "bool") ? "Active" : "");
+        diffAndSetAttribute(this.speaker, "state", SimVar.GetSimVarValue("SPEAKER ACTIVE", "bool") ? "Active" : "");
     }
     onExit() {
         this.root.setAttribute("state", "Inactive");
@@ -1455,13 +1455,13 @@ class AS3X_Touch_Setup_Display extends NavSystemElement {
         let autoBright = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Auto", "number");
         let isAuto = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 1;
         let backLightValue = isAuto ? autoBright : manualBright;
-        Avionics.Utils.diffAndSet(this.masterPercentText, (backLightValue * 100).toFixed(0));
+        diffAndSetText(this.masterPercentText, (backLightValue * 100).toFixed(0));
         let length = backLightValue * 100;
         let height = backLightValue * 30;
-        Avionics.Utils.diffAndSetAttribute(this.masterBGTriangle, "points", "0,30 " + length + "," + (30 - height) + " " + length + ",30");
-        Avionics.Utils.diffAndSetAttribute(this.masterCursor, "state", isAuto ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.buttonLess, "state", isAuto ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.buttonMore, "state", isAuto ? "Greyed" : "");
+        diffAndSetAttribute(this.masterBGTriangle, "points", "0,30 " + length + "," + (30 - height) + " " + length + ",30");
+        diffAndSetAttribute(this.masterCursor, "state", isAuto ? "Greyed" : "");
+        diffAndSetAttribute(this.buttonLess, "state", isAuto ? "Greyed" : "");
+        diffAndSetAttribute(this.buttonMore, "state", isAuto ? "Greyed" : "");
         this.masterCursor.style.left = (this.cursorStartVH + (this.cursorBGWidthVH * backLightValue)) + "vh";
     }
     onLessPress() {
@@ -1490,18 +1490,18 @@ class AS3X_Touch_Setup_Display extends NavSystemElement {
         }
     }
     openModePopup() {
-        Avionics.Utils.diffAndSetAttribute(this.modePopup, "state", "Active");
+        diffAndSetAttribute(this.modePopup, "state", "Active");
     }
     switchToAuto() {
-        Avionics.Utils.diffAndSetAttribute(this.modePopup, "state", "Inactive");
+        diffAndSetAttribute(this.modePopup, "state", "Inactive");
         SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number", 1);
-        Avionics.Utils.diffAndSet(this.buttonMode_Value, "Photo Cell");
+        diffAndSetText(this.buttonMode_Value, "Photo Cell");
     }
     switchToManual() {
-        Avionics.Utils.diffAndSetAttribute(this.modePopup, "state", "Inactive");
+        diffAndSetAttribute(this.modePopup, "state", "Inactive");
         SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number", 0);
         SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number", SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_AUto", "number"));
-        Avionics.Utils.diffAndSet(this.buttonMode_Value, "Manual");
+        diffAndSetText(this.buttonMode_Value, "Manual");
     }
 }
 class AS3X_Touch_Procedures extends NavSystemTouch_Procedures {

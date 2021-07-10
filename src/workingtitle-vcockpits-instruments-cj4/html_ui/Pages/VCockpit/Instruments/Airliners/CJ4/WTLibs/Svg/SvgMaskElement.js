@@ -33,11 +33,11 @@ class SvgBottomMaskElement extends SvgMaskElement {
         this.createDrawCallback = (map) => {
             let rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.id = this.id(map);
-            rect.setAttribute("x", offsetX.toString());
-            rect.setAttribute("y", (530 + offsetY).toString());
-            rect.setAttribute("width", "1000");
-            rect.setAttribute("height", "470");
-            rect.setAttribute("fill", "black");
+            diffAndSetAttribute(rect, "x", offsetX.toString());
+            diffAndSetAttribute(rect, "y", (530 + offsetY).toString());
+            diffAndSetAttribute(rect, "width", "1000");
+            diffAndSetAttribute(rect, "height", "470");
+            diffAndSetAttribute(rect, "fill", "black");
             return rect;
         };
     }

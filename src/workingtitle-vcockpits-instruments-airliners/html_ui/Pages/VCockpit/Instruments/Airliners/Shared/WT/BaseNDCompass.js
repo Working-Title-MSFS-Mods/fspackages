@@ -237,14 +237,14 @@ class Jet_NDCompass extends HTMLElement {
                 }
             }
             let roundedCompass = fastToFixed(compass, 2);
-            this.setAttribute("rotation", roundedCompass);
+            diffAndSetAttribute(this, "rotation", roundedCompass);
             if (this.currentRefGroup)
                 this.currentRefGroup.classList.toggle('hide', false);
             if (this.currentRefValue)
                 this.currentRefValue.textContent = Utils.leadingZeros(compass % 360, 3, 0);
         }
         else {
-            this.setAttribute("rotation", "0");
+            diffAndSetAttribute(this, "rotation", "0");
             if (this.currentRefGroup)
                 this.currentRefGroup.classList.toggle('hide', true);
         }
@@ -259,7 +259,7 @@ class Jet_NDCompass extends HTMLElement {
                         selectedHeading = Simplane.getAutoPilotSelectedHeadingLockValue(false);
                 }
                 let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
-                this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
+                diffAndSetAttribute(this, "selected_heading_bug_rotation", roundedSelectedHeading);
                 if (this.trackingLine)
                     this.trackingLine.classList.toggle('hide', !showTrackLine);
                 if (this.navigationMode == Jet_NDCompass_Navigation.NAV) {
@@ -300,7 +300,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.showSelectedHeadingTimer = 0;
                 }
                 let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
-                this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
+                diffAndSetAttribute(this, "selected_heading_bug_rotation", roundedSelectedHeading);
                 if (this.navigationMode !== Jet_NDCompass_Navigation.PLAN) {
                     if (this.selectedHeadingGroup)
                         this.selectedHeadingGroup.classList.toggle('hide', false);
@@ -338,9 +338,9 @@ class Jet_NDCompass extends HTMLElement {
                     this.showSelectedHeadingTimer = 0;
                 }
 
-                let selectedHeading = Math.round(simSelectedHeading).toString().padStart(3, "0");
+                let selectedHeading = Math.round(simSelectedHeading);
                 let roundedSelectedHeading = fastToFixed(selectedHeading, 3);
-                this.setAttribute("selected_heading_bug_rotation", roundedSelectedHeading);
+                diffAndSetAttribute(this, "selected_heading_bug_rotation", roundedSelectedHeading);
                 if (this.selectedHeadingGroup)
                     this.selectedHeadingGroup.classList.toggle('hide', false);
                 if (this.selectedHeadingLine) {
@@ -363,7 +363,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.selectedTrackGroup.classList.toggle('hide', true);
                 if (this.selectedRefGroup) {
                     if (this.selectedRefValue)
-                        this.selectedRefValue.textContent = selectedHeading.toString();
+                        this.selectedRefValue.textContent = selectedHeading.toString().padStart(3, "0");
                     this.selectedRefGroup.classList.toggle('hide', false);
                 }
             }
@@ -371,7 +371,7 @@ class Jet_NDCompass extends HTMLElement {
         else {
             let selectedTrack = simSelectedTrack;
             let roundedSelectedTrack = fastToFixed(selectedTrack, 3);
-            this.setAttribute("selected_tracking_bug_rotation", roundedSelectedTrack);
+            diffAndSetAttribute(this, "selected_tracking_bug_rotation", roundedSelectedTrack);
             if (this.trackingLine)
                 this.trackingLine.classList.toggle('hide', false);
             if (this.selectedHeadingGroup)
@@ -388,17 +388,17 @@ class Jet_NDCompass extends HTMLElement {
         }
         let heading = simHeading;
         let roundedHeading = fastToFixed(heading, 3);
-        this.setAttribute("heading_bug_rotation", roundedHeading);
+        diffAndSetAttribute(this, "heading_bug_rotation", roundedHeading);
         if (simGroundSpeed <= 10)
             simTrack = simHeading;
         let roundedTracking = fastToFixed(simTrack, 3);
-        this.setAttribute("tracking_bug_rotation", roundedTracking);
+        diffAndSetAttribute(this, "tracking_bug_rotation", roundedTracking);
         if (this.ilsGroup) {
             if (this._showILS || this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                 let localizer = this.gps.radioNav.getBestILSBeacon();
                 if (localizer.id > 0) {
                     let roundedCourse = fastToFixed(localizer.course, 3);
-                    this.setAttribute("ils_bug_rotation", roundedCourse);
+                    diffAndSetAttribute(this, "ils_bug_rotation", roundedCourse);
                     this.ilsGroup.classList.toggle('hide', false);
                 }
                 else
@@ -519,17 +519,17 @@ class Jet_NDCompass extends HTMLElement {
                         if (navToNavTransferState === 3)
                             SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course); //Sets the OBS so the LOC needle gets set to the correct course
 
-                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
-                        this.setAttribute("course_deviation", deviation.toString());
+                        diffAndSetAttribute(this, "course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        diffAndSetAttribute(this, "course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
                             displayVerticalDeviation = true;
-                            this.setAttribute("vertical_deviation", (SimVar.GetSimVarValue("NAV GSI:" + beacon.id, "number") / 127.0).toString());
+                            diffAndSetAttribute(this, "vertical_deviation", (SimVar.GetSimVarValue("NAV GSI:" + beacon.id, "number") / 127.0).toString());
                         }
                     }
                     else {
-                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        diffAndSetAttribute(this, "course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         //this.setAttribute("course", compass.toString());
-                        this.setAttribute("course_deviation", "0");
+                        diffAndSetAttribute(this, "course_deviation", "0");
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");
                         this.courseFROM.setAttribute("visibility", "hidden");
@@ -557,8 +557,8 @@ class Jet_NDCompass extends HTMLElement {
                     //let simSelectedTrack = Simplane.getNextWaypointTrack();
                     let simSelectedTrack = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
 
-                    this.setAttribute("course", simSelectedTrack.toString());
-                    this.setAttribute("course_deviation", deviation.toString());
+                    diffAndSetAttribute(this, "course", simSelectedTrack.toString());
+                    diffAndSetAttribute(this, "course_deviation", deviation.toString());
 
                     let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool");
                     let hasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "Bool");
@@ -578,8 +578,8 @@ class Jet_NDCompass extends HTMLElement {
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
-                        this.setAttribute("ghost_needle_course", course.toString());
-                        this.setAttribute("ghost_needle_deviation", deviation.toString());
+                        diffAndSetAttribute(this, "ghost_needle_course", course.toString());
+                        diffAndSetAttribute(this, "ghost_needle_deviation", deviation.toString());
                         
                         const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
 
@@ -602,8 +602,8 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                     else {
-                        this.setAttribute("ghost_needle_course", compass.toString());
-                        this.setAttribute("ghost_needle_deviation", "0");
+                        diffAndSetAttribute(this, "ghost_needle_course", compass.toString());
+                        diffAndSetAttribute(this, "ghost_needle_deviation", "0");
                         this.ghostNeedleGroup.setAttribute("visibility", "hidden");
 
                         if (this.navTransferTuning && this.navPreset) {
@@ -612,17 +612,17 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                 } 
-                this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");
-                this.setAttribute("display_vertical_deviation", displayVerticalDeviation ? "True" : "False");
+                diffAndSetAttribute(this, "display_course_deviation", displayCourseDeviation ? "True" : "False");
+                diffAndSetAttribute(this, "display_vertical_deviation", displayVerticalDeviation ? "True" : "False");
                 switch (this.logic_brg1Source) {
                     case 1:
                         {
                             let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "boolean");
                             if (hasNav) {
-                                this.setAttribute("bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360).toString());
+                                diffAndSetAttribute(this, "bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360).toString());
                             }
                             else {
-                                this.setAttribute("bearing1_bearing", "");
+                                diffAndSetAttribute(this, "bearing1_bearing", "");
                             }
                             break;
                         }
@@ -630,25 +630,25 @@ class Jet_NDCompass extends HTMLElement {
                         {
                             let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:2", "boolean");
                             if (hasNav) {
-                                this.setAttribute("bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360).toString());
+                                diffAndSetAttribute(this, "bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360).toString());
                             }
                             else {
-                                this.setAttribute("bearing1_bearing", "");
+                                diffAndSetAttribute(this, "bearing1_bearing", "");
                             }
                             break;
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing1_bearing", Simplane.getNextWaypointTrack());
+                            diffAndSetAttribute(this, "bearing1_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
                         {
                             if (SimVar.GetSimVarValue("ADF SIGNAL:1", "number")) {
-                                this.setAttribute("bearing1_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360).toString());
+                                diffAndSetAttribute(this, "bearing1_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360).toString());
                             }
                             else {
-                                this.setAttribute("bearing1_bearing", "");
+                                diffAndSetAttribute(this, "bearing1_bearing", "");
                             }
                             break;
                         }
@@ -658,10 +658,10 @@ class Jet_NDCompass extends HTMLElement {
                         {
                             let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "boolean");
                             if (hasNav) {
-                                this.setAttribute("bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360).toString());
+                                diffAndSetAttribute(this, "bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360).toString());
                             }
                             else {
-                                this.setAttribute("bearing2_bearing", "");
+                                diffAndSetAttribute(this, "bearing2_bearing", "");
                             }
                             break;
                         }
@@ -669,25 +669,25 @@ class Jet_NDCompass extends HTMLElement {
                         {
                             let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:2", "boolean");
                             if (hasNav) {
-                                this.setAttribute("bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360).toString());
+                                diffAndSetAttribute(this, "bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360).toString());
                             }
                             else {
-                                this.setAttribute("bearing2_bearing", "");
+                                diffAndSetAttribute(this, "bearing2_bearing", "");
                             }
                             break;
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing2_bearing", Simplane.getNextWaypointTrack());
+                            diffAndSetAttribute(this, "bearing2_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
                         {
                             if (SimVar.GetSimVarValue("ADF SIGNAL:1", "number")) {
-                                this.setAttribute("bearing2_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360).toString());
+                                diffAndSetAttribute(this, "bearing2_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360).toString());
                             }
                             else {
-                                this.setAttribute("bearing2_bearing", "");
+                                diffAndSetAttribute(this, "bearing2_bearing", "");
                             }
                             break;
                         }
@@ -968,11 +968,11 @@ class Jet_NDCompass extends HTMLElement {
             let w = 80;
             let h = 40;
             let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", (_x - w * 0.5).toString());
-            bg.setAttribute("y", (_y - h * 0.5).toString());
-            bg.setAttribute("width", w.toString());
-            bg.setAttribute("height", h.toString());
-            bg.setAttribute("fill", "black");
+            diffAndSetAttribute(bg, "x", (_x - w * 0.5).toString());
+            diffAndSetAttribute(bg, "y", (_y - h * 0.5).toString());
+            diffAndSetAttribute(bg, "width", w.toString());
+            diffAndSetAttribute(bg, "height", h.toString());
+            diffAndSetAttribute(bg, "fill", "black");
             _parent.appendChild(bg);
         }
         _parent.appendChild(range.text);

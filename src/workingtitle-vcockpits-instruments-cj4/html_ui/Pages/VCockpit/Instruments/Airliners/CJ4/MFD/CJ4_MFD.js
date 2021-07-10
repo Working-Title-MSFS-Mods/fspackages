@@ -722,12 +722,12 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         this.root.querySelector(".SystemHeader").textContent = "SYSTEMS 1/2";
 
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
-        rootSVG.setAttribute("id", "Standard");
-        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        diffAndSetAttribute(rootSVG, "id", "Standard");
+        diffAndSetAttribute(rootSVG, "viewBox", "0 0 1000 1000");
         this.root.querySelector(".SystemBody").appendChild(rootSVG);
         {
             var dcGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            dcGroup.setAttribute("id", "dcGroup");
+            diffAndSetAttribute(dcGroup, "id", "dcGroup");
             rootSVG.appendChild(dcGroup);
             var startPosX = 155;
             var startPosY = 30;
@@ -825,7 +825,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         }
         {
             var batteryGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            batteryGroup.setAttribute("id", "batteryGroup");
+            diffAndSetAttribute(batteryGroup, "id", "batteryGroup");
             rootSVG.appendChild(batteryGroup);
             var startPosX = 400;
             var startPosY = 30;
@@ -925,7 +925,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         }
         {
             var oxyGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            oxyGroup.setAttribute("id", "oxyGroup");
+            diffAndSetAttribute(oxyGroup, "id", "oxyGroup");
             rootSVG.appendChild(oxyGroup);
             var startPosX = 620;
             var startPosY = 30;
@@ -1008,7 +1008,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         }
         {
             var hydroGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            hydroGroup.setAttribute("id", "HydroGroup");
+            diffAndSetAttribute(hydroGroup, "id", "HydroGroup");
             rootSVG.appendChild(hydroGroup);
             var startPosX = 840;
             var startPosY = 30;
@@ -1075,7 +1075,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         }
         {
             var fuelGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            fuelGroup.setAttribute("id", "FuelGroup");
+            diffAndSetAttribute(fuelGroup, "id", "FuelGroup");
             rootSVG.appendChild(fuelGroup);
             var startPosX = 840;
             var startPosY = 110;
@@ -1179,12 +1179,12 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         this.root.querySelector(".SystemHeader").textContent = "SYSTEMS 2/2";
 
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
-        rootSVG.setAttribute("id", "Minimized");
-        rootSVG.setAttribute("viewBox", "0 0 1000 1000");
+        diffAndSetAttribute(rootSVG, "id", "Minimized");
+        diffAndSetAttribute(rootSVG, "viewBox", "0 0 1000 1000");
         this.root.querySelector(".SystemBody").appendChild(rootSVG);
         {
             var trimGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            trimGroup.setAttribute("id", "TrimGroup");
+            diffAndSetAttribute(trimGroup, "id", "TrimGroup");
             rootSVG.appendChild(trimGroup);
             var startPosX = 55;
             var startPosY = 30;

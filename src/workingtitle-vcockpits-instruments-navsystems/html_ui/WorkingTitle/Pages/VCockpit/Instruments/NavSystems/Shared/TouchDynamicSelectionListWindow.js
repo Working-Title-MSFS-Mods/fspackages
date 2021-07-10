@@ -51,7 +51,7 @@ class WT_TouchDynamicSelectionListWindow extends NavSystemElement {
         let currentIndex = this.context.currentIndexGetter.getCurrentIndex();
         for (let i = 0; i < this._elementList.length; i++) {
             this.context.elementUpdater.update(i, this._elementList[i]);
-            Avionics.Utils.diffAndSetAttribute(this._elementList[i].button, "state", (currentIndex == i) ? "Highlight" : "Active");
+            diffAndSetAttribute(this._elementList[i].button, "state", (currentIndex == i) ? "Highlight" : "Active");
         }
     }
 
@@ -131,7 +131,7 @@ class WT_TouchDynamicSelectionStandardElementHandler {
         };
         elem.button.setAttribute("class", "gradientButton");
         elem.value.setAttribute("class", "value");
-        Avionics.Utils.diffAndSet(elem.value, this.values[index]);
+        diffAndSetText(elem.value, this.values[index]);
         elem.button.appendChild(elem.value);
         return elem;
     }

@@ -375,6 +375,8 @@ class CJ4_FMC extends FMCMainDisplay {
         const apPrefix = "WT_CJ4_AP_";
         if (args[0].startsWith(apPrefix)) {
             this._navModeSelector.onNavChangedEvent(args[0].substring(apPrefix.length));
+        } else if(args[0] == "CJ4_FMC_1_BTN_CLR_Long"){
+            this._templateRenderer.clearUserInput.apply(this);
         }
     }
 

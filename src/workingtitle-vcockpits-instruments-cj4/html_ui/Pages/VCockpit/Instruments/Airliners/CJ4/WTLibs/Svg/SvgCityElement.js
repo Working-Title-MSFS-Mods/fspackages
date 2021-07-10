@@ -150,10 +150,10 @@ class SvgCityElementCanvas extends SvgMapElement {
         this.backBufferContext.strokeStyle = map.config.cityIconStrokeColor;
         this.backBufferContext.lineWidth = map.config.cityIconStrokeWidth;
 
-        container.setAttribute("x", -(map.htmlRoot.overdrawFactor - 1) * 500);
-        container.setAttribute("y", -(map.htmlRoot.overdrawFactor - 1) * 500);
-        container.setAttribute("width", map.htmlRoot.overdrawFactor * 1000);
-        container.setAttribute("height", map.htmlRoot.overdrawFactor * 1000);
+        diffAndSetAttribute(container, "x", -(map.htmlRoot.overdrawFactor - 1) * 500);
+        diffAndSetAttribute(container, "y", -(map.htmlRoot.overdrawFactor - 1) * 500);
+        diffAndSetAttribute(container, "width", map.htmlRoot.overdrawFactor * 1000);
+        diffAndSetAttribute(container, "height", map.htmlRoot.overdrawFactor * 1000);
 
         return container;
     }

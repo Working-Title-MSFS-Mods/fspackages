@@ -211,7 +211,7 @@ class SvgBackOnTrackElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "overflow", "visible");
         if (map.config.flightPlanDirectLegStrokeWidth > 0) {
             this._outlineLine = document.createElementNS(Avionics.SVG.NS, "line");
             this._outlineLine.setAttribute("stroke", this.overrideColor != "" ? this.overrideColor : map.config.flightPlanDirectLegStrokeColor);
@@ -244,7 +244,7 @@ class SvgApproachFlightPlanDebugElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "overflow", "visible");
         this._path = document.createElementNS(Avionics.SVG.NS, "path");
         this._path.setAttribute("stroke", "red");
         this._path.setAttribute("stroke-width", "4");
