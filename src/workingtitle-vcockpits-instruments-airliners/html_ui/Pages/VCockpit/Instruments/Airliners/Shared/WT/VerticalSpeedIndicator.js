@@ -96,12 +96,12 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             var _width = width;
             var _height = centerHeight;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
-            bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", (_top + 9).toString());
-            bg.setAttribute("width", _width.toString());
-            bg.setAttribute("height", _height.toString());
-            bg.setAttribute("fill", "black");
-            bg.setAttribute("fill-opacity", "0.4");
+            diffAndSetAttribute(bg, "x", _left.toString());
+            diffAndSetAttribute(bg, "y", (_top + 9).toString());
+            diffAndSetAttribute(bg, "width", _width.toString());
+            diffAndSetAttribute(bg, "height", _height.toString());
+            diffAndSetAttribute(bg, "fill", "black");
+            diffAndSetAttribute(bg, "fill-opacity", "0.4");
             this.centerGroup.appendChild(bg);
             this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.topSpeedText.textContent = "";
