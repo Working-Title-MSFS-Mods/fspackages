@@ -533,9 +533,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         this._mapInstrument.setGPS(this.gps);
     }
 
-    onUpdate(deltaTime) {
-    }
-
     reset() {
         if (this._annunciations)
             this._annunciations.reset();

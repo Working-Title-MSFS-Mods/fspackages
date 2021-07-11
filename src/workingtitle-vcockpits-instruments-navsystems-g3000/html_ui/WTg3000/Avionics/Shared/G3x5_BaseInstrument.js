@@ -105,30 +105,22 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._loadModConfig();
     }
 
-    createMainLoop() {
-        if (this._isConnected) {
+    mainLoop() {
+        if (!this._isConnected) {
+            console.log("Exiting MainLoop...");
             return;
         }
-        this._lastTime = Date.now();
-        let updateLoop = () => {
-            if (!this._isConnected) {
-                console.log("Exiting MainLoop...");
-                return;
-            }
-            try {
-                if (BaseInstrument.allInstrumentsLoaded && !this.xmlConfigLoading && this._isModConfigLoaded && SimVar.IsReady()) {
-                    if (!this._isInitialized)
-                        this.Init();
-                    this.doUpdate();
+        try {
+            if (BaseInstrument.allInstrumentsLoaded && this._isModConfigLoaded && SimVar.IsReady()) {
+                if (!this._isInitialized) {
+                    this.Init();
                 }
-            } catch (e) {
-                console.error(this.instrumentIdentifier + " : " + e, e.stack);
+                this.doUpdate();
             }
-            requestAnimationFrame(updateLoop);
-        };
-        this._isConnected = true;
-        console.log("MainLoop created");
-        requestAnimationFrame(updateLoop);
+        } catch (error) {
+            console.error(this.instrumentIdentifier + " : " + error, error.stack);
+        }
+        requestAnimationFrame(this._mainLoopFuncInstance);
     }
 
     _initTime() {
