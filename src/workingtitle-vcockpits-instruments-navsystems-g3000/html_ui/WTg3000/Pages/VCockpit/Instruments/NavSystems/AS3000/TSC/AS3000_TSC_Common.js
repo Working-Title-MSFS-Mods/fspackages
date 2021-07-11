@@ -143,6 +143,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _initLightingControl() {
+        SimVar.SetSimVarValue("L:AS3000_Brightness", "number", 1); // test
         if (this.isLightingControlAllowed()) {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
