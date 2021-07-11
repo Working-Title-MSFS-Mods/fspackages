@@ -290,7 +290,7 @@ class CJ4_FMC_ModSettingsPageTwo {
             ["DATALINK PROCESSING TIME[blue]"],
             [dlProcSwitch],
             ["HOPPIE LOGON CODE[blue]"],
-            [this._hoppieLogon],
+            ["NOT ACTIVE [disabled]"], //[this._hoppieLogon],
             ["PFD AOA STYLE[blue]"],
             [aoaSwitch],
             [""],

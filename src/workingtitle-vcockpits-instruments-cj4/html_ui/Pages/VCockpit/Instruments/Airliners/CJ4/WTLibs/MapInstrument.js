@@ -1113,10 +1113,10 @@ class MapInstrument extends ISvgMapRootElement {
     refreshDisplay() {
         if (this.isDisplayingWeatherRadar() && this.weatherHideGPS) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "block");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "none");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);
@@ -1125,10 +1125,10 @@ class MapInstrument extends ISvgMapRootElement {
         }
         if (this.quality == Quality.ultra || this.quality == Quality.high) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "block");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "block";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "block");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(true);
@@ -1136,10 +1136,10 @@ class MapInstrument extends ISvgMapRootElement {
             this.bingMap.setVisible(this.showBingMap);
         } else if (this.quality == Quality.medium) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "block");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "none");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);
@@ -1147,10 +1147,10 @@ class MapInstrument extends ISvgMapRootElement {
             this.bingMap.setVisible(this.showBingMap);
         } else {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "none";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "none");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "none");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);

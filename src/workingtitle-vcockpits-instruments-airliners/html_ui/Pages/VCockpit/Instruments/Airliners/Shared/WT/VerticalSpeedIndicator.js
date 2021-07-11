@@ -1,7 +1,7 @@
 class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     constructor() {
         super(...arguments);
-        this.cursorTextColor = "#11d011";
+        this.cursorTextColor = "var(--green)";
         this.fontSize = 25;
         this.centerLineWidth = 24;
         this.cursorPosX1 = 0;
@@ -101,13 +101,13 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             diffAndSetAttribute(bg, "width", _width.toString());
             diffAndSetAttribute(bg, "height", _height.toString());
             diffAndSetAttribute(bg, "fill", "black");
-            diffAndSetAttribute(bg, "fill-opacity", "0.5");
+            diffAndSetAttribute(bg, "fill-opacity", "0.4");
             this.centerGroup.appendChild(bg);
             this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.topSpeedText.textContent = "";
             this.topSpeedText.setAttribute("x", (_left + _width * 0.89).toString());
             this.topSpeedText.setAttribute("y", (_top + 27).toString());
-            this.topSpeedText.setAttribute("fill", "green");
+            this.topSpeedText.setAttribute("fill", "var(--green)");
             this.topSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.topSpeedText.setAttribute("font-family", "Roboto-Bold");
             this.topSpeedText.setAttribute("text-anchor", "end");
@@ -218,7 +218,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.selectedCursorOffsetY = 0;
             this.selectedCursorSVG = document.createElementNS(Avionics.SVG.NS, "path");
             this.selectedCursorSVG.setAttribute("d", "M -3 -10 L 9 0 L -3 10 L -3 3 L -6 3 L -6 -3 L -3 -3 L -3 -10 Z");
-            this.selectedCursorSVG.setAttribute("fill", "cyan");
+            this.selectedCursorSVG.setAttribute("fill", "var(--cyan)");
             this.selectedCursorSVG.setAttribute("visibility", "hidden");
             this.cursorSVGGroup.appendChild(this.selectedCursorSVG);
 
@@ -231,7 +231,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.pinkDonut.setAttribute("cy", pinkDonutHeight * 0.5 + 5);
             this.pinkDonut.setAttribute("r", "10");
             this.pinkDonut.setAttribute("fill", "none");
-            this.pinkDonut.setAttribute("stroke", "magenta");
+            this.pinkDonut.setAttribute("stroke", "var(--magenta)");
             this.pinkDonut.setAttribute("stroke-width", "3");
             this.pinkDonut.setAttribute("visibility", "hidden");
             this.cursorSVGGroup.appendChild(this.pinkDonut);
@@ -240,7 +240,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.bottomSpeedText.textContent = "";
             this.bottomSpeedText.setAttribute("x", (_left + _width * 0.89).toString());
             this.bottomSpeedText.setAttribute("y", (_top + _height * 0.95).toString());
-            this.bottomSpeedText.setAttribute("fill", "green");
+            this.bottomSpeedText.setAttribute("fill", "var(--green)");
             this.bottomSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.bottomSpeedText.setAttribute("font-family", "Roboto-Bold");
             this.bottomSpeedText.setAttribute("text-anchor", "end");
@@ -761,7 +761,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                     this.cursorSVGVerticalLine.setAttribute("y1", this.cursorPosY3.toString());
                     this.cursorSVGVerticalLine.setAttribute("y2", this.cursorPosY2.toString());
                     if (alert)
-                        this.cursorSVGLine.setAttribute("stroke", "orange");
+                        this.cursorSVGLine.setAttribute("stroke", "var(--true-orange)");
                     else
                         this.cursorSVGLine.setAttribute("stroke", this.cursorTextColor);
                 }
@@ -787,7 +787,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                         }
                     }
                     if (alert)
-                        this.cursorSVGText.setAttribute("fill", "orange");
+                        this.cursorSVGText.setAttribute("fill", "var(--true-orange)");
                     else
                         this.cursorSVGText.setAttribute("fill", this.cursorTextColor);
                 }

@@ -60,9 +60,9 @@
   "latLonLabelStrokeColor": "none",
   "latLonLabelStrokeWidth": 0,
 
-  "flightPlanActiveLegColor": "#ff00e0",
+  "flightPlanActiveLegColor": "#FF73FF",
   "flightPlanActiveLegWidth": 2,
-  "flightPlanActiveLegStrokeColor": "#ff00e0",
+  "flightPlanActiveLegStrokeColor": "#FF73FF",
   "flightPlanActiveLegStrokeWidth": 0,
   "flightPlanNonActiveLegColor": "white",
   "flightPlanNonActiveLegWidth": 2,

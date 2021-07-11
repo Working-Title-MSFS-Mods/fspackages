@@ -336,7 +336,7 @@ class Jet_PFD_AOAIndicator extends HTMLElement {
         switch (name) {
             case "angle":
                 let angle = parseFloat(newValue);
-                angle = Math.min(Math.max(angle, 0), 12.5) / 12.5;
+                angle = Math.min(Math.max(angle, 0), 10.75) / 10.75;
                 if (this.cursorSVG || this.cursorSVG_2) {
                     var posY = Math.min(this.cursorMinY + (this.cursorMaxY - this.cursorMinY) * (1.25 * angle - 0.25), 390);
                     this.cursorSVG.setAttribute("y", (posY - this.cursorHeight * 0.5).toString());
