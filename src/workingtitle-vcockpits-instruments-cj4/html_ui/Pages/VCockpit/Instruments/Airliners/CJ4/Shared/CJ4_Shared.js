@@ -3717,10 +3717,10 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
                     val += seconds;
                 }
                 this.elapsedTimeValue.textContent = val;
-                this.elapsedTime.style.display = "block";
+                diffAndSetStyle(this.elapsedTime, StyleProperty.display, "block");
             }
             else {
-                this.elapsedTime.style.display = "none";
+                diffAndSetStyle(this.elapsedTime, StyleProperty.display, "none");
                 this._timeCounterStarted = 0;
             }
         }

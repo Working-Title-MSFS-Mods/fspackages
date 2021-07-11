@@ -126,7 +126,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
             this._navSource = _navSource;
             if (this._navMode == Jet_NDCompass_Navigation.NAV) {
                 if (this.waypoint)
-                    this.waypoint.style.display = "block";
+                    diffAndSetStyle(this.waypoint, StyleProperty.display, "block");
                 this.waypointName.textContent = this._name;
                 this.waypointTrack.textContent = this._track;
                 this.waypointDistance.textContent = this._distance;
@@ -135,7 +135,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     this.approachFreq.textContent = "";
                     this.approachCourse.textContent = "";
                     this.approachInfo.textContent = "";
-                    this.approach.style.display = "none";
+                    diffAndSetStyle(this.approach, StyleProperty.display, "none");
                 }
             }
             else if (this._navMode == Jet_NDCompass_Navigation.ILS || this._navMode == Jet_NDCompass_Navigation.VOR) {
@@ -143,10 +143,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     this.waypointName.textContent = "";
                     this.waypointTrack.textContent = "";
                     this.waypointDistance.textContent = "";
-                    this.waypoint.style.display = "none";
+                    diffAndSetStyle(this.waypoint, StyleProperty.display, "none");
                 }
                 if (this.approach)
-                    this.approach.style.display = "block";
+                    diffAndSetStyle(this.approach, StyleProperty.display, "block");
             }
         }
     }
@@ -253,7 +253,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     if ((split != null) && (split.length > 0)) {
                         this.windArrow.setAttribute("transform", split[0] + " rotate(" + arrowAngle + ")");
                     }
-                    this.windArrow.style.display = "block";
+                    diffAndSetStyle(this.windArrow, StyleProperty.display, "block");
                 }
             }
         }
@@ -528,10 +528,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     val += seconds;
                 }
                 this.elapsedTimeValue.textContent = val;
-                this.elapsedTime.style.display = "block";
+                diffAndSetStyle(this.elapsedTime, StyleProperty.display, "block");
             }
             else {
-                this.elapsedTime.style.display = "none";
+                diffAndSetStyle(this.elapsedTime, StyleProperty.display, "none");
             }
         }
     }
@@ -552,7 +552,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     this.minimumsValue.parentElement.style.display = (radioMins == 0) ? 'none' : 'block';
                     break;
                 default:
-                    this.minimumsValue.parentElement.style.display = "none";
+                    diffAndSetStyle(this.minimumsValue.parentElement, StyleProperty.display, "none");
                     break;
             }
         }

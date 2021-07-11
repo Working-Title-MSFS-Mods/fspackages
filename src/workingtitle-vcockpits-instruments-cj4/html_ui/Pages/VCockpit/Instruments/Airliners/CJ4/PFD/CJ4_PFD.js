@@ -88,7 +88,7 @@ class CJ4_PFD extends BaseAirliners {
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
                 this.modeChangeTimer -= this.deltaTime / 1000;
                 if (this.modeChangeTimer <= 0) {
-                    this.modeChangeMask.style.display = "none";
+                    diffAndSetStyle(this.modeChangeMask, StyleProperty.display, "none");
                     this.modeChangeTimer = -1;
                 }
             }
@@ -437,7 +437,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
         SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
-            this.modeChangeMask.style.display = "block";
+            diffAndSetStyle(this.modeChangeMask, StyleProperty.display, "block");
             this.modeChangeTimer = 0.15;
         }
     }

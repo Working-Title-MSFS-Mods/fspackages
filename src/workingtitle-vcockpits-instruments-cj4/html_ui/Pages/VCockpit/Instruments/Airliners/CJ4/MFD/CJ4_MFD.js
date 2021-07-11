@@ -134,7 +134,7 @@ class CJ4_MFD extends BaseAirliners {
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
                 this.modeChangeTimer -= this.deltaTime / 1000;
                 if (this.modeChangeTimer <= 0) {
-                    this.modeChangeMask.style.display = "none";
+                    diffAndSetStyle(this.modeChangeMask, StyleProperty.display, "none");
                     this.modeChangeTimer = -1;
                 }
             }
@@ -512,7 +512,7 @@ class CJ4_MFD extends BaseAirliners {
     }
     onModeChanged() {
         if (this.modeChangeMask) {
-            this.modeChangeMask.style.display = "block";
+            diffAndSetStyle(this.modeChangeMask, StyleProperty.display, "block");
             this.modeChangeTimer = 0.15;
         }
     }
