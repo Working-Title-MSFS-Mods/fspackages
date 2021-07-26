@@ -104,7 +104,7 @@ class AS3X_Touch extends NavSystemTouch {
         for (let i = 0; i < this.pageGroups[0].pages.length; i++) {
             let pageElem = document.createElement("div");
             pageElem.className = "page";
-            pageElem.textContent = this.pageGroups[0].pages[i].shortName;
+            diffAndSetText(pageElem, this.pageGroups[0].pages[i].shortName);
             this.pageNames.push(pageElem);
             this.pageList.appendChild(pageElem);
         }
@@ -125,7 +125,6 @@ class AS3X_Touch extends NavSystemTouch {
                 this.switchToPopUpPage(this.afcsMenu);
             }
         }.bind(this));
-        this.maxUpdateBudget = 12;
         this.autoPitotHeat = false;
         SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAuto", "number", 1);
     }
@@ -145,8 +144,8 @@ class AS3X_Touch extends NavSystemTouch {
             tactileOnly = this.instrumentXmlConfig.getElementsByTagName("TactileOnly")[0];
             if (tactileOnly && tactileOnly.textContent == "True") {
                 this.tactileOnly = true;
-                this.getChildById("LeftKnobInfos").style.display = "None";
-                this.getChildById("RightKnobInfos").style.display = "None";
+                diffAndSetStyle(this.getChildById("LeftKnobInfos"), StyleProperty.display, "None");
+                diffAndSetStyle(this.getChildById("RightKnobInfos"), StyleProperty.display, "None");
             }
             let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
             if (autoPitotHeat && autoPitotHeat.textContent == "True") {
@@ -157,36 +156,36 @@ class AS3X_Touch extends NavSystemTouch {
         }
         switch (this.displayMode) {
             case "PFD":
-                this.mainMfd.style.display = "None";
+                diffAndSetStyle(this.mainMfd, StyleProperty.display, "None");
                 this.addIndependentElementContainer(new AS3X_Touch_PFD());
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
                 this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
-                this.getChildById("EngineInfos").style.display = "None";
-                this.mainDisplay.setAttribute("state", "FullNoEngine");
-                this.mfd.setAttribute("state", "HideNoEngine");
+                diffAndSetStyle(this.getChildById("EngineInfos"), StyleProperty.display, "None");
+                diffAndSetAttribute(this.mainDisplay, "state", "FullNoEngine");
+                diffAndSetAttribute(this.mfd, "state", "HideNoEngine");
                 this.engineDisplayed = false;
                 this.m_isSplit = false;
                 let pfdMaps = this.getElementsByClassName("PFDMap");
                 for (let i = 0; i < pfdMaps.length; i++) {
-                    pfdMaps[i].setAttribute("show-bing-map", "true");
+                    diffAndSetAttribute(pfdMaps[i], "show-bing-map", "true");
                 }
                 break;
             case "MFD":
-                this.pfd.style.display = "None";
+                diffAndSetStyle(this.pfd, StyleProperty.display, "None");
                 this.mainMap = new AS3X_Touch_MFD_Main();
                 this.addIndependentElementContainer(this.mainMap);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
-                this.mainDisplay.setAttribute("state", "Full");
-                this.mfd.setAttribute("state", "Hide");
+                diffAndSetAttribute(this.mainDisplay, "state", "Full");
+                diffAndSetAttribute(this.mfd, "state", "Hide");
                 this.engineDisplayed = true;
                 this.m_isSplit = false;
                 let mfdMaps = this.getElementsByClassName("MFDMap");
                 for (let i = 0; i < mfdMaps.length; i++) {
-                    mfdMaps[i].setAttribute("show-bing-map", "true");
+                    diffAndSetAttribute(mfdMaps[i], "show-bing-map", "true");
                 }
                 break;
             case "Splitted":
-                this.mainMfd.style.display = "None";
+                diffAndSetStyle(this.mainMfd, StyleProperty.display, "None");
                 this.addIndependentElementContainer(new AS3X_Touch_PFD());
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
                 this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
@@ -194,7 +193,7 @@ class AS3X_Touch extends NavSystemTouch {
                 this.m_isSplit = true;
                 let splitMaps = this.getElementsByClassName("SplitMap");
                 for (let i = 0; i < splitMaps.length; i++) {
-                    splitMaps[i].setAttribute("show-bing-map", "true");
+                    diffAndSetAttribute(splitMaps[i], "show-bing-map", "true");
                 }
                 break;
         }
@@ -241,9 +240,9 @@ class AS3X_Touch extends NavSystemTouch {
             if (reversionary && !this.reversionaryMode) {
                 this.reversionaryMode = true;
                 this.engineDisplayed = true;
-                this.getChildById("EngineInfos").style.display = "";
-                this.mainDisplay.setAttribute("state", "Half");
-                this.mfd.setAttribute("state", "Half");
+                diffAndSetStyle(this.getChildById("EngineInfos"), StyleProperty.display, "");
+                diffAndSetAttribute(this.mainDisplay, "state", "Half");
+                diffAndSetAttribute(this.mfd, "state", "Half");
                 this.m_isSplit = true;
                 this.updateKnobsLabels();
                 this.topBar.updateFullSplitButton();
@@ -251,9 +250,9 @@ class AS3X_Touch extends NavSystemTouch {
             else if (!reversionary && this.reversionaryMode) {
                 this.reversionaryMode = false;
                 this.engineDisplayed = false;
-                this.getChildById("EngineInfos").style.display = "None";
-                this.mainDisplay.setAttribute("state", "FullNoEngine");
-                this.mfd.setAttribute("state", "HideNoEngine");
+                diffAndSetStyle(this.getChildById("EngineInfos"), StyleProperty.display, "None");
+                diffAndSetAttribute(this.mainDisplay, "state", "FullNoEngine");
+                diffAndSetAttribute(this.mfd, "state", "HideNoEngine");
                 this.m_isSplit = false;
                 this.updateKnobsLabels();
                 this.topBar.updateFullSplitButton();
@@ -261,12 +260,12 @@ class AS3X_Touch extends NavSystemTouch {
         }
         if (this.lastPageIndex != this.getCurrentPageGroup().pageIndex || this.getCurrentPageGroup().name != this.lastPageGroup) {
             if (!isNaN(this.lastPageIndex)) {
-                this.pageNames[this.lastPageIndex].setAttribute("state", "");
+                diffAndSetAttribute(this.pageNames[this.lastPageIndex], "state", "");
             }
             this.lastPageIndex = this.getCurrentPageGroup().pageIndex;
             this.lastPageGroup = this.getCurrentPageGroup().name;
-            this.currentPageName.textContent = this.getCurrentPageGroup().pages[this.lastPageIndex].name;
-            this.pageNames[this.lastPageIndex].setAttribute("state", "Selected");
+            diffAndSetText(this.currentPageName, this.getCurrentPageGroup().pages[this.lastPageIndex].name);
+            diffAndSetAttribute(this.pageNames[this.lastPageIndex], "state", "Selected");
         }
         diffAndSetText(this.botLineTimer, this.pfdMenu.element.getTimerValue());
         diffAndSetText(this.botLineOat, fastToFixed(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), 0) + "°C");
@@ -540,12 +539,12 @@ class AS3X_Touch extends NavSystemTouch {
                 this.pageList.appendChild(pageElem);
             }
             else {
-                this.pageNames[i].style.display = "block";
+                diffAndSetStyle(this.pageNames[i], StyleProperty.display, "block");
             }
-            this.pageNames[i].textContent = this.pageGroups[this.currentPageGroupIndex].pages[i].shortName;
+            diffAndSetText(this.pageNames[i], this.pageGroups[this.currentPageGroupIndex].pages[i].shortName);
         }
         for (let i = this.pageGroups[this.currentPageGroupIndex].pages.length; i < this.pageNames.length; i++) {
-            this.pageNames[i].style.display = "none";
+            diffAndSetStyle(this.pageNames[i], StyleProperty.display, "none");
         }
     }
     SwitchToPageGroupMenu(_menu) {
@@ -575,11 +574,11 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     }
     init() {
         super.init();
-        this.attitude.svg.setAttribute("background", "false");
+        diffAndSetAttribute(this.attitude.svg, "background", "false");
         this.gps.makeButton(this.gps.getChildById("Annunciations"), () => {
             this.gps.computeEvent("Master_Caution_Push");
             this.gps.computeEvent("Master Warning Push");
-        })
+        });
     }
 }
 class AS3X_Touch_MFD_Main extends NavSystemElementContainer {
@@ -649,8 +648,8 @@ class AS3X_Touch_TopBar extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        diffAndSetText(this.comActiveFreq, SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz").toFixed(3));
-        diffAndSetText(this.comStbyFreq, SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz").toFixed(3));
+        diffAndSetText(this.comActiveFreq, fastToFixed(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), 3));
+        diffAndSetText(this.comStbyFreq, fastToFixed(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), 3));
         diffAndSetText(this.comActiveIdent, SimVar.GetSimVarValue("HSI STATION IDENT", "string"));
         diffAndSetText(this.xpdrCode, ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4));
         let xpdrState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
@@ -672,13 +671,13 @@ class AS3X_Touch_TopBar extends NavSystemElement {
                 diffAndSetText(this.xpdrMode, "ALT");
                 break;
         }
-        let nextWaypoint = this.gps.currFlightPlanManager.getActiveWaypoint(false, true);
+        let nextWaypoint = this.gps.currFlightPlanManager.getActiveWaypoint(true);
         if (nextWaypoint) {
             diffAndSetText(this.wpt, nextWaypoint.ident);
-            diffAndSetText(this.brg, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(), 0) + "°m");
+            diffAndSetText(this.brg, fastToFixed(this.gps.currFlightPlanManager.getBearingToActiveWaypoint(true), 0) + "°m");
             diffAndSetText(this.dist, this.gps.currFlightPlanManager.getDistanceToActiveWaypoint().toFixed(1) + "nm");
             var ete = this.gps.currFlightPlanManager.getETEToActiveWaypoint();
-            diffAndSetText(this.ete, ete >= 60 * 60 ? Math.floor(ete / 3600) + "+" + ((ete % 3600 / 60) < 10 ? "0" : "") + Math.floor(ete % 3600 / 60) : Math.floor(ete / 60) + ":" + (ete % 60 < 10 ? "0" : "") + ete % 60);
+            diffAndSetText(this.ete, ete >= 60 * 60 ? Math.floor(ete / 3600) + ":" + ((ete % 3600 / 60) < 10 ? "0" : "") + Math.floor(ete % 3600 / 60) : Math.floor(ete / 60) + ":" + (ete % 60 < 10 ? "0" : "") + ete % 60);
         }
         else {
             diffAndSetText(this.wpt, "____");
@@ -686,12 +685,12 @@ class AS3X_Touch_TopBar extends NavSystemElement {
             diffAndSetText(this.dist, "__._nm");
             diffAndSetText(this.ete, "__:__");
         }
-        diffAndSetText(this.gs, SimVar.GetSimVarValue("GPS GROUND SPEED", "knots").toFixed(1) + "kt");
+        diffAndSetText(this.gs, fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 1) + "kt");
         diffAndSetText(this.trk, fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"), 0) + "°m");
         if (this.isIdent) {
             if (Date.now() - this.identStartTime > 17000 || SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") < 3) {
                 this.isIdent = false;
-                this.identButton_Status.setAttribute("state", "Inactive");
+                diffAndSetAttribute(this.identButton_Status, "state", "Inactive");
             }
         }
     }
@@ -711,7 +710,7 @@ class AS3X_Touch_TopBar extends NavSystemElement {
         if (SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") > 2) {
             this.isIdent = true;
             this.identStartTime = Date.now();
-            this.identButton_Status.setAttribute("state", "Active");
+            diffAndSetAttribute(this.identButton_Status, "state", "Active");
         }
     }
 }
@@ -757,13 +756,13 @@ class AS3X_Touch_Map extends MapInstrumentElement {
     }
     moveMode(_event) {
         if (_event.button == 0) {
-            this.instrument.setAttribute("bing-mode", "vfr");
-            this.mapCenter.setAttribute("state", "Active");
+            diffAndSetAttribute(this.instrument, "bing-mode", "vfr");
+            diffAndSetAttribute(this.mapCenter, "state", "Active");
         }
     }
     centerOnPlane() {
         this.instrument.setCenteredOnPlane();
-        this.mapCenter.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.mapCenter, "state", "Inactive");
     }
 }
 class AS3X_Touch_PageMenu_Button {
@@ -842,53 +841,53 @@ class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
 }
 class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
     init(root) {
-        super.init(root);
         this.buttons = [];
         this.menuElements = root.getElementsByClassName("menuElements")[0];
     }
     onEnter() {
         super.onEnter();
+        diffAndSetAttribute(this.root, "state", "Active");
         let pageGroup = this.gps.getCurrentPageGroup();
         for (let i = 0; i < (pageGroup.pages.length + pageGroup.additionalMenuButtons.length); i++) {
             if (i >= this.buttons.length) {
                 let button = new AS3X_Touch_PageMenu_Button();
                 this.buttons.push(button);
                 button.base = document.createElement("div");
-                button.base.setAttribute("class", "gradientButton");
+                diffAndSetAttribute(button.base, "class", "gradientButton");
                 button.image = document.createElement("img");
-                button.image.setAttribute("class", "img");
+                diffAndSetAttribute(button.image, "class", "img");
                 button.title = document.createElement("div");
-                button.title.setAttribute("class", "title");
+                diffAndSetAttribute(button.title, "class", "title");
                 button.base.appendChild(button.image);
                 button.base.appendChild(button.title);
                 this.menuElements.appendChild(button.base);
                 this.gps.makeButton(button.base, this.switchToPage.bind(this, i));
             }
             else {
-                this.buttons[i].base.style.display = "";
+                diffAndSetStyle(this.buttons[i].base, StyleProperty.display, "");
             }
             if (i < pageGroup.pages.length) {
-                this.buttons[i].image.setAttribute("src", pageGroup.pages[i].imagePath);
-                this.buttons[i].title.textContent = pageGroup.pages[i].name;
+                diffAndSetAttribute(this.buttons[i].image, "src", pageGroup.pages[i].imagePath);
+                diffAndSetText(this.buttons[i].title, pageGroup.pages[i].name);
             }
             else {
                 if (pageGroup.additionalMenuButtons[i - pageGroup.pages.length].fullTactileOnly && !this.gps.tactileOnly) {
-                    this.buttons[i].base.style.display = "none";
+                    diffAndSetStyle(this.buttons[i].base, StyleProperty.display, "none");
                 }
                 else {
-                    this.buttons[i].image.setAttribute("src", pageGroup.additionalMenuButtons[i - pageGroup.pages.length].imagePath);
-                    this.buttons[i].title.textContent = pageGroup.additionalMenuButtons[i - pageGroup.pages.length].name;
+                    diffAndSetAttribute(this.buttons[i].image, "src", pageGroup.additionalMenuButtons[i - pageGroup.pages.length].imagePath);
+                    diffAndSetText(this.buttons[i].title, pageGroup.additionalMenuButtons[i - pageGroup.pages.length].name);
                 }
             }
         }
         for (let i = pageGroup.pages.length + pageGroup.additionalMenuButtons.length; i < this.buttons.length; i++) {
-            this.buttons[i].base.style.display = "none";
+            diffAndSetStyle(this.buttons[i].base, StyleProperty.display, "none");
         }
     }
     onUpdate(_deltaTime) {
     }
     onExit() {
-        this.root.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.root, "state", "Inactive");
     }
     onEvent(_event) {
     }
@@ -903,7 +902,6 @@ class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
             pageGroup.additionalMenuButtons[i - pageGroup.pages.length].callback();
         }
     }
-
 }
 class AS3X_Touch_FullKeyboard extends NavSystemTouch_FullKeyboard {
     init(_root) {
@@ -961,7 +959,7 @@ class AS3X_Touch_elevatorTrim extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        this.element.setAttribute("trim", (SimVar.GetSimVarValue("ELEVATOR TRIM PCT", "percent") / 100).toString());
+        diffAndSetAttribute(this.element, "trim", (SimVar.GetSimVarValue("ELEVATOR TRIM PCT", "percent") / 100) + '');
     }
     onExit() {
     }
@@ -998,11 +996,11 @@ class AS3X_Touch_DirectTo extends NavSystemTouch_DirectTo {
     }
     onEnter() {
         super.onEnter();
-        this.window.setAttribute("state", "Active");
+        diffAndSetAttribute(this.window, "state", "Active");
     }
     onExit() {
         super.onExit();
-        this.window.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.window, "state", "Inactive");
     }
     openKeyboard() {
         this.gps.fullKeyboard.getElementOfType(AS3X_Touch_FullKeyboard).setContext(this.endKeyboard.bind(this));
@@ -1061,7 +1059,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
     }
     onEnter() {
-        this.window.setAttribute("state", "Active");
+        diffAndSetAttribute(this.window, "state", "Active");
         this.closeMoreOptions();
     }
     onUpdate(_deltaTime) {
@@ -1114,14 +1112,14 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         }
     }
     onExit() {
-        this.window.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.window, "state", "Inactive");
     }
     onEvent(_event) {
     }
     timer_Toggle() {
         if (this.isTimerOn) {
             this.isTimerOn = false;
-            this.timerStartStop_action.textContent = "Start";
+            diffAndSetText(this.timerStartStop_action, "Start");
             this.pauseTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "Seconds");
         }
         else {
@@ -1132,14 +1130,14 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
                 this.timerStartTime = this.timerStartTime + SimVar.GetSimVarValue("E:ABSOLUTE TIME", "Seconds") - this.pauseTime;
             }
             this.isTimerOn = true;
-            this.timerStartStop_action.textContent = "Stop";
+            diffAndSetText(this.timerStartStop_action, "Stop");
         }
     }
     timer_Reset() {
         this.timerStartTime = -1;
         this.pauseTime = 0;
         this.isTimerOn = false;
-        this.timerStartStop_action.textContent = "Start";
+        diffAndSetText(this.timerStartStop_action, "Start");
     }
     openMoreOptions() {
         diffAndSetAttribute(this.moreOptions_Window, "state", "Active");
@@ -1148,27 +1146,23 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         diffAndSetAttribute(this.moreOptions_Window, "state", "Inactive");
     }
     toggleSyntheticVision() {
-        console.log('toggling synvis');
-        console.log(`it was ${this.syntheticVision}`)
         this.syntheticVision = !this.syntheticVision;
-        console.log(`it is ${this.syntheticVision}`);
         let attitude = this.gps.getElementOfType(PFD_Attitude);
         if (attitude) {
-            console.log('we have an attitude.')
             attitude.setSyntheticVisionEnabled(this.syntheticVision);
             // diffAndSetAttribute(attitude.svg, "background", (this.syntheticVision ? "false" : "true"));
         }
         if (this.syntheticVisionElement) {
-            this.syntheticVisionElement.style.display = (this.syntheticVision ? "Block" : "None");
+            diffAndSetStyle(this.syntheticVisionElement, StyleProperty.display, (this.syntheticVision ? "Block" : "None"));
         }
         diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
         SimVar.SetSimVarValue("L:Glasscockpit_SVTTerrain", "number", (this.syntheticVision ? 1 : 0));
     }
     openWindModeOptions() {
-        this.moreOptions_WindMode_Window.setAttribute("state", "active");
+        diffAndSetAttribute(this.moreOptions_WindMode_Window, "state", "active");
     }
     switchToWindMode(_mode) {
-        this.moreOptions_WindMode_Window.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.moreOptions_WindMode_Window, "state", "Inactive");
         switch (_mode) {
             case 0:
                 this.gps.computeEvent("Wind_Off");
@@ -1190,8 +1184,8 @@ class AS3X_Touch_NRST_Airport extends NavSystemTouch_NRST_Airport {
         if (this.selectedElement != -1) {
             this.gps.lastRelevantICAOType = "A";
             this.gps.lastRelevantICAO = this.nearestAirports.airports[this.selectedElement].icao;
-            this.menu.setAttribute("state", "Inactive");
-            this.airportLines[this.selectedElement].identButton.setAttribute("state", "None");
+            diffAndSetAttribute(this.menu, "state", "Inactive");
+            diffAndSetAttribute(this.airportLines[this.selectedElement].identButton, "state", "None");
             this.selectedElement = -1;
         }
         this.gps.computeEvent("DirectTo_Push");
@@ -1206,8 +1200,8 @@ class AS3X_Touch_NRST_NDB extends NavSystemTouch_NRST_NDB {
         if (this.selectedElement != -1) {
             this.gps.lastRelevantICAOType = "A";
             this.gps.lastRelevantICAO = this.nearest.ndbs[this.selectedElement].icao;
-            this.menu.setAttribute("state", "Inactive");
-            this.lines[this.selectedElement].identButton.setAttribute("state", "None");
+            diffAndSetAttribute(this.menu, "state", "Inactive");
+            diffAndSetAttribute(this.lines[this.selectedElement].identButton, "state", "None");
             this.selectedElement = -1;
         }
         this.gps.computeEvent("DirectTo_Push");
@@ -1222,8 +1216,8 @@ class AS3X_Touch_NRST_VOR extends NavSystemTouch_NRST_VOR {
         if (this.selectedElement != -1) {
             this.gps.lastRelevantICAOType = "A";
             this.gps.lastRelevantICAO = this.nearest.vors[this.selectedElement].icao;
-            this.menu.setAttribute("state", "Inactive");
-            this.lines[this.selectedElement].identButton.setAttribute("state", "None");
+            diffAndSetAttribute(this.menu, "state", "Inactive");
+            diffAndSetAttribute(this.lines[this.selectedElement].identButton, "state", "None");
             this.selectedElement = -1;
         }
         this.gps.computeEvent("DirectTo_Push");
@@ -1238,8 +1232,8 @@ class AS3X_Touch_NRST_Intersection extends NavSystemTouch_NRST_Intersection {
         if (this.selectedElement != -1) {
             this.gps.lastRelevantICAOType = "A";
             this.gps.lastRelevantICAO = this.nearest.intersections[this.selectedElement].icao;
-            this.menu.setAttribute("state", "Inactive");
-            this.lines[this.selectedElement].identButton.setAttribute("state", "None");
+            diffAndSetAttribute(this.menu, "state", "Inactive");
+            diffAndSetAttribute(this.lines[this.selectedElement].identButton, "state", "None");
             this.selectedElement = -1;
         }
         this.gps.computeEvent("DirectTo_Push");
@@ -1252,19 +1246,19 @@ class AS3X_Touch_NRST_Intersection extends NavSystemTouch_NRST_Intersection {
 class AS3X_Touch_WaypointButtonElement {
     constructor() {
         this.base = window.document.createElement("div");
-        this.base.setAttribute("class", "line");
+        diffAndSetAttribute(this.base, "class", "line");
         {
             this.button = window.document.createElement("div");
-            this.button.setAttribute("class", "gradientButton");
+            diffAndSetAttribute(this.button, "class", "gradientButton");
             {
                 this.ident = window.document.createElement("div");
-                this.ident.setAttribute("class", "mainValue");
+                diffAndSetAttribute(this.ident, "class", "mainValue");
                 this.button.appendChild(this.ident);
                 this.name = window.document.createElement("div");
-                this.name.setAttribute("class", "title");
+                diffAndSetAttribute(this.name, "class", "title");
                 this.button.appendChild(this.name);
                 this.symbol = window.document.createElement("img");
-                this.symbol.setAttribute("class", "symbol");
+                diffAndSetAttribute(this.symbol, "class", "symbol");
                 this.button.appendChild(this.symbol);
             }
             this.base.appendChild(this.button);
@@ -1288,7 +1282,7 @@ class AS3X_Touch_InsertBeforeWaypoint extends NavSystemElement {
         this.gps.makeButton(this.endButton, this.endButtonClick.bind(this));
     }
     onEnter() {
-        this.window.setAttribute("state", "Active");
+        diffAndSetAttribute(this.window, "state", "Active");
     }
     onUpdate(_deltaTime) {
         if (this.scrollElement.elementSize == 0) {
@@ -1313,7 +1307,7 @@ class AS3X_Touch_InsertBeforeWaypoint extends NavSystemElement {
         }
     }
     onExit() {
-        this.window.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.window, "state", "Inactive");
     }
     onEvent(_event) {
     }
@@ -1392,7 +1386,7 @@ class AS3X_Touch_AudioPanel extends NavSystemElement {
         SimVar.SetSimVarValue("K:TOGGLE_SPEAKER", "number", 0);
     }
     onEnter() {
-        this.root.setAttribute("state", "Active");
+        diffAndSetAttribute(this.root, "state", "Active");
     }
     onUpdate(_deltaTime) {
         diffAndSetAttribute(this.com1, "state", SimVar.GetSimVarValue("COM RECEIVE:1", "bool") ? "Active" : "");
@@ -1404,7 +1398,7 @@ class AS3X_Touch_AudioPanel extends NavSystemElement {
         diffAndSetAttribute(this.speaker, "state", SimVar.GetSimVarValue("SPEAKER ACTIVE", "bool") ? "Active" : "");
     }
     onExit() {
-        this.root.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.root, "state", "Inactive");
     }
     onEvent(_event) {
     }
@@ -1455,7 +1449,7 @@ class AS3X_Touch_Setup_Display extends NavSystemElement {
         let autoBright = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Auto", "number");
         let isAuto = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 1;
         let backLightValue = isAuto ? autoBright : manualBright;
-        diffAndSetText(this.masterPercentText, (backLightValue * 100).toFixed(0));
+        diffAndSetText(this.masterPercentText, fastToFixed((backLightValue * 100), 0));
         let length = backLightValue * 100;
         let height = backLightValue * 30;
         diffAndSetAttribute(this.masterBGTriangle, "points", "0,30 " + length + "," + (30 - height) + " " + length + ",30");
@@ -1522,11 +1516,11 @@ class AS3X_Touch_DepartureSelection extends NavSystemTouch_DepartureSelection {
     }
     onEnter() {
         super.onEnter();
-        this.root.setAttribute("state", "Active");
+        diffAndSetAttribute(this.root, "state", "Active");
     }
     onExit() {
         super.onExit();
-        this.root.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.root, "state", "Inactive");
     }
     selectDeparture(_index) {
         super.selectDeparture(_index);
@@ -1551,11 +1545,11 @@ class AS3X_Touch_ArrivalSelection extends NavSystemTouch_ArrivalSelection {
     }
     onEnter() {
         super.onEnter();
-        this.root.setAttribute("state", "Active");
+        diffAndSetAttribute(this.root, "state", "Active");
     }
     onExit() {
         super.onExit();
-        this.root.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.root, "state", "Inactive");
     }
     selectArrival(_index) {
         super.selectArrival(_index);
@@ -1580,11 +1574,11 @@ class AS3X_Touch_ApproachSelection extends NavSystemTouch_ApproachSelection {
     }
     onEnter() {
         super.onEnter();
-        this.root.setAttribute("state", "Active");
+        diffAndSetAttribute(this.root, "state", "Active");
     }
     onExit() {
         super.onExit();
-        this.root.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.root, "state", "Inactive");
     }
     selectApproach(_index) {
         super.selectApproach(_index);

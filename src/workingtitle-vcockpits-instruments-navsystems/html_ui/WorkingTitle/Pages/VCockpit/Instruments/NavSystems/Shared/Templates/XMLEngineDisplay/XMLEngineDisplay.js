@@ -152,9 +152,9 @@ class XMLEngineDisplay extends HTMLElement {
                 let maxElem = gauges[i].getElementsByTagName("Maximum");
                 if (minElem.length > 0 && maxElem.length > 0) {
                     gauge.setLimits(new CompositeLogicXMLElement(this.gps, minElem[0]), new CompositeLogicXMLElement(this.gps, maxElem[0]), this.context);
-                }                 
+                }
                 let columns = [];
-                let columnNodes = gauges[i].getElementsByTagName("Column"); 
+                let columnNodes = gauges[i].getElementsByTagName("Column");
                 for (let c = 0; c < columnNodes.length; c++) {
                     let columnNode = columnNodes[c];
                     columns.push(new CompositeLogicXMLElement(this.gps, columnNode));
@@ -167,11 +167,11 @@ class XMLEngineDisplay extends HTMLElement {
                 let redLineElem = gauges[i].getElementsByTagName("RedLine");
                 if (redLineElem.length > 0) {
                     gauge.setRedLine(redLineElem[0].textContent);
-                }                
+                }
             }
             else if (gauges[i].tagName == "Text") {
                 let textZone = document.createElement("glasscockpit-xmltextzone");
-                textZone.setAttribute("class", gauges[i].getAttribute("id"));
+                diffAndSetAttribute(textZone, "class", gauges[i].getAttribute("id"));
                 _element.appendChild(textZone);
                 this.texts.push(textZone);
                 let leftText = gauges[i].getElementsByTagName("Left");
@@ -264,7 +264,7 @@ class XMLEngineDisplay extends HTMLElement {
             }
             else if (gauges[i].tagName == "Header") {
                 let textZone = document.createElement("glasscockpit-xmlheader");
-                textZone.setAttribute("class", gauges[i].getAttribute("id"));
+                diffAndSetAttribute(textZone, "class", gauges[i].getAttribute("id"));
                 _element.appendChild(textZone);
                 this.texts.push(textZone);
                 let textNode = gauges[i].getElementsByTagName("Text");
@@ -277,7 +277,7 @@ class XMLEngineDisplay extends HTMLElement {
                 let mainDiv = document.createElement("div");
                 mainDiv.style.width = "100%";
                 mainDiv.style.display = "flex";
-                mainDiv.setAttribute("class", gauges[i].getAttribute("id"));
+                diffAndSetAttribute(mainDiv, "class", gauges[i].getAttribute("id"));
                 _element.appendChild(mainDiv);
                 let unset = 0;
                 let setSize = 0;
@@ -300,7 +300,7 @@ class XMLEngineDisplay extends HTMLElement {
                         colDiv.style.width = ((99 - setSize) / unset) + "%";
                     }
                     let colId = columns[j].getAttribute("id");
-                    colDiv.setAttribute("class", "Column" + ((colId && colId != "") ? (" " + colId) : ""));
+                    diffAndSetAttribute(colDiv, "class", "Column" + ((colId && colId != "") ? (" " + colId) : ""));
                     mainDiv.appendChild(colDiv);
                     this.parseElement(columns[j], colDiv);
                 }
@@ -309,7 +309,7 @@ class XMLEngineDisplay extends HTMLElement {
                 this.CAS = new Cabin_Annunciations();
                 this.CAS.setGPS(this.gps);
                 let casDiv = document.createElement("div");
-                casDiv.setAttribute("id", "Annunciations");
+                diffAndSetAttribute(casDiv, "id", "Annunciations");
                 _element.appendChild(casDiv);
                 this.CAS.init(_element);
             }
@@ -451,22 +451,22 @@ class XMLHeader extends HTMLElement {
     }
     connectedCallback() {
         let container = document.createElement("div");
-        container.setAttribute("style", "display:flex; width:100%; align-items: center; padding:5px;");
-        
+        diffAndSetAttribute(container, "style", "display:flex; width:100%; align-items: center; padding:5px;");
+
         let line = document.createElement("div");
-        line.setAttribute("style", "height:2px; background:#777; flex:1;");
+        diffAndSetAttribute(line, "style", "height:2px; background:#777; flex:1;");
         container.appendChild(line);
-        
+
         this.textElement = document.createElement("div");
         this.textElement.setAttribute("style", "padding:5px; color:#fff; font-family:Roboto-Bold; font-size:14px;");
         container.appendChild(this.textElement);
-        
+
         line = document.createElement("div");
-        line.setAttribute("style", "height:2px; background:#777; flex:1;");
+        diffAndSetAttribute(line, "style", "height:2px; background:#777; flex:1;");
         container.appendChild(line);
-        
+
         this.appendChild(container);
-    }    
+    }
     setText(_value) {
         if (this.textElement.textContent != _value) {
             this.textElement.textContent = _value;
@@ -514,7 +514,7 @@ class XMLColumnGauge extends HTMLElement {
             let valueCallback = columns[c];
 
             let g = document.createElementNS(Avionics.SVG.NS, "g");
-            g.setAttribute("fill", "white");
+            diffAndSetAttribute(g, "fill", "white");
             this.rootSvg.appendChild(g);
 
             let horizontalMargin = 8;
@@ -526,40 +526,40 @@ class XMLColumnGauge extends HTMLElement {
             let barHeight = columnHeight / this.numberOfBars - (verticalSpacing * (this.numberOfBars - 1)) / this.numberOfBars;
 
             let bars = [];
-            for(let i = 0; i < this.numberOfBars; i++) {
+            for (let i = 0; i < this.numberOfBars; i++) {
                 let bar = document.createElementNS(Avionics.SVG.NS, "rect");
-                bar.setAttribute("width", columnWidth);
-                bar.setAttribute("height", barHeight);
-                bar.setAttribute("x", horizontalMargin + c * (columnWidth + horizontalSpacing));
-                bar.setAttribute("y", topMargin + i * (barHeight + verticalSpacing));
+                diffAndSetAttribute(bar, "width", columnWidth);
+                diffAndSetAttribute(bar, "height", barHeight);
+                diffAndSetAttribute(bar, "x", horizontalMargin + c * (columnWidth + horizontalSpacing));
+                diffAndSetAttribute(bar, "y", topMargin + i * (barHeight + verticalSpacing));
                 g.appendChild(bar);
                 bars.push(bar);
             }
 
             let barText = document.createElementNS(Avionics.SVG.NS, "text");
-            barText.setAttribute("x", horizontalMargin + c * (columnWidth + horizontalSpacing) + columnWidth / 2);
-            barText.setAttribute("y", this.height - 30 + 10);
-            barText.setAttribute("font-size", "8");
-            barText.setAttribute("font-family", "Roboto-Bold");
-            barText.setAttribute("text-anchor", "middle");
-            barText.textContent = c + 1;
+            diffAndSetAttribute(barText, "x", horizontalMargin + c * (columnWidth + horizontalSpacing) + columnWidth / 2);
+            diffAndSetAttribute(barText, "y", this.height - 30 + 10);
+            diffAndSetAttribute(barText, "font-size", "8");
+            diffAndSetAttribute(barText, "font-family", "Roboto-Bold");
+            diffAndSetAttribute(barText, "text-anchor", "middle");
+            diffAndSetText(barText, c + 1);
             g.appendChild(barText);
 
             let redLine = document.createElementNS(Avionics.SVG.NS, "rect");
-            redLine.setAttribute("visibility", "hidden");
-            redLine.setAttribute("fill", "red");
-            redLine.setAttribute("width", 100 - horizontalMargin * 2);
-            redLine.setAttribute("height", "2");
-            redLine.setAttribute("x", horizontalMargin);
-            redLine.setAttribute("y", topMargin);
+            diffAndSetAttribute(redLine, "visibility", "hidden");
+            diffAndSetAttribute(redLine, "fill", "red");
+            diffAndSetAttribute(redLine, "width", 100 - horizontalMargin * 2);
+            diffAndSetAttribute(redLine, "height", "2");
+            diffAndSetAttribute(redLine, "x", horizontalMargin);
+            diffAndSetAttribute(redLine, "y", topMargin);
             this.rootSvg.appendChild(redLine);
             this.redLineElement = redLine;
 
             this.columns.push({
                 valueCallback: valueCallback,
-                g:g,
-                text:barText,
-                bars:bars
+                g: g,
+                text: barText,
+                bars: bars
             });
         }
 
@@ -576,12 +576,12 @@ class XMLColumnGauge extends HTMLElement {
     update(_context) {
         let min = this.minValueCallback.getValueAsNumber(_context);
         let max = this.maxValueCallback.getValueAsNumber(_context);
-        for(let column of this.columns) {
+        for (let column of this.columns) {
             let value = column.valueCallback.getValueAsNumber(_context);
             let ratio = (value - min) / (max - min);
-            for(let b = 0; b < column.bars.length; b++) {
+            for (let b = 0; b < column.bars.length; b++) {
                 let bar = column.bars[b];
-                bar.setAttribute("visibility",  (1 - b / column.bars.length > ratio) ? "hidden" : "visible");
+                diffAndSetAttribute(bar, "visibility", (1 - b / column.bars.length > ratio) ? "hidden" : "visible");
             }
         }
         if (this.selectedColumn != null && this.selectedColumn.valueCallback) {
@@ -675,7 +675,7 @@ class XMLGauge extends HTMLElement {
                 this.isAlerting = true;
                 this.isCaution = false;
                 this.computeAlertBackgrounds();
-                this.setAttribute("State", "Alert");
+                diffAndSetAttribute(this, "State", "Alert");
             }
         } else if (newValueCaution && newValueCaution != 0) {
             if (!this.isCaution) {
@@ -683,11 +683,11 @@ class XMLGauge extends HTMLElement {
                 this.isAlerting = false;
                 this.isCaution = true;
                 this.computeCautionBackgrounds();
-                this.setAttribute("State", "Caution");
+                diffAndSetAttribute(this, "State", "Caution");
             }
         } else {
             this.isAlerting = this.isCaution = false;
-            this.setAttribute("State", "");
+            diffAndSetAttribute(this, "State", "");
         }
     }
 }
@@ -719,7 +719,7 @@ class XMLCircularGauge extends XMLGauge {
         this.forceTextColor = "";
         this.textPrecision = 0;
         this.graduations = null;
-        
+
     }
     setStyle(_styleElem) {
         if (_styleElem) {
@@ -778,28 +778,28 @@ class XMLCircularGauge extends XMLGauge {
         this.customGraduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.customGraduationGroup);
         let mainArc = document.createElementNS(Avionics.SVG.NS, "path");
-        mainArc.setAttribute("d", "M" + (50 - 40 * Math.cos(this.startAngle * Math.PI / 180)) + " " + (40 - 40 * Math.sin(this.startAngle * Math.PI / 180)) + "A 40 40 0 " + (this.endAngle - this.startAngle > 180 ? "1" : "0") + " 1" + (50 - 40 * Math.cos(this.endAngle * Math.PI / 180)) + " " + (40 - 40 * Math.sin(this.endAngle * Math.PI / 180)));
-        mainArc.setAttribute("stroke", "white");
-        mainArc.setAttribute("stroke-width", "2");
-        mainArc.setAttribute("fill", "none");
+        diffAndSetAttribute(mainArc, "d", "M" + (50 - 40 * Math.cos(this.startAngle * Math.PI / 180)) + " " + (40 - 40 * Math.sin(this.startAngle * Math.PI / 180)) + "A 40 40 0 " + (this.endAngle - this.startAngle > 180 ? "1" : "0") + " 1" + (50 - 40 * Math.cos(this.endAngle * Math.PI / 180)) + " " + (40 - 40 * Math.sin(this.endAngle * Math.PI / 180)));
+        diffAndSetAttribute(mainArc, "stroke", "white");
+        diffAndSetAttribute(mainArc, "stroke-width", "2");
+        diffAndSetAttribute(mainArc, "fill", "none");
         this.rootSvg.appendChild(mainArc);
         let beginLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        beginLimit.setAttribute("x", "10");
-        beginLimit.setAttribute("y", "39");
-        beginLimit.setAttribute("width", "10");
-        beginLimit.setAttribute("height", "2");
-        beginLimit.setAttribute("fill", "white");
-        beginLimit.setAttribute("transform", "rotate(" + this.startAngle + " 50 40)");
+        diffAndSetAttribute(beginLimit, "x", "10");
+        diffAndSetAttribute(beginLimit, "y", "39");
+        diffAndSetAttribute(beginLimit, "width", "10");
+        diffAndSetAttribute(beginLimit, "height", "2");
+        diffAndSetAttribute(beginLimit, "fill", "white");
+        diffAndSetAttribute(beginLimit, "transform", "rotate(" + this.startAngle + " 50 40)");
         this.rootSvg.appendChild(beginLimit);
         let endLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        endLimit.setAttribute("x", "10");
-        endLimit.setAttribute("y", "39");
-        endLimit.setAttribute("width", "10");
-        endLimit.setAttribute("height", "2");
-        endLimit.setAttribute("fill", "white");
-        endLimit.setAttribute("transform", "rotate(" + this.endAngle + " 50 40)");
-        this.rootSvg.appendChild(endLimit);	
-        
+        diffAndSetAttribute(endLimit, "x", "10");
+        diffAndSetAttribute(endLimit, "y", "39");
+        diffAndSetAttribute(endLimit, "width", "10");
+        diffAndSetAttribute(endLimit, "height", "2");
+        diffAndSetAttribute(endLimit, "fill", "white");
+        diffAndSetAttribute(endLimit, "transform", "rotate(" + this.endAngle + " 50 40)");
+        this.rootSvg.appendChild(endLimit);
+
         this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
         switch (this.cursorType) {
             case 0:
@@ -840,7 +840,7 @@ class XMLCircularGauge extends XMLGauge {
         this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_cautionbg.setAttribute("fill-opacity", "0");
         this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
-        this.rootSvg.appendChild(this.valueText_cautionbg);        
+        this.rootSvg.appendChild(this.valueText_cautionbg);
         this.titleText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.titleText_alertbg.setAttribute("fill-opacity", "0");
         this.titleText_alertbg.setAttribute("AlertBlink", "Background");
@@ -896,19 +896,19 @@ class XMLCircularGauge extends XMLGauge {
     }
     addColorZone(_begin, _end, _color, _context) {
         let colorZone = document.createElementNS(Avionics.SVG.NS, "path");
-        colorZone.setAttribute("d", "");
-        colorZone.setAttribute("fill", _color);
+        diffAndSetAttribute(colorZone, "d", "");
+        diffAndSetAttribute(colorZone, "fill", _color);
         this.decorationGroup.appendChild(colorZone);
         this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
         this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
     }
     addColorLine(_position, _color, _context) {
         let colorLine = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorLine.setAttribute("x", "10");
-        colorLine.setAttribute("y", "39");
-        colorLine.setAttribute("height", "2");
-        colorLine.setAttribute("width", "10");
-        colorLine.setAttribute("fill", _color);
+        diffAndSetAttribute(colorLine, "x", "10");
+        diffAndSetAttribute(colorLine, "y", "39");
+        diffAndSetAttribute(colorLine, "height", "2");
+        diffAndSetAttribute(colorLine, "width", "10");
+        diffAndSetAttribute(colorLine, "fill", _color);
         this.decorationGroup.appendChild(colorLine);
         this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
         this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
@@ -961,7 +961,7 @@ class XMLCircularGauge extends XMLGauge {
                 this.valueText_cautionbg.setAttribute("x", (valueBbox.x - 1).toString());
                 this.valueText_cautionbg.setAttribute("y", (valueBbox.y - 1).toString());
                 this.valueText_cautionbg.setAttribute("width", (valueBbox.width + 2).toString());
-                this.valueText_cautionbg.setAttribute("height", (valueBbox.height + 2).toString());                
+                this.valueText_cautionbg.setAttribute("height", (valueBbox.height + 2).toString());
             }
         }
     }
@@ -976,20 +976,20 @@ class XMLCircularGauge extends XMLGauge {
         if (this.forcedEndText == null) {
             this.endText.textContent = _end.toString();
         }
-        
+
         if (this.graduations != null) {
             this.customGraduationGroup.innerHTML = "";
             for (let i = 0; i < this.graduations.length; i++) {
-                let graduation = this.graduations[i];			
+                let graduation = this.graduations[i];
                 let el = document.createElementNS(Avionics.SVG.NS, "rect");
-                el.setAttribute("x", "10");
-                el.setAttribute("y", "39");
-                el.setAttribute("width", "8");
-                el.setAttribute("height", "1");
-                el.setAttribute("fill", "white");
-                el.setAttribute("transform", "rotate(" + this.valueToAngle(graduation) + " 50 40)");
+                diffAndSetAttribute(el, "x", "10");
+                diffAndSetAttribute(el, "y", "39");
+                diffAndSetAttribute(el, "width", "8");
+                diffAndSetAttribute(el, "height", "1");
+                diffAndSetAttribute(el, "fill", "white");
+                diffAndSetAttribute(el, "transform", "rotate(" + this.valueToAngle(graduation) + " 50 40)");
                 this.customGraduationGroup.appendChild(el);
-            }	
+            }
         }
     }
     setTitleAndUnit(_title, _unit) {
@@ -1007,7 +1007,7 @@ class XMLCircularGauge extends XMLGauge {
         this.unitText_cautionbg.setAttribute("y", (unitBbox.y - 1).toString());
         this.unitText_cautionbg.setAttribute("width", (unitBbox.width + 2).toString());
         this.unitText_cautionbg.setAttribute("height", (unitBbox.height + 2).toString());
-    }    
+    }
     computeAlertBackgrounds() {
         let titleBbox = this.titleText.getBBox();
         this.titleText_alertbg.setAttribute("x", (titleBbox.x - 1).toString());
@@ -1023,12 +1023,12 @@ class XMLCircularGauge extends XMLGauge {
     setGraduations(_spaceBetween, _withText = false) {
         for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
             let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-            grad.setAttribute("x", "10");
-            grad.setAttribute("y", "39");
-            grad.setAttribute("width", "6");
-            grad.setAttribute("height", "1");
-            grad.setAttribute("fill", "white");
-            grad.setAttribute("transform", "rotate(" + this.valueToAngle(i) + " 50 40)");
+            diffAndSetAttribute(grad, "x", "10");
+            diffAndSetAttribute(grad, "y", "39");
+            diffAndSetAttribute(grad, "width", "6");
+            diffAndSetAttribute(grad, "height", "1");
+            diffAndSetAttribute(grad, "fill", "white");
+            diffAndSetAttribute(grad, "transform", "rotate(" + this.valueToAngle(i) + " 50 40)");
             this.graduationGroup.appendChild(grad);
         }
     }
@@ -1108,25 +1108,25 @@ class XMLHorizontalGauge extends XMLGauge {
         this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.graduationGroup);
         let bottomBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        bottomBar.setAttribute("x", this.beginX.toString());
-        bottomBar.setAttribute("y", this.isReverseY ? "2" : "20");
-        bottomBar.setAttribute("height", "2");
-        bottomBar.setAttribute("width", (this.endX - this.beginX).toString());
-        bottomBar.setAttribute("fill", "white");
+        diffAndSetAttribute(bottomBar, "x", this.beginX.toString());
+        diffAndSetAttribute(bottomBar, "y", this.isReverseY ? "2" : "20");
+        diffAndSetAttribute(bottomBar, "height", "2");
+        diffAndSetAttribute(bottomBar, "width", (this.endX - this.beginX).toString());
+        diffAndSetAttribute(bottomBar, "fill", "white");
         this.rootSvg.appendChild(bottomBar);
         let beginLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        beginLimit.setAttribute("x", (this.beginX - 1).toString());
-        beginLimit.setAttribute("y", this.isReverseY ? "2" : "14");
-        beginLimit.setAttribute("height", "8");
-        beginLimit.setAttribute("width", "2");
-        beginLimit.setAttribute("fill", "white");
+        diffAndSetAttribute(beginLimit, "x", (this.beginX - 1).toString());
+        diffAndSetAttribute(beginLimit, "y", this.isReverseY ? "2" : "14");
+        diffAndSetAttribute(beginLimit, "height", "8");
+        diffAndSetAttribute(beginLimit, "width", "2");
+        diffAndSetAttribute(beginLimit, "fill", "white");
         this.rootSvg.appendChild(beginLimit);
         let endLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        endLimit.setAttribute("x", (this.endX - 1).toString());
-        endLimit.setAttribute("y", this.isReverseY ? "2" : "14");
-        endLimit.setAttribute("height", "8");
-        endLimit.setAttribute("width", "2");
-        endLimit.setAttribute("fill", "white");
+        diffAndSetAttribute(endLimit, "x", (this.endX - 1).toString());
+        diffAndSetAttribute(endLimit, "y", this.isReverseY ? "2" : "14");
+        diffAndSetAttribute(endLimit, "height", "8");
+        diffAndSetAttribute(endLimit, "width", "2");
+        diffAndSetAttribute(endLimit, "fill", "white");
         this.rootSvg.appendChild(endLimit);
         this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
         if (this.isReverseY) {
@@ -1158,7 +1158,7 @@ class XMLHorizontalGauge extends XMLGauge {
         this.titleText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.titleText_cautionbg.setAttribute("fill-opacity", "0");
         this.titleText_cautionbg.setAttribute("CautionBlink", "Background");
-        this.rootSvg.appendChild(this.titleText_cautionbg);        
+        this.rootSvg.appendChild(this.titleText_cautionbg);
         this.titleText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.titleText_alertbg.setAttribute("fill-opacity", "0");
         this.titleText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1182,7 +1182,7 @@ class XMLHorizontalGauge extends XMLGauge {
         this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_cautionbg.setAttribute("fill-opacity", "0");
         this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
-        this.rootSvg.appendChild(this.valueText_cautionbg);        
+        this.rootSvg.appendChild(this.valueText_cautionbg);
         this.valueText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_alertbg.setAttribute("fill-opacity", "0");
         this.valueText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1216,9 +1216,9 @@ class XMLHorizontalGauge extends XMLGauge {
     }
     addColorZone(_begin, _end, _color, _context) {
         let colorZone = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorZone.setAttribute("height", "4");
-        colorZone.setAttribute("y", this.isReverseY ? "4" : "16");
-        colorZone.setAttribute("fill", _color);
+        diffAndSetAttribute(colorZone, "height", "4");
+        diffAndSetAttribute(colorZone, "y", this.isReverseY ? "4" : "16");
+        diffAndSetAttribute(colorZone, "fill", _color);
         this.decorationGroup.appendChild(colorZone);
         this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
         this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
@@ -1231,11 +1231,11 @@ class XMLHorizontalGauge extends XMLGauge {
     }
     addColorLine(_position, _color, _context) {
         let colorLine = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorLine.setAttribute("x", "9");
-        colorLine.setAttribute("y", this.isReverseY ? "4" : "10");
-        colorLine.setAttribute("height", "10");
-        colorLine.setAttribute("width", "2");
-        colorLine.setAttribute("fill", _color);
+        diffAndSetAttribute(colorLine, "x", "9");
+        diffAndSetAttribute(colorLine, "y", this.isReverseY ? "4" : "10");
+        diffAndSetAttribute(colorLine, "height", "10");
+        diffAndSetAttribute(colorLine, "width", "2");
+        diffAndSetAttribute(colorLine, "fill", _color);
         this.decorationGroup.appendChild(colorLine);
         this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
         this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
@@ -1252,11 +1252,11 @@ class XMLHorizontalGauge extends XMLGauge {
     setGraduations(_spaceBetween, _withText = false) {
         for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
             let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-            grad.setAttribute("x", (((i - this.minValue) / (this.maxValue - this.minValue)) * 80 + 9.5).toString());
-            grad.setAttribute("y", this.isReverseY ? "4" : "14");
-            grad.setAttribute("height", "6");
-            grad.setAttribute("width", "1");
-            grad.setAttribute("fill", "white");
+            diffAndSetAttribute(grad, "x", (((i - this.minValue) / (this.maxValue - this.minValue)) * 80 + 9.5).toString());
+            diffAndSetAttribute(grad, "y", this.isReverseY ? "4" : "14");
+            diffAndSetAttribute(grad, "height", "6");
+            diffAndSetAttribute(grad, "width", "1");
+            diffAndSetAttribute(grad, "fill", "white");
             this.graduationGroup.appendChild(grad);
         }
     }
@@ -1379,29 +1379,29 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
         }
         this.appendChild(this.rootSvg);
         let bottomBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        bottomBar.setAttribute("x", this.beginX.toString());
-        bottomBar.setAttribute("y", "21");
-        bottomBar.setAttribute("height", "2");
-        bottomBar.setAttribute("width", (this.endX - this.beginX).toString());
-        bottomBar.setAttribute("fill", "white");
+        diffAndSetAttribute(bottomBar, "x", this.beginX.toString());
+        diffAndSetAttribute(bottomBar, "y", "21");
+        diffAndSetAttribute(bottomBar, "height", "2");
+        diffAndSetAttribute(bottomBar, "width", (this.endX - this.beginX).toString());
+        diffAndSetAttribute(bottomBar, "fill", "white");
         this.rootSvg.appendChild(bottomBar);
         this.decorationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.decorationGroup);
         this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.graduationGroup);
         let beginLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        beginLimit.setAttribute("x", (this.beginX - 1).toString());
-        beginLimit.setAttribute("y", "17");
-        beginLimit.setAttribute("height", "10");
-        beginLimit.setAttribute("width", "2");
-        beginLimit.setAttribute("fill", "white");
+        diffAndSetAttribute(beginLimit, "x", (this.beginX - 1).toString());
+        diffAndSetAttribute(beginLimit, "y", "17");
+        diffAndSetAttribute(beginLimit, "height", "10");
+        diffAndSetAttribute(beginLimit, "width", "2");
+        diffAndSetAttribute(beginLimit, "fill", "white");
         this.rootSvg.appendChild(beginLimit);
         let endLimit = document.createElementNS(Avionics.SVG.NS, "rect");
-        endLimit.setAttribute("x", (this.endX - 1).toString());
-        endLimit.setAttribute("y", "17");
-        endLimit.setAttribute("height", "10");
-        endLimit.setAttribute("width", "2");
-        endLimit.setAttribute("fill", "white");
+        diffAndSetAttribute(endLimit, "x", (this.endX - 1).toString());
+        diffAndSetAttribute(endLimit, "y", "17");
+        diffAndSetAttribute(endLimit, "height", "10");
+        diffAndSetAttribute(endLimit, "width", "2");
+        diffAndSetAttribute(endLimit, "fill", "white");
         this.rootSvg.appendChild(endLimit);
         this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
         this.cursor.setAttribute("points", this.beginX + ",22 " + (this.beginX - 4) + ",12 " + (this.beginX + 4) + ",12");
@@ -1477,9 +1477,9 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     }
     addColorZone(_begin, _end, _color, _context) {
         let colorZone = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorZone.setAttribute("height", "4");
-        colorZone.setAttribute("y", "20");
-        colorZone.setAttribute("fill", _color);
+        diffAndSetAttribute(colorZone, "height", "4");
+        diffAndSetAttribute(colorZone, "y", "20");
+        diffAndSetAttribute(colorZone, "fill", _color);
         this.decorationGroup.appendChild(colorZone);
         this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
         this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
@@ -1492,11 +1492,11 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     }
     addColorLine(_position, _color, _context) {
         let colorLine = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorLine.setAttribute("height", "12");
-        colorLine.setAttribute("width", "2");
-        colorLine.setAttribute("x", (this.beginX - 1).toString());
-        colorLine.setAttribute("y", "16");
-        colorLine.setAttribute("fill", _color);
+        diffAndSetAttribute(colorLine, "height", "12");
+        diffAndSetAttribute(colorLine, "width", "2");
+        diffAndSetAttribute(colorLine, "x", (this.beginX - 1).toString());
+        diffAndSetAttribute(colorLine, "y", "16");
+        diffAndSetAttribute(colorLine, "fill", _color);
         this.decorationGroup.appendChild(colorLine);
         this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
         this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
@@ -1513,21 +1513,21 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     setGraduations(_spaceBetween, _withText = false) {
         for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
             let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-            grad.setAttribute("x", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX - 0.5).toString());
-            grad.setAttribute("y", "17");
-            grad.setAttribute("height", "10");
-            grad.setAttribute("width", "1");
-            grad.setAttribute("fill", "white");
+            diffAndSetAttribute(grad, "x", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX - 0.5).toString());
+            diffAndSetAttribute(grad, "y", "17");
+            diffAndSetAttribute(grad, "height", "10");
+            diffAndSetAttribute(grad, "width", "1");
+            diffAndSetAttribute(grad, "fill", "white");
             this.graduationGroup.appendChild(grad);
             if (_withText) {
                 let gradText = document.createElementNS(Avionics.SVG.NS, "text");
-                gradText.setAttribute("x", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX - 0.5).toString());
-                gradText.setAttribute("y", "40");
-                gradText.setAttribute("fill", "white");
-                gradText.setAttribute("font-size", "8");
-                gradText.setAttribute("font-family", "Roboto-Bold");
-                gradText.setAttribute("text-anchor", "middle");
-                gradText.textContent = i.toString();
+                diffAndSetAttribute(gradText, "x", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX - 0.5).toString());
+                diffAndSetAttribute(gradText, "y", "40");
+                diffAndSetAttribute(gradText, "fill", "white");
+                diffAndSetAttribute(gradText, "font-size", "8");
+                diffAndSetAttribute(gradText, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(gradText, "text-anchor", "middle");
+                diffAndSetText(gradText, i.toString());
                 this.graduationGroup.appendChild(gradText);
             }
         }
@@ -1684,25 +1684,25 @@ class XMLVerticalGauge extends XMLGauge {
         this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.graduationGroup);
         let rightBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        rightBar.setAttribute("x", "35");
-        rightBar.setAttribute("y", this.endY.toString());
-        rightBar.setAttribute("height", (this.beginY - this.endY).toString());
-        rightBar.setAttribute("width", "2");
-        rightBar.setAttribute("fill", "white");
+        diffAndSetAttribute(rightBar, "x", "35");
+        diffAndSetAttribute(rightBar, "y", this.endY.toString());
+        diffAndSetAttribute(rightBar, "height", (this.beginY - this.endY).toString());
+        diffAndSetAttribute(rightBar, "width", "2");
+        diffAndSetAttribute(rightBar, "fill", "white");
         this.rootSvg.appendChild(rightBar);
         let beginBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        beginBar.setAttribute("x", "25");
-        beginBar.setAttribute("y", (this.beginY).toString());
-        beginBar.setAttribute("height", "2");
-        beginBar.setAttribute("width", "12");
-        beginBar.setAttribute("fill", "white");
+        diffAndSetAttribute(beginBar, "x", "25");
+        diffAndSetAttribute(beginBar, "y", (this.beginY).toString());
+        diffAndSetAttribute(beginBar, "height", "2");
+        diffAndSetAttribute(beginBar, "width", "12");
+        diffAndSetAttribute(beginBar, "fill", "white");
         this.rootSvg.appendChild(beginBar);
         let endBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        endBar.setAttribute("x", "25");
-        endBar.setAttribute("y", (this.endY).toString());
-        endBar.setAttribute("height", "2");
-        endBar.setAttribute("width", "12");
-        endBar.setAttribute("fill", "white");
+        diffAndSetAttribute(endBar, "x", "25");
+        diffAndSetAttribute(endBar, "y", (this.endY).toString());
+        diffAndSetAttribute(endBar, "height", "2");
+        diffAndSetAttribute(endBar, "width", "12");
+        diffAndSetAttribute(endBar, "fill", "white");
         this.rootSvg.appendChild(endBar);
         this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
         this.cursor.setAttribute("points", "35," + this.beginY + " 32," + (this.beginY - 3) + " 27," + (this.beginY - 3) + " 27," + (this.beginY + 3) + " 32," + (this.beginY + 3));
@@ -1729,7 +1729,7 @@ class XMLVerticalGauge extends XMLGauge {
         this.valueText_cautionbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_cautionbg.setAttribute("fill-opacity", "0");
         this.valueText_cautionbg.setAttribute("CautionBlink", "Background");
-        this.rootSvg.appendChild(this.valueText_cautionbg);        
+        this.rootSvg.appendChild(this.valueText_cautionbg);
         this.valueText_alertbg = document.createElementNS(Avionics.SVG.NS, "rect");
         this.valueText_alertbg.setAttribute("fill-opacity", "0");
         this.valueText_alertbg.setAttribute("AlertBlink", "Background");
@@ -1765,20 +1765,20 @@ class XMLVerticalGauge extends XMLGauge {
     }
     addColorZone(_begin, _end, _color, _context) {
         let colorZone = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorZone.setAttribute("width", "4");
-        colorZone.setAttribute("x", "31");
-        colorZone.setAttribute("fill", _color);
+        diffAndSetAttribute(colorZone, "width", "4");
+        diffAndSetAttribute(colorZone, "x", "31");
+        diffAndSetAttribute(colorZone, "fill", _color);
         this.decorationGroup.appendChild(colorZone);
         this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
         this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
     }
     addColorLine(_position, _color, _context) {
         let colorLine = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorLine.setAttribute("height", "2");
-        colorLine.setAttribute("width", "8");
-        colorLine.setAttribute("x", "27");
-        colorLine.setAttribute("y", this.beginY.toString());
-        colorLine.setAttribute("fill", _color);
+        diffAndSetAttribute(colorLine, "height", "2");
+        diffAndSetAttribute(colorLine, "width", "8");
+        diffAndSetAttribute(colorLine, "x", "27");
+        diffAndSetAttribute(colorLine, "y", this.beginY.toString());
+        diffAndSetAttribute(colorLine, "fill", _color);
         this.decorationGroup.appendChild(colorLine);
         this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
         this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
@@ -1846,21 +1846,21 @@ class XMLVerticalGauge extends XMLGauge {
     setGraduations(_spaceBetween, _withText) {
         for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
             let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-            grad.setAttribute("x", "25");
-            grad.setAttribute("y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY - 0.5).toString());
-            grad.setAttribute("height", "1");
-            grad.setAttribute("width", "10");
-            grad.setAttribute("fill", "white");
+            diffAndSetAttribute(grad, "x", "25");
+            diffAndSetAttribute(grad, "y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY - 0.5).toString());
+            diffAndSetAttribute(grad, "height", "1");
+            diffAndSetAttribute(grad, "width", "10");
+            diffAndSetAttribute(grad, "fill", "white");
             this.graduationGroup.appendChild(grad);
             if (_withText) {
                 let gradText = document.createElementNS(Avionics.SVG.NS, "text");
-                gradText.setAttribute("x", "23");
-                gradText.setAttribute("y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY + 4).toString());
-                gradText.setAttribute("fill", "white");
-                gradText.setAttribute("font-size", "8");
-                gradText.setAttribute("font-family", "Roboto-Bold");
-                gradText.setAttribute("text-anchor", "end");
-                gradText.textContent = i.toString();
+                diffAndSetAttribute(gradText, "x", "23");
+                diffAndSetAttribute(gradText, "y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY + 4).toString());
+                diffAndSetAttribute(gradText, "fill", "white");
+                diffAndSetAttribute(gradText, "font-size", "8");
+                diffAndSetAttribute(gradText, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(gradText, "text-anchor", "end");
+                diffAndSetText(gradText, i.toString());
                 this.graduationGroup.appendChild(gradText);
             }
         }
@@ -1918,41 +1918,41 @@ class XMLVerticalDoubleGauge extends XMLGauge {
         this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.graduationGroup);
         let beginBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        beginBar.setAttribute("x", "25");
-        beginBar.setAttribute("y", (this.beginY).toString());
-        beginBar.setAttribute("height", "2");
-        beginBar.setAttribute("width", "50");
-        beginBar.setAttribute("fill", "white");
+        diffAndSetAttribute(beginBar, "x", "25");
+        diffAndSetAttribute(beginBar, "y", (this.beginY).toString());
+        diffAndSetAttribute(beginBar, "height", "2");
+        diffAndSetAttribute(beginBar, "width", "50");
+        diffAndSetAttribute(beginBar, "fill", "white");
         this.rootSvg.appendChild(beginBar);
         let endBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        endBar.setAttribute("x", "25");
-        endBar.setAttribute("y", (this.endY).toString());
-        endBar.setAttribute("height", "2");
-        endBar.setAttribute("width", "50");
-        endBar.setAttribute("fill", "white");
+        diffAndSetAttribute(endBar, "x", "25");
+        diffAndSetAttribute(endBar, "y", (this.endY).toString());
+        diffAndSetAttribute(endBar, "height", "2");
+        diffAndSetAttribute(endBar, "width", "50");
+        diffAndSetAttribute(endBar, "fill", "white");
         this.rootSvg.appendChild(endBar);
         let gradTextBackground = document.createElementNS(Avionics.SVG.NS, "rect");
-        gradTextBackground.setAttribute("x", "36");
-        gradTextBackground.setAttribute("y", (this.endY - 5).toString());
-        gradTextBackground.setAttribute("width", "28");
-        gradTextBackground.setAttribute("height", (this.beginY - this.endY + 10).toString());
-        gradTextBackground.setAttribute("fill", "#1a1d21");
+        diffAndSetAttribute(gradTextBackground, "x", "36");
+        diffAndSetAttribute(gradTextBackground, "y", (this.endY - 5).toString());
+        diffAndSetAttribute(gradTextBackground, "width", "28");
+        diffAndSetAttribute(gradTextBackground, "height", (this.beginY - this.endY + 10).toString());
+        diffAndSetAttribute(gradTextBackground, "fill", "#1a1d21");
         this.rootSvg.appendChild(gradTextBackground);
         this.graduationTextGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.rootSvg.appendChild(this.graduationTextGroup);
         let barLeft = document.createElementNS(Avionics.SVG.NS, "rect");
-        barLeft.setAttribute("x", "34");
-        barLeft.setAttribute("y", this.endY.toString());
-        barLeft.setAttribute("height", (this.beginY - this.endY).toString());
-        barLeft.setAttribute("width", "2");
-        barLeft.setAttribute("fill", "white");
+        diffAndSetAttribute(barLeft, "x", "34");
+        diffAndSetAttribute(barLeft, "y", this.endY.toString());
+        diffAndSetAttribute(barLeft, "height", (this.beginY - this.endY).toString());
+        diffAndSetAttribute(barLeft, "width", "2");
+        diffAndSetAttribute(barLeft, "fill", "white");
         this.rootSvg.appendChild(barLeft);
         let barRight = document.createElementNS(Avionics.SVG.NS, "rect");
-        barRight.setAttribute("x", "64");
-        barRight.setAttribute("y", this.endY.toString());
-        barRight.setAttribute("height", (this.beginY - this.endY).toString());
-        barRight.setAttribute("width", "2");
-        barRight.setAttribute("fill", "white");
+        diffAndSetAttribute(barRight, "x", "64");
+        diffAndSetAttribute(barRight, "y", this.endY.toString());
+        diffAndSetAttribute(barRight, "height", (this.beginY - this.endY).toString());
+        diffAndSetAttribute(barRight, "width", "2");
+        diffAndSetAttribute(barRight, "fill", "white");
         this.rootSvg.appendChild(barRight);
         this.cursor = document.createElementNS(Avionics.SVG.NS, "polygon");
         this.cursor.setAttribute("points", "30," + this.beginY + " 20," + this.beginY + " 20," + (this.beginY + this.beginY - this.endY) + " 25," + (this.beginY + this.beginY - this.endY) + " 25," + (this.beginY + 10));
@@ -2005,20 +2005,20 @@ class XMLVerticalDoubleGauge extends XMLGauge {
     }
     addColorZone(_begin, _end, _color, _context) {
         let colorZone = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorZone.setAttribute("width", "40");
-        colorZone.setAttribute("x", "30");
-        colorZone.setAttribute("fill", _color);
+        diffAndSetAttribute(colorZone, "width", "40");
+        diffAndSetAttribute(colorZone, "x", "30");
+        diffAndSetAttribute(colorZone, "fill", _color);
         this.decorationGroup.appendChild(colorZone);
         this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
         this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
     }
     addColorLine(_position, _color, _context) {
         let colorLine = document.createElementNS(Avionics.SVG.NS, "rect");
-        colorLine.setAttribute("height", "2");
-        colorLine.setAttribute("width", "46");
-        colorLine.setAttribute("x", "27");
-        colorLine.setAttribute("y", this.beginY.toString());
-        colorLine.setAttribute("fill", _color);
+        diffAndSetAttribute(colorLine, "height", "2");
+        diffAndSetAttribute(colorLine, "width", "46");
+        diffAndSetAttribute(colorLine, "x", "27");
+        diffAndSetAttribute(colorLine, "y", this.beginY.toString());
+        diffAndSetAttribute(colorLine, "fill", _color);
         this.decorationGroup.appendChild(colorLine);
         this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
         this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
@@ -2072,21 +2072,21 @@ class XMLVerticalDoubleGauge extends XMLGauge {
     setGraduations(_spaceBetween, _withText) {
         for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
             let grad = document.createElementNS(Avionics.SVG.NS, "rect");
-            grad.setAttribute("x", "29");
-            grad.setAttribute("y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY - 0.5).toString());
-            grad.setAttribute("height", "1");
-            grad.setAttribute("width", "42");
-            grad.setAttribute("fill", "white");
+            diffAndSetAttribute(grad, "x", "29");
+            diffAndSetAttribute(grad, "y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY - 0.5).toString());
+            diffAndSetAttribute(grad, "height", "1");
+            diffAndSetAttribute(grad, "width", "42");
+            diffAndSetAttribute(grad, "fill", "white");
             this.graduationGroup.appendChild(grad);
             if (_withText) {
                 let gradText = document.createElementNS(Avionics.SVG.NS, "text");
-                gradText.setAttribute("x", "50");
-                gradText.setAttribute("y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY + 4).toString());
-                gradText.setAttribute("fill", "white");
-                gradText.setAttribute("font-size", "8");
-                gradText.setAttribute("font-family", "Roboto-Bold");
-                gradText.setAttribute("text-anchor", "middle");
-                gradText.textContent = i.toString();
+                diffAndSetAttribute(gradText, "x", "50");
+                diffAndSetAttribute(gradText, "y", (((i - this.minValue) / (this.maxValue - this.minValue)) * (this.endY - this.beginY) + this.beginY + 4).toString());
+                diffAndSetAttribute(gradText, "fill", "white");
+                diffAndSetAttribute(gradText, "font-size", "8");
+                diffAndSetAttribute(gradText, "font-family", "Roboto-Bold");
+                diffAndSetAttribute(gradText, "text-anchor", "middle");
+                diffAndSetText(gradText, i.toString());
                 this.graduationTextGroup.appendChild(gradText);
             }
         }
@@ -2172,20 +2172,20 @@ class XMLFlapsGauge extends XMLGauge {
         let texts = ["UP", "T/O", "LDG"];
         for (let i = 0; i < angles.length; i++) {
             let graduation = document.createElementNS(Avionics.SVG.NS, "rect");
-            graduation.setAttribute("x", "60");
-            graduation.setAttribute("y", "10");
-            graduation.setAttribute("height", "1");
-            graduation.setAttribute("width", "10");
-            graduation.setAttribute("fill", "white");
-            graduation.setAttribute("transform", "rotate(" + angles[i] + " 10 10)");
+            diffAndSetAttribute(graduation, "x", "60");
+            diffAndSetAttribute(graduation, "y", "10");
+            diffAndSetAttribute(graduation, "height", "1");
+            diffAndSetAttribute(graduation, "width", "10");
+            diffAndSetAttribute(graduation, "fill", "white");
+            diffAndSetAttribute(graduation, "transform", "rotate(" + angles[i] + " 10 10)");
             this.rootSvg.appendChild(graduation);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
             let radAngle = angles[i] * Math.PI / 180;
-            text.setAttribute("x", (10 + 65 * Math.cos(radAngle)).toString());
-            text.setAttribute("y", (15 + 65 * Math.sin(radAngle)).toString());
-            text.setAttribute("fill", "white");
-            text.setAttribute("font-size", "10");
-            text.textContent = texts[i];
+            diffAndSetAttribute(text, "x", (10 + 65 * Math.cos(radAngle)).toString());
+            diffAndSetAttribute(text, "y", (15 + 65 * Math.sin(radAngle)).toString());
+            diffAndSetAttribute(text, "fill", "white");
+            diffAndSetAttribute(text, "font-size", "10");
+            diffAndSetText(text, texts[i]);
             this.rootSvg.appendChild(text);
         }
     }
@@ -2201,61 +2201,61 @@ class XMLLongitudeFuelGauge extends XMLGauge {
         this.rootSvg.setAttribute("overflow", "visible");
         this.appendChild(this.rootSvg);
         let leftBg = document.createElementNS(Avionics.SVG.NS, "rect");
-        leftBg.setAttribute("x", "5");
-        leftBg.setAttribute("y", "20");
-        leftBg.setAttribute("width", "25");
-        leftBg.setAttribute("height", "10");
-        leftBg.setAttribute("stroke", "grey");
-        leftBg.setAttribute("fill", "none");
+        diffAndSetAttribute(leftBg, "x", "5");
+        diffAndSetAttribute(leftBg, "y", "20");
+        diffAndSetAttribute(leftBg, "width", "25");
+        diffAndSetAttribute(leftBg, "height", "10");
+        diffAndSetAttribute(leftBg, "stroke", "grey");
+        diffAndSetAttribute(leftBg, "fill", "none");
         this.rootSvg.appendChild(leftBg);
         let rightBg = document.createElementNS(Avionics.SVG.NS, "rect");
-        rightBg.setAttribute("x", "70");
-        rightBg.setAttribute("y", "20");
-        rightBg.setAttribute("width", "25");
-        rightBg.setAttribute("height", "10");
-        rightBg.setAttribute("stroke", "grey");
-        rightBg.setAttribute("fill", "none");
+        diffAndSetAttribute(rightBg, "x", "70");
+        diffAndSetAttribute(rightBg, "y", "20");
+        diffAndSetAttribute(rightBg, "width", "25");
+        diffAndSetAttribute(rightBg, "height", "10");
+        diffAndSetAttribute(rightBg, "stroke", "grey");
+        diffAndSetAttribute(rightBg, "fill", "none");
         this.rootSvg.appendChild(rightBg);
         let totalBg = document.createElementNS(Avionics.SVG.NS, "rect");
-        totalBg.setAttribute("x", "35");
-        totalBg.setAttribute("y", "10");
-        totalBg.setAttribute("width", "30");
-        totalBg.setAttribute("height", "10");
-        totalBg.setAttribute("stroke", "grey");
-        totalBg.setAttribute("fill", "none");
+        diffAndSetAttribute(totalBg, "x", "35");
+        diffAndSetAttribute(totalBg, "y", "10");
+        diffAndSetAttribute(totalBg, "width", "30");
+        diffAndSetAttribute(totalBg, "height", "10");
+        diffAndSetAttribute(totalBg, "stroke", "grey");
+        diffAndSetAttribute(totalBg, "fill", "none");
         this.rootSvg.appendChild(totalBg);
         let horizBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        horizBar.setAttribute("x", "30");
-        horizBar.setAttribute("y", "24.5");
-        horizBar.setAttribute("width", "40");
-        horizBar.setAttribute("height", "1");
-        horizBar.setAttribute("fill", "grey");
+        diffAndSetAttribute(horizBar, "x", "30");
+        diffAndSetAttribute(horizBar, "y", "24.5");
+        diffAndSetAttribute(horizBar, "width", "40");
+        diffAndSetAttribute(horizBar, "height", "1");
+        diffAndSetAttribute(horizBar, "fill", "grey");
         this.rootSvg.appendChild(horizBar);
         let vertBar = document.createElementNS(Avionics.SVG.NS, "rect");
-        vertBar.setAttribute("x", "49.5");
-        vertBar.setAttribute("y", "20");
-        vertBar.setAttribute("width", "1");
-        vertBar.setAttribute("height", "5");
-        vertBar.setAttribute("fill", "grey");
+        diffAndSetAttribute(vertBar, "x", "49.5");
+        diffAndSetAttribute(vertBar, "y", "20");
+        diffAndSetAttribute(vertBar, "width", "1");
+        diffAndSetAttribute(vertBar, "height", "5");
+        diffAndSetAttribute(vertBar, "fill", "grey");
         this.rootSvg.appendChild(vertBar);
         let leftText = document.createElementNS(Avionics.SVG.NS, "text");
-        leftText.setAttribute("x", "30");
-        leftText.setAttribute("y", "18");
-        leftText.setAttribute("fill", "white");
-        leftText.setAttribute("font-size", "7");
-        leftText.setAttribute("font-family", "Roboto-Bold");
-        leftText.setAttribute("text-anchor", "end");
+        diffAndSetAttribute(leftText, "x", "30");
+        diffAndSetAttribute(leftText, "y", "18");
+        diffAndSetAttribute(leftText, "fill", "white");
+        diffAndSetAttribute(leftText, "font-size", "7");
+        diffAndSetAttribute(leftText, "font-family", "Roboto-Bold");
+        diffAndSetAttribute(leftText, "text-anchor", "end");
         this.rootSvg.appendChild(leftText);
-        leftText.textContent = "TOT";
+        diffAndSetText(leftText, "TOT");
         let rightText = document.createElementNS(Avionics.SVG.NS, "text");
-        rightText.setAttribute("x", "70");
-        rightText.setAttribute("y", "18");
-        rightText.setAttribute("fill", "white");
-        rightText.setAttribute("font-size", "7");
-        rightText.setAttribute("font-family", "Roboto-Bold");
-        rightText.setAttribute("text-anchor", "start");
+        diffAndSetAttribute(rightText, "x", "70");
+        diffAndSetAttribute(rightText, "y", "18");
+        diffAndSetAttribute(rightText, "fill", "white");
+        diffAndSetAttribute(rightText, "font-size", "7");
+        diffAndSetAttribute(rightText, "font-family", "Roboto-Bold");
+        diffAndSetAttribute(rightText, "text-anchor", "start");
         this.rootSvg.appendChild(rightText);
-        rightText.textContent = "GAL";
+        diffAndSetText(rightText, "GAL");
         this.leftText = document.createElementNS(Avionics.SVG.NS, "text");
         this.leftText.setAttribute("x", "17.5");
         this.leftText.setAttribute("y", "28");
@@ -2320,10 +2320,10 @@ class XMLFlapsSpeedbrakesGauge extends XMLGauge {
         this.rootSvg.setAttribute("overflow", "visible");
         this.appendChild(this.rootSvg);
         let wing = document.createElementNS(Avionics.SVG.NS, "path");
-        wing.setAttribute("d", "M45 12 C40 11, 30 10, 22 10 C0 13, 0 24, 23 24 C35 25, 50 25, 70 24 C65 21, 70 15, 71 17 L62 15");
-        wing.setAttribute("stroke", "white");
-        wing.setAttribute("stroke-width", "0.5");
-        wing.setAttribute("fill", "none");
+        diffAndSetAttribute(wing, "d", "M45 12 C40 11, 30 10, 22 10 C0 13, 0 24, 23 24 C35 25, 50 25, 70 24 C65 21, 70 15, 71 17 L62 15");
+        diffAndSetAttribute(wing, "stroke", "white");
+        diffAndSetAttribute(wing, "stroke-width", "0.5");
+        diffAndSetAttribute(wing, "fill", "none");
         this.rootSvg.appendChild(wing);
         this.speedbrakes = document.createElementNS(Avionics.SVG.NS, "path");
         this.speedbrakes.setAttribute("d", "M49 14 Q44.75 12, 49 11 Q71.5 15.5, 49 14");
