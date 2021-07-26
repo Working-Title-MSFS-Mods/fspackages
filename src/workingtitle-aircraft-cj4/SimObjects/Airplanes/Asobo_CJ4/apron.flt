@@ -54,7 +54,7 @@ FuelPumpSwitch_EX1=0
 CarbHeat/DeiceSwitch=False
 EngineMasterSwitch=True
 GlowPlugTemperaturePct=1
-IgnitionSwitch=0
+IgnitionSwitch=1
 Afterburner=0
 
 [Engine Parameters.2.0]
@@ -73,7 +73,7 @@ FuelPumpSwitch_EX1=0
 CarbHeat/DeiceSwitch=False
 EngineMasterSwitch=True
 GlowPlugTemperaturePct=1
-IgnitionSwitch=0
+IgnitionSwitch=1
 Afterburner=0
 
 [Systems.0]
