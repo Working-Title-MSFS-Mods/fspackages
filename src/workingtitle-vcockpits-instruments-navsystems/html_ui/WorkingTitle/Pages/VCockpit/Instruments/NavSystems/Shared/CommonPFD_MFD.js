@@ -4184,14 +4184,4 @@ class MFD_DepartureSelection extends NavSystemElement {
         }
     }
 }
-function fastToFixed(num, p) {
-    if (p <= 0)
-        return Math.round(num).toString();
-
-    r = Math.round(num * Math.pow(10, p)).toString();
-    l = r.length;
-
-    return r.substring(0, l - p) + "." + r.substring(l - p, l);
-}
-
 //# sourceMappingURL=CommonPFD_MFD.js.map
