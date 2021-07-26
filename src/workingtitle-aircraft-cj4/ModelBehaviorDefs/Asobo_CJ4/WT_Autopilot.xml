@@ -1,15 +1,18 @@
 <ModelBehaviors>
 	<!-- AP -->
 	<Template Name="ASOBO_AUTOPILOT_Push_Heading_Template">
-		<DefaultTemplateParameters>
+		<Parameters Type="Default">
 			<DEFAULT_NAME>Heading</DEFAULT_NAME>
-			<HELPID>HELPID_AUTOPILOT_HEADING_HOLD</HELPID>
+			<ON_HEADING_MODE_SWITCH/>
 			<TOOLTIPID>Toggle HDG</TOOLTIPID>
 			<LEFT_SINGLE_CODE>
 				(&gt;H:WT_CJ4_AP_HDG_PRESSED)
 			</LEFT_SINGLE_CODE>
 			<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT HEADING LOCK</EMISSIVE_SIMVAR_ACTIVE>
-		</DefaultTemplateParameters>
+		</Parameters>
+		<Parameters Type="Override">
+			<ON_AP_MODE_STATE_CHANGED>#ON_HEADING_MODE_SWITCH#</ON_AP_MODE_STATE_CHANGED>
+		</Parameters>
 		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
 		</UseTemplate>
 	</Template>
@@ -410,7 +413,7 @@
 		</Component>
 	</Template>
 
-	<Template Name="ASOBO_AUTOPILOT_Push_VerticalNavigation_Template">
+	<Template Name="ASOBO_AUTOPILOT_Push_Vertical_Navigation_Template">
 		<DefaultTemplateParameters>
 			<DEFAULT_NAME>VerticalNavigation</DEFAULT_NAME>
 			<EMISSIVE_DEFAULT_NAME>AUTOPILOT_Push_VerticalNavigation_Text</EMISSIVE_DEFAULT_NAME>
