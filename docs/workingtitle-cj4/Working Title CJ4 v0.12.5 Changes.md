@@ -1,5 +1,5 @@
-# Working Title CJ4 v0.12.6
-Welcome to the Working Title CJ4 v0.12.5. ...
+# Working Title CJ4 v0.12.5
+Welcome to the Working Title CJ4 v0.12.5. This version brings compatibility for MSFS Sim Update 4, as well as a number of other enhancements and small fixes, including traffic display (TFC) that will show the new SU4 SimConnect injected traffic from online services like VATSIM and IVAO. TCAS Control options are also available in the FMS, but TA/RA advisories have not yet been implemented.
 
 In this release we also have a number of community submissions. Thanks to everyone, as always, for your contributions! We really love working with you all.
 
@@ -15,7 +15,18 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 # Changes
 
-- SU5 compatibility
+- Added Traffic Display (TFC) to the PFD and MFD 
+- Added "ALT TAG" option on the FMS TCAS CONTROL page
+- Added ABOVE/NORM/BELOW options on the FMS TCAS CONTROL page
+- Lots of great cosmetic improvements to the PFD (thanks charles-vomacka!)
+- Adjusted the green band on the trim in extended view (thanks Slip!)
+- Adjustments to external lighting (thanks  Uwajimaya!)
+- More accurate AoA display (by Slip) 
+- Fixed ITT scale ranges on the MFD (by Slip) 
+- Overhaul of the SAI (by Slip) 
+- Fixed ZFW calculation concerning pax weight (thanks thor!)
+- VSi bug improvements on the PFD
+- Minor bugfixes
 
 
 ## ⚠️ Known Issues
