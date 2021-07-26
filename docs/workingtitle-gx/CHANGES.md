@@ -1,3 +1,6 @@
+# Changes in 0.1.0-dev9
+* Compatibility with SU5.
+
 # Changes in 0.1.0-dev8
 * Fixed bug that could cause display issues in the same area as live traffic.
 
