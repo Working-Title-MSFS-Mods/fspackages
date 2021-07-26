@@ -1041,6 +1041,8 @@ class CJ4_APDisplay extends NavSystemElement {
                 const altitudeArmed = parsedFmaValues.altitudeArmed;
                 const vnavArmed = parsedFmaValues.vnavArmed;
                 const approachVerticalArmed = parsedFmaValues.approachVerticalArmed;
+                this.AP_ModeReference_Value.style.paddingLeft = '0px';
+
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
@@ -1069,7 +1071,8 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_VerticalSpeedbug_Icon.style.display = "none";
                     this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
                     this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
-                    diffAndSetText(this.AP_ModeReference_Value, (pitchRef < 0 ? "&emsp; &emsp; +" : "&emsp; &emsp;") + (-1 * pitchRef).toFixed(1));
+                    diffAndSetText(this.AP_ModeReference_Value, (pitchRef < 0 ? " +" : " ") + (-1 * pitchRef).toFixed(1));
+                    this.AP_ModeReference_Value.style.paddingLeft = '10px';
                 } else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";
