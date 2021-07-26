@@ -1,6 +1,6 @@
 <ModelBehaviors>
 	<Include ModelBehaviorFile="Asobo\Generic.xml"/>
-	<Include RelativeFile="Inputs\\AS1000_Inputs.xml"/>
+	<!-- <Include RelativeFile="Inputs\\AS1000_Inputs.xml"/> -->
 	
 	<!-- ############## -->
 	<!-- AS3000 Presets -->
