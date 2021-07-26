@@ -39,20 +39,19 @@
     <Template Name="ASOBO_ENGINE_Push_Starter_Template">
         <DefaultTemplateParameters>
             <ID>1</ID>
-            <!-- test 
-			<PART_ID>Push_Starter_Template_#ID#</PART_ID>	-->
         </DefaultTemplateParameters>
 
-        <UseTemplate Name="ASOBO_ENGINE_Push_Starter_SubTemplate">
+        <UseTemplate Name="ASOBO_ENGINE_Starter_Template">
+			<INTERACTION_TYPE>Push</INTERACTION_TYPE>
             <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
             <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </UseTemplate>
     </Template>
 
     <Template Name="ASOBO_ENGINE_Push_Starter_Disengage_Template">
-        <DefaultTemplateParameters>
-            <ID>1</ID>
-        </DefaultTemplateParameters>
+		<Parameters Type="Default">
+			<ID>1</ID>
+		</Parameters>
         <UseTemplate Name="ASOBO_ENGINE_Push_Starter_Disengage_SubTemplate">
             <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
             <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
