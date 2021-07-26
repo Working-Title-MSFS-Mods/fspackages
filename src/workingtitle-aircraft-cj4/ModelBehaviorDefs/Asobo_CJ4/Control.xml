@@ -156,64 +156,87 @@
     </Template>
 
     <!-- AP SUB ########################################### -->
-    <Template Name="ASOBO_AUTOPILOT_Push_SubTemplate">
-        <DefaultTemplateParameters>
-            <Condition Check="NODE_ID">
-                <True>
-                    <BASE_NODE_ID>#NODE_ID#</BASE_NODE_ID>
-                </True>
-            </Condition>
-            <NODE_ID>AUTOPILOT_Push_#DEFAULT_NAME##SUFFIX_ID#</NODE_ID>
-            <ANIM_NAME>AUTOPILOT_Push_#DEFAULT_NAME##SUFFIX_ID#</ANIM_NAME>
-            <PART_ID>AUTOPILOT_Push_#DEFAULT_NAME#</PART_ID>
-            <WWISE_EVENT_AUTOPILOT_SWITCH_ON>autopilot_switch_on</WWISE_EVENT_AUTOPILOT_SWITCH_ON>
-            <WWISE_EVENT_AUTOPILOT_SWITCH_OFF>autopilot_switch_off</WWISE_EVENT_AUTOPILOT_SWITCH_OFF>
-            <WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>WT_hard_button_on</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>
-            <WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>WT_hard_button_off</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>
-        </DefaultTemplateParameters>
-        <Component ID="#NODE_ID#" Node="#NODE_ID#">
-            <Condition Check="ANIM_CODE">
-                <True>
-                    <UseTemplate Name="ASOBO_GT_Switch_Code">
-                        <WWISE_EVENT_1>#WWISE_EVENT_AUTOPILOT_SWITCH_ON#</WWISE_EVENT_1>
-                        <WWISE_EVENT_2>#WWISE_EVENT_AUTOPILOT_SWITCH_OFF#</WWISE_EVENT_2>
-                    </UseTemplate>
-                </True>
-                <False>
-                    <UseTemplate Name="ASOBO_GT_Push_Button">
-                        <WWISE_EVENT_1>#WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON#</WWISE_EVENT_1>
-                        <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                        <WWISE_EVENT_2>#WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF#</WWISE_EVENT_2>
-                        <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                    </UseTemplate>
-                </False>
-            </Condition>
-        </Component>
-        <Condition Valid="NO_INDICATOR">
-            <False>
-                <UseTemplate Name="ASOBO_AUTOPILOT_Push_Active_Template">
-                </UseTemplate>
-            </False>
-        </Condition>
-        <Condition Valid="NO_TEXT_EMISSIVE">
-            <False>
-                <UseTemplate Name="ASOBO_AUTOPILOT_Push_Emissive_Template">
-                </UseTemplate>
-            </False>
-        </Condition>
-        <Condition Valid="BUTTON_EMISSIVE">
-            <True>
-                <UseTemplate Name="ASOBO_LIGHTING_Cabin_Emissive_Template">
-                </UseTemplate>
-            </True>
-        </Condition>
-
-        <Condition Check="INIT">
-            <Update Once="True">
-				#INIT#
-            </Update>
-        </Condition>
-    </Template>
+	<Template Name="ASOBO_AUTOPILOT_Push_SubTemplate">
+		<Parameters Type="Default">
+			<Condition Check="NODE_ID">
+				<True>
+					<BASE_NODE_ID>#NODE_ID#</BASE_NODE_ID>
+				</True>
+			</Condition>
+			<NODE_ID>AUTOPILOT_Push_#DEFAULT_NAME##SUFFIX_ID#</NODE_ID>
+			<ANIM_NAME>AUTOPILOT_Push_#DEFAULT_NAME##SUFFIX_ID#</ANIM_NAME>
+			<PART_ID>AUTOPILOT_Push_#DEFAULT_NAME#</PART_ID>
+			<WWISE_EVENT_AUTOPILOT_SWITCH_ON>autopilot_switch_on</WWISE_EVENT_AUTOPILOT_SWITCH_ON>
+			<WWISE_EVENT_AUTOPILOT_SWITCH_OFF>autopilot_switch_off</WWISE_EVENT_AUTOPILOT_SWITCH_OFF>		
+			<WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>WT_hard_button_on</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>
+			<WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>WT_hard_button_off</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>
+			<Condition Check="ANIM_CODE">
+				<AXIS>Y</AXIS>
+			</Condition>
+			<INPUT_EVENT_ID_SOURCE>AUTOPILOT</INPUT_EVENT_ID_SOURCE>
+			<USE_INPUT_EVENT_ID>AUTOPILOT</USE_INPUT_EVENT_ID>
+		</Parameters>
+		<Parameters Type="Default">
+			<Condition NotEmpty="GET_STATE_EXTERNAL">
+				<True>
+					<LEFT_SINGLE_CODE>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID#_Toggle)</LEFT_SINGLE_CODE>
+					<CHECK_STATE_HAS_CHANGED>True</CHECK_STATE_HAS_CHANGED>
+				</True>
+				<False>
+					<LEFT_SINGLE_CODE>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID#_Push)</LEFT_SINGLE_CODE>
+					<BINDING_INC_0>Push</BINDING_INC_0>
+					<BINDING_INC_0_PARAM_0>1</BINDING_INC_0_PARAM_0>
+				</False>
+			</Condition>
+			<Condition NotEmpty="EVENT_ID">
+				<BINDING_INC_0_EVENT_ID>#EVENT_ID#</BINDING_INC_0_EVENT_ID>					
+			</Condition>
+			<Condition Valid="TOOLTIP_TITLE">
+				<TOOLTIP_ENTRY_0>#INPUT_EVENT_ID_SOURCE#_#BTN_ID#</TOOLTIP_ENTRY_0>	
+			</Condition>
+		</Parameters>
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<UseInputEvent ID="#USE_INPUT_EVENT_ID#">
+				<Condition Check="ANIM_CODE">
+					<TT_ICON>MOVE_#AXIS#</TT_ICON>
+				</Condition>
+			</UseInputEvent>
+			<Condition Check="ANIM_CODE">
+				<True>
+					<UseTemplate Name="ASOBO_GT_Switch_Code">
+						<WWISE_EVENT_1>#WWISE_EVENT_AUTOPILOT_SWITCH_ON#</WWISE_EVENT_1>
+						<WWISE_EVENT_2>#WWISE_EVENT_AUTOPILOT_SWITCH_OFF#</WWISE_EVENT_2>
+					</UseTemplate>
+				</True>
+				<False>
+					<UseTemplate Name="ASOBO_GT_Push_Button">
+						<WWISE_EVENT_1>#WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON#</WWISE_EVENT_1>
+						<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+						<WWISE_EVENT_2>#WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF#</WWISE_EVENT_2>
+						<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+					</UseTemplate>
+				</False>
+			</Condition>
+		</Component>
+		<Condition Valid="NO_INDICATOR">
+			<False>
+				<UseTemplate Name="ASOBO_AUTOPILOT_Push_Active_Template"/>
+			</False>
+		</Condition>
+		<Condition Valid="NO_TEXT_EMISSIVE">
+			<False>
+				<UseTemplate Name="ASOBO_AUTOPILOT_Push_Emissive_Template"/>
+			</False>
+		</Condition>
+		<Condition Valid="BUTTON_EMISSIVE">
+			<True>
+				<UseTemplate Name="ASOBO_LIGHTING_Cabin_Emissive_Template"/>
+			</True>
+		</Condition>
+		<Condition Check="INIT">
+			<Update Once="True">#INIT#</Update>
+		</Condition>
+	</Template>
 
     <Template Name="WT_ELECTRICAL_Switch_Circuit_Template">
         <DefaultTemplateParameters>
