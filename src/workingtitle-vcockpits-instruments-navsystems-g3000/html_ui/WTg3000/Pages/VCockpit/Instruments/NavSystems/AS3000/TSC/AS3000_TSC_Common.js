@@ -97,6 +97,8 @@ class WT_G3x5_TSCPage extends WT_G3x5_TSCElementContainer {
 }
 
 class AS3000_TSC extends NavSystemTouch {
+    get manageFlightPlan() { return false; }
+
     constructor() {
         super();
 

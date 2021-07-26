@@ -19,6 +19,8 @@ class WT_G3x5_MFD extends NavSystem {
         return undefined;
     }
 
+    get manageFlightPlan() { return false; }
+
     /**
      * @readonly
      * @type {WT_AirplaneAirspeedSensor}
