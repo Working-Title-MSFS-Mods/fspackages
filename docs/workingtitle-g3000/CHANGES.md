@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.7.4
+**Fixes**
+- \[Compatibility\] Now compatible with game patch 1.18.13.0 (Sim Update 5).
+
 ### v0.7.3
 **Changed Features**
 - \[FPLN\] Enabled the ability to zoom and scroll the Flight Plan and Procedure Preview panes (uses the same controls as zooming and scrolling the navigation map).

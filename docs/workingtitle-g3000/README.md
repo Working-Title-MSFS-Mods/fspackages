@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.7.3
+### Latest version: v0.7.4
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.7.3.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.4.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -29,17 +29,9 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
-### Release Highlights for v0.7.3
+### Release Highlights for v0.7.4
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Added the Enroute Options menu to the GTC Flight Plan page, which allows you to add waypoints and airways directly to the beginning of the Enroute segment.
-- Enabled the ability to zoom and scroll the Flight Plan and Procedure Preview panes.
-
-**Fixes**
-- \[FPLN\] VNAV indications will no longer display "NaN" for vertical deviation when the current VNAV leg is flat.
-- \[MFD\] The Navigation Data Bar BRG field now correctly displays the bearing to the active waypoint instead of the airplane's heading.
-- \[GTC\] Fixed behavior of Back button in the G3000 Transponder page.
-- \[NavMap\] The range compass now displays "360" instead of "000" for north heading.
-- \[Charts\] Fixed a freeze that could occur when attempting to display certain Navigraph charts with malformed georeferencing data.
+- Now compatible with game patch 1.18.13.0 (Sim Update 5).
 
 ### Known Issues
 - \[FPLN\] There is currently a bug with the sim's built-in flight plan management system which prevents waypoints from being properly added to the flight plan while an approach is loaded. As a result, inserting waypoints or airways into the Enroute segment of the active flight plan with an approach loaded will desynchronize the FMS flight plan from the sim's flight plan and lead to unexpected behavior. As a workaround, enter waypoints _before_ loading an approach. If you need to enter waypoints after an approach has been loaded, remove the approach, make the necessary edits, then reload the approach. Lastly, if the FMS active flight plan becomes desynchronized, you can fix it by deleting the active flight plan via the Flight Plan Options menu.
