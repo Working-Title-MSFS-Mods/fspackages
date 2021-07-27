@@ -532,6 +532,7 @@ class XMLColumnGauge extends HTMLElement {
                 diffAndSetAttribute(bar, "height", barHeight);
                 diffAndSetAttribute(bar, "x", horizontalMargin + c * (columnWidth + horizontalSpacing));
                 diffAndSetAttribute(bar, "y", topMargin + i * (barHeight + verticalSpacing));
+                diffAndSetAttribute(bar, "visibility", "hidden");
                 g.appendChild(bar);
                 bars.push(bar);
             }
