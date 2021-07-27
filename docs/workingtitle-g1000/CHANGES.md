@@ -1,3 +1,6 @@
+# changes on 0.4.0
+* Add extended engine pages to the stock SU5 G1000.  Everything else is as stock.
+
 # changes on 0.3.7
 * Fixed bug that could cause display issues in the same area as live traffic.
 

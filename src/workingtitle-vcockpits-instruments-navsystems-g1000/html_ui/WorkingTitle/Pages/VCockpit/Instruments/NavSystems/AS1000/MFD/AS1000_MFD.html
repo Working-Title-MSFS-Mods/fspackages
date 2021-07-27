@@ -12,7 +12,8 @@
                     </div>
                     <div id="RightInfos" state="Map">
                         <div id="Map">
-                            <map-instrument id="MapInstrument" bing-id="MFD" config-path="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" hide-flightplan-if-bushtrip="true"></map-instrument>
+                            <map-instrument overdrawFactor="1.42" id="MapInstrument" bing-id="MFD" config-path="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/" hide-flightplan-if-bushtrip="true"></map-instrument>
+                            <glasscockpit-fuel-range-circle id="FuelRange"></glasscockpit-fuel-range-circle>
                             <glasscockpit-wind-data id="WindData"></glasscockpit-wind-data>
                         </div>
 
@@ -452,6 +453,34 @@
                         </div>
                     </div>
                 </div>
+                <div id="MapSetup" class="PopupWindow"  state="Inactive">
+                    <div class="content">
+                        <div class="title">MAP SETUP</div>
+                        <div class="topPart">
+                            <div class="subTitle">GROUP</div>
+                            <div class="elements">
+                                <div class="element">Map</div>
+                            </div>
+                        </div>
+                        <div class="optionTitles">
+                            <div class="optiontitle">ORIENTATION</div>
+                            <div class="optiontitle">FUEL RNG (RSV)</div>
+                        </div>
+                        <div class="optionValues">
+                            <div class="optionValue Selectable" id="MapSetup_Orientation">North Up</div>
+                            <div class="optionValue"><div class="Selectable" id="MapSetup_FuelRngOnOff">Off</div><div class="Selectable" id="MapSetup_FuelRngReserve">00:45</div></div>
+                        </div>
+                    </div>
+                    <div class="popupMenu" id="MapSetup_OrientationMenu" state="Inactive">
+                        <div class="menuElem Selectable" id="MapOrientation_North">North up</div>
+                        <div class="menuElem Selectable" id="MapOrientation_Track">Track up</div>
+                        <div class="menuElem Selectable" id="MapOrientation_DTK">DTK up</div>
+                        <div class="menuElem Selectable" id="MapOrientation_HDG">HDG up</div>
+                    </div>
+                    <div class="subText">
+                        Press the FMS CRSR knob to return to base page
+                    </div>
+                </div>
                 <div id="PageSelection" class="PopupWindow" state="Inactive">
                     <div id="Pages"></div>
                     <table id="PageGroupsTable">
@@ -616,7 +645,7 @@
                         <div class="Content">
                             <div class="airportTop">
                                 <div class="Blinking" id="Approach_AirportID">_____</div>
-                                <img id="Approach_AirportLogo"/>
+                                <img id="Approach_AirportLogo" />
                                 <div id="Approach_AirportType">UNKNOWN</div>
                             </div>
                             <div class="Blinking" id="Approach_AirportName">____________</div>
@@ -693,7 +722,7 @@
                         <div class="Content">
                             <div class="airportTop">
                                 <div class="Blinking" id="Arrival_AirportID">_____</div>
-                                <img id="Arrival_AirportLogo"/>
+                                <img id="Arrival_AirportLogo" />
                                 <div id="Arrival_AirportType">UNKNOWN</div>
                             </div>
                             <div class="Blinking" id="Arrival_AirportName">____________</div>
@@ -768,7 +797,7 @@
                         <div class="Content">
                             <div class="airportTop">
                                 <div class="Blinking" id="Departure_AirportID">_____</div>
-                                <img id="Departure_AirportLogo"/>
+                                <img id="Departure_AirportLogo" />
                                 <div id="Departure_AirportType">UNKNOWN</div>
                             </div>
                             <div class="Blinking" id="Departure_AirportName">____________</div>
@@ -841,6 +870,10 @@
 
             <div id="NavBox">
                 <div id="Left">
+                    <div id="NavVolumePopup" state="Inactive">
+                        <div id="NavVolumeLabel">VOLUME</div>
+                        <div id="NavVolumeValue">100%</div>
+                    </div>
                     <div id="Nav1">
                         <div>NAV1</div>
                         <div class="Selectable" id="Nav1_StdBy">--</div>
@@ -872,6 +905,10 @@
                 </div>
 
                 <div id="Right">
+                    <div id="ComVolumePopup" state="Inactive">
+                        <div id="ComVolumeLabel">VOLUME</div>
+                        <div id="ComVolumeValue">100%</div>
+                    </div>
                     <div id="Com1">
                         <div id="Com1_Active">--</div>
                         <div id="Com1_DoubleArrow"><img src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/DoubleArrow.svg" /></div>
@@ -906,14 +943,16 @@
                 <div id="ContextualMenuContent">
                     <div id="ContextualMenuTitle">EXAMPLE MENU</div>
                     <div id="ContextualMenuMainArea">
-                        <div id="subTitle">OPTIONS</div>
-                        <div id="ContextualMenuElements">
-                            <div class="ContextualMenuElement" state="Inactive">Inactive?</div>
-                            <div class="ContextualMenuElement" state="Selected">Selected?</div>
-                            <div class="ContextualMenuElement" state="Unselected">Unselected?</div>
-                        </div>
-                        <div id="SliderMenu" state="Active">
-                            <div id="SliderMenuCursor"></div>
+                        <div id="SubTitle">OPTIONS</div>
+                        <div id="List">
+                            <div id="ContextualMenuElements">
+                                <div class="ContextualMenuElement" state="Inactive">Inactive?</div>
+                                <div class="ContextualMenuElement" state="Selected">Selected?</div>
+                                <div class="ContextualMenuElement" state="Unselected">Unselected?</div>
+                            </div>
+                            <div id="SliderMenu" state="Active">
+                                <div id="SliderMenuCursor"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -925,23 +964,28 @@
     </div>
 </script>
 
-<link rel="stylesheet" href="AS1000_MFD.css" />
-<link rel="stylesheet" href="AS1000_MFD_WT.css" />
+<link rel="stylesheet" href="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/AS1000_MFD.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
-<script type="text/html" import-script="/JS/dataStorage.js"></script>
 
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NumberUnit.js"></script>
 
-<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
+<script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/WindDataDisplay/WindDataDisplay.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/WindDataDisplay/WindDataDisplay.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/FuelRangeCircle/FuelRangeCircle.js"></script>
+<script type="text/html"
+    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SearchField.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SearchField.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/CircularGauge.js"></script>
@@ -953,15 +997,17 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/ElevTrimGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/RudderTrimGauge.js"></script>
 
-<script type="text/html" import-template="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/EngineDisplay.html"></script>
-
+<script type="text/html"
+    import-template="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/EngineDisplay.html"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
+<script type="text/html"
+    import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/FileHandler.js"></script>
 
-
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/BaseAS1000.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Engine.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/AS1000_MFD.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/BaseAS1000.js"></script>
+<script type="text/html"
+    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/Engine.js"></script>
+<script type="text/html"
+    import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/AS1000_MFD.js"></script>
