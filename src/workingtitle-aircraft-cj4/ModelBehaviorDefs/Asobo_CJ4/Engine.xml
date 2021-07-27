@@ -53,6 +53,10 @@
 	<Template Name="ASOBO_ENGINE_Push_Starter_Template">
 		<UseTemplate Name="ASOBO_ENGINE_Starter_Template">
 			<INTERACTION_TYPE>Push</INTERACTION_TYPE>
+			<WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+			<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+			<WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+			<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
 		</UseTemplate>
 	</Template>
 	<!-- Ignition -->
@@ -179,7 +183,12 @@
 		<Parameters Type="Default">
 			<ID>1</ID>
 		</Parameters>
-		<UseTemplate Name="ASOBO_ENGINE_Push_Starter_Disengage_SubTemplate"/>
+		<UseTemplate Name="ASOBO_ENGINE_Push_Starter_Disengage_SubTemplate">
+			<WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+			<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+			<WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+			<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+		</UseTemplate>
 	</Template>
 	<Template Name="ASOBO_ENGINE_Lever_CowlFlaps_Template">
 		<Parameters Type="Default">
