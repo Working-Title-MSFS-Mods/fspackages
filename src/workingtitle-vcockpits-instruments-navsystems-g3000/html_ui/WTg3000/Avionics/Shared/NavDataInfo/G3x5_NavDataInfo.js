@@ -135,14 +135,16 @@ class WT_G3x5_NavDataInfoTime extends WT_G3x5_NavDataInfo {
     }
 }
 
+/**
+ * @abstract
+ */
 class WT_G3x5_NavDataInfoViewFormatter {
     /**
-     * Gets the display HTML string of a nav data info's current value.
+     * Formats a nav data info's current value for a nav data info view.
      * @param {WT_G3x5_NavDataInfo} navDataInfo - a nav data info object.
-     * @returns {String} the HTML string of the nav data info's current value.
+     * @param {WT_G3x5_NavDataInfoView} view - a nav data info view.
      */
-    getDisplayHTML(navDataInfo) {
-        return "";
+    format(navDataInfo, view) {
     }
 }
 
@@ -180,23 +182,23 @@ class WT_G3x5_NavDataInfoViewNumberFormatter extends WT_G3x5_NavDataInfoViewForm
     }
 
     /**
-     * Gets the display HTML string of a nav data info's current value.
-     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
-     * @returns {String} the HTML string of the nav data info's current value.
+     * Formats a nav data info's current value for a nav data info view.
+     * @param {WT_G3x5_NavDataInfo} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoView} view - a nav data info view.
      */
-    getDisplayHTML(navDataInfo) {
-        return `<span>${this._getNumberText(navDataInfo)}</span><span class="${WT_G3x5_NavDataInfoView.UNIT_CLASS}">${this._getUnitText(navDataInfo)}</span>`;
+    format(navDataInfo, view) {
+        view.setNumberUnitValue(this._getNumberText(navDataInfo), this._getUnitText(navDataInfo));
     }
 }
 
 class WT_G3x5_NavDataInfoViewDegreeFormatter extends WT_G3x5_NavDataInfoViewNumberFormatter {
     /**
-     * Gets the display HTML string of a nav data info's current value.
-     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
-     * @returns {String} the HTML string of the nav data info's current value.
+     * Formats a nav data info's current value for a nav data info view.
+     * @param {WT_G3x5_NavDataInfo} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoView} view - a nav data info view.
      */
-    getDisplayHTML(navDataInfo) {
-        return `${this._getNumberText(navDataInfo)}${this._getUnitText(navDataInfo)}`;
+    format(navDataInfo, view) {
+        view.setNumberUnitValue(`${this._getNumberText(navDataInfo)}${this._getUnitText(navDataInfo)}`, "");
     }
 }
 
@@ -211,12 +213,14 @@ class WT_G3x5_NavDataInfoViewDurationFormatter extends WT_G3x5_NavDataInfoViewNu
     }
 }
 
-class WT_G3x5_NavDataInfoViewTimeFormatter {
+class WT_G3x5_NavDataInfoViewTimeFormatter extends WT_G3x5_NavDataInfoViewFormatter {
     /**
      * @param {String} [defaultText]
      * @param {{isDefault(value:WT_Time):Boolean}} [defaultChecker]
      */
     constructor(defaultText = "__:__", defaultChecker = {isDefault: time => !time.isValid()}) {
+        super();
+
         this._defaultText = defaultText;
         this._defaultChecker = defaultChecker;
 
@@ -247,13 +251,13 @@ class WT_G3x5_NavDataInfoViewTimeFormatter {
     }
 
     /**
-     * Gets the display HTML string of a nav data info's current value.
-     * @param {WT_G3x5_NavDataInfoTime} navDataInfo - a nav data info object.
-     * @returns {String} the HTML string of the nav data info's current value.
+     * Formats a nav data info's current value for a nav data info view.
+     * @param {WT_G3x5_NavDataInfo} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoView} view - a nav data info view.
      */
-    getDisplayHTML(navDataInfo) {
+    format(navDataInfo, view) {
         let time = navDataInfo.getValue();
-        return this._defaultChecker.isDefault(time) ? this._defaultText : this._getFormattedTime(navDataInfo, time);
+        view.setTextValue(this._defaultChecker.isDefault(time) ? this._defaultText : this._getFormattedTime(navDataInfo, time));
     }
 }
 WT_G3x5_NavDataInfoViewTimeFormatter.FORMAT_STRINGS = [
@@ -280,19 +284,47 @@ class WT_G3x5_NavDataInfoView extends HTMLElement {
         this._isInit = false;
     }
 
-    _defineChildren() {
-        this._title = new WT_CachedElement(this.shadowRoot.querySelector(`#title`), {cacheAttributes: false});
-        this._value = new WT_CachedElement(this.shadowRoot.querySelector(`#value`), {cacheAttributes: false});
+    async _defineChildren() {
+        this._title = new WT_CachedElement(this.shadowRoot.querySelector("#title"), {cacheAttributes: false});
+        this._numberUnitValue = await WT_CustomElementSelector.select(this.shadowRoot, "#numberunitvalue", WT_NumberUnitView);
+        this._textValue = new WT_CachedElement(this.shadowRoot.querySelector("#textvalue"), {cacheAttributes: false});
     }
 
-    connectedCallback() {
-        this._defineChildren();
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
         this._isInit = true;
     }
 
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
     _clear() {
-        this._title.innerHTML = "";
-        this._value.innerHTML = "";
+        this._title.textContent = "";
+        this._numberUnitValue.setNumberText("");
+        this._numberUnitValue.setUnitText("");
+        this._textValue.textContent = "";
+    }
+
+    /**
+     * Sets the number unit value of this view. This will clear this view's text value.
+     * @param {String} numberText - the number component of the new value.
+     * @param {String} unitText - the unit component of the new value.
+     */
+    setNumberUnitValue(numberText, unitText) {
+        this._numberUnitValue.setNumberText(numberText);
+        this._numberUnitValue.setUnitText(unitText);
+        this._textValue.textContent = "";
+    }
+
+    /**
+     * Sets the text value of this view. This will clear this view's number unit value.
+     * @param {String} text - the new text value.
+     */
+    setTextValue(text) {
+        this._textValue.textContent = text;
+        this._numberUnitValue.setNumberText("");
+        this._numberUnitValue.setUnitText("");
     }
 
     /**
@@ -307,7 +339,7 @@ class WT_G3x5_NavDataInfoView extends HTMLElement {
 
         if (navDataInfo) {
             this._title.innerHTML = navDataInfo.shortName;
-            this._value.innerHTML = formatter.getDisplayHTML(navDataInfo);
+            formatter.format(navDataInfo, this);
         } else {
             this._clear();
         }
@@ -338,17 +370,18 @@ WT_G3x5_NavDataInfoView.TEMPLATE.innerHTML = `
                 font-size: var(--navdatainfo-unit-font-size, 0.75em);
                 color: var(--navdatainfo-title-color, white);
             }
-            #value {
+            #numberunitvalue {
+                color: var(--navdatainfo-value-color, white);
+                --numberunit-unit-font-size: var(--navdatainfo-unit-font-size, 0.75em);
+            }
+            #textvalue {
                 color: var(--navdatainfo-value-color, white);
             }
-                .${WT_G3x5_NavDataInfoView.UNIT_CLASS} {
-                    font-size: var(--navdatainfo-unit-font-size, 0.75em);
-                }
     </style>
     <div id="wrapper">
         <div id="title"></div>
-        <div id="value">
-        </div>
+        <wt-numberunit id="numberunitvalue"></wt-numberunit>
+        <div id="textvalue"></div>
     </div>
 `;
 
