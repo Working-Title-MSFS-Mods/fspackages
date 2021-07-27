@@ -283,6 +283,10 @@
             </LEFT_SINGLE_CODE>
             <EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:1, bool)</EMISSIVE_INDICATOR_CODE>
             <TOOLTIPID>%((A:COM TRANSMIT:1, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_OFF%{end}</TOOLTIPID>
+            <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+            <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
         </UseTemplate>
         <UseTemplate Name="ASOBO_NAVCOM_Base_Template">
             <ANIM_NAME>AudioPanel_Push_COM_2_#ID#</ANIM_NAME>
@@ -295,6 +299,10 @@
             </LEFT_SINGLE_CODE>
             <EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:2, bool)</EMISSIVE_INDICATOR_CODE>
             <TOOLTIPID>%((A:COM TRANSMIT:2, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_OFF%{end}</TOOLTIPID>
+            <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+            <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
         </UseTemplate>
     </Template>
 </ModelBehaviors>
