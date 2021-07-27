@@ -772,13 +772,13 @@ class AS3X_Touch_Popup extends NavSystemElement {
         this.root = root;
     }
     onEnter() {
-        this.root.setAttribute("state", "Active");
+        diffAndSetAttribute(this.root, "state", "Active");
     }
     onUpdate() {
         super.onUpdate();
     }
     onExit() {
-        this.root.setAttribute("state", "Inactive");
+        diffAndSetAttribute(this.root, "state", "Inactive");
     }
     onEvent(_event) {
     }
@@ -841,6 +841,7 @@ class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
 }
 class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
     init(root) {
+        super.init(root);
         this.buttons = [];
         this.menuElements = root.getElementsByClassName("menuElements")[0];
     }

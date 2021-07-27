@@ -1,3 +1,6 @@
+# Changes in 0.1.0-dev10
+* Fix bug that caused menu button to not open main MFD menu.
+
 # Changes in 0.1.0-dev9
 * Compatibility with SU5.
 
