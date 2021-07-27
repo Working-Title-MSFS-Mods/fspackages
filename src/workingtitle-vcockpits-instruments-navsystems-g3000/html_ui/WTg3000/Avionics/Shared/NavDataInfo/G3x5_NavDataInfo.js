@@ -239,15 +239,40 @@ class WT_G3x5_NavDataInfoViewTimeFormatter extends WT_G3x5_NavDataInfoViewFormat
     /**
      *
      * @param {WT_G3x5_NavDataInfoTime} navDataInfo
-     * @param {WT_TimeObject} time
      * @returns {String}
      */
-    _getFormattedTime(navDataInfo, time) {
+    _getFormattedTime(navDataInfo) {
+        let time = navDataInfo.getValue();
         let format = navDataInfo.getFormat();
         if (format !== WT_G3x5_TimeFormatSetting.Mode.UTC) {
             time = this._offsetTime.set(time).add(navDataInfo.getLocalOffset());
         }
         return time.format(WT_Timezone.UTC, this._getFormatString(format));
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_NavDataInfoTime} navDataInfo
+     * @returns {String}
+     */
+    _getFormattedSuffix(navDataInfo) {
+        let format = navDataInfo.getFormat();
+        switch (format) {
+            case WT_G3x5_TimeFormatSetting.Mode.UTC:
+                return "UTC";
+            case WT_G3x5_TimeFormatSetting.Mode.LOCAL_24_HOUR:
+                return "LCL";
+            case WT_G3x5_TimeFormatSetting.Mode.LOCAL_12_HOUR:
+                let time = navDataInfo.getValue();
+                if (this._defaultChecker.isDefault(time)) {
+                    return "LCL";
+                } else {
+                    time = this._offsetTime.set(time).add(navDataInfo.getLocalOffset());
+                    return time.format(WT_Timezone.UTC, "{ampm}").toUpperCase();
+                }
+            default:
+                return "";
+        }
     }
 
     /**
@@ -257,13 +282,15 @@ class WT_G3x5_NavDataInfoViewTimeFormatter extends WT_G3x5_NavDataInfoViewFormat
      */
     format(navDataInfo, view) {
         let time = navDataInfo.getValue();
-        view.setTextValue(this._defaultChecker.isDefault(time) ? this._defaultText : this._getFormattedTime(navDataInfo, time));
+        let numberText = this._defaultChecker.isDefault(time) ? this._defaultText : this._getFormattedTime(navDataInfo);
+        let unitText = this._getFormattedSuffix(navDataInfo);
+        view.setNumberUnitValue(numberText, unitText);
     }
 }
 WT_G3x5_NavDataInfoViewTimeFormatter.FORMAT_STRINGS = [
-    `{hour-pad}:{minute-pad}<span class="unit" style="text-transform: uppercase;">{ampm}</span>`,
+    `{hour-pad}:{minute-pad}`,
     `{hour-24-pad}:{minute-pad}`,
-    `{hour-24-pad}:{minute-pad}<span class="unit">UTC</span>`
+    `{hour-24-pad}:{minute-pad}`
 ];
 
 class WT_G3x5_NavDataInfoViewRecycler extends WT_HTMLElementRecycler {
