@@ -1559,7 +1559,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
         else {
             //selectedAltitude = Math.max(0, Simplane.getAutoPilotAltitudeLockValue());
-            selectedAltitude = Math.min(Math.max(0, Simplane.getAutoPilotSelectedAltitudeLockValue()), 45000);
+            selectedAltitude = Math.min(Math.max(0, SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet")), 45000);
         }
         this.updateGraduationScrolling(indicatedAltitude);
         this.updateCursorScrolling(indicatedAltitude);

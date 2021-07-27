@@ -2248,9 +2248,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     let isSelected = Simplane.getAutoPilotAirspeedSelected();
                     if (isSelected) {
                         if (Simplane.getAutoPilotMachModeActive())
-                            blueAirspeed = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", Simplane.getAutoPilotMachHoldValue());
+                            blueAirspeed = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"));
                         else
-                            blueAirspeed = Simplane.getAutoPilotAirspeedHoldValue();
+                            // blueAirspeed = Simplane.getAutoPilotAirspeedHoldValue();
+                            blueAirspeed = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
                     }
                 }
                 if (blueAirspeed > this.graduationMinValue) {
@@ -2335,7 +2336,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     let selectedAirspeed = 0;
                     var machMode = Simplane.getAutoPilotMachModeActive();
                     if (machMode) {
-                        let machAirspeed = Simplane.getAutoPilotMachHoldValue();
+                        let machAirspeed = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
                         if (machAirspeed < 1.0) {
                             var fixedMach = machAirspeed.toFixed(2);
                             this.targetSpeedSVG.textContent = "M" + fixedMach.slice(1);
@@ -2346,7 +2347,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                         selectedAirspeed = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", machAirspeed);
                     }
                     else {
-                        selectedAirspeed = Simplane.getAutoPilotAirspeedHoldValue();
+                        selectedAirspeed = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
                         this.targetSpeedSVG.textContent = Utils.leadingZeros(Math.round(selectedAirspeed), 3);
                     }
                     if (selectedAirspeed >= this.graduationMinValue) {

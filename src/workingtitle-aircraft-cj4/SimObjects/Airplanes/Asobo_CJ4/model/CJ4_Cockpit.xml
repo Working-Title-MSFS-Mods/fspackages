@@ -102,7 +102,7 @@
 
 		<!-- AUDIO ################################-->
 		<Component ID="AUDIO">
-			<DefaultTemplateParameters>
+			<Parameters Type="Default">
 				<!-- <USE_ON_OFF_PUSH_BUTTON_FOR_COM>True</USE_ON_OFF_PUSH_BUTTON_FOR_COM> -->
 				<COM_COUNT>2</COM_COUNT>
 				<NAV_COUNT>2</NAV_COUNT>
@@ -114,14 +114,16 @@
 				<USE_INTERCOM>False</USE_INTERCOM>
 				<SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
 				<USE_NAV_RECEIVE>False</USE_NAV_RECEIVE>
-			</DefaultTemplateParameters>
+			</Parameters>
 			<UseTemplate Name="ASOBO_AudioPanel_Composite_Template">
-				<CONTAINER_ID>1</CONTAINER_ID>
+				<SUFFIX_ID>_1</SUFFIX_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_AudioPanel_Composite_Template">
-				<CONTAINER_ID>2</CONTAINER_ID>
+				<SUFFIX_ID>_2</SUFFIX_ID>
 			</UseTemplate>
+		</Component>
 
+		<Component ID="WT_AUDIO">
 			<UseTemplate Name="WT_AUDIO_Button_Template">
 				<ID>1</ID>
 			</UseTemplate>

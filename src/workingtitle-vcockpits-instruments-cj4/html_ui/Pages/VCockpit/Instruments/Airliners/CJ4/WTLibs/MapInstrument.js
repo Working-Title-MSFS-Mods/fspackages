@@ -625,7 +625,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.scrollDisp.x = 0;
             this.scrollDisp.y = 0;
             if (this.bingMap) {
-                const rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
+                const rangeTarget = this.getDisplayRange()* this.overdrawFactor; // * 1000 ; // Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
                 this.navMap.setRange(rangeTarget);
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather()) {
