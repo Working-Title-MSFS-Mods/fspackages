@@ -1089,7 +1089,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._state._isDesynced = this.source === WT_G3x5_TSCFlightPlan.Source.ACTIVE && this.instrument.flightPlanManagerWT.isActiveDesynced;
 
         if (this._forceShowDesyncPopUp || (!wasDesynced && this._state._isDesynced)) {
-            this._openConfirmationTextPopUp("Warning: Active flight plan is desynchronized.", () => {});
+            this._openConfirmationTextPopUp("Warning: Active flight plan is desynchronized. Please delete the active plan to resolve.", () => {});
             this._forceShowDesyncPopUp = false;
         }
     }
