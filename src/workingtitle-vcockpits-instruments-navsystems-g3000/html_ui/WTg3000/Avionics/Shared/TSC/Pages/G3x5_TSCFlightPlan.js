@@ -18,6 +18,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
          */
         this._displayedFlightPlanVNAV = null;
         this._selectedRow = null;
+        this._forceShowDesyncPopUp = false;
         this._isInit = false;
 
         this._initState();
@@ -33,6 +34,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             _airplaneHeadingTrue: 0,
             _isDirectToActive: false,
             _activeLeg: null,
+            _isDesynced: false,
 
             get settings() {
                 return this._settings;
@@ -48,6 +50,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
             get activeLeg() {
                 return this._activeLeg;
+            },
+
+            get isDesynced() {
+                return this._isDesynced;
             }
         };
     }
@@ -1061,16 +1067,31 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
+    _checkDesync() {
+        if (this.source === WT_G3x5_TSCFlightPlan.Source.ACTIVE && this.instrument.flightPlanManagerWT.isActiveDesynced) {
+            this._forceShowDesyncPopUp = true;
+        }
+    }
+
     onEnter() {
         this._autoSetActiveSource();
         this.htmlElement.open();
         this.updateFlightPlanPreview();
+        this._checkDesync();
     }
 
     _updateState() {
         this._state._airplaneHeadingTrue = this.instrument.airplane.navigation.headingTrue();
         this._state._isDirectToActive = this.instrument.flightPlanManagerWT.directTo.isActive();
         this._state._activeLeg = this._state.isDirectToActive ? this.instrument.flightPlanManagerWT.getDirectToLeg(true) : this.instrument.flightPlanManagerWT.getActiveLeg(true);
+
+        let wasDesynced = this._state.isDesynced;
+        this._state._isDesynced = this.source === WT_G3x5_TSCFlightPlan.Source.ACTIVE && this.instrument.flightPlanManagerWT.isActiveDesynced;
+
+        if (this._forceShowDesyncPopUp || (!wasDesynced && this._state._isDesynced)) {
+            this._openConfirmationTextPopUp("Warning: Active flight plan is desynchronized.", () => {});
+            this._forceShowDesyncPopUp = false;
+        }
     }
 
     _updateSelectedRow() {
@@ -1122,6 +1143,7 @@ WT_G3x5_TSCFlightPlan.Source = {
  * @property {readonly Number} airplaneHeadingTrue
  * @property {readonly Boolean} isDirectToActive
  * @property {readonly WT_FlightPlanLeg} activeLeg
+ * @property {readonly Boolean} isDesynced
  */
 
 class WT_G3x5_TSCFlightPlanUnitsModel extends WT_G3x5_UnitsSettingModelAdapter {
@@ -2155,6 +2177,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
      *
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
+    _updateDesync(state) {
+        this._wrapper.setAttribute("desync", `${state.isDesynced}`);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
     _updateFlightPlan(state) {
         if (this._needRedrawFlightPlan) {
             this._redrawFlightPlan(state.isDirectToActive, state.activeLeg);
@@ -2207,6 +2237,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     }
 
     _doUpdate(state) {
+        this._updateDesync(state);
         this._updateFlightPlan(state);
         this._updateUnits();
         this._updateDynamicDataFields();
@@ -2381,6 +2412,9 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                             #nametitle {
                                 justify-self: start;
                                 margin: 0 0.2em;
+                            }
+                            #wrapper[desync="true"] #nametitle {
+                                color: var(--wt-g3x5-amber);
                             }
                         #rows {
                             position: relative;
