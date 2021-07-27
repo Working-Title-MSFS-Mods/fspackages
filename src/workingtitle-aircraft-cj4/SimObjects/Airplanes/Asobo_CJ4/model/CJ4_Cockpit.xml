@@ -578,16 +578,22 @@
 			</DefaultTemplateParameters>
 			<UseTemplate Name="ASOBO_DEICE_Push_Pitot_Template">
 				<NUM_PITOTS>2</NUM_PITOTS>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Engine_Template">
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_ANTI_ICE_ENGINE_ACTION_SET</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_LEFT)</TT_DESCRIPTION_INDEX>
 				<ID>1</ID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>					
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Engine_Template">
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_ANTI_ICE_ENGINE_ACTION_SET</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_RIGHT)</TT_DESCRIPTION_INDEX>
 				<ID>2</ID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Airframe_Template">
 				<ID>1</ID>
@@ -596,6 +602,8 @@
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_SWITCH_AIRFRAME_ACTION_SET_DUO</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_LEFT)</TT_DESCRIPTION_INDEX>
 				<NUM_DEICE>2</NUM_DEICE>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Airframe_Template">
 				<ID>2</ID>
@@ -604,6 +612,8 @@
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_SWITCH_AIRFRAME_ACTION_SET_DUO</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_RIGHT)</TT_DESCRIPTION_INDEX>				
 				<NUM_DEICE>2</NUM_DEICE>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Update">
 				<UPDATE_ONCE>True</UPDATE_ONCE>
