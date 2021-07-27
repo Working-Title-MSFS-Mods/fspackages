@@ -625,7 +625,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.scrollDisp.x = 0;
             this.scrollDisp.y = 0;
             if (this.bingMap) {
-                const rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
+                const rangeTarget = this.getDisplayRange()* this.overdrawFactor; // * 1000 ; // Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
                 this.navMap.setRange(rangeTarget);
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather()) {
@@ -1113,10 +1113,10 @@ class MapInstrument extends ISvgMapRootElement {
     refreshDisplay() {
         if (this.isDisplayingWeatherRadar() && this.weatherHideGPS) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "block");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "none");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);
@@ -1125,10 +1125,10 @@ class MapInstrument extends ISvgMapRootElement {
         }
         if (this.quality == Quality.ultra || this.quality == Quality.high) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "block");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "block";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "block");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(true);
@@ -1136,10 +1136,10 @@ class MapInstrument extends ISvgMapRootElement {
             this.bingMap.setVisible(this.showBingMap);
         } else if (this.quality == Quality.medium) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "block");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "none");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);
@@ -1147,10 +1147,10 @@ class MapInstrument extends ISvgMapRootElement {
             this.bingMap.setVisible(this.showBingMap);
         } else {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "none";
+                diffAndSetStyle(this.navMap.svgHtmlElement, StyleProperty.display, "none");
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                diffAndSetStyle(this.lineCanvas, StyleProperty.display, "none");
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);

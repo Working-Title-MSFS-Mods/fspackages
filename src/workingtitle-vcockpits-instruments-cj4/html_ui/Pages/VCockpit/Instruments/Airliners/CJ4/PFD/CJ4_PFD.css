@@ -1,5 +1,17 @@
 ﻿:root {
     --bodyHeightScale: 1;
+    --magenta:#FF73FF;
+    --cyan: #33FFFF;
+    --green: #5AF25A;
+    --lighter-red: #FF3333;
+    --dark-orange: #FFA333;
+    --horizon-blue: #1D72FC;
+    --horizon-brown: #B97D5F;
+    --light-grey: #d3d2cf;
+    --dark-grey: #52504d;
+    --true-yellow: #ffff00;
+    --true-red: #ff0000;
+    --true-orange: #ffa500;
 }
 
 @keyframes TemporaryShow {
@@ -55,8 +67,8 @@ html body {
 }
 
 .cyan {
-    color: cyan;
-  }
+    color: var(--cyan);
+}
 
 #Electricity {
     width: 100%;
@@ -91,6 +103,13 @@ html body {
 @font-face {
     font-family: "Collins ProLine";
     src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-LightCondensed.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Custom Altimeter Collins ProLine";
+    src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Custom_Altimeter_CollinsProLine-LightCondensed.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
@@ -186,7 +205,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VnavAlt {
     transform: rotateX(0);
     position: absolute;
     font-size: 26px;
-    color: magenta;
+    color: var(--magenta);
     font: "Robot-Bold";
     -webkit-text-stroke: 5px black;
     text-align: center;
@@ -245,7 +264,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
     top: 8px;
     left: 0;
     width: 100%;
-    border-bottom: 3.5px solid #FFE133;
+    border-bottom: 3.5px solid #FFE133; /* one off color */
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #AutopilotBg {
@@ -269,7 +288,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left {
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #apprActiveField {
     position: absolute;
     width: 100%;
-    color: green;
+    color: var(--green);
     font-size: 1.5vh;
     top: 8%;
     left: 8%;
@@ -278,7 +297,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #app
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #lateralActiveField {
     position: absolute;
-    color: green;
+    color: var(--green);
     font-size: 1.5vh;
     top: 8%;
     left: 0%;
@@ -316,7 +335,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center {
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #ap_ydEngageField {
     position: absolute;
     width: 100%;
-    color: green;
+    color: var(--green);
     font-size: 1.5vh;
     top: 8%;
     left: 50%;
@@ -357,11 +376,11 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #f
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow[state=Engaged] path{
-    fill: #11d011;
+    fill: var(--green);
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow[state=Engaged] polyline{
-  stroke: #11d011;
+  stroke: var(--green);
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
@@ -385,7 +404,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField {
     position: absolute;
     width: 62%;
-    color: cyan;
+    color: var(--cyan);
     font-size: 22px;
     top: 8%;
     right: 0;
@@ -403,7 +422,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon #verticalSpeedbug path {
-    fill: cyan;
+    fill: var(--cyan);
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowUp_Icon {
@@ -411,7 +430,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowUp_Icon #verticalDirectionArrowUp {
-    fill: cyan;
+    fill: var(--cyan);
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowDown_Icon {
@@ -419,7 +438,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowDown_Icon #verticalDirectionArrowDown {
-    fill: cyan;
+    fill: var(--cyan);
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField_Icon {
@@ -434,7 +453,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField_Icon #Speedbug path {
     fill: transparent;
-    stroke: cyan;
+    stroke: var(--cyan);
     stroke-width: 2;
     stroke-linecap: round;
 }
@@ -501,22 +520,22 @@ cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations div {
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Warning,
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Warning_Blink {
-    color: red;
+    color: var(--true-red);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Caution,
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations .Caution_Blink {
-    color: yellow;
+    color: var(--true-yellow);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations[state=Blink] .Warning_Blink {
     color: white;
-    background-color: red;
+    background-color: var(--true-red);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos #SystemAnnunciations[state=Blink] .Caution_Blink {
     color: black;
-    background-color: yellow;
+    background-color: var(--true-yellow);
 }
 
 cj4-pfd-element #Mainframe #SystemInfos[page=electrics] #SystemElectrics {
@@ -571,7 +590,7 @@ cj4-pfd-element #Mainframe #NDMap #MapOrientation {
     right: 0%;
     width: 10%;
     height: calc(3 * 1vh * var(--bodyHeightScale));
-    background-color: #1a1d21;
+    background-color: #1a1d21; /* one off color */
     color: white;
 }
 
@@ -588,8 +607,8 @@ cj4-pfd-element #Mainframe #NDMap #MapRange {
     right: 0%;
     width: 7%;
     height: calc(3 * 1vh * var(--bodyHeightScale));
-    background-color: #1a1d21;
-    color: #36c8d2;
+    background-color: #1a1d21; /* one off color */
+    color: #36c8d2; /* one off color */
 }
 
 cj4-pfd-element #Mainframe #NDMap #MapSVG,
@@ -669,7 +688,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Minimums {
     width: 22%;
     height: 8%;
     font-size: 25px;
-    color: cyan;
+    color: var(--cyan);
     position: absolute;
 }
 
@@ -727,29 +746,29 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text {
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Value {
     font-size: 18px;
-    fill: green;
+    fill: var(--green);
     text-anchor: end;
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Units {
     font-size: 18px;
-    fill: green;
+    fill: var(--green);
     text-anchor: end;
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Small {
     font-size: 18px;
-    fill: green;
+    fill: var(--green);
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Large {
     font-size: 26px;
-    fill: green;
+    fill: var(--green);
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     font-size: 18px;
-    fill: magenta;
+    fill: var(--magenta);
     text-anchor: end;
 }
 
@@ -763,8 +782,8 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Unit {
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Left {
-    color: cyan;
-    stroke: cyan;
+    color: var(--cyan);
+    stroke: var(--cyan);
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Right {
@@ -804,7 +823,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TFC text {
     height: 100%;
     font-family: 'Collins ProLine';
     font-size: 18px;
-    fill: cyan;
+    fill: var(--cyan);
     text-anchor: end;
 }
 
@@ -913,7 +932,7 @@ cj4-pfd-element #Mainframe #NavBar #Cabs #Diff {
 }
 
 cj4-pfd-element #Mainframe #NavBar .Modifiable {
-    color: green;
+    color: var(--green) !important;
     margin-left: 8px;
     margin-right: 4px;
 }
@@ -967,13 +986,13 @@ cj4-pfd-element #Mainframe #PopupMenu svg {
 }
 
 #Waypoint {
-    color: magenta;
+    color: var(--magenta);
 }
 
 #Approach,
 #ElapsedTime .Modifiable,
 #Coms div.Modifiable {
-    color: #11d011 !important;
+    color: var(--green) !important;
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox {
@@ -997,14 +1016,14 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Speed {
 
 #currentRefGroup text {
     font-size: 34px;
-    fill: #11d011;
+    fill: var(--green);
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #apprActiveField,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #lateralActiveField,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #ap_ydEngageField,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalActiveField {
-    color: #11d011 !important;
+    color: var(--green) !important;
     font-size: 22px
 }
 
@@ -1050,17 +1069,21 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 } */
 
 #VerticalSpeed #CenterGroup>text {
-    fill: #11d011;
+    fill: var(--green);
     font-size: 26px;
 }
 
-#Airspeed #CenterGroup #CursorGroup text,
+#Airspeed #CenterGroup #CursorGroup text {
+    fill: var(--green)
+}
+
 #Altimeter #CenterGroup #CursorGroup text {
-    fill: #11d011;
+    font-family: "Custom Altimeter Collins ProLine" !important;
+    fill: var(--green);
 }
 
 #Airspeed>text:last-child {
-    fill: cyan;
+    fill: var(--cyan);
     font-size: 30px;
 }
 
@@ -1117,7 +1140,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #Altimeter #MeterUnit{
-    fill: #adadad !important;
+    fill: #adadad !important; /* one off color */
 }
 
 #Altimeter #CenterGroup #graduationGroup>text[font-size="25"] {
@@ -1181,7 +1204,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 .yellow {
-    color: yellow;
+    color: var(--true-yellow);
 }
 
 #NavPreset {
@@ -1193,13 +1216,13 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 .preset-name {
-    color: cyan;
+    color: var(--cyan);
     padding: 4px 0 0 4px;
-    border: 2px solid cyan;
+    border: 2px solid var(--cyan);
 }
 
 .preset-tuning {
-    color: cyan;
+    color: var(--cyan);
 }
 
 #TFC ul {
@@ -1215,7 +1238,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 #TFC .active {
     font-size: 24px;
-    color: cyan;
+    color: var(--cyan);
 }
 
 #Symbols ul {
@@ -1231,12 +1254,12 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 #Symbols .active {
     font-size: 24px;
-    color: cyan;
+    color: var(--cyan);
 }
 
 #Symbols .overlay-wx-line1,
 #Symbols .overlay-wx-line2 {
-    color: cyan;
+    color: var(--cyan);
 }
 
 .bearing-pointer-info {

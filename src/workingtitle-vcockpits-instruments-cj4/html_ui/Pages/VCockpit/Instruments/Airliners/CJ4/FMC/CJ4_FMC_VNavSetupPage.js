@@ -3,7 +3,7 @@ class CJ4_FMC_VNavSetupPage {
         fmc.clearDisplay();
 
         let vnavClimbIas = WTDataStore.get('CJ4_vnavClimbIas', 240);
-        let vnavClimbMach = WTDataStore.get('CJ4_vnavClimbMach', 0.64);
+        let vnavClimbMach = WTDataStore.get('CJ4_vnavClimbMach', 64) / 100;
         let departureSpeedLimit = WTDataStore.get('CJ4_departureSpeedLimit', 250);
         let departureSpeedLimitAltitude = WTDataStore.get('CJ4_departureSpeedLimitAltitude', 10000);
         let departureTransitionAlt = WTDataStore.get('CJ4_departureTransitionAlt', 18000);
@@ -29,7 +29,7 @@ class CJ4_FMC_VNavSetupPage {
             value[0] = parseFloat(value[0]).toPrecision(2);
             value[1] = parseInt(value[1]);
             if (value.length == 2 && value[0] >= 0.4 && value[0] <= 0.77 && value[1] >= 110 && value[1] <= 305) {
-                vnavClimbMach = value[0];
+                vnavClimbMach = value[0] * 100;
                 vnavClimbIas = value[1];
                 WTDataStore.set('CJ4_vnavClimbMach', vnavClimbMach);
                 WTDataStore.set('CJ4_vnavClimbIas', vnavClimbIas);
@@ -45,6 +45,7 @@ class CJ4_FMC_VNavSetupPage {
             let value = fmc.inOut.split("/");
             value[0] = parseInt(value[0]);
             value[1] = parseInt(value[1]);
+  
             if (value.length == 2 && value[0] > 0 && value[0] <= 305 && value[1] >= 0 && value[1] <= 45000) {
                 departureSpeedLimit = value[0];
                 departureSpeedLimitAltitude = value[1];
@@ -115,7 +116,7 @@ class CJ4_FMC_VNavSetupPage {
         fmc.clearDisplay();
 
         let vnavDescentIas = WTDataStore.get('CJ4_vnavDescentIas', 290);
-        let vnavDescentMach = WTDataStore.get('CJ4_vnavDescentMach', 0.74);
+        let vnavDescentMach = WTDataStore.get('CJ4_vnavDescentMach', 74) / 100;
         let vpa = WTDataStore.get('CJ4_vpa', 3);
         let arrivalSpeedLimit = WTDataStore.get('CJ4_arrivalSpeedLimit', 250);
         let arrivalSpeedLimitAltitude = WTDataStore.get('CJ4_arrivalSpeedLimitAltitude', 10000);
@@ -145,7 +146,7 @@ class CJ4_FMC_VNavSetupPage {
             value[0] = parseFloat(value[0]).toPrecision(2);
             value[1] = parseInt(value[1]);
             if (value.length == 2 && value[0] >= 0.4 && value[0] <= 0.77 && value[1] >= 110 && value[1] <= 305) {
-                vnavDescentMach = value[0];
+                vnavDescentMach = value[0] * 100;
                 vnavDescentIas = value[1];
                 WTDataStore.set('CJ4_vnavDescentMach', vnavDescentMach);
                 WTDataStore.set('CJ4_vnavDescentIas', vnavDescentIas);

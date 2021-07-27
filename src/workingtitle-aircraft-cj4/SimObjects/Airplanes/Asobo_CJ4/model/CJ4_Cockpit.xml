@@ -102,7 +102,7 @@
 
 		<!-- AUDIO ################################-->
 		<Component ID="AUDIO">
-			<DefaultTemplateParameters>
+			<Parameters Type="Default">
 				<!-- <USE_ON_OFF_PUSH_BUTTON_FOR_COM>True</USE_ON_OFF_PUSH_BUTTON_FOR_COM> -->
 				<COM_COUNT>2</COM_COUNT>
 				<NAV_COUNT>2</NAV_COUNT>
@@ -114,14 +114,16 @@
 				<USE_INTERCOM>False</USE_INTERCOM>
 				<SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
 				<USE_NAV_RECEIVE>False</USE_NAV_RECEIVE>
-			</DefaultTemplateParameters>
+			</Parameters>
 			<UseTemplate Name="ASOBO_AudioPanel_Composite_Template">
-				<CONTAINER_ID>1</CONTAINER_ID>
+				<SUFFIX_ID>_1</SUFFIX_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_AudioPanel_Composite_Template">
-				<CONTAINER_ID>2</CONTAINER_ID>
+				<SUFFIX_ID>_2</SUFFIX_ID>
 			</UseTemplate>
+		</Component>
 
+		<Component ID="WT_AUDIO">
 			<UseTemplate Name="WT_AUDIO_Button_Template">
 				<ID>1</ID>
 			</UseTemplate>
@@ -191,81 +193,84 @@
 			</UseTemplate>
 			<Component ID="Detached_Control_Panels">
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-					<KEY_PREFIX>Generic_Upr</KEY_PREFIX>
-					<TYPE>CJ4</TYPE>
+					<PANEL_TYPE>UPPER</PANEL_TYPE>
 					<ID>1</ID>
 					<!-- Node_ids UPPER PANEL -->
 					<NODE_ID_NAV>push_pilot_DCP_NAV</NODE_ID_NAV>
 					<NODE_ID_PFD_MENU>push_pilot_DCP_PFDMENU</NODE_ID_PFD_MENU>
-					<NODE_ID_ESC_UPR>push_pilot_DCP_ESC</NODE_ID_ESC_UPR>
+					<NODE_ID_ESC>push_pilot_DCP_ESC</NODE_ID_ESC>
 					<NODE_ID_ET>push_pilot_DCP_ET</NODE_ID_ET>
 					<NODE_ID_FRMT>push_pilot_DCP_FRMT</NODE_ID_FRMT>
-					<NODE_ID_TERR_WX_UPR>push_pilot_DCP_TERRWX</NODE_ID_TERR_WX_UPR>
-					<NODE_ID_TFC_UPR>push_pilot_DCP_TFC</NODE_ID_TFC_UPR>
+					<NODE_ID_TERR_WX>push_pilot_DCP_TERRWX</NODE_ID_TERR_WX>
+					<NODE_ID_TFC>push_pilot_DCP_TFC</NODE_ID_TFC>
 					<NODE_ID_REFS_MENU>push_pilot_DCP_REFSMENU</NODE_ID_REFS_MENU>
-					<NODE_ID_KNOB_MENU_ADV_UPR>MFD_Knob_MenuADV_1</NODE_ID_KNOB_MENU_ADV_UPR>
-					<NODE_ID_KNOB_DATA_UPR>MFD_Knob_Data_1</NODE_ID_KNOB_DATA_UPR>
-					<NODE_ID_KNOB_TILT>MFD_Knob_Tilt_1</NODE_ID_KNOB_TILT>
-					<NODE_ID_KNOB_RANGE>MFD_Knob_Range_1</NODE_ID_KNOB_RANGE>
+					<NODE_ID_MENU_ADV>MFD_Knob_MenuADV_1</NODE_ID_MENU_ADV>
+					<NODE_ID_DATA>MFD_Knob_Data_1</NODE_ID_DATA>
+					<ANIM_NAME_DATA_PUSH>MFD_Knob_Data_Push_1</ANIM_NAME_DATA_PUSH>
+					<NODE_ID_TILT>MFD_Knob_Tilt_1</NODE_ID_TILT>
+					<NODE_ID_RANGE>MFD_Knob_Range_1</NODE_ID_RANGE>
+					<ANIM_NAME_RANGE_PUSH>MFD_Knob_Range_Push_1</ANIM_NAME_RANGE_PUSH>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-					<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
-					<TYPE>CJ4</TYPE>
+					<PANEL_TYPE>LOWER</PANEL_TYPE>
 					<ID>1</ID>
 					<!-- Node_ids LOWER PANEL -->
-					<NODE_ID_ESC>CCP_Push_esc</NODE_ID_ESC>
-					<NODE_ID_LWR_MENU>CCP_Push_lwrMenu</NODE_ID_LWR_MENU>
-					<NODE_ID_TERR_WX>CCP_Push_terrWX</NODE_ID_TERR_WX>
-					<NODE_ID_TFC>CCP_Push_tfc</NODE_ID_TFC>
-					<NODE_ID_SYS>CCP_Push_sys</NODE_ID_SYS>
-					<NODE_ID_ZOOM>CCP_Switch_zoom</NODE_ID_ZOOM>
-					<NODE_ID_CAS_PAGE>CCP_Push_casPage</NODE_ID_CAS_PAGE>
-					<NODE_ID_KNOB_MENU_ADV>CCP_Knob_Outer</NODE_ID_KNOB_MENU_ADV>
-					<NODE_ID_KNOB_DATA>CCP_Knob_Inner</NODE_ID_KNOB_DATA>
-					<NODE_ID_ENG>CCP_Push_eng</NODE_ID_ENG>
-					<NODE_ID_UPR_MENU>CCP_Push_uprMenu</NODE_ID_UPR_MENU>
-					<NODE_ID_RANGE_STICK>CCP_Joystick</NODE_ID_RANGE_STICK>
-					<ANIM_NAME_RANGE_STICK_L_R>CCP_Joystick_L_R</ANIM_NAME_RANGE_STICK_L_R>
-					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
+					<NODE_ID_ESC>CCP_Push_esc_1</NODE_ID_ESC>
+					<NODE_ID_NAV_DATA>CCP_Push_navData_1</NODE_ID_NAV_DATA>
+					<NODE_ID_LWR_MENU>CCP_Push_lwrMenu_1</NODE_ID_LWR_MENU>
+					<NODE_ID_TERR_WX>CCP_Push_terrWX_1</NODE_ID_TERR_WX>
+					<NODE_ID_TFC>CCP_Push_tfc_1</NODE_ID_TFC>
+					<NODE_ID_SYS>CCP_Push_sys_1</NODE_ID_SYS>
+					<NODE_ID_ZOOM>CCP_Switch_zoom_1</NODE_ID_ZOOM>
+					<NODE_ID_CAS_PAGE>CCP_Push_casPage_1</NODE_ID_CAS_PAGE>
+					<NODE_ID_MENU_ADV>CCP_Knob_Outer_1</NODE_ID_MENU_ADV>
+					<NODE_ID_DATA>CCP_Knob_Inner_1</NODE_ID_DATA>
+					<ANIM_NAME_DATA_PUSH>CCP_Knob_Inner_Push_1</ANIM_NAME_DATA_PUSH>
+					<NODE_ID_ENG>CCP_Push_eng_1</NODE_ID_ENG>
+					<NODE_ID_UPR_MENU>CCP_Push_uprMenu_1</NODE_ID_UPR_MENU>
+					<NODE_ID_RANGE_STICK>CCP_Joystick_1</NODE_ID_RANGE_STICK>
+					<ANIM_NAME_RANGE_STICK_L_R>CCP_Joystick_L_R_1</ANIM_NAME_RANGE_STICK_L_R>
+					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP_1</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-					<KEY_PREFIX>Generic_Upr</KEY_PREFIX>
-					<TYPE>CJ4</TYPE>
+					<PANEL_TYPE>UPPER</PANEL_TYPE>
 					<ID>2</ID>
 					<!-- Node_ids UPPER PANEL -->
 					<NODE_ID_NAV>push_coPilot_DCP_NAV</NODE_ID_NAV>
 					<NODE_ID_PFD_MENU>push_coPilot_DCP_PFDMENU</NODE_ID_PFD_MENU>
-					<NODE_ID_ESC_UPR>push_coPilot_DCP_ESC</NODE_ID_ESC_UPR>
+					<NODE_ID_ESC>push_coPilot_DCP_ESC</NODE_ID_ESC>
 					<NODE_ID_ET>push_coPilot_DCP_ET</NODE_ID_ET>
 					<NODE_ID_FRMT>push_coPilot_DCP_FRMT</NODE_ID_FRMT>
-					<NODE_ID_TERR_WX_UPR>push_coPilot_DCP_TERRWX</NODE_ID_TERR_WX_UPR>
-					<NODE_ID_TFC_UPR>push_coPilot_DCP_TFC</NODE_ID_TFC_UPR>
+					<NODE_ID_TERR_WX>push_coPilot_DCP_TERRWX</NODE_ID_TERR_WX>
+					<NODE_ID_TFC>push_coPilot_DCP_TFC</NODE_ID_TFC>
 					<NODE_ID_REFS_MENU>push_coPilot_DCP_REFSMENU</NODE_ID_REFS_MENU>
-					<NODE_ID_KNOB_MENU_ADV_UPR>MFD_Knob_MenuADV_2</NODE_ID_KNOB_MENU_ADV_UPR>
-					<NODE_ID_KNOB_DATA_UPR>MFD_Knob_Data_2</NODE_ID_KNOB_DATA_UPR>
-					<NODE_ID_KNOB_TILT>MFD_Knob_Tilt_2</NODE_ID_KNOB_TILT>
-					<NODE_ID_KNOB_RANGE>MFD_Knob_Range_2</NODE_ID_KNOB_RANGE>
+					<NODE_ID_MENU_ADV>MFD_Knob_MenuADV_2</NODE_ID_MENU_ADV>
+					<NODE_ID_DATA>MFD_Knob_Data_2</NODE_ID_DATA>
+					<ANIM_NAME_DATA_PUSH>MFD_Knob_Data_Push_2</ANIM_NAME_DATA_PUSH>
+					<NODE_ID_TILT>MFD_Knob_Tilt_2</NODE_ID_TILT>
+					<NODE_ID_RANGE>MFD_Knob_Range_2</NODE_ID_RANGE>
+					<ANIM_NAME_RANGE_PUSH>MFD_Knob_Range_Push_2</ANIM_NAME_RANGE_PUSH>
 				</UseTemplate>
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-					<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
-					<TYPE>CJ4</TYPE>
+					<PANEL_TYPE>LOWER</PANEL_TYPE>
 					<ID>2</ID>
 					<!-- Node_ids LOWER PANEL -->
-					<NODE_ID_ESC>CCP_Push_esc</NODE_ID_ESC>
-					<NODE_ID_NAV_DATA>CCP_Push_navData</NODE_ID_NAV_DATA>
-					<NODE_ID_LWR_MENU>CCP_Push_lwrMenu</NODE_ID_LWR_MENU>
-					<NODE_ID_TERR_WX>CCP_Push_terrWX</NODE_ID_TERR_WX>
-					<NODE_ID_TFC>CCP_Push_tfc</NODE_ID_TFC>
-					<NODE_ID_SYS>CCP_Push_sys</NODE_ID_SYS>
-					<NODE_ID_ZOOM>CCP_Switch_zoom</NODE_ID_ZOOM>
-					<NODE_ID_CAS_PAGE>CCP_Push_casPage</NODE_ID_CAS_PAGE>
-					<NODE_ID_KNOB_MENU_ADV>CCP_Knob_Inner</NODE_ID_KNOB_MENU_ADV>
-					<NODE_ID_KNOB_DATA>CCP_Knob_Outer</NODE_ID_KNOB_DATA>
-					<NODE_ID_ENG>CCP_Push_eng</NODE_ID_ENG>
-					<NODE_ID_UPR_MENU>CCP_Push_uprMenu</NODE_ID_UPR_MENU>
-					<NODE_ID_RANGE_STICK>CCP_Joystick</NODE_ID_RANGE_STICK>
-					<ANIM_NAME_RANGE_STICK_L_R>CCP_Joystick_L_R</ANIM_NAME_RANGE_STICK_L_R>
-					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP</ANIM_NAME_RANGE_STICK_DN_UP>
+					<NODE_ID_ESC>CCP_Push_esc_2</NODE_ID_ESC>
+					<NODE_ID_NAV_DATA>CCP_Push_navData_2</NODE_ID_NAV_DATA>
+					<NODE_ID_LWR_MENU>CCP_Push_lwrMenu_2</NODE_ID_LWR_MENU>
+					<NODE_ID_TERR_WX>CCP_Push_terrWX_2</NODE_ID_TERR_WX>
+					<NODE_ID_TFC>CCP_Push_tfc_2</NODE_ID_TFC>
+					<NODE_ID_SYS>CCP_Push_sys_2</NODE_ID_SYS>
+					<NODE_ID_ZOOM>CCP_Switch_zoom_2</NODE_ID_ZOOM>
+					<NODE_ID_CAS_PAGE>CCP_Push_casPage_2</NODE_ID_CAS_PAGE>
+					<NODE_ID_MENU_ADV>CCP_Knob_Inner_2</NODE_ID_MENU_ADV>
+					<NODE_ID_DATA>CCP_Knob_Outer_2</NODE_ID_DATA>
+					<ANIM_NAME_DATA_PUSH>CCP_Knob_Outer_Push_2</ANIM_NAME_DATA_PUSH>
+					<NODE_ID_ENG>CCP_Push_eng_2</NODE_ID_ENG>
+					<NODE_ID_UPR_MENU>CCP_Push_uprMenu_2</NODE_ID_UPR_MENU>
+					<NODE_ID_RANGE_STICK>CCP_Joystick_2</NODE_ID_RANGE_STICK>
+					<ANIM_NAME_RANGE_STICK_L_R>CCP_Joystick_L_R_2</ANIM_NAME_RANGE_STICK_L_R>
+					<ANIM_NAME_RANGE_STICK_DN_UP>CCP_Joystick_DN_UP_2</ANIM_NAME_RANGE_STICK_DN_UP>
 				</UseTemplate>
 			</Component>
 
@@ -317,6 +322,8 @@
 						<NODE_ID>LIGHTING_Push_Light_Navigation_1</NODE_ID>
 						<ANIM_NAME>LIGHTING_Push_Light_Navigation_1</ANIM_NAME>
 						<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_SWITCH_LIGHT_NAV_ACTION_SET</TT_DESCRIPTION_ID>	
+						<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+						<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 					</UseTemplate>
 					<!-- <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Landing_Template">
 						<PART_ID>LIGHTING_Switch_Light_Landing</PART_ID>
@@ -326,13 +333,19 @@
 					</UseTemplate> -->
 					<UseTemplate Name="ASOBO_LIGHTING_Push_Light_Strobe_Template">
  						<TOOLTIP_TITLE>@TT_Package.LIGHTING_SWITCH_LIGHT_STROBE_TITLE</TOOLTIP_TITLE>	
-						<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_SWITCH_LIGHT_STROBE_ACTION</TT_DESCRIPTION_ID>	
+						<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_SWITCH_LIGHT_STROBE_ACTION</TT_DESCRIPTION_ID>
+						<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+						<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Push_Light_Logo_Template">
 						<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_SWITCH_LIGHT_LOGO_ACTION_SET</TT_DESCRIPTION_ID>	
+						<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+						<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Push_Light_Beacon_Template">
 						<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_SWITCH_LIGHT_BEACON_ACTION_SET</TT_DESCRIPTION_ID>	
+						<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+						<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 					</UseTemplate>
 					<!-- <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Recognition_Template">
 						<TOOLTIPID>%((A:LIGHT RECOGNITION, bool))%{if}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_ON %{else}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_OFF%{end}</TOOLTIPID>
@@ -565,16 +578,22 @@
 			</DefaultTemplateParameters>
 			<UseTemplate Name="ASOBO_DEICE_Push_Pitot_Template">
 				<NUM_PITOTS>2</NUM_PITOTS>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Engine_Template">
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_ANTI_ICE_ENGINE_ACTION_SET</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_LEFT)</TT_DESCRIPTION_INDEX>
 				<ID>1</ID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>					
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Engine_Template">
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_ANTI_ICE_ENGINE_ACTION_SET</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_RIGHT)</TT_DESCRIPTION_INDEX>
 				<ID>2</ID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Airframe_Template">
 				<ID>1</ID>
@@ -583,6 +602,8 @@
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_SWITCH_AIRFRAME_ACTION_SET_DUO</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_LEFT)</TT_DESCRIPTION_INDEX>
 				<NUM_DEICE>2</NUM_DEICE>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_DEICE_Push_Airframe_Template">
 				<ID>2</ID>
@@ -591,6 +612,8 @@
 				<TT_DESCRIPTION_ID>@TT_Package.DEICE_SWITCH_AIRFRAME_ACTION_SET_DUO</TT_DESCRIPTION_ID>
 				<TT_DESCRIPTION_INDEX>(R:1:@TT_Package.GT_STATE_RIGHT)</TT_DESCRIPTION_INDEX>				
 				<NUM_DEICE>2</NUM_DEICE>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>	
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Update">
 				<UPDATE_ONCE>True</UPDATE_ONCE>
