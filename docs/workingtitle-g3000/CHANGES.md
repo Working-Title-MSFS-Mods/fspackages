@@ -1,6 +1,11 @@
 # Changelog
 
 ### v0.7.4
+**New Features**
+- \[GTC\] The Flight Plan page will now provide warnings when the system detects that the FMS active flight plan is desynchronized from the sim's flight plan.
+  - The flight plan title will be displayed in yellow instead of white when a desync is detected.
+  - A pop-up will appear with a warning message when a desync is detected.
+
 **Fixes**
 - \[Compatibility\] Now compatible with game patch 1.18.13.0 (Sim Update 5).
 
