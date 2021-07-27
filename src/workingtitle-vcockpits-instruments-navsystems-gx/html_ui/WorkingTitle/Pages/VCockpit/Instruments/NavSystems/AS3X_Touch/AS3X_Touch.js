@@ -769,8 +769,6 @@ class AS3X_Touch_PageMenu_Button {
 }
 class AS3X_Touch_Popup extends NavSystemElement {
     init(root) {
-        console.log('in popup init, setting root');
-        console.log(root);
         this.root = root;
     }
     onEnter() {
