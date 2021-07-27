@@ -440,10 +440,6 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                 #wrapper[nodata="true"] #nodata {
                     display: block;
                 }
-
-            .${WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS} {
-                font-size: var(--bearingcell-unit-font-size, 0.75em);
-            }
     </style>
     <div id="wrapper">
         <div id="arrow">
@@ -457,7 +453,7 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
         <div id="text">
             <div id="source"></div>
             <div id="ident"></div>
-            <div id="distance"></div>
+            <wt-numberunit id="distance"></wt-numberunit>
             <div id="bearing"></div>
             <div id="nosource">NO SOURCE</div>
             <div id="nodata">– – –</div>
