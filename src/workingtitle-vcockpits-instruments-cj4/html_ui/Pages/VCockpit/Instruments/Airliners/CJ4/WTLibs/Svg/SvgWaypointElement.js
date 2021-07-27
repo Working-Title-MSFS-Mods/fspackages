@@ -366,9 +366,9 @@ class SvgWaypointTextElement extends SvgMapElement {
         }
         if (!isActiveWaypoint) {
             if (this.waypointElement.ident === "TOD" || this.waypointElement.ident === "DES") {
-                context.fillStyle = "#11d011";
+                context.fillStyle = "#5AF25A";
             } else if (this.waypointElement.source.isInMissedAppr === true) {
-                context.fillStyle = "cyan";
+                context.fillStyle = "#33FFFF";
             } else if (this.waypointElement.isInFpln === true) {
                 context.fillStyle = map.config.waypointLabelColor;
             } else if (this.waypointElement.source instanceof IntersectionInfo) {
@@ -383,7 +383,7 @@ class SvgWaypointTextElement extends SvgMapElement {
                 context.fillStyle = map.config.waypointLabelColor;
             }
         } else {
-            context.fillStyle = "magenta";
+            context.fillStyle = "#FF73FF";
         }
         context.textAlign = "start";
         context.font = fontSize + "px " + map.config.waypointLabelFontFamily;

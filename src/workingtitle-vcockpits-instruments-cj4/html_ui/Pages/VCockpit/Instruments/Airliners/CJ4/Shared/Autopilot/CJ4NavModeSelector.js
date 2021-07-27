@@ -526,7 +526,7 @@ class CJ4NavModeSelector {
       if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1) {
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
       } else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") == 1) {
-        SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_ON", "Number", 0);
+        SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_OFF", "Number", 0);
       }
     }
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
@@ -547,7 +547,7 @@ class CJ4NavModeSelector {
       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
     if (!SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
-      SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "Number", 1);
+      SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_ON", "Number", 1);
     }
     if (speed === undefined) {
       if (Simplane.getAutoPilotMachModeActive()) {

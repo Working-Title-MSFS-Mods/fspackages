@@ -75,8 +75,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this._altAlertPreselect = 0;
         this._msgUpdateCd = 500;
         SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 1)
-        SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 1)
+        SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 1);
+        SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 1);
+        SimVar.SetSimVarValue("L:AS3000_Brightness", "number", 0.5);
         this._nearest = undefined;
         /** @type {CJ4_FMC_NavigationService} */
         this._navigationService = new CJ4_FMC_NavigationService(this);
