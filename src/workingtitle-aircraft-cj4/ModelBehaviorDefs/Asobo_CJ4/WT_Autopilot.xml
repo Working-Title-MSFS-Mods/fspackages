@@ -564,6 +564,7 @@
 							#BARO_ID# (&gt;K:BAROMETRIC_STD_PRESSURE)
 						} els{
 							#BARO_ID# (L:XMLVAR_Baro#BARO_ID#_SavedPressure) (&gt;K:2:KOHLSMAN_SET)
+							2 (L:XMLVAR_Baro1_SavedPressure) (&gt;K:2:KOHLSMAN_SET)
 						}
 					</BTN_SET_STATE_EXTERNAL>
 					<TT_DESCRIPTION_ID_BTN>@TT_Package.AUTOPILOT_KNOB_BARO_ACTION_SET_STD</TT_DESCRIPTION_ID_BTN>
