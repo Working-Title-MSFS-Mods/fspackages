@@ -24,6 +24,9 @@ class CJ4_PFD extends BaseAirliners {
         this._msgInfo = undefined;
         this.presetMapNavigationSource = 1;
         this.previousNavToNavTransferState = 0;
+        this.climbMach = 0.64;
+        this.descentIas = 290;
+        this.crossoverSetTime = 0;
     }
     get templateID() {
         return "CJ4_PFD";
@@ -70,6 +73,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", WTDataStore.get("CJ4_BARO_MODE", false));
         SimVar.SetSimVarValue("L:WT_CJ4_MIN_SRC", "Number", 0);
         document.documentElement.classList.add("animationsEnabled");
+        this.getCrossoverSpeeds(0, true);
     }
     reboot() {
         super.reboot();
@@ -252,24 +256,41 @@ class CJ4_PFD extends BaseAirliners {
                 this.autoSwitchedToILS1 = false;
             }
         }
-
+        this.getCrossoverSpeeds(_deltaTime);
         this.updateMachTransition(_deltaTime);
     }
+
+    /** Method to get the climb mach speed from vnav setup page if it exists
+     * @param _deltaTime is the update time passed
+     * @param force is a param to force an update
+     * @returns the climb mach speed
+    */
+    getCrossoverSpeeds(_deltaTime, force = false) {
+        if (force || this.crossoverSetTime < 0) {
+            this.crossoverSetTime = 5000;
+            this.climbMach = WTDataStore.get('CJ4_vnavClimbMach', 64) / 100;
+            this.descentIas = WTDataStore.get('CJ4_vnavDescentIas', 290);
+        }
+        this.crossoverSetTime -= _deltaTime;
+    }
+
     updateMachTransition(_deltaTime) {
         this._machSyncTimer -= _deltaTime;
-        const cruiseMach = 0.64; // TODO: change this when cruise mach becomes settable
-        // let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
-        const mach = Simplane.getMachSpeed();
+        // const cruiseMach = 0.64; // TODO: change this when cruise mach becomes settable
+        // const cruiseMach = this.climbMach;
+        const vs = Simplane.getVerticalSpeed();
         switch (this.machTransition) {
             case 0:
-                if (mach >= cruiseMach) {
+                const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
+                if (mach >= this.climbMach && vs > 100) {
                     this.machTransition = 1;
                     SimVar.SetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool", true);
                     SimVar.SetSimVarValue("L:AIRLINER_FMC_FORCE_NEXT_UPDATE", "number", 1);
                 }
                 break;
             case 1:
-                if (mach < cruiseMach - 0.01) {
+                const ias = SimVar.GetSimVarValue("AIRSPEED INDICATED", "knots");
+                if (ias >= this.descentIas && vs < -300) {
                     this.machTransition = 0;
                     SimVar.SetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool", false);
                     SimVar.SetSimVarValue("L:AIRLINER_FMC_FORCE_NEXT_UPDATE", "number", 1);
@@ -280,15 +301,15 @@ class CJ4_PFD extends BaseAirliners {
         if (this.isMachActive != isMachActive) {
             this.isMachActive = isMachActive;
             if (isMachActive) {
-                Coherent.call("AP_MACH_VAR_SET", 0, cruiseMach);
+                Coherent.call("AP_MACH_VAR_SET", 0, this.climbMach);
             } else {
-                const knots = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", Simplane.getAutoPilotMachHoldValue());
-                Coherent.call("AP_SPD_VAR_SET", 1, knots);
+                // const knots = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", Simplane.getAutoPilotMachHoldValue());
+                Coherent.call("AP_SPD_VAR_SET", 0, this.descentIas);
             }
             return true;
         } else {
             // DONT DELETE: mach mode fix
-            const machAirspeed = Simplane.getAutoPilotMachHoldValue();
+            const machAirspeed = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "number");
             if (this.isMachActive && this._machAirpeed == machAirspeed && this._machSyncTimer < 0) {
                 this._machAirpeed = machAirspeed;
                 Coherent.call("AP_MACH_VAR_SET", 0, machAirspeed);
