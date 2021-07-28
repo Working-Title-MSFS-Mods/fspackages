@@ -478,7 +478,7 @@
 					</Or>
 				</Test>
 				<True>
-					<TYPE>PUSH</TYPE>
+					<TYPE>AIRLINER</TYPE>
 				</True>
 			</Condition>
 			<Condition Check="AIRLINER_TYPE">
@@ -555,6 +555,8 @@
 					<BARO_SET_CONDITION>(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# !=</BARO_SET_CONDITION>
 				</Case>
 				<Case Value="AIRLINER">
+					<ANIM_NAME_KNOB>#ANIM_NAME#</ANIM_NAME_KNOB>
+					<ANIM_NAME_PUSH>AUTOPILOT_Knob_Baro_#ID#_push#SUFFIX_ID#</ANIM_NAME_PUSH>
 					<ADDITIONAL_EVENT_TYPE>PUSH</ADDITIONAL_EVENT_TYPE>
 					<BTN_ID_EXTERNAL>Baro_#ID#_STD</BTN_ID_EXTERNAL>
 					<BTN_SET_STATE_EXTERNAL>
