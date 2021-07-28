@@ -478,7 +478,7 @@
 					</Or>
 				</Test>
 				<True>
-					<TYPE>AIRLINER</TYPE>
+					<TYPE>PUSH</TYPE>
 				</True>
 			</Condition>
 			<Condition Check="AIRLINER_TYPE">
