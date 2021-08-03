@@ -554,9 +554,10 @@ class AS3000_PFD_MainElement extends NavSystemElement {
     }
 }
 
-class AS3000_PFD_Attitude extends PFD_Attitude {
+class AS3000_PFD_Attitude extends NavSystemElement {
     constructor(instrumentID) {
         super();
+        this.vDir = new Vec2();
 
         this._instrumentID = instrumentID;
 
@@ -564,7 +565,7 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
     }
 
     _initSettingModel() {
-        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID);
         this._settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._settingModel));
         this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
 
@@ -594,11 +595,33 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
         return this._syntheticVisionEnabled;
     }
 
-    set syntheticVisionEnabled(enabled) {
-    }
-
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
+    }
+    onEnter() {
+    }
+    onUpdate(_deltaTime) {
+        var xyz = Simplane.getOrientationAxis();
+        if (xyz) {
+            let gs = Simplane.getGroundSpeed() * 101.269;
+            let vs = Simplane.getVerticalSpeed();
+            let angle = Math.atan(vs/gs);
+            this.svg.setSytheticVisionEnabled(this.syntheticVisionEnabled);
+            this.svg.setAttribute("ground-speed", Simplane.getGroundSpeed().toString());
+            this.svg.setAttribute("actual-pitch", (angle / Math.PI * 180).toString());
+            this.svg.setAttribute("pitch", (xyz.pitch / Math.PI * 180).toString());
+            this.svg.setAttribute("bank", (xyz.bank / Math.PI * 180).toString());
+            this.svg.setAttribute("slip_skid", Simplane.getInclinometer().toString());
+            this.svg.setAttribute("flight_director-active", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "true" : "false");
+            this.svg.setAttribute("flight_director-pitch", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"));
+            this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
+            this.svg.setAttribute("track", SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"));
+            this.svg.setAttribute("heading", SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"));
+        }
+    }
+    onExit() {
+    }
+    onEvent(_event) {
     }
 
     _setSVTShow(value) {
@@ -610,11 +633,32 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
     }
 }
 
-class WT_G3x5_PFDCompass extends PFD_Compass {
+class WT_G3x5_PFDCompass extends NavSystemElement {
+
+    constructor(_hsiElemId = null, _arcHsiElemId = null) {
+        super();
+        this.displayArc = true;
+        this.hasLocBeenEntered = false;
+        this.hasLocBeenActivated = false;
+        this.ifTimer = 0;
+        this.hsiElemId = _hsiElemId;
+        this.arcHsiElemId = _arcHsiElemId;
+    }
     init(root) {
-        super.init(root);
+        this.hsi = this.gps.getChildById(this.hsiElemId ? this.hsiElemId : "Compass");
+        this.arcHsi = this.gps.getChildById(this.arcHsiElemId ? this.arcHsiElemId : "ArcCompass");
+        this.nearestAirport = new NearestAirportList(this.gps);
+        this.displayArc = SimVar.GetSimVarValue("L:Glasscockpit_HSI_Arc", "number") != 0;
 
         this._needFormattingRefresh = true;
+    }
+    onEnter() {
+        if (this.hsi) {
+            this.hsi.init();
+        }
+        if (this.arcHsi) {
+            this.arcHsi.init();
+        }
     }
 
     _refreshFormatting() {
@@ -648,6 +692,36 @@ class WT_G3x5_PFDCompass extends PFD_Compass {
         }
 
         this._refreshFormatting();
+    }
+    onExit() {
+    }
+    get cdiSource() {
+        if (this.hsi)
+            return this.hsi.logic_cdiSource;
+        return 0;
+    }
+    set cdiSource(_val) {
+        if (this.hsi)
+            this.hsi.logic_cdiSource = _val;
+    }
+    get dmeSource() {
+        return SimVar.GetSimVarValue("L:Glasscockpit_DmeSource", "Number");
+    }
+    set dmeSource(_val) {
+        SimVar.SetSimVarValue("L:Glasscockpit_DmeSource", "Number", _val);
+    }
+    onEvent(_event) {
+        this.hsi.onEvent(_event);
+        switch (_event) {
+            case "SoftKeys_HSI_360":
+                this.displayArc = false;
+                SimVar.SetSimVarValue("L:Glasscockpit_HSI_Arc", "number", 0);
+                break;
+            case "SoftKeys_HSI_ARC":
+                this.displayArc = true;
+                SimVar.SetSimVarValue("L:Glasscockpit_HSI_Arc", "number", 1);
+                break;
+        }
     }
 }
 
