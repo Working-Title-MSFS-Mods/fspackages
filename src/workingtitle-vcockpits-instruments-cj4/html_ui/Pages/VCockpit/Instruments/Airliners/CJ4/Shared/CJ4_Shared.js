@@ -3306,10 +3306,10 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 this.zoomFactor = 4.3;
                 break;
             case Jet_NDCompass_Display.PLAN:
-                this.zoomFactor = 5.4;
+                this.zoomFactor = 4.0;
                 break;
             case Jet_NDCompass_Display.PPOS:
-                this.zoomFactor = 3.6;
+                this.zoomFactor = 2.6;
                 break;
             default:
                 this.zoomFactor = 1.0;
