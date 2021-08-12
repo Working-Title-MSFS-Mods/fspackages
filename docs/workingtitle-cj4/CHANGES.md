@@ -6,10 +6,6 @@ Thanks to everyone, as always, for your contributions! We really love working wi
 ## SU5 Compatibility
 Please note that the core sim interaction/model behaviors have changed dramatically with SU5, and there is a new interaction system. See the Known Issues for some issues with this. We highly recommend using the new LOCK Cockpit Interaction System with Instrument Tooltips off. To access these settings, go to Options -> General Options -> Accessibility.
 
-## SU5 Compatibility
-Please note that the core sim interaction/model behaviors have changed dramatically with SU5, and there is a new interaction system. See the Known Issues for some issues with this. We highly recommend using the new LOCK Cockpit Interaction System with Instrument Tooltips off. To access these settings, go to Options -> General Options -> Accessibility.
-
-
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
 
