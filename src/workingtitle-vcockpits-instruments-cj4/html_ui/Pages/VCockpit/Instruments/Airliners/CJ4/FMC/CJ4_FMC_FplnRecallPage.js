@@ -85,8 +85,11 @@ class CJ4_FMC_FplnRecallPage {
                             addWaypoint();
                         }
                         else {
-                            fmc.flightPlanManager.resumeSync();
+                            // Skip incorrect waypoints and continue
+                            // fmc.flightPlanManager.resumeSync();
                             fmc.setMsg("ERROR WPT " + icao + "[red]");
+                            // Continue adding the rest waypoints after displaying error message for 2 seconds
+                            setTimeout(addWaypoint, 2000);
                         }
 
                     });

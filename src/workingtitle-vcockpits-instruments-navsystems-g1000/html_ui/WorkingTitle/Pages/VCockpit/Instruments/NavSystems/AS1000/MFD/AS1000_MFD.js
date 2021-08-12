@@ -8,13 +8,12 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        this.loadSavedMapOrientation();
         this.pagesContainer = this.getChildById("RightInfos");
-        this.engineDisplay = new WTEngine("Engine", "LeftInfos");
-        this.addIndependentElementContainer(this.engineDisplay);
+        this.engines = new WTEngine("Engine", "LeftInfos");
+        this.addIndependentElementContainer(this.engines);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(this.engineDisplay)
+                new AS1000_MFD_MainMap(this.engines)
             ]),
             new NavSystemPageGroup("WPT", this, [
                 new AS1000_MFD_AirportInfos()
@@ -32,11 +31,10 @@ class AS1000_MFD extends BaseAS1000 {
         this.addEventLinkedPageGroup("FPL_Push", new NavSystemPageGroup("FPL", this, [
             new AS1000_MFD_ActiveFlightPlan()
         ]));
-        this.mapElement = new MFD_MapElement()
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
+        this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", new MapInstrumentElement()));
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -46,23 +44,13 @@ class AS1000_MFD extends BaseAS1000 {
                 this.altimeterIndex = parseInt(altimeterIndexElems[0].textContent) + 1;
             }
         }
-
-        // Weather radar is on by default, and has to be explicitly turned OFF in a plane's
-        // configuration.   Which isn't loaded when the MFD initializes.  So here I need to
-        // go back and recreate the entire map page group if there's radar.  This is dumb.
-        if (this.hasWeatherRadar()) {
-            this.pageGroups[0] = new NavSystemPageGroup("MAP", this, [
-                new AS1000_MFD_MainMap(this.engineDisplay),
-                new AS1000_MFD_Radar()
-            ]);
-        }
     }
     disconnectedCallback() {
     }
     onEvent(_event) {
         super.onEvent(_event);
         let isGPSDrived = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool");
-        let cdiSource = isGPSDrived ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
+        let cdiSource = isGPSDrived ? 3 : Simplane.getAutoPilotSelectedNav();
         switch (_event) {
             case "CLR_Long":
                 this.currentInteractionState = 0;
@@ -110,23 +98,8 @@ class AS1000_MFD extends BaseAS1000 {
     }
     reboot() {
         super.reboot();
-        if (this.engineDisplay)
-            this.engineDisplay.reset();
-    }
-    loadSavedMapOrientation() {
-        let state = WTDataStore.get("MFD.TrackUp", false);
-        this.setMapOrientation(state);
-    }
-
-    toggleMapOrientation() {
-        let newValue = !SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean");
-        this.setMapOrientation(newValue)
-    }
-
-    setMapOrientation(state) {
-        WTDataStore.set("MFD.TrackUp", state);
-        SimVar.SetSimVarValue("L:GPS_TRACK_UP", "boolean", state);
-        this.trackup = state;
+        if (this.engines)
+            this.engines.reset();
     }
 }
 class AS1000_MFD_NavStatus extends NavSystemElement {
@@ -149,24 +122,24 @@ class AS1000_MFD_NavStatus extends NavSystemElement {
     onUpdate(_deltaTime) {
         var groundSpeedValue = fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0) + "kt";
         if (this.groundSpeedValue != groundSpeedValue) {
-            this.groundSpeed.textContent = groundSpeedValue;
+            diffAndSetText(this.groundSpeed, groundSpeedValue);
             this.groundSpeedValue = groundSpeedValue;
         }
         var currentTrackValue = fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree"), 0) + "°";
         if (this.currentTrack.textContent != currentTrackValue) {
-            this.currentTrack.textContent = currentTrackValue;
+            diffAndSetText(this.currentTrack, currentTrackValue);
             this.currentTrackValue = currentTrackValue;
         }
         let flightPlanActive = SimVar.GetSimVarValue("GPS IS ACTIVE FLIGHT PLAN", "boolean");
         if (flightPlanActive) {
             var desiredTrackValue = fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0) + "°";
             if (this.desiredTrack.textContent != desiredTrackValue) {
-                this.desiredTrack.textContent = desiredTrackValue;
+                diffAndSetText(this.desiredTrack, desiredTrackValue);
                 this.desiredTrackValue = desiredTrackValue;
             }
-            var ete = SimVar.GetSimVarValue("GPS ETE", "seconds");
+            var ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
             if (this.lastEte == undefined || this.lastEte != ete) {
-                this.eteElement.textContent = Math.floor(ete / 60) + ":" + (ete % 60 < 10 ? "0" : "") + ete % 60;
+                diffAndSetText(this.eteElement, Math.floor(ete / 60) + ":" + (ete % 60 < 10 ? "0" : "") + ete % 60);
                 this.lastEte = ete;
             }
         }
@@ -199,7 +172,7 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
     onUpdate(_deltaTime) {
         var displayNameValue = this.gps.getCurrentPageGroup().name + " - " + this.gps.getCurrentPage().name;
         if (displayNameValue != this.displayNameValue) {
-            this.currentPageDisplay.textContent = displayNameValue;
+            diffAndSetText(this.currentPageDisplay, displayNameValue);
             this.displayNameValue = displayNameValue;
         }
         if (this.isVisible) {
@@ -209,7 +182,7 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
             if (this.gps.currentEventLinkedPageGroup != null) {
                 let pageCells = '<td state="Selected" > ' + this.gps.currentEventLinkedPageGroup.pageGroup.name + '</td>';
                 if (pageCells != this.pageCellsValue) {
-                    this.pageGroupElement.innerHTML = pageCells;
+                    diffAndSetHTML(this.pageGroupElement, pageCells);
                     this.pageCellsValue = pageCells;
                 }
                 var pageHtml = "";
@@ -218,7 +191,7 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
                     pageHtml += '<div state="' + (i == this.gps.currentEventLinkedPageGroup.pageGroup.pageIndex ? 'Selected' : 'Unselected') + '">' + pages[i].name + '</div>';
                 }
                 if (pageHtml != this.pagesHtmlValue) {
-                    this.pagesElement.innerHTML = pageHtml;
+                    diffAndSetHTML(this.pagesElement, pageHtml);
                     this.pagesHtmlValue = pageHtml;
                 }
             }
@@ -228,7 +201,7 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
                     pageCells += '<td state="' + (i == this.gps.currentPageGroupIndex ? "Selected" : "Unselected") + '">' + this.gps.pageGroups[i].name + '</td>';
                 }
                 if (pageCells != this.pageCellsValue) {
-                    this.pageGroupElement.innerHTML = pageCells;
+                    diffAndSetHTML(this.pageGroupElement, pageCells);
                     this.pageCellsValue = pageCells;
                 }
                 var pageHtml = "";
@@ -237,17 +210,17 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
                     pageHtml += '<div state="' + (i == this.gps.pageGroups[this.gps.currentPageGroupIndex].pageIndex ? 'Selected' : 'Unselected') + '">' + pages[i].name + '</div>';
                 }
                 if (pageHtml != this.pagesHtmlValue) {
-                    this.pagesElement.innerHTML = pageHtml;
+                    diffAndSetHTML(this.pagesElement, pageHtml);
                     this.pagesHtmlValue = pageHtml;
                 }
             }
-            this.pageSelectionElement.setAttribute("state", "Active");
+            diffAndSetAttribute(this.pageSelectionElement, "state", "Active");
             if ((new Date()).getTime() - this.lastAction.getTime() > 5000) {
                 this.isVisible = false;
             }
         }
         else {
-            this.pageSelectionElement.setAttribute("state", "Inactive");
+            diffAndSetAttribute(this.pageSelectionElement, "state", "Inactive");
         }
     }
     onExit() {
@@ -269,17 +242,21 @@ class AS1000_MFD_PageNavigation extends NavSystemElement {
 }
 class AS1000_MFD_MainMap extends NavSystemPage {
     constructor(engineDisplay) {
-        super("NAVIGATION MAP", "Map", new NavSystemElementGroup([
-            new AS1000_MFD_MainMapSlot(),
-            new MFD_WindData()
-        ]));
+        super("NAVIGATION MAP", "Map", null);
         this.mapMenu = new AS1000_MapMenu();
+        this.windData = new MFD_WindData();
+        this.map = new AS1000_MFD_MainMapSlot();
+        this.element = new NavSystemElementGroup([
+            this.map,
+            this.windData
+        ]);
         this.engineMenu = new AS1000_EngineMenu(engineDisplay);
         this.engineDisplay = engineDisplay;
     }
     init() {
         this.mapMenu.init(this, this.gps);
         this.engineMenu.init(this, this.gps);
+
         this.softKeys = new SoftKeysMenu();
         this.softKeys.elements = [
             new SoftKeyElement("ENGINE", this.engineMenu.open.bind(this.engineMenu)),
@@ -303,24 +280,130 @@ class AS1000_MFD_MainMap extends NavSystemPage {
             new SoftKeyElement("SHW CHRT", null),
             new SoftKeyElement("", null)
         ];
-	}
+        this.mapSetup = new NavSystemElementContainer("MapSetup", "MapSetup", new AS1000_MFD_MapSetup());
+        this.mapSetup.setGPS(this.gps);
+        this.defaultMenu = new ContextualMenu("PAGE MENU", [
+            new ContextualMenuElement("Map Setup", this.openMapSetup.bind(this))
+        ]);
+        this.windData.relatedMap = this.map.getMap();
+    }
+    openMapSetup() {
+        this.gps.switchToPopUpPage(this.mapSetup);
+    }
+}
+class AS1000_MFD_MapSetup extends NavSystemElement {
+    init(root) {
+        this.root = root;
+        this.orientationValue = this.gps.getChildById("MapSetup_Orientation");
+        this.FuelRangeOnOff = this.gps.getChildById("MapSetup_FuelRngOnOff");
+        this.FuelRangeReserve = this.gps.getChildById("MapSetup_FuelRngReserve");
+        this.defaultSelectables = [
+            new SelectableElement(this.gps, this.orientationValue, this.orientationMapCallback.bind(this)),
+            new SelectableElement(this.gps, this.FuelRangeOnOff, this.fuelRangeOnOffCallback.bind(this)),
+            new SelectableElement(this.gps, this.FuelRangeReserve, this.fuelRangeReserveCallback.bind(this))
+        ];
+        this.orientationSubMenu = this.gps.getChildById("MapSetup_OrientationMenu");
+        this.orientationMenuSelectables = [
+            new SelectableElement(this.gps, this.gps.getChildById("MapOrientation_North"), this.setOrientation.bind(this, EMapRotationMode.NorthUp)),
+            new SelectableElement(this.gps, this.gps.getChildById("MapOrientation_Track"), this.setOrientation.bind(this, EMapRotationMode.TrackUp)),
+            new SelectableElement(this.gps, this.gps.getChildById("MapOrientation_DTK"), this.setOrientation.bind(this, EMapRotationMode.DTKUp)),
+            new SelectableElement(this.gps, this.gps.getChildById("MapOrientation_HDG"), this.setOrientation.bind(this, EMapRotationMode.HDGUp))
+        ];
+        this.mapElement = this.gps.getElementOfType(MapInstrumentElement);
+    }
+    onEnter() {
+        diffAndSetAttribute(this.root, "state", "Active");
+        this.gps.ActiveSelection(this.defaultSelectables);
+    }
+    onExit() {
+        diffAndSetAttribute(this.root, "state", "Inactive");
+    }
+    onEvent(_event) {
+        switch (_event) {
+            case "NavigationPush":
+            case "CLR_Push":
+            case "MENU_Push":
+                this.gps.closePopUpElement();
+                break;
+        }
+    }
+    onUpdate(_deltaTime) {
+        switch (this.mapElement.getRotationMode()) {
+            case EMapRotationMode.NorthUp:
+                diffAndSetText(this.orientationValue, "North up");
+                break;
+            case EMapRotationMode.TrackUp:
+                diffAndSetText(this.orientationValue, "Track up");
+                break;
+            case EMapRotationMode.HDGUp:
+                diffAndSetText(this.orientationValue, "HDG up");
+                break;
+            case EMapRotationMode.DTKUp:
+                diffAndSetText(this.orientationValue, "DTK up");
+                break;
+        }
+        diffAndSetText(this.FuelRangeOnOff, this.mapElement.getFuelRangeActive() ? "On" : "Off");
+        let timeReserve = this.mapElement.getFuelRangeReserveMinute();
+        diffAndSetText(this.FuelRangeReserve, String(Math.floor(timeReserve / 60)).padStart(2, "0") + ":" + String(timeReserve % 60).padStart(2, "0"));
+    }
+    orientationMapCallback(_event) {
+        switch (_event) {
+            case "ENT_Push":
+                diffAndSetAttribute(this.orientationSubMenu, "state", "Active");
+                this.gps.ActiveSelection(this.orientationMenuSelectables);
+                break;
+        }
+    }
+    fuelRangeOnOffCallback(_event) {
+        switch (_event) {
+            case "ENT_Push":
+                this.mapElement.setFuelRangeActive(!this.mapElement.getFuelRangeActive());
+                break;
+            case "NavigationSmallInc":
+                this.mapElement.setFuelRangeActive(true);
+                break;
+            case "NavigationSmallDec":
+                this.mapElement.setFuelRangeActive(false);
+                break;
+        }
+    }
+    fuelRangeReserveCallback(_event) {
+        switch (_event) {
+            case "NavigationSmallInc":
+                this.mapElement.setFuelRangeReserveMinute(Math.min(this.mapElement.getFuelRangeReserveMinute() + 1, 5999));
+                break;
+            case "NavigationSmallDec":
+                this.mapElement.setFuelRangeReserveMinute(Math.max(this.mapElement.getFuelRangeReserveMinute() - 1, 0));
+                break;
+        }
+    }
+    setOrientation(_newValue, _event) {
+        switch (_event) {
+            case "ENT_Push":
+                this.mapElement.setRotationMode(_newValue);
+                diffAndSetAttribute(this.orientationSubMenu, "state", "Inactive");
+                this.gps.ActiveSelection(this.defaultSelectables);
+                break;
+        }
+    }
 }
 class AS1000_MFD_MainMapSlot extends NavSystemElement {
     init(root) {
         this.mapContainer = root;
         this.map = this.gps.getChildById("MapInstrument");
-        this.map.zoomRanges = [0.5, 1, 1.5, 2, 3, 5, 8, 10, 15, 20, 30, 50, 80, 100, 150, 200, 300, 500, 800, 1000, 1500, 2000];
     }
     onEnter() {
         this.mapContainer.insertBefore(this.map, this.mapContainer.firstChild);
         this.map.setCenteredOnPlane();
-        this.gps.mapElement.setDisplayMode(EMapDisplayMode.GPS);
     }
     onUpdate(_deltaTime) {
     }
     onExit() {
     }
     onEvent(_event) {
+    }
+    getMap() {
+        return this.map;
     }
 }
 class AS1000_MFD_WaypointLine extends MFD_WaypointLine {
@@ -345,66 +428,6 @@ class AS1000_MFD_WaypointLine extends MFD_WaypointLine {
         this.mapMenu.init(this, this.element.gps);
     }
 }
-
-class AS1000_MFD_Radar extends NavSystemPage {
-    constructor() {
-        super("WEATHER RADAR", "Map", new AS1000_MFD_RadarElement());
-        this.mapMenu = new AS1000_MapMenu();
-    }
-    init() {
-        this.mapMenu.init(this, this.gps);
-        this.softKeys = new SoftKeysMenu();
-        this.softKeys.elements = [
-            new SoftKeyElement("", null),
-            new SoftKeyElement("MODE", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("HORIZON", this.gps.mapElement.setRadar.bind(this.gps.mapElement, ERadarMode.HORIZON), this.getKeyState.bind(this, "HORIZON")),
-            new SoftKeyElement("VERTICAL", this.gps.mapElement.setRadar.bind(this.gps.mapElement, ERadarMode.VERTICAL), this.getKeyState.bind(this, "VERTICAL")),
-            new SoftKeyElement("", null),
-            new SoftKeyElement("GAIN", null),
-            new SoftKeyElement("WATCH", null),
-            new SoftKeyElement("BRG", null),
-            new SoftKeyElement("WX ALERT", null),
-            new SoftKeyElement("", null)
-        ];
-    }
-    getKeyState(_keyName) {
-        switch (_keyName) {
-            case "HORIZON":
-                {
-                    if (this.gps.mapElement.getRadarMode() == ERadarMode.HORIZON)
-                        return "White";
-                    break;
-                }
-            case "VERTICAL":
-                {
-                    if (this.gps.mapElement.getRadarMode() == ERadarMode.VERTICAL)
-                        return "White";
-                    break;
-                }
-        }
-        return "None";
-    }
-}
-
-class AS1000_MFD_RadarElement extends NavSystemElement {
-    init(root) {
-        this.mapContainer = root;
-        this.map = this.gps.getChildById("MapInstrument");
-    }
-    onEnter() {
-        this.mapContainer.insertBefore(this.map, this.mapContainer.firstChild);
-        this.gps.mapElement.setDisplayMode(EMapDisplayMode.RADAR);
-    }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-    }
-    onEvent(_event) {
-    }
-}
-
 class AS1000_MFD_ApproachWaypointLine extends MFD_ApproachWaypointLine {
     constructor(waypoint, index, _element) {
         super(waypoint, index, _element);
@@ -545,153 +568,148 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
         this.isInitialized = true;
     }
     onEnter() {
-        this.rootElement.setAttribute("state", "Infos1");
+        diffAndSetAttribute(this.rootElement, "state", "Infos1");
         this.mapContainer.appendChild(this.mapElement);
-        this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+        diffAndSetAttribute(this.mapElement, "bing-mode", "vfr");
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao != "") {
-            this.symbolElement.textContent = "";
+            diffAndSetText(this.symbolElement, "");
             switch (infos.privateType) {
                 case 0:
-                    this.typeElement.textContent = "Unknown";
+                    diffAndSetText(this.typeElement, "Unknown");
                     break;
                 case 1:
-                    this.typeElement.textContent = "Public";
+                    diffAndSetText(this.typeElement, "Public");
                     break;
                 case 2:
-                    this.typeElement.textContent = "Military";
+                    diffAndSetText(this.typeElement, "Military");
                     break;
                 case 3:
-                    this.typeElement.textContent = "Private";
+                    diffAndSetText(this.typeElement, "Private");
                     break;
             }
-            this.facilityNameElement.textContent = infos.name;
-            this.cityElement.textContent = infos.city;
-            this.regionElement.textContent = infos.region;
-            this.elevationElement.textContent = fastToFixed(infos.coordinates.alt, 0) + "FT";
-            this.latitudeElement.textContent = this.gps.latitudeFormat(infos.coordinates.lat);
-            this.longitudeElement.textContent = this.gps.longitudeFormat(infos.coordinates.long);
-            this.fuelAvailableElement.textContent = infos.fuel;
-            this.timeZoneElement.textContent = "";
+            diffAndSetText(this.facilityNameElement, infos.name);
+            diffAndSetText(this.cityElement, infos.city);
+            diffAndSetText(this.regionElement, infos.region);
+            diffAndSetText(this.elevationElement, fastToFixed(infos.coordinates.alt, 0) + "FT");
+            diffAndSetText(this.latitudeElement, this.gps.latitudeFormat(infos.coordinates.lat));
+            diffAndSetText(this.longitudeElement, this.gps.longitudeFormat(infos.coordinates.long));
+            diffAndSetText(this.fuelAvailableElement, infos.fuel);
+            diffAndSetText(this.timeZoneElement, "");
             if (this.gps.currentInteractionState == 3) {
                 this.selectedRunway = 0;
             }
-            if ("designation" in infos.runways[this.selectedRunway]) {
-                this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
-            }
-            this.runwaySizeElement.textContent = Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].length, WT_Unit.FOOT)) + "FT x " +
-                        Math.round(WT_Unit.METER.convert(infos.runways[this.selectedRunway].width, WT_Unit.FOOT)) + "FT";
+            diffAndSetText(this.runwayNameElement, infos.runways[this.selectedRunway].designation);
+            diffAndSetText(this.runwaySizeElement, Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT");
             switch (infos.runways[this.selectedRunway].surface) {
                 case 0:
-                    this.runwaySurfaceTypeElement.textContent = "Unknown";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Unknown");
                     break;
                 case 1:
-                    this.runwaySurfaceTypeElement.textContent = "Concrete";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Concrete");
                     break;
                 case 2:
-                    this.runwaySurfaceTypeElement.textContent = "Asphalt";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Asphalt");
                     break;
                 case 101:
-                    this.runwaySurfaceTypeElement.textContent = "Grass";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Grass");
                     break;
                 case 102:
-                    this.runwaySurfaceTypeElement.textContent = "Turf";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Turf");
                     break;
                 case 103:
-                    this.runwaySurfaceTypeElement.textContent = "Dirt";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Dirt");
                     break;
                 case 104:
-                    this.runwaySurfaceTypeElement.textContent = "Coral";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Coral");
                     break;
                 case 105:
-                    this.runwaySurfaceTypeElement.textContent = "Gravel";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Gravel");
                     break;
                 case 106:
-                    this.runwaySurfaceTypeElement.textContent = "Oil Treated";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Oil Treated");
                     break;
                 case 107:
-                    this.runwaySurfaceTypeElement.textContent = "Steel";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Steel");
                     break;
                 case 108:
-                    this.runwaySurfaceTypeElement.textContent = "Bituminus";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Bituminus");
                     break;
                 case 109:
-                    this.runwaySurfaceTypeElement.textContent = "Brick";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Brick");
                     break;
                 case 110:
-                    this.runwaySurfaceTypeElement.textContent = "Macadam";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Macadam");
                     break;
                 case 111:
-                    this.runwaySurfaceTypeElement.textContent = "Planks";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Planks");
                     break;
                 case 112:
-                    this.runwaySurfaceTypeElement.textContent = "Sand";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Sand");
                     break;
                 case 113:
-                    this.runwaySurfaceTypeElement.textContent = "Shale";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Shale");
                     break;
                 case 114:
-                    this.runwaySurfaceTypeElement.textContent = "Tarmac";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Tarmac");
                     break;
                 case 115:
-                    this.runwaySurfaceTypeElement.textContent = "Snow";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Snow");
                     break;
                 case 116:
-                    this.runwaySurfaceTypeElement.textContent = "Ice";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Ice");
                     break;
                 case 201:
-                    this.runwaySurfaceTypeElement.textContent = "Water";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Water");
                     break;
                 default:
-                    this.runwaySurfaceTypeElement.textContent = "Unknown";
+                    diffAndSetText(this.runwaySurfaceTypeElement, "Unknown");
             }
             switch (infos.runways[this.selectedRunway].lighting) {
                 case 0:
-                    this.runwayLightsElement.textContent = "Unknown";
+                    diffAndSetText(this.runwayLightsElement, "Unknown");
                     break;
                 case 1:
-                    this.runwayLightsElement.textContent = "None";
+                    diffAndSetText(this.runwayLightsElement, "None");
                     break;
                 case 2:
-                    this.runwayLightsElement.textContent = "Part Time";
+                    diffAndSetText(this.runwayLightsElement, "Part Time");
                     break;
                 case 3:
-                    this.runwayLightsElement.textContent = "Full Time";
+                    diffAndSetText(this.runwayLightsElement, "Full Time");
                     break;
                 case 4:
-                    this.runwayLightsElement.textContent = "Frequency";
+                    diffAndSetText(this.runwayLightsElement, "Frequency");
                     break;
             }
             var frequencies = [];
             for (let i = 0; i < infos.frequencies.length; i++) {
-                frequencies.push('<div class="Freq"><div class="Name">' + infos.frequencies[i].name + '</div><div class="Value Blinking">' + infos.frequencies[i].mhValue.toFixed(3) + '</div></div>');
+                frequencies.push('<div class="Freq"><div class="Name">' + infos.frequencies[i].getTypeName() + '</div><div class="Value Blinking">' + fastToFixed(infos.frequencies[i].mhValue, 3) + '</div></div>');
             }
             this.frequenciesSelectionGroup.setStringElements(frequencies);
             this.mapElement.setCenter(infos.coordinates);
         }
         else {
-            this.symbolElement.textContent = "";
-            this.typeElement.textContent = "Unknown";
-            this.facilityNameElement.textContent = "____________________";
-            this.cityElement.textContent = "____________________";
-            this.regionElement.textContent = "__________";
-            this.elevationElement.textContent = "____FT";
-            this.latitudeElement.textContent = "_ __°__.__'";
-            this.longitudeElement.textContent = "____°__.__'";
-            this.fuelAvailableElement.textContent = "";
-            this.timeZoneElement.textContent = "UTC__";
-            this.runwayNameElement.textContent = "__-__";
-            this.runwaySizeElement.textContent = "____FT x ___FT";
-            this.runwaySurfaceTypeElement.textContent = "____________________";
-            this.runwayLightsElement.textContent = "____________________";
+            diffAndSetText(this.symbolElement, "");
+            diffAndSetText(this.typeElement, "Unknown");
+            diffAndSetText(this.facilityNameElement, "____________________");
+            diffAndSetText(this.cityElement, "____________________");
+            diffAndSetText(this.regionElement, "__________");
+            diffAndSetText(this.elevationElement, "____FT");
+            diffAndSetText(this.latitudeElement, "_ __°__.__'");
+            diffAndSetText(this.longitudeElement, "____°__.__'");
+            diffAndSetText(this.fuelAvailableElement, "");
+            diffAndSetText(this.timeZoneElement, "UTC__");
+            diffAndSetText(this.runwayNameElement, "__-__");
+            diffAndSetText(this.runwaySizeElement, "____FT x ___FT");
+            diffAndSetText(this.runwaySurfaceTypeElement, "____________________");
+            diffAndSetText(this.runwayLightsElement, "____________________");
         }
     }
     onExit() {
-        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onEvent(_event) {
     }
@@ -751,43 +769,41 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         ];
     }
     onEnter() {
-        this.rootElement.setAttribute("state", "Infos2");
+        diffAndSetAttribute(this.rootElement, "state", "Infos2");
         this.mapContainer.appendChild(this.mapElement);
-        this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
+        diffAndSetAttribute(this.mapElement, "bing-mode", "vfr");
     }
     onUpdate(_deltaTime) {
         this.icaoSearchField.Update();
         var infos = this.icaoSearchField.getUpdatedInfos();
         if (infos && infos.icao != "") {
-            this.symbolElement.textContent = "";
+            diffAndSetText(this.symbolElement, "");
             switch (infos.privateType) {
                 case 0:
-                    this.typeElement.textContent = "Unknown";
+                    diffAndSetText(this.typeElement, "Unknown");
                     break;
                 case 1:
-                    this.typeElement.textContent = "Public";
+                    diffAndSetText(this.typeElement, "Public");
                     break;
                 case 2:
-                    this.typeElement.textContent = "Military";
+                    diffAndSetText(this.typeElement, "Military");
                     break;
                 case 3:
-                    this.typeElement.textContent = "Private";
+                    diffAndSetText(this.typeElement, "Private");
                     break;
             }
-            this.facilityElement.textContent = infos.name;
-            this.cityElement.textContent = infos.city;
+            diffAndSetText(this.facilityElement, infos.name);
+            diffAndSetText(this.cityElement, infos.city);
             this.mapElement.setCenter(infos.coordinates);
         }
         else {
-            this.symbolElement.textContent = "";
-            this.typeElement.textContent = "Unknown";
-            this.facilityElement.textContent = "____________________";
-            this.cityElement.textContent = "____________________";
+            diffAndSetText(this.symbolElement, "");
+            diffAndSetText(this.typeElement, "Unknown");
+            diffAndSetText(this.facilityElement, "____________________");
+            diffAndSetText(this.cityElement, "____________________");
         }
     }
     onExit() {
-        this.gps.mapElement.instrument.setTrackUpDisabled(false);
     }
     onEvent(_event) {
     }
@@ -799,7 +815,6 @@ class AS1000_MFD_AirportInfos2 extends NavSystemElement {
         }
     }
 }
-
 class AS1000_MFD_NearestAirport extends NavSystemPage {
     constructor() {
         super("NEAREST AIRPORTS", "Nrst_Airport", new AS1000_MFD_NearestAirport_Element());
@@ -963,12 +978,7 @@ class AS1000_MFD_NearestAirport_Element extends MFD_NearestAirport_Element {
     onEnter() {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
-        this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
-    }
-    onExit() {
-        super.onExit();
-        this.gps.mapElement.instrument.setTrackUpDisabled(false);
+        diffAndSetAttribute(this.mapElement, "bing-mode", "vfr");
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -985,12 +995,7 @@ class AS1000_MFD_NearestVOR_Element extends MFD_NearestVOR_Element {
     onEnter() {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
-        this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
-    }
-    onExit() {
-        super.onExit();
-        this.gps.mapElement.instrument.setTrackUpDisabled(false);
+        diffAndSetAttribute(this.mapElement, "bing-mode", "vfr");
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -1017,12 +1022,7 @@ class AS1000_MFD_NearestNDB_Element extends MFD_NearestNDB_Element {
     onEnter() {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
-        this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
-    }
-    onExit() {
-        super.onExit();
-        this.gps.mapElement.instrument.setTrackUpDisabled(false);
+        diffAndSetAttribute(this.mapElement, "bing-mode", "vfr");
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -1039,12 +1039,7 @@ class AS1000_MFD_NearestIntersection_Element extends MFD_NearestIntersection_Ele
     onEnter() {
         super.onEnter();
         this.mapContainer.appendChild(this.mapElement);
-        this.mapElement.setAttribute("bing-mode", "vfr");
-        this.gps.mapElement.instrument.setTrackUpDisabled(true);
-    }
-    onExit() {
-        super.onExit();
-        this.gps.mapElement.instrument.setTrackUpDisabled(false);
+        diffAndSetAttribute(this.mapElement, "bing-mode", "vfr");
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -1055,6 +1050,23 @@ class AS1000_MFD_NearestIntersection_Element extends MFD_NearestIntersection_Ele
 class AS1000_MFD_SystemSetup extends NavSystemPage {
     constructor() {
         super("System Setup", "SystemSetup", new AS1000_MFD_SystemSetupElement());
+    }
+    init() {
+        this.softKeys = new SoftKeysMenu();
+        this.softKeys.elements = [
+            new SoftKeyElement("ENGINE", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null)
+        ];
     }
 }
 class AS1000_MFD_SystemSetupElement extends NavSystemElement {
@@ -1088,23 +1100,70 @@ class AS1000_MapMenu {
     constructor() {
         this.modeMenu = new SoftKeysMenu();
         this.gpsMenu = new SoftKeysMenu();
+        this.weatherMenu = new SoftKeysMenu();
     }
     init(_owner, _gps) {
         this.owner = _owner;
         this.gps = _gps;
-        this.mapElement = this.gps.mapElement;
-        this.modeMenu.elements = [
+        this.mapElement = this.gps.getElementOfType(MapInstrumentElement);
+        if (this.gps.hasWeatherRadar()) {
+            this.modeMenu.elements = [
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("DISPLAY", this.mapElement.toggleDisplayMode.bind(this.mapElement)),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("GPS", this.switchMenu.bind(this, this.gpsMenu), this.getKeyState.bind(this, "GPS")),
+                new SoftKeyElement("WEATHER", this.switchMenu.bind(this, this.weatherMenu), this.getKeyState.bind(this, "WEATHER")),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("BACK", this.close.bind(this)),
+                new SoftKeyElement("", null)
+            ];
+        }
+        else {
+            this.modeMenu.elements = [
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("GPS", this.switchMenu.bind(this, this.gpsMenu), this.getKeyState.bind(this, "GPS")),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("", null),
+                new SoftKeyElement("BACK", this.close.bind(this)),
+                new SoftKeyElement("", null)
+            ];
+        }
+        this.gpsMenu.elements = [
             new SoftKeyElement("TRAFFIC", null),
-            new SoftKeyElement("PROFILE", null),
+            new SoftKeyElement("", null),
             new SoftKeyElement("TOPO", this.mapElement.toggleIsolines.bind(this.mapElement), this.getKeyState.bind(this, "TOPO")),
-            new SoftKeyElement("TERRAIN", null, () => { return "White" }),
-            new SoftKeyElement("AIRWAYS", null),
-            new SoftKeyElement("TRCK UP", this.gps.toggleMapOrientation.bind(this.gps), this.getKeyState.bind(this, "TRCK UP")),
+            new SoftKeyElement("TERRAIN", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
             new SoftKeyElement("NEXRAD", this.mapElement.toggleNexrad.bind(this.mapElement), this.getKeyState.bind(this, "NEXRAD")),
             new SoftKeyElement("", null),
             new SoftKeyElement("", null),
             new SoftKeyElement("", null),
-            new SoftKeyElement("BACK", this.close.bind(this)),
+            new SoftKeyElement("BACK", this.switchMenu.bind(this, this.modeMenu)),
+            new SoftKeyElement("", null)
+        ];
+        this.weatherMenu.elements = [
+            new SoftKeyElement("", null),
+            new SoftKeyElement("MODE", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("HORIZON", this.mapElement.setRadar.bind(this.mapElement, ERadarMode.HORIZON), this.getKeyState.bind(this, "HORIZON")),
+            new SoftKeyElement("VERTICAL", this.mapElement.setRadar.bind(this.mapElement, ERadarMode.VERTICAL), this.getKeyState.bind(this, "VERTICAL")),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("", null),
+            new SoftKeyElement("BACK", this.switchMenu.bind(this, this.modeMenu)),
             new SoftKeyElement("", null)
         ];
     }
@@ -1120,6 +1179,18 @@ class AS1000_MapMenu {
     }
     getKeyState(_keyName) {
         switch (_keyName) {
+            case "GPS":
+                {
+                    if (this.mapElement.getDisplayMode() == EMapDisplayMode.GPS)
+                        return "White";
+                    break;
+                }
+            case "WEATHER":
+                {
+                    if (this.mapElement.getDisplayMode() == EMapDisplayMode.RADAR)
+                        return "White";
+                    break;
+                }
             case "TOPO":
                 {
                     if (this.mapElement.getIsolines())
@@ -1132,14 +1203,20 @@ class AS1000_MapMenu {
                         return "White";
                     break;
                 }
-            case "TRCK UP":
+            case "HORIZON":
                 {
-                    if (this.gps.trackup)
+                    if (this.mapElement.getRadarMode() == ERadarMode.HORIZON)
+                        return "White";
+                    break;
+                }
+            case "VERTICAL":
+                {
+                    if (this.mapElement.getRadarMode() == ERadarMode.VERTICAL)
                         return "White";
                     break;
                 }
         }
-                return "None";
+        return "None";
     }
 }
 class AS1000_EngineMenu {
@@ -1160,12 +1237,12 @@ class AS1000_EngineMenu {
         let engineDisplayPages = this.engineDisplay.getEngineDisplayPages();
         let i = 0;
         let numEngineDisplayPages = 0;
-        for(let id in engineDisplayPages) {
+        for (let id in engineDisplayPages) {
             elements[i++] = new SoftKeyElement(id, this.selectEngineDisplayPage.bind(this, id), this.getKeyState.bind(this, id));
             numEngineDisplayPages++;
         }
 
-        for(let i = 0; i < extraElements.length; i++) {
+        for (let i = 0; i < extraElements.length; i++) {
             elements[i + numEngineDisplayPages + 1] = extraElements[i];
         }
 
@@ -1177,7 +1254,7 @@ class AS1000_EngineMenu {
     }
     selectEngineDisplayPage(id) {
         let page = this.engineDisplay.selectEnginePage(id);
-        this.switchMenu(this.getSoftKeyMenu(page.buttons.map(button => new SoftKeyElement(button.text, this.performSubAction.bind(this,button)))));
+        this.switchMenu(this.getSoftKeyMenu(page.buttons.map(button => new SoftKeyElement(button.text, this.performSubAction.bind(this, button)))));
     }
     performSubAction(button) {
 
@@ -1199,7 +1276,7 @@ class AS1000_EngineMenu {
         switch (_keyName) {
             case "CYL SLCT":
             case "ASSIST":
-              break;
+                break;
         }
         return "None";
     }

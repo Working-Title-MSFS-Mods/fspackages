@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.7.2
+### Latest version: v0.7.4
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.7.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.4.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -29,18 +29,15 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
-### Release Highlights for v0.7.2
+### Release Highlights for v0.7.4
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Added support for advisory VNAV guidance. The FMS can now calculate VNAV descent profiles and provide information on top of descent, bottom of descent, required vertical speed, and vertical path deviation. The autopilot still does not support V PATH mode.
-
-**Fixes**
-- \[FPLN\] Fixed a bug that prevented editing of the active flight plan under certain circumstances.
-- \[PFD\] Autopilot display now correctly shows ALTS armed indication while in PITCH mode.
-- \[NavMap\] Flight Plan Text Inset now displays cumulative ETE instead of leg ETE when CUM mode is selected.
+- Now compatible with game patch 1.18.13.0 (Sim Update 5).
+- The GTC Flight Plan page will now provide warnings when the system detects that the FMS active flight plan is desynchronized from the sim's flight plan.
 
 ### Known Issues
-- \[FPLN\] There is currently a bug with the sim's built-in flight plan management system which prevents waypoints from being properly added to the flight plan while an approach is loaded. As a result, inserting waypoints or airways into the Enroute segment of the active flight plan with an approach loaded will desynchronize the FMS flight plan from the sim's flight plan and lead to unexpected behavior. As a workaround, enter waypoints _before_ loading an approach. If you need to enter waypoints after an approach has been loaded, remove the approach, make the necessary edits, then reload the approach. Lastly, if the FMS active flight plan becomes desynchronized, you can fix it by deleting the active flight plan via the Flight Plan Options menu.
-- \[FPLN\] There is another issue with the sim's built-in flight plan management system related to having consecutive legs with the same waypoint fix in the active flight plan (non-consecutive legs with the same waypoint fix are OK). This can cause numerous types of unexpected behavior. As such, avoid creating an active flight plan with consecutive legs with the same waypoint fix (the one exception is that the first approach leg may have the same fix as the leg immediately before it). Deleting the active flight plan via the Flight Plan Options menu will resolve any problems related to this bug.
+- \[General\] The sim's load screen no longer waits for avionics to finish loading before starting a flight. Therefore, you may need to wait a few seconds after entering a flight before the avionics finish loading.
+- \[FPLN\] There is an issue with the sim's built-in flight plan management system related to having consecutive legs with the same waypoint fix in the active flight plan (non-consecutive legs with the same waypoint fix are OK). This can cause numerous types of unexpected behavior. As such, avoid creating an active flight plan with consecutive legs with the same waypoint fix (the one exception is that the first approach leg may have the same fix as the leg immediately before it). Deleting the active flight plan via the Flight Plan Options menu will resolve any problems related to this bug.
+- \[FPLN\] Canceling a direct-to will erase the active flight plan if the plan only contains an origin and destination (this is a base sim issue).
 - \[PFD\] Citation Longitude: the PFD altimeter baro setting may be a bit slow to update when turning the PFD baro knobs. As a side effect of syncing the PFD altimeter baro settings to that of the standby altimeter, the sync is paused as long as the baro knobs are being turned in order to prevent inputs from being eaten.
 - \[PFD\] TBM 930: Co-pilot PFD softkeys are nonfunctional.
 - \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
