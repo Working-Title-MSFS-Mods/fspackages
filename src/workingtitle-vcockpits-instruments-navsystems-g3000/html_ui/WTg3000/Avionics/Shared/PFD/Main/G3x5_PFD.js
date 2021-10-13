@@ -14,6 +14,8 @@ class WT_G3x5_PFD extends NavSystem {
         return undefined;
     }
 
+    get manageFlightPlan() { return false; }
+
     /**
      * @readonly
      * @type {WT_AirplaneAirspeedSensor}
@@ -533,9 +535,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         this._mapInstrument.setGPS(this.gps);
     }
 
-    onUpdate(deltaTime) {
-    }
-
     reset() {
         if (this._annunciations)
             this._annunciations.reset();
@@ -630,11 +629,28 @@ class WT_G3x5_PFDCompass extends PFD_Compass {
     }
 
     onUpdate(deltaTime) {
-        super.onUpdate(deltaTime);
+        if (this.displayArc) {
+            diffAndSetAttribute(this.hsi, "state", "Inactive");
+            diffAndSetAttribute(this.arcHsi, "state", "Active");
+            this.arcHsi.update(deltaTime);
+        }
+        else {
+            diffAndSetAttribute(this.hsi, "state", "Active");
+            diffAndSetAttribute(this.arcHsi, "state", "Inactive");
+            this.hsi.update(deltaTime);
+        }
+        this.nearestAirport.Update(25, 200);
+        if (this.nearestAirport.airports.length == 0) {
+            SimVar.SetSimVarValue("L:GPS_Current_Phase", "number", 4);
+        }
+        else {
+            SimVar.SetSimVarValue("L:GPS_Current_Phase", "number", 3);
+        }
 
         this._refreshFormatting();
     }
 }
+
 class AS3000_PFD_ActiveCom extends NavSystemElement {
     init(root) {
         this.activeCom = this.gps.getChildById("ActiveCom");
@@ -644,7 +660,7 @@ class AS3000_PFD_ActiveCom extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        diffAndSetText(this.activeComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        diffAndSetHTML(this.activeComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
     }
     onExit() {
     }

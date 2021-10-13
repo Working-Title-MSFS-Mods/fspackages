@@ -1,3 +1,11 @@
+var ScreenState;
+(function (ScreenState) {
+    ScreenState[ScreenState["OFF"] = 0] = "OFF";
+    ScreenState[ScreenState["INIT"] = 1] = "INIT";
+    ScreenState[ScreenState["WAITING_VALIDATION"] = 2] = "WAITING_VALIDATION";
+    ScreenState[ScreenState["ON"] = 3] = "ON";
+    ScreenState[ScreenState["REVERSIONARY"] = 4] = "REVERSIONARY";
+})(ScreenState || (ScreenState = {}));
 class NavSystem extends WT_G3x5_BaseInstrument {
     constructor() {
         super(...arguments);
@@ -22,7 +30,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.currentSearchFieldWaypoint = null;
         this.contextualMenuDisplayBeginIndex = 0;
         this.menuMaxElems = 6;
-        this.useUpdateBudget = true;
+        this.useUpdateBudget = false;
         this.maxUpdateBudget = 6;
         this.budgetedItemId = 0;
         this.aspectRatioElement = null;
@@ -34,12 +42,12 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.isStarted = false;
         this.needValidationAfterInit = false;
         this.initAcknowledged = false;
+        this.screenState = ScreenState.OFF;
         this.reversionaryMode = false;
     }
-    get flightPlanManager() {
-        return this.currFlightPlanManager;
-    }
+    get flightPlanManager() { return this.currFlightPlanManager; }
     get instrumentAlias() { return null; }
+    get manageFlightPlan() { return true; }
     connectedCallback() {
         super.connectedCallback();
         this.contextualMenu = this.getChildById("ContextualMenu");
@@ -47,13 +55,14 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.contextualMenuElements = this.getChildById("ContextualMenuElements");
         this.menuSlider = this.getChildById("SliderMenu");
         this.menuSliderCursor = this.getChildById("SliderMenuCursor");
-        this.currFlightPlanManager = new FlightPlanManager(this);
-        this.currFlightPlan = new FlightPlan(this, this.currFlightPlanManager);
+        if (this.manageFlightPlan) {
+            this.currFlightPlanManager = new FlightPlanManager(this);
+            this.currFlightPlan = new FlightPlan(this, this.currFlightPlanManager);
+        }
     }
     disconnectedCallback() {
         super.disconnectedCallback();
     }
-
     Init() {
         super.Init();
         this.cockpitSettings = SimVar.GetGameVarValue("", "GlassCockpitSettings");
@@ -71,7 +80,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             }
             let styleNode = this.instrumentXmlConfig.getElementsByTagName("Style");
             if (styleNode.length > 0) {
-                this.electricity.setAttribute("displaystyle", styleNode[0].textContent);
+                diffAndSetAttribute(this.electricity, "displaystyle", styleNode[0].textContent);
             }
         }
     }
@@ -241,7 +250,10 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             }
             switch (_event) {
                 case "ActiveFPL_Modified":
-                    this.currFlightPlan.FillWithCurrentFP();
+                    if (this.currFlightPlan) {
+                        this.currFlightPlan.FillWithCurrentFP();
+                    }
+                    break;
             }
         }
         this.onEvent(_event);
@@ -334,12 +346,17 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.updateAspectRatio();
         if (this.currFlightPlanManager) {
             this.currFlightPlanManager.update(this.deltaTime);
+            if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && !this.currFlightPlanManager.getIsDirectTo() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
+                if (Simplane.getFMCFlightPlanIsTemp() != 1) {
+                    this.currFlightPlanManager.tryAutoActivateApproach();
+                }
+            }
         }
         if (this.popUpElement) {
             this.popUpElement.onUpdate(this.deltaTime);
         }
         if (this.pagesContainer) {
-            this.pagesContainer.setAttribute("state", this.getCurrentPage().htmlElemId);
+            diffAndSetAttribute(this.pagesContainer, "state", this.getCurrentPage().htmlElemId);
         }
         if (this.useUpdateBudget) {
             this.updateGroupsWithBudget();
@@ -382,30 +399,38 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             }
             if (this.isBootProcedureComplete()) {
                 if (this.reversionaryMode) {
-                    if (this.electricity) {
-                        this.electricity.setAttribute("state", "Backup");
+                    if (this.screenState != ScreenState.REVERSIONARY) {
+                        this.screenState = ScreenState.REVERSIONARY;
+                        if (this.electricity)
+                            diffAndSetAttribute(this.electricity, "state", "Backup");
                         SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
                         SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 3);
                     }
                 }
                 else {
-                    if (this.electricity) {
-                        this.electricity.setAttribute("state", "on");
+                    if (this.screenState != ScreenState.ON) {
+                        this.screenState = ScreenState.ON;
+                        if (this.electricity)
+                            diffAndSetAttribute(this.electricity, "state", "on");
                         SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
                         SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 2);
                     }
                 }
             }
             else if (Date.now() - this.startTime > this.initDuration) {
-                if (this.electricity) {
-                    this.electricity.setAttribute("state", "initWaitingValidation");
+                if (this.screenState != ScreenState.WAITING_VALIDATION) {
+                    this.screenState = ScreenState.WAITING_VALIDATION;
+                    if (this.electricity)
+                        diffAndSetAttribute(this.electricity, "state", "initWaitingValidation");
                     SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
                     SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
                 }
             }
             else {
-                if (this.electricity) {
-                    this.electricity.setAttribute("state", "init");
+                if (this.screenState != ScreenState.INIT) {
+                    this.screenState = ScreenState.INIT;
+                    if (this.electricity)
+                        diffAndSetAttribute(this.electricity, "state", "init");
                     SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
                     SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
                 }
@@ -416,8 +441,10 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             if (this.isStarted) {
                 this.onShutDown();
             }
-            if (this.electricity) {
-                this.electricity.setAttribute("state", "off");
+            if (this.screenState != ScreenState.OFF) {
+                this.screenState = ScreenState.OFF;
+                if (this.electricity)
+                    diffAndSetAttribute(this.electricity, "state", "off");
                 SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0);
                 SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 0);
             }
@@ -464,27 +491,27 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     onEvent(_event) {
     }
     GetComActiveFreq() {
-        return this.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), 3);
+        return this.frequencyFormat(Simplane.getComActFreq1(), 3);
     }
     GetComStandbyFreq() {
-        return this.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), 3);
+        return this.frequencyFormat(Simplane.getComSbyFreq1(), 3);
     }
     GetNavActiveFreq() {
-        return this.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2);
+        return this.frequencyFormat(Simplane.getNavActFreq1(), 2);
     }
     GetNavStandbyFreq() {
-        return this.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz"), 2);
+        return this.frequencyFormat(Simplane.getNavSbyFreq1(), 2);
     }
     UpdateSlider(_slider, _cursor, _index, _nbElem, _maxElems) {
         if (_nbElem > _maxElems) {
             let cursorHeight = (_maxElems * 100) / _nbElem;
             let pct = _index / (_nbElem - _maxElems);
             let cursorTop = Math.min(pct, 1.0) * (100 - cursorHeight);
-            _slider.setAttribute("state", "Active");
-            _cursor.setAttribute("style", "height:" + cursorHeight + "%; top:" + cursorTop + "%");
+            diffAndSetAttribute(_slider, "state", "Active");
+            diffAndSetAttribute(_cursor, "style", "height:" + cursorHeight + "%; top:" + cursorTop + "%");
         }
         else {
-            _slider.setAttribute("state", "Inactive");
+            diffAndSetAttribute(_slider, "state", "Inactive");
         }
     }
     frequencyFormat(_frequency, _nbDigits) {
@@ -564,7 +591,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
                 }
                 break;
             case 2:
-                this.contextualMenu.setAttribute("state", "Inactive");
+                diffAndSetAttribute(this.contextualMenu, "state", "Inactive");
                 break;
         }
     }
@@ -583,7 +610,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
                 this.cursorIndex = 0;
                 break;
             case 2:
-                this.contextualMenu.setAttribute("state", "Active");
+                diffAndSetAttribute(this.contextualMenu, "state", "Active");
                 this.contextualMenuDisplayBeginIndex = 0;
                 this.cursorIndex = 0;
                 if (this.currentContextualMenu.elements[0].isInactive()) {
@@ -638,9 +665,11 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         }
         this.overridePage = null;
     }
-    SwitchToPageName(_menu, _page) {
-        this.lastRelevantICAO = null;
-        this.lastRelevantICAOType = null;
+    SwitchToPageName(_menu, _page, _savelastReleventICAO = false) {
+        if (!_savelastReleventICAO) {
+            this.lastRelevantICAO = null;
+            this.lastRelevantICAOType = null;
+        }
         this.closePopUpElement();
         if (this.overridePage) {
             this.closeOverridePage();
@@ -835,7 +864,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             frame.style.left = newLeft + "px";
             frame.style.width = newWidth + "px";
             frame.style.height = newHeight + "px";
-            window.document.documentElement.style.setProperty("--bodyHeightScale", (newHeight / vpHeight).toString());
+            window.document.documentElement.style.setProperty("--bodyHeightScale", (newHeight / vpHeight) + '');
         }
         this.forcedScreenRatio = 1.0 / curRatio;
         this.forcedAspectRatio = 1.0 / refRatio;
@@ -1179,24 +1208,6 @@ class NavSystemElement extends Updatable {
     redraw() {
     }
 }
-class NavSystemIFrameElement extends NavSystemElement {
-    constructor(_frameName) {
-        super();
-        this.iFrame = this.gps.getChildById(_frameName);
-    }
-    isReady() {
-        if (this.iFrame) {
-            this.canvas = this.iFrame.contentWindow;
-            if (this.canvas) {
-                var readyToSet = this.canvas["readyToSet"];
-                if (readyToSet) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-}
 class NavSystemElementGroup extends NavSystemElement {
     constructor(_elements) {
         super();
@@ -1231,7 +1242,9 @@ class NavSystemElementGroup extends NavSystemElement {
     onUpdate(_deltaTime) {
         if (!this._updatingWithBudget) {
             for (let i = 0; i < this.elements.length; i++) {
+                engine.beginProfileEvent(this.elements[i].constructor.name + "::onUpdate");
                 this.elements[i].onUpdate(_deltaTime);
+                engine.endProfileEvent();
             }
         }
     }
@@ -1416,8 +1429,8 @@ class CDIElement extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var CTD = SimVar.GetSimVarValue("GPS WP CROSS TRK", "nautical mile");
-        this.cdiCursor.setAttribute("style", "left:" + ((CTD <= -1 ? -1 : CTD >= 1 ? 1 : CTD) * 50 + 50) + "%");
+        var CTD = Simplane.getNextWaypointCrossTrk();
+        diffAndSetAttribute(this.cdiCursor, "style", "left:" + ((CTD <= -1 ? -1 : CTD >= 1 ? 1 : CTD) * 50 + 50) + "%");
     }
     onExit() {
     }
@@ -1491,7 +1504,7 @@ class MapInstrumentElement extends NavSystemElement {
                 let range = this.instrument.getWeatherRange();
                 let ratio = 1.0 / this.weatherTexts.length;
                 for (let i = 0; i < this.weatherTexts.length; i++) {
-                    this.weatherTexts[i].textContent = fastToFixed(range * ratio * (i + 1), 2) + "NM";
+                    diffAndSetText(this.weatherTexts[i], fastToFixed(range * ratio * (i + 1), 2) + "NM");
                 }
             }
             if (this.fuelRangeCircle && this.fuelRangeOn) {
@@ -1501,23 +1514,23 @@ class MapInstrumentElement extends NavSystemElement {
                 this.fuelRangeCircle.style.width = size + "px";
                 this.fuelRangeCircle.style.top = (this.instrument.clientHeight < size ? (this.instrument.clientHeight - size) / 2 : 0) + "px";
                 this.fuelRangeCircle.style.left = (this.instrument.clientWidth < size ? (this.instrument.clientWidth - size) / 2 : 0) + "px";
-                let groundSpeed = SimVar.GetSimVarValue("GROUND VELOCITY", "knot") / 60;
+                let groundSpeed = Simplane.getGroundVelocity() / 60;
                 this.smoothedSpeed = this.smoothFactor * this.smoothedSpeed + (1 - this.smoothFactor) * groundSpeed;
-                let fuelQuantity = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
-                let fuelFlow = SimVar.GetSimVarValue("ENG FUEL FLOW GPH:1", "gallons per hour");
+                let fuelQuantity = Simplane.getFuelcQuantity();
+                let fuelFlow = Simplane.getEngFuelFlow1();
                 this.smoothedFF = this.smoothFactor * this.smoothedFF + (1 - this.smoothFactor) * fuelFlow;
                 let timeToEmpty = (fuelQuantity / this.smoothedFF) * 60;
                 let timeToReserve = Math.max(0, timeToEmpty - this.fuelRangeReserveMinutes);
                 let distanceToReserve = timeToReserve * this.smoothedSpeed;
                 let distanceToEmpty = timeToEmpty * this.smoothedSpeed;
-                diffAndSetAttribute(this.fuelRangeCircle, "radius-reserve", Math.min(2000, distanceToEmpty * 1000 / this.instrument.getDisplayRange()).toString());
-                diffAndSetAttribute(this.fuelRangeCircle, "inner-radius", Math.min(2000, distanceToReserve * 1000 / this.instrument.getDisplayRange()).toString());
-                diffAndSetAttribute(this.fuelRangeCircle, "time-to-reserve", (timeToReserve).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "radius-reserve", Math.min(2000, distanceToEmpty * 1000 / this.instrument.getDisplayRange()) + '');
+                diffAndSetAttribute(this.fuelRangeCircle, "inner-radius", Math.min(2000, distanceToReserve * 1000 / this.instrument.getDisplayRange()) + '');
+                diffAndSetAttribute(this.fuelRangeCircle, "time-to-reserve", (timeToReserve) + '');
                 let offset = this.instrument.getPlaneCoords();
                 offset.y = (offset.y - 500) * this.instrument.getOverdrawFactor();
                 offset.x = (offset.x - 500) * this.instrument.getOverdrawFactor();
-                diffAndSetAttribute(this.fuelRangeCircle, "offset-x", (offset.x).toString());
-                diffAndSetAttribute(this.fuelRangeCircle, "offset-y", (offset.y).toString());
+                diffAndSetAttribute(this.fuelRangeCircle, "offset-x", (offset.x) + '');
+                diffAndSetAttribute(this.fuelRangeCircle, "offset-y", (offset.y) + '');
             }
             else if (this.fuelRangeCircle) {
                 diffAndSetAttribute(this.fuelRangeCircle, "state", "Inactive");
@@ -1601,15 +1614,15 @@ class MapInstrumentElement extends NavSystemElement {
                 if (_mode == EWeatherRadar.HORIZONTAL) {
                     this.instrument.setBingMapStyle("10.3%", "-13.3%", "127%", "157%");
                     var coneAngle = 90;
-                    svgRoot.setAttribute("viewBox", "0 0 400 400");
+                    diffAndSetAttribute(svgRoot, "viewBox", "0 0 400 400");
                     var trsGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    trsGroup.setAttribute("transform", "translate(-125, 29) scale(1.63)");
+                    diffAndSetAttribute(trsGroup, "transform", "translate(-125, 29) scale(1.63)");
                     svgRoot.appendChild(trsGroup);
                     let viewBox = document.createElementNS(Avionics.SVG.NS, "svg");
-                    viewBox.setAttribute("viewBox", "-600 -600 1200 1200");
+                    diffAndSetAttribute(viewBox, "viewBox", "-600 -600 1200 1200");
                     trsGroup.appendChild(viewBox);
                     var circleGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    circleGroup.setAttribute("id", "Circles");
+                    diffAndSetAttribute(circleGroup, "id", "Circles");
                     viewBox.appendChild(circleGroup);
                     {
                         let rads = [0.25, 0.50, 0.75, 1.0];
@@ -1620,73 +1633,73 @@ class MapInstrumentElement extends NavSystemElement {
                             while (Math.floor(startDegrees) <= endDegrees) {
                                 let line = document.createElementNS(Avionics.SVG.NS, "rect");
                                 let degree = (180 + startDegrees + 0.5);
-                                line.setAttribute("x", "0");
-                                line.setAttribute("y", rad.toString());
-                                line.setAttribute("width", dashWidth.toString());
-                                line.setAttribute("height", dashHeight.toString());
-                                line.setAttribute("transform", "rotate(" + degree + " 0 0)");
-                                line.setAttribute("fill", "white");
+                                diffAndSetAttribute(line, "x", "0");
+                                diffAndSetAttribute(line, "y", rad + '');
+                                diffAndSetAttribute(line, "width", dashWidth + '');
+                                diffAndSetAttribute(line, "height", dashHeight + '');
+                                diffAndSetAttribute(line, "transform", "rotate(" + degree + " 0 0)");
+                                diffAndSetAttribute(line, "fill", "white");
                                 circleGroup.appendChild(line);
                                 startDegrees += coneAngle / dashNbRect;
                             }
                         }
                     }
                     var lineGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    lineGroup.setAttribute("id", "Lines");
+                    diffAndSetAttribute(lineGroup, "id", "Lines");
                     viewBox.appendChild(lineGroup);
                     {
                         var coneStart = 180 - coneAngle * 0.5;
                         var coneStartLine = document.createElementNS(Avionics.SVG.NS, "line");
-                        coneStartLine.setAttribute("x1", "0");
-                        coneStartLine.setAttribute("y1", "0");
-                        coneStartLine.setAttribute("x2", "0");
-                        coneStartLine.setAttribute("y2", circleRadius.toString());
-                        coneStartLine.setAttribute("transform", "rotate(" + coneStart + " 0 0)");
-                        coneStartLine.setAttribute("stroke", "white");
-                        coneStartLine.setAttribute("stroke-width", "3");
+                        diffAndSetAttribute(coneStartLine, "x1", "0");
+                        diffAndSetAttribute(coneStartLine, "y1", "0");
+                        diffAndSetAttribute(coneStartLine, "x2", "0");
+                        diffAndSetAttribute(coneStartLine, "y2", circleRadius + '');
+                        diffAndSetAttribute(coneStartLine, "transform", "rotate(" + coneStart + " 0 0)");
+                        diffAndSetAttribute(coneStartLine, "stroke", "white");
+                        diffAndSetAttribute(coneStartLine, "stroke-width", "3");
                         lineGroup.appendChild(coneStartLine);
                         var coneEnd = 180 + coneAngle * 0.5;
                         var coneEndLine = document.createElementNS(Avionics.SVG.NS, "line");
-                        coneEndLine.setAttribute("x1", "0");
-                        coneEndLine.setAttribute("y1", "0");
-                        coneEndLine.setAttribute("x2", "0");
-                        coneEndLine.setAttribute("y2", circleRadius.toString());
-                        coneEndLine.setAttribute("transform", "rotate(" + coneEnd + " 0 0)");
-                        coneEndLine.setAttribute("stroke", "white");
-                        coneEndLine.setAttribute("stroke-width", "3");
+                        diffAndSetAttribute(coneEndLine, "x1", "0");
+                        diffAndSetAttribute(coneEndLine, "y1", "0");
+                        diffAndSetAttribute(coneEndLine, "x2", "0");
+                        diffAndSetAttribute(coneEndLine, "y2", circleRadius + '');
+                        diffAndSetAttribute(coneEndLine, "transform", "rotate(" + coneEnd + " 0 0)");
+                        diffAndSetAttribute(coneEndLine, "stroke", "white");
+                        diffAndSetAttribute(coneEndLine, "stroke-width", "3");
                         lineGroup.appendChild(coneEndLine);
                     }
                     var textGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    textGroup.setAttribute("id", "Texts");
+                    diffAndSetAttribute(textGroup, "id", "Texts");
                     viewBox.appendChild(textGroup);
                     {
                         this.weatherTexts = [];
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "100");
-                        text.setAttribute("y", "-85");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "20");
+                        diffAndSetAttribute(text, "x", "100");
+                        diffAndSetAttribute(text, "y", "-85");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "20");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "200");
-                        text.setAttribute("y", "-185");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "20");
+                        diffAndSetAttribute(text, "x", "200");
+                        diffAndSetAttribute(text, "y", "-185");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "20");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "300");
-                        text.setAttribute("y", "-285");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "20");
+                        diffAndSetAttribute(text, "x", "300");
+                        diffAndSetAttribute(text, "y", "-285");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "20");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "400");
-                        text.setAttribute("y", "-385");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "20");
+                        diffAndSetAttribute(text, "x", "400");
+                        diffAndSetAttribute(text, "y", "-385");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "20");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                     }
@@ -1694,15 +1707,15 @@ class MapInstrumentElement extends NavSystemElement {
                 else if (_mode == EWeatherRadar.VERTICAL) {
                     this.instrument.setBingMapStyle("-75%", "-88%", "201%", "250%");
                     var coneAngle = 51.43;
-                    svgRoot.setAttribute("viewBox", "0 0 400 400");
+                    diffAndSetAttribute(svgRoot, "viewBox", "0 0 400 400");
                     var trsGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    trsGroup.setAttribute("transform", "translate(402, -190) scale(1.95) rotate(90)");
+                    diffAndSetAttribute(trsGroup, "transform", "translate(402, -190) scale(1.95) rotate(90)");
                     svgRoot.appendChild(trsGroup);
                     let viewBox = document.createElementNS(Avionics.SVG.NS, "svg");
-                    viewBox.setAttribute("viewBox", "-600 -600 1200 1200");
+                    diffAndSetAttribute(viewBox, "viewBox", "-600 -600 1200 1200");
                     trsGroup.appendChild(viewBox);
                     var circleGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    circleGroup.setAttribute("id", "Circles");
+                    diffAndSetAttribute(circleGroup, "id", "Circles");
                     viewBox.appendChild(circleGroup);
                     {
                         let rads = [0.25, 0.50, 0.75, 1.0];
@@ -1713,19 +1726,19 @@ class MapInstrumentElement extends NavSystemElement {
                             while (Math.floor(startDegrees) <= endDegrees) {
                                 let line = document.createElementNS(Avionics.SVG.NS, "rect");
                                 let degree = (180 + startDegrees + 0.5);
-                                line.setAttribute("x", "0");
-                                line.setAttribute("y", rad.toString());
-                                line.setAttribute("width", dashWidth.toString());
-                                line.setAttribute("height", dashHeight.toString());
-                                line.setAttribute("transform", "rotate(" + degree + " 0 0)");
-                                line.setAttribute("fill", "white");
+                                diffAndSetAttribute(line, "x", "0");
+                                diffAndSetAttribute(line, "y", rad + '');
+                                diffAndSetAttribute(line, "width", dashWidth + '');
+                                diffAndSetAttribute(line, "height", dashHeight + '');
+                                diffAndSetAttribute(line, "transform", "rotate(" + degree + " 0 0)");
+                                diffAndSetAttribute(line, "fill", "white");
                                 circleGroup.appendChild(line);
                                 startDegrees += coneAngle / dashNbRect;
                             }
                         }
                     }
                     var limitGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    limitGroup.setAttribute("id", "Limits");
+                    diffAndSetAttribute(limitGroup, "id", "Limits");
                     viewBox.appendChild(limitGroup);
                     {
                         let endPosY = circleRadius + 50;
@@ -1733,11 +1746,11 @@ class MapInstrumentElement extends NavSystemElement {
                         let posY = 50;
                         while (posY <= endPosY) {
                             let line = document.createElementNS(Avionics.SVG.NS, "rect");
-                            line.setAttribute("x", posX.toString());
-                            line.setAttribute("y", (-posY).toString());
-                            line.setAttribute("width", dashHeight.toString());
-                            line.setAttribute("height", dashWidth.toString());
-                            line.setAttribute("fill", "white");
+                            diffAndSetAttribute(line, "x", posX + '');
+                            diffAndSetAttribute(line, "y", (-posY) + '');
+                            diffAndSetAttribute(line, "width", dashHeight + '');
+                            diffAndSetAttribute(line, "height", dashWidth + '');
+                            diffAndSetAttribute(line, "fill", "white");
                             limitGroup.appendChild(line);
                             posY += dashWidth * 2;
                         }
@@ -1745,97 +1758,97 @@ class MapInstrumentElement extends NavSystemElement {
                         posY = 50;
                         while (posY <= endPosY) {
                             let line = document.createElementNS(Avionics.SVG.NS, "rect");
-                            line.setAttribute("x", posX.toString());
-                            line.setAttribute("y", (-posY).toString());
-                            line.setAttribute("width", dashHeight.toString());
-                            line.setAttribute("height", dashWidth.toString());
-                            line.setAttribute("fill", "white");
+                            diffAndSetAttribute(line, "x", posX + '');
+                            diffAndSetAttribute(line, "y", (-posY) + '');
+                            diffAndSetAttribute(line, "width", dashHeight + '');
+                            diffAndSetAttribute(line, "height", dashWidth + '');
+                            diffAndSetAttribute(line, "fill", "white");
                             limitGroup.appendChild(line);
                             posY += dashWidth * 2;
                         }
                     }
                     var lineGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    lineGroup.setAttribute("id", "Lines");
+                    diffAndSetAttribute(lineGroup, "id", "Lines");
                     viewBox.appendChild(lineGroup);
                     {
                         var coneStart = 180 - coneAngle * 0.5;
                         var coneStartLine = document.createElementNS(Avionics.SVG.NS, "line");
-                        coneStartLine.setAttribute("x1", "0");
-                        coneStartLine.setAttribute("y1", "0");
-                        coneStartLine.setAttribute("x2", "0");
-                        coneStartLine.setAttribute("y2", circleRadius.toString());
-                        coneStartLine.setAttribute("transform", "rotate(" + coneStart + " 0 0)");
-                        coneStartLine.setAttribute("stroke", "white");
-                        coneStartLine.setAttribute("stroke-width", "3");
+                        diffAndSetAttribute(coneStartLine, "x1", "0");
+                        diffAndSetAttribute(coneStartLine, "y1", "0");
+                        diffAndSetAttribute(coneStartLine, "x2", "0");
+                        diffAndSetAttribute(coneStartLine, "y2", circleRadius + '');
+                        diffAndSetAttribute(coneStartLine, "transform", "rotate(" + coneStart + " 0 0)");
+                        diffAndSetAttribute(coneStartLine, "stroke", "white");
+                        diffAndSetAttribute(coneStartLine, "stroke-width", "3");
                         lineGroup.appendChild(coneStartLine);
                         var coneEnd = 180 + coneAngle * 0.5;
                         var coneEndLine = document.createElementNS(Avionics.SVG.NS, "line");
-                        coneEndLine.setAttribute("x1", "0");
-                        coneEndLine.setAttribute("y1", "0");
-                        coneEndLine.setAttribute("x2", "0");
-                        coneEndLine.setAttribute("y2", circleRadius.toString());
-                        coneEndLine.setAttribute("transform", "rotate(" + coneEnd + " 0 0)");
-                        coneEndLine.setAttribute("stroke", "white");
-                        coneEndLine.setAttribute("stroke-width", "3");
+                        diffAndSetAttribute(coneEndLine, "x1", "0");
+                        diffAndSetAttribute(coneEndLine, "y1", "0");
+                        diffAndSetAttribute(coneEndLine, "x2", "0");
+                        diffAndSetAttribute(coneEndLine, "y2", circleRadius + '');
+                        diffAndSetAttribute(coneEndLine, "transform", "rotate(" + coneEnd + " 0 0)");
+                        diffAndSetAttribute(coneEndLine, "stroke", "white");
+                        diffAndSetAttribute(coneEndLine, "stroke-width", "3");
                         lineGroup.appendChild(coneEndLine);
                     }
                     var textGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                    textGroup.setAttribute("id", "Texts");
+                    diffAndSetAttribute(textGroup, "id", "Texts");
                     viewBox.appendChild(textGroup);
                     {
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.textContent = "+60000FT";
-                        text.setAttribute("x", "50");
-                        text.setAttribute("y", "-150");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "20");
-                        text.setAttribute("transform", "rotate(-90)");
+                        diffAndSetText(text, "+60000FT");
+                        diffAndSetAttribute(text, "x", "50");
+                        diffAndSetAttribute(text, "y", "-150");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "20");
+                        diffAndSetAttribute(text, "transform", "rotate(-90)");
                         textGroup.appendChild(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.textContent = "-60000FT";
-                        text.setAttribute("x", "50");
-                        text.setAttribute("y", "160");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "20");
-                        text.setAttribute("transform", "rotate(-90)");
+                        diffAndSetText(text, "-60000FT");
+                        diffAndSetAttribute(text, "x", "50");
+                        diffAndSetAttribute(text, "y", "160");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "20");
+                        diffAndSetAttribute(text, "transform", "rotate(-90)");
                         textGroup.appendChild(text);
                         this.weatherTexts = [];
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "85");
-                        text.setAttribute("y", "85");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "18");
-                        text.setAttribute("transform", "rotate(-90)");
+                        diffAndSetAttribute(text, "x", "85");
+                        diffAndSetAttribute(text, "y", "85");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "18");
+                        diffAndSetAttribute(text, "transform", "rotate(-90)");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "215");
-                        text.setAttribute("y", "160");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "18");
-                        text.setAttribute("transform", "rotate(-90)");
+                        diffAndSetAttribute(text, "x", "215");
+                        diffAndSetAttribute(text, "y", "160");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "18");
+                        diffAndSetAttribute(text, "transform", "rotate(-90)");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "345");
-                        text.setAttribute("y", "220");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "18");
-                        text.setAttribute("transform", "rotate(-90)");
+                        diffAndSetAttribute(text, "x", "345");
+                        diffAndSetAttribute(text, "y", "220");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "18");
+                        diffAndSetAttribute(text, "transform", "rotate(-90)");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                         var text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.setAttribute("x", "475");
-                        text.setAttribute("y", "280");
-                        text.setAttribute("fill", "white");
-                        text.setAttribute("font-size", "18");
-                        text.setAttribute("transform", "rotate(-90)");
+                        diffAndSetAttribute(text, "x", "475");
+                        diffAndSetAttribute(text, "y", "280");
+                        diffAndSetAttribute(text, "fill", "white");
+                        diffAndSetAttribute(text, "font-size", "18");
+                        diffAndSetAttribute(text, "transform", "rotate(-90)");
                         textGroup.appendChild(text);
                         this.weatherTexts.push(text);
                     }
                 }
                 var legendGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                legendGroup.setAttribute("id", "legendGroup");
+                diffAndSetAttribute(legendGroup, "id", "legendGroup");
                 svgRoot.appendChild(legendGroup);
                 {
                     var x = -5;
@@ -1850,88 +1863,88 @@ class MapInstrumentElement extends NavSystemElement {
                     var left = x - w * 0.5;
                     var top = y - h * 0.5;
                     var rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", left.toString());
-                    rect.setAttribute("y", top.toString());
-                    rect.setAttribute("width", w.toString());
-                    rect.setAttribute("height", h.toString());
-                    rect.setAttribute("stroke", "white");
-                    rect.setAttribute("stroke-width", "2");
-                    rect.setAttribute("stroke-opacity", "1");
+                    diffAndSetAttribute(rect, "x", left + '');
+                    diffAndSetAttribute(rect, "y", top + '');
+                    diffAndSetAttribute(rect, "width", w + '');
+                    diffAndSetAttribute(rect, "height", h + '');
+                    diffAndSetAttribute(rect, "stroke", "white");
+                    diffAndSetAttribute(rect, "stroke-width", "2");
+                    diffAndSetAttribute(rect, "stroke-opacity", "1");
                     legendGroup.appendChild(rect);
                     rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", left.toString());
-                    rect.setAttribute("y", top.toString());
-                    rect.setAttribute("width", w.toString());
-                    rect.setAttribute("height", titleHeight.toString());
-                    rect.setAttribute("stroke", "white");
-                    rect.setAttribute("stroke-width", "2");
-                    rect.setAttribute("stroke-opacity", "1");
+                    diffAndSetAttribute(rect, "x", left + '');
+                    diffAndSetAttribute(rect, "y", top + '');
+                    diffAndSetAttribute(rect, "width", w + '');
+                    diffAndSetAttribute(rect, "height", titleHeight + '');
+                    diffAndSetAttribute(rect, "stroke", "white");
+                    diffAndSetAttribute(rect, "stroke-width", "2");
+                    diffAndSetAttribute(rect, "stroke-opacity", "1");
                     legendGroup.appendChild(rect);
                     var text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = "SCALE";
-                    text.setAttribute("x", x.toString());
-                    text.setAttribute("y", (top + titleHeight * 0.5).toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "11");
-                    text.setAttribute("text-anchor", "middle");
+                    diffAndSetText(text, "SCALE");
+                    diffAndSetAttribute(text, "x", x + '');
+                    diffAndSetAttribute(text, "y", (top + titleHeight * 0.5) + '');
+                    diffAndSetAttribute(text, "fill", "white");
+                    diffAndSetAttribute(text, "font-size", "11");
+                    diffAndSetAttribute(text, "text-anchor", "middle");
                     legendGroup.appendChild(text);
                     var scaleIndex = 0;
                     rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", (left + scaleOffsetX).toString());
-                    rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
-                    rect.setAttribute("width", scaleWidth.toString());
-                    rect.setAttribute("height", scaleHeight.toString());
-                    rect.setAttribute("fill", "red");
-                    rect.setAttribute("stroke", "white");
-                    rect.setAttribute("stroke-width", "2");
-                    rect.setAttribute("stroke-opacity", "1");
+                    diffAndSetAttribute(rect, "x", (left + scaleOffsetX) + '');
+                    diffAndSetAttribute(rect, "y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight) + '');
+                    diffAndSetAttribute(rect, "width", scaleWidth + '');
+                    diffAndSetAttribute(rect, "height", scaleHeight + '');
+                    diffAndSetAttribute(rect, "fill", "red");
+                    diffAndSetAttribute(rect, "stroke", "white");
+                    diffAndSetAttribute(rect, "stroke-width", "2");
+                    diffAndSetAttribute(rect, "stroke-opacity", "1");
                     legendGroup.appendChild(rect);
                     text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = "HEAVY";
-                    text.setAttribute("x", (left + scaleOffsetX + scaleWidth + 5).toString());
-                    text.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight + scaleHeight * 0.5).toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "11");
+                    diffAndSetText(text, "HEAVY");
+                    diffAndSetAttribute(text, "x", (left + scaleOffsetX + scaleWidth + 5) + '');
+                    diffAndSetAttribute(text, "y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight + scaleHeight * 0.5) + '');
+                    diffAndSetAttribute(text, "fill", "white");
+                    diffAndSetAttribute(text, "font-size", "11");
                     legendGroup.appendChild(text);
                     scaleIndex++;
                     rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", (left + scaleOffsetX).toString());
-                    rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
-                    rect.setAttribute("width", scaleWidth.toString());
-                    rect.setAttribute("height", scaleHeight.toString());
-                    rect.setAttribute("fill", "yellow");
-                    rect.setAttribute("stroke", "white");
-                    rect.setAttribute("stroke-width", "2");
-                    rect.setAttribute("stroke-opacity", "1");
+                    diffAndSetAttribute(rect, "x", (left + scaleOffsetX) + '');
+                    diffAndSetAttribute(rect, "y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight) + '');
+                    diffAndSetAttribute(rect, "width", scaleWidth + '');
+                    diffAndSetAttribute(rect, "height", scaleHeight + '');
+                    diffAndSetAttribute(rect, "fill", "yellow");
+                    diffAndSetAttribute(rect, "stroke", "white");
+                    diffAndSetAttribute(rect, "stroke-width", "2");
+                    diffAndSetAttribute(rect, "stroke-opacity", "1");
                     legendGroup.appendChild(rect);
                     scaleIndex++;
                     rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", (left + scaleOffsetX).toString());
-                    rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
-                    rect.setAttribute("width", scaleWidth.toString());
-                    rect.setAttribute("height", scaleHeight.toString());
-                    rect.setAttribute("fill", "green");
-                    rect.setAttribute("stroke", "white");
-                    rect.setAttribute("stroke-width", "2");
-                    rect.setAttribute("stroke-opacity", "1");
+                    diffAndSetAttribute(rect, "x", (left + scaleOffsetX) + '');
+                    diffAndSetAttribute(rect, "y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight) + '');
+                    diffAndSetAttribute(rect, "width", scaleWidth + '');
+                    diffAndSetAttribute(rect, "height", scaleHeight + '');
+                    diffAndSetAttribute(rect, "fill", "green");
+                    diffAndSetAttribute(rect, "stroke", "white");
+                    diffAndSetAttribute(rect, "stroke-width", "2");
+                    diffAndSetAttribute(rect, "stroke-opacity", "1");
                     legendGroup.appendChild(rect);
                     text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = "LIGHT";
-                    text.setAttribute("x", (left + scaleOffsetX + scaleWidth + 5).toString());
-                    text.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight + scaleHeight * 0.5).toString());
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", "11");
+                    diffAndSetText(text, "LIGHT");
+                    diffAndSetAttribute(text, "x", (left + scaleOffsetX + scaleWidth + 5) + '');
+                    diffAndSetAttribute(text, "y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight + scaleHeight * 0.5) + '');
+                    diffAndSetAttribute(text, "fill", "white");
+                    diffAndSetAttribute(text, "font-size", "11");
                     legendGroup.appendChild(text);
                     scaleIndex++;
                     rect = document.createElementNS(Avionics.SVG.NS, "rect");
-                    rect.setAttribute("x", (left + scaleOffsetX).toString());
-                    rect.setAttribute("y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight).toString());
-                    rect.setAttribute("width", scaleWidth.toString());
-                    rect.setAttribute("height", scaleHeight.toString());
-                    rect.setAttribute("fill", "black");
-                    rect.setAttribute("stroke", "white");
-                    rect.setAttribute("stroke-width", "2");
-                    rect.setAttribute("stroke-opacity", "1");
+                    diffAndSetAttribute(rect, "x", (left + scaleOffsetX) + '');
+                    diffAndSetAttribute(rect, "y", (top + titleHeight + scaleOffsetY + scaleIndex * scaleHeight) + '');
+                    diffAndSetAttribute(rect, "width", scaleWidth + '');
+                    diffAndSetAttribute(rect, "height", scaleHeight + '');
+                    diffAndSetAttribute(rect, "fill", "black");
+                    diffAndSetAttribute(rect, "stroke", "white");
+                    diffAndSetAttribute(rect, "stroke-width", "2");
+                    diffAndSetAttribute(rect, "stroke-opacity", "1");
                     legendGroup.appendChild(rect);
                 }
             }
@@ -1946,7 +1959,7 @@ class SoftKeyHtmlElement {
     fillFromElement(_elem) {
         var val = _elem.name;
         if (this.Value != val) {
-            this.Element.innerHTML = val;
+            diffAndSetHTML(this.Element, val);
             this.Value = val;
         }
         if (_elem.stateCallback) {
@@ -1968,7 +1981,7 @@ class SoftKeys extends NavSystemElement {
     }
     init(root) {
         for (var i = 1; i <= 12; i++) {
-            var name = "Key" + i.toString();
+            var name = "Key" + i + '';
             var child = this.gps.getChildById(name);
             if (child) {
                 var e = new this.softKeyHTMLClass(child);
@@ -2051,6 +2064,8 @@ class Annunciation_Message {
         this.Visible = false;
         this.Acknowledged = false;
     }
+    get Text() { return this.m_Text; }
+    set Text(s) { this.m_Text = s; }
     reset() {
     }
 }
@@ -2230,6 +2245,7 @@ class Cabin_Annunciations extends Annunciations {
         this.warningTone = false;
         this.firstAcknowledge = true;
         this.offStart = false;
+        this.FrameCounterForAlternation = 0;
     }
     init(root) {
         super.init(root);
@@ -2263,7 +2279,8 @@ class Cabin_Annunciations extends Annunciations {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        for (var i = 0; i < this.allMessages.length; i++) {
+        this.FrameCounterForAlternation++;
+        for (var i = (this.FrameCounterForAlternation & 7); i < this.allMessages.length; i += 8) {
             var message = this.allMessages[i];
             var value = false;
             if (message.Handler)
@@ -2321,7 +2338,7 @@ class Cabin_Annunciations extends Annunciations {
             }
         }
         if (this.annunciations)
-            this.annunciations.setAttribute("state", this.gps.blinkGetState(800, 400) ? "Blink" : "None");
+            diffAndSetAttribute(this.annunciations, "state", this.gps.blinkGetState(800, 400) ? "Blink" : "None");
         if (this.needReload) {
             let warningOn = 0;
             let cautionOn = 0;
@@ -2351,7 +2368,7 @@ class Cabin_Annunciations extends Annunciations {
                 SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", cautionOn);
             }
             if (this.annunciations)
-                this.annunciations.innerHTML = messages;
+                diffAndSetHTML(this.annunciations, messages);
             this.needReload = false;
         }
         if (this.warningTone && !this.isPlayingWarningTone && this.gps.isPrimary) {
@@ -2495,16 +2512,16 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     LowVaccum() {
-        return SimVar.GetSimVarValue("WARNING VACUUM", "Boolean");
+        return Simplane.LowVaccum();
     }
     LowPower() {
         return false;
     }
     LowFuelR() {
-        return SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallon") < 5;
+        return Simplane.getFuelQuantityR() < 5;
     }
     LowFuelL() {
-        return SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallon") < 5;
+        return Simplane.getFuelQuantityL() < 5;
     }
     FuelTempFailed() {
         return false;
@@ -2519,24 +2536,24 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     OilPressure() {
-        return SimVar.GetSimVarValue("WARNING OIL PRESSURE", "Boolean");
+        return Simplane.getWOilPressure();
     }
     LowFuelPressure() {
-        var pressure = SimVar.GetSimVarValue("ENG FUEL PRESSURE", "psi");
+        var pressure = Simplane.getEngFuelPressure0();
         if (pressure <= 1)
             return true;
         return false;
     }
     LowVoltage() {
         var voltage;
-        voltage = SimVar.GetSimVarValue("ELECTRICAL MAIN BUS VOLTAGE", "volts");
+        voltage = Simplane.getElecMainBusVolt();
         if (voltage < 24)
             return true;
         return false;
     }
     HighVoltage() {
         var voltage;
-        voltage = SimVar.GetSimVarValue("ELECTRICAL MAIN BUS VOLTAGE", "volts");
+        voltage = Simplane.getElecMainBusVolt();
         if (voltage > 32)
             return true;
         return false;
@@ -2551,16 +2568,16 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     fuelOff() {
-        return (SimVar.GetSimVarValue("FUEL TANK SELECTOR:1", "number") == 0);
+        return (Simplane.getTankSelector() == 0);
     }
     fuelPress() {
-        return (SimVar.GetSimVarValue("GENERAL ENG FUEL PRESSURE:1", "psi") <= 10);
+        return (Simplane.getFuelPress() <= 10);
     }
     oilPressWarning() {
-        return (SimVar.GetSimVarValue("ENG OIL PRESSURE:1", "psi") <= 60);
+        return (Simplane.getEngOilPressure1() <= 60);
     }
     itt(_limit = 840) {
-        let itt = SimVar.GetSimVarValue("TURB ENG ITT:1", "celsius");
+        let itt = Simplane.getEngITT();
         return (itt > _limit);
     }
     flapsAsym() {
@@ -2573,16 +2590,16 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     cabinAltitude() {
-        return SimVar.GetSimVarValue("PRESSURIZATION CABIN ALTITUDE", "feet") > 10000;
+        return Simplane.getPressurisationCabinAltitude() > 10000;
     }
     edm() {
         return false;
     }
     cabinDiffPress() {
-        return SimVar.GetSimVarValue("PRESSURIZATION PRESSURE DIFFERENTIAL", "psi") > 6.2;
+        return Simplane.getPressurisationDifferential() > 6.2;
     }
     door() {
-        return SimVar.GetSimVarValue("EXIT OPEN:0", "percent") > 0;
+        return Simplane.getExitOpen() > 0;
     }
     uspActive() {
         return false;
@@ -2591,28 +2608,28 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     parkBrake() {
-        return SimVar.GetSimVarValue("BRAKE PARKING INDICATOR", "Bool");
+        return Simplane.getParkBrake();
     }
     oxygen() {
         return false;
     }
     oilPressCaution() {
-        let press = SimVar.GetSimVarValue("ENG OIL PRESSURE:1", "psi");
+        let press = Simplane.getEngOilPressure1();
         return (press <= 105 && press >= 60);
     }
     chip() {
         return false;
     }
     oilTemp() {
-        let temp = SimVar.GetSimVarValue("GENERAL ENG OIL TEMPERATURE:1", "celsius");
+        let temp = Simplane.getEngOilTemp1();
         return (temp <= 0 || temp >= 104);
     }
     auxBoostPmpOn() {
-        return SimVar.GetSimVarValue("GENERAL ENG FUEL PUMP ON:1", "Bool");
+        return Simplane.getEngFuelPump1();
     }
     fuelLowSelector() {
-        let left = SimVar.GetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallon") < 9;
-        let right = SimVar.GetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallon") < 9;
+        let left = Simplane.getFuelMQuantityL() < 9;
+        let right = Simplane.getFuelMQuantityR() < 9;
         if (left && right) {
             return 3;
         }
@@ -2630,33 +2647,33 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     fuelImbalance() {
-        let left = SimVar.GetSimVarValue("FUEL TANK LEFT MAIN QUANTITY", "gallon");
-        let right = SimVar.GetSimVarValue("FUEL TANK RIGHT MAIN QUANTITY", "gallon");
+        let left = Simplane.getFuelMQuantityL();
+        let right = Simplane.getFuelMQuantityR();
         return Math.abs(left - right) > 15;
     }
     lowLvlFailSelector() {
         return false;
     }
     batOff() {
-        return !SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "Bool");
+        return !Simplane.getElecMasterBatt();
     }
     batAmp() {
-        return SimVar.GetSimVarValue("ELECTRICAL BATTERY BUS AMPS", "amperes") > 50;
+        return Simplane.getElecBatBusAmp() > 50;
     }
     mainGen() {
-        return !SimVar.GetSimVarValue("GENERAL ENG GENERATOR SWITCH:1", "Bool");
+        return !Simplane.getEngGenSw1();
     }
     lowVoltage() {
-        return SimVar.GetSimVarValue("ELECTRICAL MAIN BUS VOLTAGE", "volts") < 24.5;
+        return Simplane.getElecMainBusVolt() < 24.5;
     }
     bleedOff() {
-        return SimVar.GetSimVarValue("BLEED AIR SOURCE CONTROL", "Enum") == 1;
+        return Simplane.getBleedAirSourceCont() == 1;
     }
     useOxygenMask() {
-        return SimVar.GetSimVarValue("PRESSURIZATION CABIN ALTITUDE", "feet") > 10000;
+        return Simplane.getPressurisationCabinAltitude() > 10000;
     }
     vacuumLow() {
-        return SimVar.GetSimVarValue("PARTIAL PANEL VACUUM", "Enum") == 1;
+        return Simplane.getPartpanVacu() == 1;
     }
     propDeiceFail() {
         return false;
@@ -2683,13 +2700,13 @@ class Engine_Annunciations extends Cabin_Annunciations {
         return false;
     }
     ignition() {
-        return SimVar.GetSimVarValue("TURB ENG IS IGNITING:1", "Bool");
+        return Simplane.getTurbEng1IsIgn();
     }
     starter() {
-        return SimVar.GetSimVarValue("GENERAL ENG STARTER ACTIVE:1", "Bool");
+        return Simplane.getEngStarAc1();
     }
     maxDiffMode() {
-        return SimVar.GetSimVarValue("BLEED AIR SOURCE CONTROL", "Enum") == 3;
+        return Simplane.getBleedAirSourceCont() == 3;
     }
     cpcsBackUpMode() {
         return false;
@@ -2797,12 +2814,12 @@ class Warnings extends NavSystemElement {
             this.warnings.push(new Warning_Data("", "", "Garmin_TAWS_System_Test_OK_f", 0, this.tawsTestFinishedCallback.bind(this), true));
         }
         this.UID = parseInt(this.gps.getAttribute("Guid")) + 1;
-        SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", 0);
+        Simplane.setAS1000WarMasterSet(0);
     }
     onUpdate(_deltaTime) {
-        let masterSet = SimVar.GetSimVarValue("L:AS1000_Warnings_Master_Set", "number");
+        let masterSet = Simplane.getAS1000WarMasterSet();
         if (masterSet == 0) {
-            SimVar.SetSimVarValue("L:AS1000_Warnings_Master_Set", "number", this.UID);
+            Simplane.setAS1000WarMasterSet(this.UID);
         }
         else if (masterSet == this.UID) {
             let found = false;
@@ -2830,9 +2847,9 @@ class Warnings extends NavSystemElement {
                 }
             }
             if (found)
-                SimVar.SetSimVarValue("L:AS1000_Warnings_WarningIndex", "number", bestWarning + 1);
+                Simplane.setAS1000WarIndex(bestWarning + 1);
             else
-                SimVar.SetSimVarValue("L:AS1000_Warnings_WarningIndex", "number", 0);
+                Simplane.setAS1000WarIndex(0);
         }
     }
     onSoundEnd(_eventId) {
@@ -2895,23 +2912,23 @@ class Warnings extends NavSystemElement {
         }
     }
     pullUpCallback() {
-        let height = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet");
-        let descentRate = -SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
+        let height = Simplane.getAltitudeAboveGround_();
+        let descentRate = -Simplane.getVerticalSpeed();
         return this.linearMultiPointsEvaluation(this.pullUp_sinkRate_Points, descentRate, height) == 1;
     }
     sinkRateCallback() {
-        let height = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "feet");
-        let descentRate = -SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
+        let height = Simplane.getAltitudeAboveGround_();
+        let descentRate = -Simplane.getVerticalSpeed();
         return this.linearMultiPointsEvaluation(this.pullUp_sinkRate_Points, descentRate, height) == 2;
     }
     landingGearCallback() {
-        let gear = !SimVar.GetSimVarValue("IS GEAR RETRACTABLE", "Boolean") || SimVar.GetSimVarValue("GEAR HANDLE POSITION", "Boolean");
-        let throttle = SimVar.GetSimVarValue("GENERAL ENG THROTTLE LEVER POSITION:1", "percent");
-        let flaps = SimVar.GetSimVarValue("FLAPS HANDLE INDEX", "number");
+        let gear = !Simplane.getIsGearRetractable() || Simplane.getGearHandlePosition();
+        let throttle = Simplane.getEngineThrottle(1);
+        let flaps = Simplane.getFlapsHandleIndex();
         return !gear && (flaps > 1 || (throttle == 0));
     }
     stallCallback() {
-        return SimVar.GetSimVarValue("STALL WARNING", "Boolean");
+        return Simplane.getStallWarning();
     }
     tawsTestCallback() {
         return this.gps.getTimeSinceStart() < 30000;
@@ -2923,8 +2940,7 @@ class Warnings extends NavSystemElement {
 class Cabin_Warnings extends Warnings {
     constructor() {
         super(...arguments);
-        this.currentWarningLevel = 0;
-        this.currentWarningText = "";
+        this.currentWarning = null;
     }
     init(root) {
         super.init(root);
@@ -2932,44 +2948,40 @@ class Cabin_Warnings extends Warnings {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        let warningIndex = SimVar.GetSimVarValue("L:AS1000_Warnings_WarningIndex", "number");
-        let warningText;
-        let warningLevel;
-        if (warningIndex <= 0 || warningIndex > this.warnings.length) {
-            warningText = "";
-            warningLevel = 0;
+        let warningIndex = Simplane.getAS1000WarIndex();
+        let warning = null;
+        if (warningIndex > 0 && warningIndex <= this.warnings.length) {
+            warning = this.warnings[warningIndex - 1];
         }
-        else {
-            warningText = this.warnings[warningIndex - 1].shortText;
-            warningLevel = this.warnings[warningIndex - 1].level;
-        }
-        if (this.currentWarningLevel != warningLevel || this.currentWarningText != warningText) {
-            this.currentWarningText = warningText;
-            this.currentWarningLevel = warningLevel;
+        if (this.currentWarning != warning) {
+            this.currentWarning = warning;
             if (this.warningBox && this.warningContent) {
-                this.warningContent.textContent = warningText;
-                switch (warningLevel) {
+                diffAndSetText(this.warningContent, this.getCurrentWarningText());
+                switch (this.getCurrentWarningLevel()) {
                     case 0:
-                        this.warningBox.setAttribute("state", "Hidden");
+                        diffAndSetAttribute(this.warningBox, "state", "Hidden");
                         break;
                     case 1:
-                        this.warningBox.setAttribute("state", "White");
+                        diffAndSetAttribute(this.warningBox, "state", "White");
                         break;
                     case 2:
-                        this.warningBox.setAttribute("state", "Yellow");
+                        diffAndSetAttribute(this.warningBox, "state", "Yellow");
                         break;
                     case 3:
-                        this.warningBox.setAttribute("state", "Red");
+                        diffAndSetAttribute(this.warningBox, "state", "Red");
                         break;
                 }
             }
         }
     }
+    getCurrentWarning() {
+        return this.currentWarning;
+    }
     getCurrentWarningLevel() {
-        return this.currentWarningLevel;
+        return this.currentWarning ? this.currentWarning.level : 0;
     }
     getCurrentWarningText() {
-        return this.currentWarningText;
+        return this.currentWarning ? this.currentWarning.shortText : "";
     }
     onEnter() { }
     onExit() { }
@@ -3000,7 +3012,9 @@ class GlassCockpit_XMLEngine extends NavSystemElement {
         }
         this._t++;
         if (this._t > 30) {
-            this.gps.currFlightPlanManager.updateFlightPlan();
+            if (this.gps.currFlightPlanManager) {
+                this.gps.currFlightPlanManager.updateFlightPlan();
+            }
             this._t = 0;
         }
     }

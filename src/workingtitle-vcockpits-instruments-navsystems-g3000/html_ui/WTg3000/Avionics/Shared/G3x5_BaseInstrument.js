@@ -105,30 +105,22 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._loadModConfig();
     }
 
-    createMainLoop() {
-        if (this._isConnected) {
+    mainLoop() {
+        if (!this._isConnected) {
+            console.log("Exiting MainLoop...");
             return;
         }
-        this._lastTime = Date.now();
-        let updateLoop = () => {
-            if (!this._isConnected) {
-                console.log("Exiting MainLoop...");
-                return;
-            }
-            try {
-                if (BaseInstrument.allInstrumentsLoaded && !this.xmlConfigLoading && this._isModConfigLoaded && SimVar.IsReady()) {
-                    if (!this._isInitialized)
-                        this.Init();
-                    this.doUpdate();
+        try {
+            if (BaseInstrument.allInstrumentsLoaded && this._isModConfigLoaded && SimVar.IsReady()) {
+                if (!this._isInitialized) {
+                    this.Init();
                 }
-            } catch (e) {
-                console.error(this.instrumentIdentifier + " : " + e, e.stack);
+                this.doUpdate();
             }
-            requestAnimationFrame(updateLoop);
-        };
-        this._isConnected = true;
-        console.log("MainLoop created");
-        requestAnimationFrame(updateLoop);
+        } catch (error) {
+            console.error(this.instrumentIdentifier + " : " + error, error.stack);
+        }
+        requestAnimationFrame(this._mainLoopFuncInstance);
     }
 
     _initTime() {
@@ -205,7 +197,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         try {
             // this needs to be in a try-catch block because for a period of time after loading a flight, Coherent has issues retrieving ICAO waypoint data
             // therefore we don't count forced enroute syncs that encounter errors as successful and will try again the next cycle
-            await this.flightPlanManagerWT.syncActiveFromGame(!this.flightPlanManagerWT.activePlanHasManualEdit || this._forceSyncEnrouteFromAsobo);
+            await this.flightPlanManagerWT.syncActiveFromGame(!this.flightPlanManagerWT.activePlanHasManualEdit || this._forceSyncEnrouteFromAsobo, true);
 
             // need to force enroute sync multiple times because sometimes the game is late loading all fpln legs from the world map
             if (this._asoboEnrouteSyncCount < WT_G3x5_BaseInstrument.FLIGHT_PLAN_ENROUTE_SYNC_ATTEMPTS) {

@@ -14,39 +14,30 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
     }
 
     _initDistanceFormatter() {
-        let formatter = new WT_NumberFormatter({
+        this._distanceFormatter = new WT_NumberFormatter({
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
         });
-        this._distanceFormatter = new WT_NumberHTMLFormatter(formatter, {
-            classGetter: {
-                _numberClassList: [],
-                _unitClassList: [WT_G3x5_PFDNavDMEInfoHTMLElement.UNIT_CLASS],
-
-                getNumberClassList(numberUnit, forceUnit) {
-                    return this._numberClassList;
-                },
-                getUnitClassList(numberUnit, forceUnit) {
-                    return this._unitClassList;
-                }
-            },
-            numberUnitDelim: ""
-        });
     }
 
-    _defineChildren() {
-        this._navTitle = new WT_CachedElement(this.shadowRoot.querySelector(`#navtitle`));
-        this._ident = new WT_CachedElement(this.shadowRoot.querySelector(`#ident`));
-        this._frequency = new WT_CachedElement(this.shadowRoot.querySelector(`#frequency`));
-        this._dmeTitle = new WT_CachedElement(this.shadowRoot.querySelector(`#dmetitle`));
-        this._dme = new WT_CachedElement(this.shadowRoot.querySelector(`#dme`));
+    async _defineChildren() {
+        this._navTitle = new WT_CachedElement(this.shadowRoot.querySelector("#navtitle"), {cacheAttributes: false});
+        this._ident = new WT_CachedElement(this.shadowRoot.querySelector("#ident"), {cacheAttributes: false});
+        this._frequency = new WT_CachedElement(this.shadowRoot.querySelector("#frequency"), {cacheAttributes: false});
+        this._dmeTitle = new WT_CachedElement(this.shadowRoot.querySelector("#dmetitle"), {cacheAttributes: false});
+
+        this._dme = await WT_CustomElementSelector.select(this.shadowRoot, "#dme", WT_NumberUnitView);
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._isInit = true;
     }
 
     connectedCallback() {
-        this._defineChildren();
-        this._isInit = true;
+        this._connectedCallbackHelper();
     }
 
     /**
@@ -62,7 +53,8 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
         this._ident.textContent = "";
         this._frequency.textContent = "";
         this._dmeTitle.textContent = "";
-        this._dme.innerHTML = "";
+        this._dme.setNumberText("");
+        this._dme.setUnitText("");
     }
 
     /**
@@ -103,13 +95,18 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
      */
     _updateDME(nav, hasDME) {
         let dme = nav.dme(this._tempNM);
-        let text;
+        let displayUnit = this._context.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        let numberText;
+        let unitText;
         if (dme) {
-            text = this._distanceFormatter.getFormattedHTML(dme, this._context.unitsSettingModel.distanceSpeedSetting.getDistanceUnit());
+            numberText = this._distanceFormatter.getFormattedNumber(dme, displayUnit);
+            unitText = this._distanceFormatter.getFormattedUnit(dme, displayUnit);
         } else {
-            text = `___${this._distanceFormatter.getFormattedUnitHTML(this._tempNM, this._context.unitsSettingModel.distanceSpeedSetting.getDistanceUnit())}`;
+            numberText = "___";
+            unitText = this._distanceFormatter.getFormattedUnit(this._tempNM, displayUnit)
         }
-        this._dme.innerHTML = text;
+        this._dme.setNumberText(numberText);
+        this._dme.setUnitText(unitText);
     }
 
     _updateDisplay() {
@@ -128,7 +125,10 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
     }
 
     update() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._updateDisplay();
     }
 }
-WT_G3x5_PFDNavDMEInfoHTMLElement.UNIT_CLASS = "unit";

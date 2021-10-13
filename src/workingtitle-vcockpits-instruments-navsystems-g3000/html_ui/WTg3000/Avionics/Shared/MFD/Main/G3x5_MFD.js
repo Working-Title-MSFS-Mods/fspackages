@@ -19,6 +19,8 @@ class WT_G3x5_MFD extends NavSystem {
         return undefined;
     }
 
+    get manageFlightPlan() { return false; }
+
     /**
      * @readonly
      * @type {WT_AirplaneAirspeedSensor}
@@ -628,16 +630,16 @@ class AS3000_MFD_ComFrequencies extends NavSystemElement {
     onUpdate(_deltaTime) {
         var com1Active = SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz");
         if (com1Active)
-            diffAndSetText(this.com1Active, com1Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com1Active, com1Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
         var com1Sby = SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz");
         if (com1Sby)
-            diffAndSetText(this.com1Stby, com1Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com1Stby, com1Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
         var com2Active = SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz");
         if (com2Active)
-            diffAndSetText(this.com2Active, com2Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com2Active, com2Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
         var com2Sby = SimVar.GetSimVarValue("COM STANDBY FREQUENCY:2", "MHz");
         if (com2Sby)
-            diffAndSetText(this.com2Stby, com2Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com2Stby, com2Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
     }
     onExit() {
     }
