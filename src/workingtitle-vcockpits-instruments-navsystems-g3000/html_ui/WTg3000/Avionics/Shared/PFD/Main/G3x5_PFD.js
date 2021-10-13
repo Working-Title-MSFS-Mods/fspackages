@@ -559,17 +559,6 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
         super();
 
         this._instrumentID = instrumentID;
-
-        this._initSettingModel();
-    }
-
-    _initSettingModel() {
-        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
-        this._settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._settingModel));
-        this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
-
-        this._settingModel.init();
-        this._setSVTShow(this.svtShowSetting.getValue());
     }
 
     /**
@@ -590,19 +579,30 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
         return this._svtShowSetting;
     }
 
-    get syntheticVisionEnabled() {
-        return this._syntheticVisionEnabled;
-    }
-
-    set syntheticVisionEnabled(enabled) {
+    /**
+     * Checks whether synthetic terrain is enabled.
+     * @returns whether synthetic terrain is enabled.
+     */
+    isSVTEnabled() {
+        return this._svg ? this._svg.getSyntheticVisionEnabled() : false;
     }
 
     init(root) {
-        this.svg = this.gps.getChildById("Horizon");
+        this._svg = this.gps.getChildById("Horizon");
+        this._initSettingModel();
+    }
+
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._settingModel));
+        this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
+
+        this._settingModel.init();
+        this._setSVTShow(this.svtShowSetting.getValue());
     }
 
     _setSVTShow(value) {
-        this._syntheticVisionEnabled = value;
+        this._svg.setSyntheticVisionEnabled(value);
     }
 
     _onSVTShowSettingChanged(setting, newValue, oldValue) {
