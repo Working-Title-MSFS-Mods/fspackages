@@ -205,9 +205,6 @@ class WT_Approach extends WT_Procedure {
     _initRunway(data) {
         let runwayDesignation = data.runway.trim();
         this._runway = this.airport.runways.getByDesignation(runwayDesignation);
-        if (!this._runway) {
-            this._runway = this.airport.runways.getByDesignation(runwayDesignation + "C"); // data from the game leaves out the C for center runways
-        }
     }
 
     _initLegs(data) {
