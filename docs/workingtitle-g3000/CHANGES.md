@@ -1,5 +1,13 @@
 # Changelog
 
+### v0.7.5
+**Fixes**
+- \[Compatibility\] Now compatible with game patch xxxxx (Sim Update 6).
+- \[PFD\] SVT can now be toggled off.
+- \[Misc\] Changed the default Vspeeds for the Longitude to more sensible values.
+  - Takeoff Vspeeds are now reflective of published values for takeoff at MTOW, sea level, ISA, dry runway, Flaps 1, anti-ice OFF.
+  - Landing Vspeeds are now reflective of published values for landing at MLW.
+
 ### v0.7.4
 **New Features**
 - \[GTC\] The Flight Plan page will now provide warnings when the system detects that the FMS active flight plan is desynchronized from the sim's flight plan.
