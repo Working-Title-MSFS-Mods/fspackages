@@ -5,7 +5,6 @@ class WT_G3x5_MFD extends NavSystem {
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
 
-        this._trafficTracker = new WT_TrafficTracker();
         this._lastTrafficUpdateTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
@@ -118,8 +117,7 @@ class WT_G3x5_MFD extends NavSystem {
     }
 
     _initTrafficTracker() {
-        let dataRetriever = this.modConfig.traffic.useTrafficService ? new WT_TrafficServiceTrafficDataRetriever(this.modConfig.traffic.trafficServicePort) : new WT_CoherentTrafficDataRetriever();
-        this._trafficTracker = new WT_TrafficTracker(dataRetriever);
+        this._trafficTracker = new WT_TrafficTracker(new WT_CoherentTrafficDataRetriever());
     }
 
     /**

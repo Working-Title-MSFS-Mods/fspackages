@@ -141,8 +141,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _initTrafficTracker() {
-        let dataRetriever = this.modConfig.traffic.useTrafficService ? new WT_TrafficServiceTrafficDataRetriever(this.modConfig.traffic.trafficServicePort) : new WT_CoherentTrafficDataRetriever();
-        this._trafficTracker = new WT_TrafficTracker(dataRetriever);
+        this._trafficTracker = new WT_TrafficTracker(new WT_CoherentTrafficDataRetriever());
     }
 
     /**
