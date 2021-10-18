@@ -687,12 +687,7 @@ class AS3X_Touch_TopBar extends NavSystemElement {
         }
         diffAndSetText(this.gs, fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 1) + "kt");
         diffAndSetText(this.trk, fastToFixed(SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"), 0) + "°m");
-        if (this.isIdent) {
-            if (Date.now() - this.identStartTime > 17000 || SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") < 3) {
-                this.isIdent = false;
-                diffAndSetAttribute(this.identButton_Status, "state", "Inactive");
-            }
-        }
+        diffAndSetAttribute(this.identButton_Status, "state", (SimVar.GetSimVarValue("TRANSPONDER IDENT:1", "bool")) ? "Active" : "Inactive");
     }
     onExit() {
     }
@@ -707,11 +702,7 @@ class AS3X_Touch_TopBar extends NavSystemElement {
         }
     }
     ident() {
-        if (SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") > 2) {
-            this.isIdent = true;
-            this.identStartTime = Date.now();
-            diffAndSetAttribute(this.identButton_Status, "state", "Active");
-        }
+        SimVar.SetSimVarValue("K:XPNDR_IDENT_ON", "bool", true);
     }
 }
 class AS3X_Touch_Transponder extends NavSystemTouch_Transponder {
