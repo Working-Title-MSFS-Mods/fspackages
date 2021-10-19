@@ -98,6 +98,9 @@ class CompositeLogicXMLElement extends LogicXMLElement {
                     case "Max":
                         this.childrens.push(new MaxLogicXMLElement(this.gps, this.element.children[i]));
                         break;
+                    case "Clamp":
+                        this.childrens.push(new ClampLogicXMLElement(this.gps, this.element.children[i]));
+                        break;
                     case "Lower":
                         this.childrens.push(new LowerLogicXMLElement(this.gps, this.element.children[i]));
                         break;
@@ -130,6 +133,9 @@ class CompositeLogicXMLElement extends LogicXMLElement {
                         break;
                     case "LinearMultiPoint":
                         this.childrens.push(new LinearMultiPointLogicXMLElement(this.gps, this.element.children[i]));
+                        break;
+                    case "MultiDimensionsTable":
+                        this.childrens.push(new MultiDimensionsTableLogicXMLElement(this.gps, this.element.children[i]));
                         break;
                     case "TimeSinceStart":
                         this.childrens.push(new TimeSinceStartLogicXMLElement(this.gps, this.element.children[i]));
@@ -315,6 +321,30 @@ class MinLogicXMLElement extends CompositeLogicXMLElement {
             }
         }
         return min;
+    }
+}
+class ClampLogicXMLElement extends CompositeLogicXMLElement {
+    constructor(_gps, _element) {
+        super(_gps, _element);
+        let min = _element.getAttribute("min");
+        if (min) {
+            this.min = parseFloat(min);
+        }
+        let max = _element.getAttribute("max");
+        if (max) {
+            this.max = parseFloat(max);
+        }
+    }
+    getValue(_context) {
+        let val = this.childrens.length > 0 ? this.childrens[0].getValueAsNumber(_context) : undefined;
+        if (this.max && this.min)
+            return Utils.Clamp(val, this.min, this.max);
+        else if (this.max)
+            return Math.min(val, this.max);
+        else if (this.min)
+            return Math.max(val, this.min);
+        else
+            return val;
     }
 }
 class LowerLogicXMLElement extends CompositeLogicXMLElement {
@@ -513,10 +543,10 @@ class LinearMultiPointLogicXMLElement extends LogicXMLElement {
             this.param2 = new CompositeLogicXMLElement(this.gps, params[1]);
         }
     }
-    getValue() {
+    getValue(_context) {
         let lastLowerIndex = -1;
-        let valueX = this.param1.getValue();
-        let valueY = this.param2.getValue();
+        let valueX = this.param1.getValue(_context);
+        let valueY = this.param2.getValue(_context);
         if (typeof valueX == 'number' && typeof valueY == 'number') {
             for (let i = 0; i < this.referencePoints.length; i++) {
                 if (valueX > this.referencePoints[i]) {
@@ -563,6 +593,189 @@ class LinearMultiPointLogicXMLElement extends LogicXMLElement {
             this.param2.reset();
     }
 }
+class MultiDimensionsTableInput {
+    get factor() { return this._factor; }
+    get previousIndex() { return this._previousIndex; }
+    get nextIndex() { return this._nextIndex; }
+    update(_context) {
+        if (this.param && this.references && this.references.length > 0) {
+            let value = this.param.getValueAsNumber(_context);
+            let lastLowerIndex = -1;
+            for (let i = 0; this.references.length; i++) {
+                if (value > this.references[i])
+                    lastLowerIndex = i;
+                else
+                    break;
+            }
+            if (lastLowerIndex == -1) {
+                this._previousIndex = 0;
+                this._nextIndex = 0;
+                this._factor = 0;
+            }
+            else if (lastLowerIndex == this.references.length - 1) {
+                this._previousIndex = this.references.length - 1;
+                this._nextIndex = this._previousIndex;
+                this._factor = 0;
+            }
+            else {
+                this._previousIndex = lastLowerIndex;
+                this._nextIndex = lastLowerIndex + 1;
+                this._factor = (value - this.references[this.previousIndex]) / (this.references[this.nextIndex] - this.references[this.previousIndex]);
+            }
+        }
+    }
+}
+class MultiDimensionsTableLogicXMLElement extends LogicXMLElement {
+    constructor(_gps, _element) {
+        super(_gps, _element);
+        this.inputs = [];
+        let inputs = _element.getElementsByTagName("Input");
+        for (let i = 0; i < inputs.length; i++) {
+            let input = new MultiDimensionsTableInput();
+            let referencesElement = inputs[i].getElementsByTagName("References");
+            if (referencesElement.length > 0) {
+                input.references = referencesElement[0].textContent.split(",").map(x => parseFloat(x));
+            }
+            let paramElement = inputs[i].getElementsByTagName("Param");
+            if (paramElement.length > 0) {
+                input.param = new CompositeLogicXMLElement(_gps, paramElement[0]);
+            }
+            this.inputs.push(input);
+        }
+        let outputElement = _element.getElementsByTagName("Output");
+        if (outputElement.length > 0) {
+            this.constructOutputTable(outputElement[0]);
+        }
+    }
+    constructOutputTable(outputTableElement) {
+        let sizeArray = [];
+        for (let i = 0; i < this.inputs.length; i++) {
+            sizeArray.push(this.inputs[i].references.length);
+        }
+        this.outputTable = this.initializeOutputTable(sizeArray);
+        let elements = outputTableElement.textContent.replace(/[\n\r\s]+/g, "").split(";");
+        for (let i = 0; i < elements.length; i++) {
+            if (elements[i]) {
+                let element = elements[i].split(":");
+                let indexes = element[0].split(",").map(x => parseFloat(x));
+                let value = parseFloat(element[1]);
+                if (indexes.length != this.inputs.length) {
+                    console.warn("MultiDimensionTable warning : Indexes " + indexes + " have not the same length as inputs length (should be = " + this.inputs.length + ")");
+                    continue;
+                }
+                this.setTableValue(this.outputTable, indexes, value);
+            }
+        }
+        this.fillUndefinedValues(this.outputTable);
+    }
+    initializeOutputTable(sizeArray) {
+        if (!Array.isArray(sizeArray) || sizeArray.length <= 0)
+            return;
+        if (sizeArray.length == 1)
+            return new Array(sizeArray[0]);
+        let table = new Array(sizeArray[0]);
+        for (let i = 0; i < table.length; i++) {
+            table[i] = this.initializeOutputTable(sizeArray.slice(1));
+        }
+        return table;
+    }
+    getTableValue(array, indexes) {
+        if (indexes.length < 1 || !Array.isArray(array))
+            return undefined;
+        if (indexes.length == 1)
+            return array[indexes[0]];
+        return this.getTableValue(array[indexes[0]], indexes.slice(1));
+    }
+    setTableValue(array, indexes, value) {
+        if (indexes.length < 1 || !Array.isArray(array))
+            return false;
+        if (indexes.length == 1) {
+            array[indexes[0]] = value;
+            return true;
+        }
+        return this.setTableValue(array[indexes[0]], indexes.slice(1), value);
+    }
+    fillUndefinedValues(array) {
+        if (!Array.isArray(array))
+            return false;
+        if (array.some(e => Array.isArray(e))) {
+            let res = true;
+            let lastFoundArray = [];
+            for (let i = 0; i < array.length; i++) {
+                if (Array.isArray(array[i])) {
+                    if (this.fillUndefinedValues(array[i])) {
+                        lastFoundArray = array[i];
+                    }
+                    else if (lastFoundArray.length > 0) {
+                        array[i] = lastFoundArray;
+                    }
+                    else {
+                        console.warn("MultiDimensionTable warning : unable to fill empty values -> no values has been set in the table");
+                        res = false;
+                    }
+                }
+            }
+            return res;
+        }
+        let values = [];
+        for (let i = 0; i < array.length; i++) {
+            if (array[i])
+                values.push(i);
+        }
+        if (values.length <= 0) {
+            return false;
+        }
+        let factor, j, n, incr, previousIndex, nextIndex;
+        let lastInputReferences = this.inputs[this.inputs.length - 1].references;
+        for (let i = 0; i < array.length; i++) {
+            if (!array[i]) {
+                if (i < values[0])
+                    array[i] = array[values[0]];
+                else if (i > values[values.length - 1])
+                    array[i] = array[values[values.length - 1]];
+                else {
+                    for (j = 0; j < values.length; j++) {
+                        if (i > values[j] && i < values[j + 1]) {
+                            break;
+                        }
+                    }
+                    if (previousIndex != values[j]) {
+                        previousIndex = values[j];
+                        nextIndex = values[j + 1];
+                        n = lastInputReferences[nextIndex] - lastInputReferences[previousIndex];
+                        incr = (array[nextIndex] - array[previousIndex]) / n;
+                    }
+                    factor = lastInputReferences[i] - lastInputReferences[previousIndex];
+                    array[i] = array[values[j]] + incr * factor;
+                }
+            }
+        }
+        return true;
+    }
+    interpolate(indexes, idx) {
+        if (isNaN(idx)) {
+            idx = this.inputs.length - 1;
+        }
+        if (!indexes)
+            indexes = [];
+        let v1, v2;
+        if (idx == 0) {
+            v1 = this.getTableValue(this.outputTable, [this.inputs[idx].previousIndex, ...indexes]);
+            v2 = this.getTableValue(this.outputTable, [this.inputs[idx].nextIndex, ...indexes]);
+        }
+        else {
+            v1 = this.interpolate([this.inputs[idx].previousIndex, ...indexes], idx - 1);
+            v2 = this.interpolate([this.inputs[idx].nextIndex, ...indexes], idx - 1);
+        }
+        return this.inputs[idx].factor * (v2 - v1) + v1;
+    }
+    getValue(_context) {
+        for (let i = 0; i < this.inputs.length; i++) {
+            this.inputs[i].update(_context);
+        }
+        return this.interpolate();
+    }
+}
 class StateTransitionLogicXML {
 }
 class StateLogicXML {
@@ -588,13 +801,13 @@ class StateMachineLogicXMLElement extends LogicXMLElement {
         }
         this.currentState = this.states[0];
     }
-    getValue() {
-        this.makeTransitions();
+    getValue(_context) {
+        this.makeTransitions(_context);
         return this.currentState.value;
     }
-    makeTransitions() {
+    makeTransitions(_context) {
         for (let i = 0; i < this.currentState.transitions.length; i++) {
-            if (this.currentState.transitions[i].conditions.getValue() != 0) {
+            if (this.currentState.transitions[i].conditions.getValue(_context) != 0) {
                 for (let j = 0; j < this.states.length; j++) {
                     if (Name_Z.compare(this.currentState.transitions[i].toId, this.states[j].id)) {
                         this.currentState = this.states[j];
@@ -644,17 +857,17 @@ class IfLogicXMLElement extends LogicXMLElement {
             }
         }
     }
-    getValue() {
-        if (this.condition.getValue() != 0) {
+    getValue(_context) {
+        if (this.condition.getValue(_context) != 0) {
             if (this.then) {
-                return this.then.getValue();
+                return this.then.getValue(_context);
             }
             else
                 return 0;
         }
         else {
             if (this.else) {
-                return this.else.getValue();
+                return this.else.getValue(_context);
             }
             else
                 return 0;
@@ -726,8 +939,8 @@ class DistanceFromOriginXMLElement extends LogicXMLElement {
             origin = this.gps.flightPlanManager.getOrigin();
         }
         let position = new LatLong();
-        position.lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degrees");
-        position.long = SimVar.GetSimVarValue("PLANE LATITUDE", "degrees");
+        position.lat = Simplane.getCurrentLat();
+        position.long = Simplane.getCurrentLon();
         let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
         if (this.originPosition == null && !origin && onGround) {
             this.originPosition = position;
@@ -760,8 +973,8 @@ class DistanceToDestinationXMLElement extends LogicXMLElement {
             destination = this.gps.flightPlanManager.getDestination();
         }
         let position = new LatLong();
-        this.destinationPosition.lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degrees");
-        this.destinationPosition.long = SimVar.GetSimVarValue("PLANE LATITUDE", "degrees");
+        this.destinationPosition.lat = Simplane.getCurrentLat();
+        this.destinationPosition.long = Simplane.getCurrentLon();
         if (this.destinationPosition == null && !destination) {
             this.destinationPosition = position;
         }
@@ -787,14 +1000,22 @@ class HeadingChangeFromDepartureXMLElement extends LogicXMLElement {
     getValue(_context) {
         let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
         if (this.wasOnGround && !onGround) {
-            this.headingAtTakeOff = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degrees");
+            this.headingAtTakeOff = Simplane.getHeadingTrue();
         }
         else if (onGround) {
             this.headingAtTakeOff = undefined;
             this.maxHeadingChange = 0;
         }
         this.wasOnGround = onGround;
-        this.maxHeadingChange = Math.max(this.maxHeadingChange, this.headingAtTakeOff == undefined ? 0 : Math.abs(this.headingAtTakeOff - SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degrees")));
+        let headingChange = 0;
+        if (this.headingAtTakeOff != undefined) {
+            headingChange = this.headingAtTakeOff - Simplane.getHeadingTrue();
+            if (headingChange < -180)
+                headingChange += 360;
+            if (headingChange > 180)
+                headingChange -= 360;
+        }
+        this.maxHeadingChange = Math.max(this.maxHeadingChange, Math.abs(headingChange));
         return this.maxHeadingChange;
     }
 }
@@ -811,11 +1032,11 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
         this.tokens = [];
         while (s.length > 0) {
             let m = s.match(/^(h+|m+|s+|:)/);
-            if (m == null ) {
+            if (m == null) {
                 console.log("Invalid duration format");
                 return;
             } else {
-                switch(m[0]) {
+                switch (m[0]) {
                     case ":":
                         this.tokens.push({
                             type: "string",
@@ -837,7 +1058,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
     }
 
     getHours(v) {
-        return v/3600;
+        return v / 3600;
     }
 
     getMinutes(v) {
@@ -856,7 +1077,7 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
 
         let result = "";
         let isValidValue = !isNaN(value) && value < 86400; // A day is probably more than worth showing...
-        for(let i = 0; i < this.tokens.length; i++) {
+        for (let i = 0; i < this.tokens.length; i++) {
             let token = this.tokens[i];
             switch (token.type) {
                 case "string":
@@ -877,17 +1098,17 @@ class DurationLogicXMLElement extends CompositeLogicXMLElement {
 
     getVariable(variable, length, value) {
         let v = 0;
-        switch(variable) {
-            case "h" : v = this.getHours(value); break;
-            case "m" : v = this.getMinutes(value); break;
-            case "s" : v = this.getSeconds(value); break;
+        switch (variable) {
+            case "h": v = this.getHours(value); break;
+            case "m": v = this.getMinutes(value); break;
+            case "s": v = this.getSeconds(value); break;
         }
         v = Math.floor(v);
         return this.pad(v, length);
     }
 
     pad(num, size) {
-        var s = num+"";
+        var s = num + "";
         while (s.length < size) s = "0" + s;
         return s;
     }

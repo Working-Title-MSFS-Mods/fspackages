@@ -1110,6 +1110,12 @@ class WaypointLoader {
                 SimVar.SetSimVarValue("C:fs9gps:" + this.SET_MAX_ITEMS, "number", this.maxItemsSearchCount, this.instrument.instrumentIdentifier + "-loader").then(() => {
                     let trueMaxItemsSearchCount = SimVar.GetSimVarValue("C:fs9gps:" + this.GET_MAX_ITEMS, "number", this.instrument.instrumentIdentifier + "-loader");
                     if (trueMaxItemsSearchCount === this.maxItemsSearchCount) {
+                        if (this._maxItemsSearchCount === 0) {
+                            this._searchRangeNeedUpdate = true;
+                        }
+                        else {
+                            this._searchRangeNeedUpdate = false;
+                        }
                         this._maxItemsSearchCountNeedUpdate = false;
                         this._lastMaxItemsSearchCountSyncDate = t;
                         this._locked = false;

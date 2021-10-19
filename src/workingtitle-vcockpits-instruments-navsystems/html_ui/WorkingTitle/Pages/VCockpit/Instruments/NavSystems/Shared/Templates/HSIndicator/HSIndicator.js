@@ -81,20 +81,20 @@ class HSIndicator extends HTMLElement {
             }
         }
         this.root = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.root.setAttribute("width", "100%");
-        this.root.setAttribute("height", "100%");
-        this.root.setAttribute("viewBox", "-28 -15 156 116");
+        diffAndSetAttribute(this.root, "width", "100%");
+        diffAndSetAttribute(this.root, "height", "100%");
+        diffAndSetAttribute(this.root, "viewBox", "-28 -15 156 116");
         this.appendChild(this.root);
         {
             let lines = [-135, -90, -45, 45, 90, 135];
             for (let i = 0; i < lines.length; i++) {
                 let line = document.createElementNS(Avionics.SVG.NS, "rect");
-                line.setAttribute("x", "49.5");
-                line.setAttribute("y", "-7");
-                line.setAttribute("width", "1");
-                line.setAttribute("height", "6");
-                line.setAttribute("transform", "rotate(" + lines[i] + " 50 50)");
-                line.setAttribute("fill", "white");
+                diffAndSetAttribute(line, "x", "49.5");
+                diffAndSetAttribute(line, "y", "-7");
+                diffAndSetAttribute(line, "width", "1");
+                diffAndSetAttribute(line, "height", "6");
+                diffAndSetAttribute(line, "transform", "rotate(" + lines[i] + " 50 50)");
+                diffAndSetAttribute(line, "fill", "white");
                 this.root.appendChild(line);
             }
         }
@@ -113,26 +113,26 @@ class HSIndicator extends HTMLElement {
                 let turnRateBackground = document.createElementNS(Avionics.SVG.NS, "path");
                 let path = "M" + beginPointBotX + " " + pointBotY + "A " + (arcRadius - arcWidth / 2) + " " + (arcRadius - arcWidth / 2) + " 0 0 1 " + endPointBotX + " " + pointBotY;
                 path += "L" + endPointTopX + " " + pointTopY + "A " + (arcRadius + arcWidth / 2) + " " + (arcRadius + arcWidth / 2) + " 0 0 0 " + beginPointTopX + " " + pointTopY;
-                turnRateBackground.setAttribute("d", path);
-                turnRateBackground.setAttribute("fill", "#1a1d21");
-                turnRateBackground.setAttribute("fill-opacity", "0.25");
+                diffAndSetAttribute(turnRateBackground, "d", path);
+                diffAndSetAttribute(turnRateBackground, "fill", "#1a1d21");
+                diffAndSetAttribute(turnRateBackground, "fill-opacity", "0.25");
                 this.root.appendChild(turnRateBackground);
                 let lines = [-18, -9, 9, 18];
                 for (let i = 0; i < lines.length; i++) {
                     let line = document.createElementNS(Avionics.SVG.NS, "rect");
-                    line.setAttribute("x", "49.5");
-                    line.setAttribute("y", (-arcWidth).toString());
-                    line.setAttribute("width", "1");
-                    line.setAttribute("height", arcWidth.toString());
-                    line.setAttribute("transform", "rotate(" + lines[i] + " 50 50)");
-                    line.setAttribute("fill", "white");
+                    diffAndSetAttribute(line, "x", "49.5");
+                    diffAndSetAttribute(line, "y", (-arcWidth) + '');
+                    diffAndSetAttribute(line, "width", "1");
+                    diffAndSetAttribute(line, "height", arcWidth + '');
+                    diffAndSetAttribute(line, "transform", "rotate(" + lines[i] + " 50 50)");
+                    diffAndSetAttribute(line, "fill", "white");
                     this.root.appendChild(line);
                 }
             }
             {
                 let turnRateArc = document.createElementNS(Avionics.SVG.NS, "path");
                 this.turnRateArc = turnRateArc;
-                turnRateArc.setAttribute("fill", "#d12bc7");
+                diffAndSetAttribute(turnRateArc, "fill", "#d12bc7");
                 this.root.appendChild(turnRateArc);
             }
         }
@@ -141,11 +141,11 @@ class HSIndicator extends HTMLElement {
             this.root.appendChild(this.backgroundCircle);
             {
                 let circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                circle.setAttribute("cx", "50");
-                circle.setAttribute("cy", "50");
-                circle.setAttribute("r", "50");
-                circle.setAttribute("fill", "#1a1d21");
-                circle.setAttribute("fill-opacity", "0.25");
+                diffAndSetAttribute(circle, "cx", "50");
+                diffAndSetAttribute(circle, "cy", "50");
+                diffAndSetAttribute(circle, "r", "50");
+                diffAndSetAttribute(circle, "fill", "#1a1d21");
+                diffAndSetAttribute(circle, "fill-opacity", "0.25");
                 this.backgroundCircle.appendChild(circle);
             }
             {
@@ -153,12 +153,12 @@ class HSIndicator extends HTMLElement {
                 for (let i = 0; i < 72; i++) {
                     let line = document.createElementNS(Avionics.SVG.NS, "rect");
                     let length = i % 2 == 0 ? 4 : 2;
-                    line.setAttribute("x", "49.5");
-                    line.setAttribute("y", (100 - length).toString());
-                    line.setAttribute("width", "1");
-                    line.setAttribute("height", length.toString());
-                    line.setAttribute("transform", "rotate(" + ((-angle / Math.PI) * 180 + 180) + " 50 50)");
-                    line.setAttribute("fill", "white");
+                    diffAndSetAttribute(line, "x", "49.5");
+                    diffAndSetAttribute(line, "y", (100 - length) + '');
+                    diffAndSetAttribute(line, "width", "1");
+                    diffAndSetAttribute(line, "height", length + '');
+                    diffAndSetAttribute(line, "transform", "rotate(" + ((-angle / Math.PI) * 180 + 180) + " 50 50)");
+                    diffAndSetAttribute(line, "fill", "white");
                     angle += (2 * Math.PI) / 72;
                     this.backgroundCircle.appendChild(line);
                 }
@@ -168,63 +168,63 @@ class HSIndicator extends HTMLElement {
                 let angle = 0;
                 for (let i = 0; i < texts.length; i++) {
                     let text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = texts[i];
-                    text.setAttribute("x", "50");
-                    text.setAttribute("y", (i % 3) == 0 ? "12" : "9");
-                    text.setAttribute("fill", "white");
-                    text.setAttribute("font-size", (i % 3) == 0 ? "15" : "8");
-                    text.setAttribute("font-family", "Roboto-Bold");
-                    text.setAttribute("text-anchor", "middle");
-                    text.setAttribute("alignment-baseline", "central");
-                    text.setAttribute("transform", "rotate(" + angle + " 50 50)");
+                    diffAndSetText(text, texts[i]);
+                    diffAndSetAttribute(text, "x", "50");
+                    diffAndSetAttribute(text, "y", (i % 3) == 0 ? "12" : "9");
+                    diffAndSetAttribute(text, "fill", "white");
+                    diffAndSetAttribute(text, "font-size", (i % 3) == 0 ? "15" : "8");
+                    diffAndSetAttribute(text, "font-family", "Roboto-Bold");
+                    diffAndSetAttribute(text, "text-anchor", "middle");
+                    diffAndSetAttribute(text, "alignment-baseline", "central");
+                    diffAndSetAttribute(text, "transform", "rotate(" + angle + " 50 50)");
                     angle += 360 / texts.length;
                     this.backgroundCircle.appendChild(text);
                 }
             }
             {
                 this.headingBug = document.createElementNS(Avionics.SVG.NS, "polygon");
-                this.headingBug.setAttribute("points", "46,0 47,0 50,4 53,0 54,0 54,5 46,5");
-                this.headingBug.setAttribute("fill", "aqua");
+                diffAndSetAttribute(this.headingBug, "points", "46,0 47,0 50,4 53,0 54,0 54,5 46,5");
+                diffAndSetAttribute(this.headingBug, "fill", "aqua");
                 this.backgroundCircle.appendChild(this.headingBug);
             }
             {
                 this.innerCircle = document.createElementNS(Avionics.SVG.NS, "circle");
-                this.innerCircle.setAttribute("cx", "50");
-                this.innerCircle.setAttribute("cy", "50");
-                this.innerCircle.setAttribute("r", "30");
-                this.innerCircle.setAttribute("stroke", "white");
-                this.innerCircle.setAttribute("stroke-width", "0.8");
-                this.innerCircle.setAttribute("fill-opacity", "0");
-                this.innerCircle.setAttribute("display", "none");
+                diffAndSetAttribute(this.innerCircle, "cx", "50");
+                diffAndSetAttribute(this.innerCircle, "cy", "50");
+                diffAndSetAttribute(this.innerCircle, "r", "30");
+                diffAndSetAttribute(this.innerCircle, "stroke", "white");
+                diffAndSetAttribute(this.innerCircle, "stroke-width", "0.8");
+                diffAndSetAttribute(this.innerCircle, "fill-opacity", "0");
+                diffAndSetAttribute(this.innerCircle, "display", "none");
                 this.backgroundCircle.appendChild(this.innerCircle);
             }
             if (this.displayStyle != HSIndicatorDisplayType.HUD_Simplified) {
                 {
                     this.currentTrackIndicator = document.createElementNS(Avionics.SVG.NS, "polygon");
-                    this.currentTrackIndicator.setAttribute("points", "50,-4 52,0 50,4 48,0");
-                    this.currentTrackIndicator.setAttribute("fill", "#d12bc7");
+                    diffAndSetAttribute(this.currentTrackIndicator, "points", "50,-4 52,0 50,4 48,0");
+                    diffAndSetAttribute(this.currentTrackIndicator, "fill", "#d12bc7");
                     this.backgroundCircle.appendChild(this.currentTrackIndicator);
                 }
                 {
                     this.bearing1 = document.createElementNS(Avionics.SVG.NS, "g");
-                    this.bearing1.setAttribute("display", "none");
+                    diffAndSetAttribute(this.bearing1, "display", "none");
                     this.backgroundCircle.appendChild(this.bearing1);
                     let arrow = document.createElementNS(Avionics.SVG.NS, "path");
-                    arrow.setAttribute("d", "M50 96 L50 80 M50 4 L50 20 M50 8 L57 15 M50 8 L43 15");
-                    arrow.setAttribute("stroke", "#36c8d2");
-                    arrow.setAttribute("stroke-width", "1");
-                    arrow.setAttribute("fill-opacity", "0");
+                    diffAndSetAttribute(arrow, "d", "M50 96 L50 80 M50 4 L50 20 M50 8 L57 15 M50 8 L43 15");
+                    diffAndSetAttribute(arrow, "stroke", "#36c8d2");
+                    diffAndSetAttribute(arrow, "stroke-width", "1");
+                    diffAndSetAttribute(arrow, "fill-opacity", "0");
                     this.bearing1.appendChild(arrow);
                 }
                 {
                     this.bearing2 = document.createElementNS(Avionics.SVG.NS, "g");
-                    this.bearing2.setAttribute("display", "none");
+                    diffAndSetAttribute(this.bearing2, "display", "none");
                     this.backgroundCircle.appendChild(this.bearing2);
                     let arrow = document.createElementNS(Avionics.SVG.NS, "path");
-                    arrow.setAttribute("d", "M50 96 L50 92 M47 80 L47 90 Q50 96 53 90 L53 80 M50 4 L50 8 L57 15 M50 8 L43 15 M47 11 L47 20 M53 11 L53 20");
-                    arrow.setAttribute("stroke", "#36c8d2");
-                    arrow.setAttribute("stroke-width", "1");
-                    arrow.setAttribute("fill-opacity", "0");
+                    diffAndSetAttribute(arrow, "d", "M50 96 L50 92 M47 80 L47 90 Q50 96 53 90 L53 80 M50 4 L50 8 L57 15 M50 8 L43 15 M47 11 L47 20 M53 11 L53 20");
+                    diffAndSetAttribute(arrow, "stroke", "#36c8d2");
+                    diffAndSetAttribute(arrow, "stroke-width", "1");
+                    diffAndSetAttribute(arrow, "fill-opacity", "0");
                     this.bearing2.appendChild(arrow);
                 }
                 {
@@ -232,45 +232,45 @@ class HSIndicator extends HTMLElement {
                     this.backgroundCircle.appendChild(this.course);
                     {
                         this.beginArrow = document.createElementNS(Avionics.SVG.NS, "polygon");
-                        this.beginArrow.setAttribute("points", "51,96 49,96 49,75 51,75");
-                        this.beginArrow.setAttribute("fill", "#d12bc7");
+                        diffAndSetAttribute(this.beginArrow, "points", "51,96 49,96 49,75 51,75");
+                        diffAndSetAttribute(this.beginArrow, "fill", "#d12bc7");
                         this.course.appendChild(this.beginArrow);
                         this.fromIndicator = document.createElementNS(Avionics.SVG.NS, "polygon");
-                        this.fromIndicator.setAttribute("points", "46,75 54,75 50,80");
-                        this.fromIndicator.setAttribute("fill", "#d12bc7");
-                        this.fromIndicator.setAttribute("stroke", "black");
-                        this.fromIndicator.setAttribute("stroke-width", "0.2");
-                        this.fromIndicator.setAttribute("display", "none");
+                        diffAndSetAttribute(this.fromIndicator, "points", "46,75 54,75 50,80");
+                        diffAndSetAttribute(this.fromIndicator, "fill", "#d12bc7");
+                        diffAndSetAttribute(this.fromIndicator, "stroke", "black");
+                        diffAndSetAttribute(this.fromIndicator, "stroke-width", "0.2");
+                        diffAndSetAttribute(this.fromIndicator, "display", "none");
                         this.course.appendChild(this.fromIndicator);
                     }
                     {
                         this.CDI = document.createElementNS(Avionics.SVG.NS, "polygon");
-                        this.CDI.setAttribute("points", "49,74.5 51,74.5 51,25.5 49,25.5");
-                        this.CDI.setAttribute("fill", "#d12bc7");
+                        diffAndSetAttribute(this.CDI, "points", "49,74.5 51,74.5 51,25.5 49,25.5");
+                        diffAndSetAttribute(this.CDI, "fill", "#d12bc7");
                         this.course.appendChild(this.CDI);
                     }
                     {
                         this.endArrow = document.createElementNS(Avionics.SVG.NS, "polygon");
-                        this.endArrow.setAttribute("points", "51,25 49,25 49,15 45,15 50,4 55,15 51,15");
-                        this.endArrow.setAttribute("fill", "#d12bc7");
+                        diffAndSetAttribute(this.endArrow, "points", "51,25 49,25 49,15 45,15 50,4 55,15 51,15");
+                        diffAndSetAttribute(this.endArrow, "fill", "#d12bc7");
                         this.course.appendChild(this.endArrow);
                         this.toIndicator = document.createElementNS(Avionics.SVG.NS, "polygon");
-                        this.toIndicator.setAttribute("points", "46,25 54,25 50,20");
-                        this.toIndicator.setAttribute("fill", "#d12bc7");
-                        this.toIndicator.setAttribute("stroke", "black");
-                        this.toIndicator.setAttribute("stroke-width", "0.2");
-                        this.toIndicator.setAttribute("display", "none");
+                        diffAndSetAttribute(this.toIndicator, "points", "46,25 54,25 50,20");
+                        diffAndSetAttribute(this.toIndicator, "fill", "#d12bc7");
+                        diffAndSetAttribute(this.toIndicator, "stroke", "black");
+                        diffAndSetAttribute(this.toIndicator, "stroke-width", "0.2");
+                        diffAndSetAttribute(this.toIndicator, "display", "none");
                         this.course.appendChild(this.toIndicator);
                     }
                     let circlePosition = [-20, -10, 10, 20];
                     for (let i = 0; i < circlePosition.length; i++) {
                         let CDICircle = document.createElementNS(Avionics.SVG.NS, "circle");
-                        CDICircle.setAttribute("cx", (50 + circlePosition[i]).toString());
-                        CDICircle.setAttribute("cy", "50");
-                        CDICircle.setAttribute("r", "2");
-                        CDICircle.setAttribute("stroke", "white");
-                        CDICircle.setAttribute("stroke-width", "1");
-                        CDICircle.setAttribute("fill-opacity", "0");
+                        diffAndSetAttribute(CDICircle, "cx", (50 + circlePosition[i]) + '');
+                        diffAndSetAttribute(CDICircle, "cy", "50");
+                        diffAndSetAttribute(CDICircle, "r", "2");
+                        diffAndSetAttribute(CDICircle, "stroke", "white");
+                        diffAndSetAttribute(CDICircle, "stroke-width", "1");
+                        diffAndSetAttribute(CDICircle, "fill-opacity", "0");
                         this.course.appendChild(CDICircle);
                     }
                 }
@@ -278,34 +278,34 @@ class HSIndicator extends HTMLElement {
         }
         {
             let topTriangle = document.createElementNS(Avionics.SVG.NS, "polygon");
-            topTriangle.setAttribute("points", "46,-3 54,-3 50,3");
-            topTriangle.setAttribute("fill", "white");
-            topTriangle.setAttribute("stroke", "black");
+            diffAndSetAttribute(topTriangle, "points", "46,-3 54,-3 50,3");
+            diffAndSetAttribute(topTriangle, "fill", "white");
+            diffAndSetAttribute(topTriangle, "stroke", "black");
             this.root.appendChild(topTriangle);
         }
         {
             let plane = document.createElementNS(Avionics.SVG.NS, "path");
-            plane.setAttribute("d", "M44 50 L49 50 L49 53 L48 54 L48 55 L52 55 L52 54 L51 53 L51 50 L56 50 L56 49 L51 48 L51 46 Q50 44 49 46 L49 48 L44 49 Z");
-            plane.setAttribute("fill", "white");
+            diffAndSetAttribute(plane, "d", "M44 50 L49 50 L49 53 L48 54 L48 55 L52 55 L52 54 L51 53 L51 50 L56 50 L56 49 L51 48 L51 46 Q50 44 49 46 L49 48 L44 49 Z");
+            diffAndSetAttribute(plane, "fill", "white");
             this.root.appendChild(plane);
         }
         {
             let bearingRectangle = document.createElementNS(Avionics.SVG.NS, "rect");
-            bearingRectangle.setAttribute("x", "35");
-            bearingRectangle.setAttribute("y", "-15");
-            bearingRectangle.setAttribute("height", "12");
-            bearingRectangle.setAttribute("width", "30");
-            bearingRectangle.setAttribute("fill", "#1a1d21");
+            diffAndSetAttribute(bearingRectangle, "x", "35");
+            diffAndSetAttribute(bearingRectangle, "y", "-15");
+            diffAndSetAttribute(bearingRectangle, "height", "12");
+            diffAndSetAttribute(bearingRectangle, "width", "30");
+            diffAndSetAttribute(bearingRectangle, "fill", "#1a1d21");
             this.root.appendChild(bearingRectangle);
             if (this.displayStyle == HSIndicatorDisplayType.HUD)
                 this.applyHUDStyle(bearingRectangle);
             let bearingText = document.createElementNS(Avionics.SVG.NS, "text");
-            bearingText.setAttribute("fill", "white");
-            bearingText.setAttribute("text-anchor", "middle");
-            bearingText.setAttribute("x", "50");
-            bearingText.setAttribute("y", "-5");
-            bearingText.setAttribute("font-size", "11");
-            bearingText.setAttribute("font-family", "Roboto-Bold");
+            diffAndSetAttribute(bearingText, "fill", "white");
+            diffAndSetAttribute(bearingText, "text-anchor", "middle");
+            diffAndSetAttribute(bearingText, "x", "50");
+            diffAndSetAttribute(bearingText, "y", "-5");
+            diffAndSetAttribute(bearingText, "font-size", "11");
+            diffAndSetAttribute(bearingText, "font-family", "Roboto-Bold");
             this.bearingText = bearingText;
             this.root.appendChild(bearingText);
         }
@@ -578,10 +578,10 @@ class HSIndicator extends HTMLElement {
                 this.isDmeDisplayed = !this.isDmeDisplayed;
                 if (this.dme) {
                     if (this.isDmeDisplayed) {
-                        this.dme.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.dme, "display", "inherit");
                     }
                     else {
-                        this.dme.setAttribute("display", "none");
+                        diffAndSetAttribute(this.dme, "display", "none");
                     }
                 }
                 break;
@@ -589,18 +589,18 @@ class HSIndicator extends HTMLElement {
                 this.isBearing1Displayed = !this.isBearing1Displayed;
                 if (this.bearing1) {
                     if (this.isBearing1Displayed || this.isBearing2Displayed) {
-                        this.innerCircle.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.innerCircle, "display", "inherit");
                     }
                     else {
-                        this.innerCircle.setAttribute("display", "none");
+                        diffAndSetAttribute(this.innerCircle, "display", "none");
                     }
                     if (this.isBearing1Displayed) {
-                        this.bearing1.setAttribute("display", "inherit");
-                        this.bearing1FixedGroup.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.bearing1, "display", "inherit");
+                        diffAndSetAttribute(this.bearing1FixedGroup, "display", "inherit");
                     }
                     else {
-                        this.bearing1.setAttribute("display", "none");
-                        this.bearing1FixedGroup.setAttribute("display", "none");
+                        diffAndSetAttribute(this.bearing1, "display", "none");
+                        diffAndSetAttribute(this.bearing1FixedGroup, "display", "none");
                     }
                 }
                 break;
@@ -608,18 +608,18 @@ class HSIndicator extends HTMLElement {
                 this.isBearing2Displayed = !this.isBearing2Displayed;
                 if (this.bearing2) {
                     if (this.isBearing1Displayed || this.isBearing2Displayed) {
-                        this.innerCircle.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.innerCircle, "display", "inherit");
                     }
                     else {
-                        this.innerCircle.setAttribute("display", "none");
+                        diffAndSetAttribute(this.innerCircle, "display", "none");
                     }
                     if (this.isBearing2Displayed) {
-                        this.bearing2.setAttribute("display", "inherit");
-                        this.bearing2FixedGroup.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.bearing2, "display", "inherit");
+                        diffAndSetAttribute(this.bearing2FixedGroup, "display", "inherit");
                     }
                     else {
-                        this.bearing2.setAttribute("display", "none");
-                        this.bearing2FixedGroup.setAttribute("display", "none");
+                        diffAndSetAttribute(this.bearing2, "display", "none");
+                        diffAndSetAttribute(this.bearing2FixedGroup, "display", "none");
                     }
                 }
                 break;
@@ -628,30 +628,30 @@ class HSIndicator extends HTMLElement {
             return;
         switch (name) {
             case "rotation":
-                this.backgroundCircle.setAttribute("transform", "rotate(" + (-newValue) + " 50 50)");
+                diffAndSetAttribute(this.backgroundCircle, "transform", "rotate(" + (-newValue) + " 50 50)");
                 if (this.bearingText) {
                     let brg = Math.round(parseFloat(newValue));
                     brg = (brg == 0) ? 360 : brg;
-                    this.bearingText.textContent = "000".slice(brg.toString().length) + brg + "°";
+                    diffAndSetText(this.bearingText, "000".slice((brg + '').length) + brg + "°");
                 }
                 break;
             case "heading_bug_rotation":
-                this.headingBug.setAttribute("transform", "rotate(" + (newValue) + ", 50, 50)");
+                diffAndSetAttribute(this.headingBug, "transform", "rotate(" + (newValue) + ", 50, 50)");
                 if (this.headingText) {
                     let headingValue = parseFloat(newValue);
                     if (headingValue == 0) {
                         headingValue = 360;
                     }
                     let hdg = fastToFixed(headingValue, 0);
-                    this.headingText.textContent = "000".slice(hdg.length) + hdg + "°";
+                    diffAndSetText(this.headingText, "000".slice(hdg.length) + hdg + "°");
                 }
                 break;
             case "course":
                 if (this.course) {
-                    this.course.setAttribute("transform", "rotate(" + (newValue) + ", 50, 50)");
+                    diffAndSetAttribute(this.course, "transform", "rotate(" + (newValue) + ", 50, 50)");
                     if (this.courseText) {
                         let crs = fastToFixed(parseFloat(newValue), 0);
-                        this.courseText.textContent = "000".slice(crs.length) + crs + "°";
+                        diffAndSetText(this.courseText, "000".slice(crs.length) + crs + "°");
                     }
                 }
                 break;
@@ -661,16 +661,16 @@ class HSIndicator extends HTMLElement {
                     if (this.sourceIsGps) {
                         this.crossTrackGoal = (Math.min(Math.max(deviation, -this.crosstrackFullError), this.crosstrackFullError) * (20 / this.crosstrackFullError));
                         if (Math.abs(deviation) < this.crosstrackFullError) {
-                            this.crossTrackError.setAttribute("visibility", "hidden");
-                            this.crossTrackErrorBg.setAttribute("visibility", "hidden");
+                            diffAndSetAttribute(this.crossTrackError, "visibility", "hidden");
+                            diffAndSetAttribute(this.crossTrackErrorBg, "visibility", "hidden");
                         }
                         else {
-                            this.crossTrackError.setAttribute("visibility", "visible");
-                            this.crossTrackErrorBg.setAttribute("visibility", "visible");
+                            diffAndSetAttribute(this.crossTrackError, "visibility", "visible");
+                            diffAndSetAttribute(this.crossTrackErrorBg, "visibility", "visible");
                             this.crossTrackError.textContent = "XTK " + fastToFixed(deviation, 2) + "NM";
                             let courseDevRect = this.crossTrackError.getBBox();
-                            this.crossTrackErrorBg.setAttribute("width", (courseDevRect.width + 2).toString());
-                            this.crossTrackErrorBg.setAttribute("x", (courseDevRect.x - 1).toString());
+                            diffAndSetAttribute(this.crossTrackErrorBg, "width", (courseDevRect.width + 2) + '');
+                            diffAndSetAttribute(this.crossTrackErrorBg, "x", (courseDevRect.x - 1) + '');
                         }
                     }
                     else {
@@ -680,10 +680,10 @@ class HSIndicator extends HTMLElement {
                 break;
             case "display_deviation":
                 if (newValue == "True") {
-                    this.CDI.setAttribute("display", "");
+                    diffAndSetAttribute(this.CDI, "display", "");
                 }
                 else {
-                    this.CDI.setAttribute("display", "none");
+                    diffAndSetAttribute(this.CDI, "display", "none");
                 }
                 break;
             case "turn_rate":
@@ -718,80 +718,83 @@ class HSIndicator extends HTMLElement {
                             path = "M" + beginPointBotX + " " + beginPointBotY + "A " + (arcRadius - arcWidth / 2) + " " + (arcRadius - arcWidth / 2) + " 0 0 " + (arcAngle > 0 ? "1" : "0") + " " + endPointBotX + " " + endPointBotY;
                             path += "L" + endPointTopX + " " + endPointTopY + "A " + (arcRadius + arcWidth / 2) + " " + (arcRadius + arcWidth / 2) + " 0 0 " + (arcAngle > 0 ? "0" : "1") + " " + beginPointTopX + " " + beginPointTopY;
                         }
-                        this.turnRateArc.setAttribute("d", path);
+                        diffAndSetAttribute(this.turnRateArc, "d", path);
                     }
                 }
                 break;
             case "nav_source":
                 if (this.navSource) {
-                    this.navSource.textContent = newValue == "FMS" ? this.fmsAlias : newValue;
+                    diffAndSetText(this.navSource, newValue == "GPS" ? this.fmsAlias : newValue);
                     let rect = this.navSource.getBBox();
-                    this.navSourceBg.setAttribute("width", (rect.width + 2).toString());
-                    this.navSourceBg.setAttribute("x", (rect.x - 1).toString());
+                    diffAndSetAttribute(this.navSourceBg, "width", (rect.width + 2) + '');
+                    diffAndSetAttribute(this.navSourceBg, "x", (rect.x - 1) + '');
                     switch (newValue) {
-                        case "FMS":
+                        case "GPS":
                             this.sourceIsGps = true;
-                            this.beginArrow.setAttribute("fill", "#d12bc7");
-                            this.CDI.setAttribute("fill", "#d12bc7");
-                            this.endArrow.setAttribute("fill", "#d12bc7");
-                            this.beginArrow.setAttribute("fill-opacity", "1");
-                            this.CDI.setAttribute("fill-opacity", "1");
-                            this.endArrow.setAttribute("fill-opacity", "1");
-                            this.beginArrow.setAttribute("stroke", "");
-                            this.CDI.setAttribute("stroke", "");
-                            this.endArrow.setAttribute("stroke", "");
-                            this.navSource.setAttribute("fill", "#d12bc7");
-                            this.flightPhase.setAttribute("visibility", "visible");
-                            this.flightPhaseBg.setAttribute("visibility", "visible");
-                            this.toIndicator.setAttribute("fill", "#d12bc7");
-                            this.fromIndicator.setAttribute("fill", "#d12bc7");
+                            diffAndSetAttribute(this.beginArrow, "fill", "#d12bc7");
+                            diffAndSetAttribute(this.CDI, "fill", "#d12bc7");
+                            diffAndSetAttribute(this.endArrow, "fill", "#d12bc7");
+                            diffAndSetAttribute(this.beginArrow, "fill-opacity", "1");
+                            diffAndSetAttribute(this.CDI, "fill-opacity", "1");
+                            diffAndSetAttribute(this.endArrow, "fill-opacity", "1");
+                            diffAndSetAttribute(this.beginArrow, "stroke", "");
+                            diffAndSetAttribute(this.CDI, "stroke", "");
+                            diffAndSetAttribute(this.endArrow, "stroke", "");
+                            diffAndSetAttribute(this.navSource, "fill", "#d12bc7");
+                            diffAndSetAttribute(this.flightPhase, "visibility", "visible");
+                            diffAndSetAttribute(this.flightPhaseBg, "visibility", "visible");
+                            diffAndSetAttribute(this.toIndicator, "fill", "#d12bc7");
+                            diffAndSetAttribute(this.fromIndicator, "fill", "#d12bc7");
+                            SimVar.SetSimVarValue("L:PFD_CDI_Source", "number", 3);
                             break;
                         case "VOR1":
                         case "LOC1":
                             this.sourceIsGps = false;
-                            this.beginArrow.setAttribute("fill", "#10c210");
-                            this.CDI.setAttribute("fill", "#10c210");
-                            this.endArrow.setAttribute("fill", "#10c210");
-                            this.beginArrow.setAttribute("fill-opacity", "1");
-                            this.CDI.setAttribute("fill-opacity", "1");
-                            this.endArrow.setAttribute("fill-opacity", "1");
-                            this.beginArrow.setAttribute("stroke", "");
-                            this.CDI.setAttribute("stroke", "");
-                            this.endArrow.setAttribute("stroke", "");
-                            this.navSource.setAttribute("fill", "#10c210");
-                            this.flightPhase.setAttribute("visibility", "hidden");
-                            this.flightPhaseBg.setAttribute("visibility", "hidden");
-                            this.crossTrackError.setAttribute("visibility", "hidden");
-                            this.crossTrackErrorBg.setAttribute("visibility", "hidden");
-                            this.toIndicator.setAttribute("fill", "#10c210");
-                            this.fromIndicator.setAttribute("fill", "#10c210");
+                            diffAndSetAttribute(this.beginArrow, "fill", "#10c210");
+                            diffAndSetAttribute(this.CDI, "fill", "#10c210");
+                            diffAndSetAttribute(this.endArrow, "fill", "#10c210");
+                            diffAndSetAttribute(this.beginArrow, "fill-opacity", "1");
+                            diffAndSetAttribute(this.CDI, "fill-opacity", "1");
+                            diffAndSetAttribute(this.endArrow, "fill-opacity", "1");
+                            diffAndSetAttribute(this.beginArrow, "stroke", "");
+                            diffAndSetAttribute(this.CDI, "stroke", "");
+                            diffAndSetAttribute(this.endArrow, "stroke", "");
+                            diffAndSetAttribute(this.navSource, "fill", "#10c210");
+                            diffAndSetAttribute(this.flightPhase, "visibility", "hidden");
+                            diffAndSetAttribute(this.flightPhaseBg, "visibility", "hidden");
+                            diffAndSetAttribute(this.crossTrackError, "visibility", "hidden");
+                            diffAndSetAttribute(this.crossTrackErrorBg, "visibility", "hidden");
+                            diffAndSetAttribute(this.toIndicator, "fill", "#10c210");
+                            diffAndSetAttribute(this.fromIndicator, "fill", "#10c210");
+                            SimVar.SetSimVarValue("L:PFD_CDI_Source", "number", 1);
                             break;
                         case "VOR2":
                         case "LOC2":
                             this.sourceIsGps = false;
-                            this.beginArrow.setAttribute("fill-opacity", "0");
-                            this.CDI.setAttribute("fill-opacity", "0");
-                            this.endArrow.setAttribute("fill-opacity", "0");
-                            this.beginArrow.setAttribute("stroke", "#10c210");
-                            this.CDI.setAttribute("stroke", "#10c210");
-                            this.endArrow.setAttribute("stroke", "#10c210");
-                            this.navSource.setAttribute("fill", "#10c210");
-                            this.flightPhase.setAttribute("visibility", "hidden");
-                            this.flightPhaseBg.setAttribute("visibility", "hidden");
-                            this.crossTrackError.setAttribute("visibility", "hidden");
-                            this.crossTrackErrorBg.setAttribute("visibility", "hidden");
-                            this.toIndicator.setAttribute("fill", "#10c210");
-                            this.fromIndicator.setAttribute("fill", "#10c210");
+                            diffAndSetAttribute(this.beginArrow, "fill-opacity", "0");
+                            diffAndSetAttribute(this.CDI, "fill-opacity", "0");
+                            diffAndSetAttribute(this.endArrow, "fill-opacity", "0");
+                            diffAndSetAttribute(this.beginArrow, "stroke", "#10c210");
+                            diffAndSetAttribute(this.CDI, "stroke", "#10c210");
+                            diffAndSetAttribute(this.endArrow, "stroke", "#10c210");
+                            diffAndSetAttribute(this.navSource, "fill", "#10c210");
+                            diffAndSetAttribute(this.flightPhase, "visibility", "hidden");
+                            diffAndSetAttribute(this.flightPhaseBg, "visibility", "hidden");
+                            diffAndSetAttribute(this.crossTrackError, "visibility", "hidden");
+                            diffAndSetAttribute(this.crossTrackErrorBg, "visibility", "hidden");
+                            diffAndSetAttribute(this.toIndicator, "fill", "#10c210");
+                            diffAndSetAttribute(this.fromIndicator, "fill", "#10c210");
+                            SimVar.SetSimVarValue("L:PFD_CDI_Source", "number", 2);
                             break;
                     }
                 }
                 break;
             case "flight_phase":
                 if (this.flightPhase) {
-                    this.flightPhase.textContent = newValue;
+                    diffAndSetText(this.flightPhase, newValue);
                     let flightPhaseRect = this.flightPhase.getBBox();
-                    this.flightPhaseBg.setAttribute("width", (flightPhaseRect.width + 2).toString());
-                    this.flightPhaseBg.setAttribute("x", (flightPhaseRect.x - 1).toString());
+                    diffAndSetAttribute(this.flightPhaseBg, "width", (flightPhaseRect.width + 2) + '');
+                    diffAndSetAttribute(this.flightPhaseBg, "x", (flightPhaseRect.x - 1) + '');
                 }
                 break;
             case "crosstrack_full_error":
@@ -801,10 +804,10 @@ class HSIndicator extends HTMLElement {
                 this.isDmeDisplayed = newValue == "true";
                 if (this.dme) {
                     if (this.isDmeDisplayed) {
-                        this.dme.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.dme, "display", "inherit");
                     }
                     else {
-                        this.dme.setAttribute("display", "none");
+                        diffAndSetAttribute(this.dme, "display", "none");
                     }
                 }
                 break;
@@ -812,18 +815,18 @@ class HSIndicator extends HTMLElement {
                 this.isBearing1Displayed = newValue == "true";
                 if (this.bearing1) {
                     if (this.isBearing1Displayed || this.isBearing2Displayed) {
-                        this.innerCircle.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.innerCircle, "display", "inherit");
                     }
                     else {
-                        this.innerCircle.setAttribute("display", "none");
+                        diffAndSetAttribute(this.innerCircle, "display", "none");
                     }
                     if (this.isBearing1Displayed) {
-                        this.bearing1.setAttribute("display", "inherit");
-                        this.bearing1FixedGroup.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.bearing1, "display", "inherit");
+                        diffAndSetAttribute(this.bearing1FixedGroup, "display", "inherit");
                     }
                     else {
-                        this.bearing1.setAttribute("display", "none");
-                        this.bearing1FixedGroup.setAttribute("display", "none");
+                        diffAndSetAttribute(this.bearing1, "display", "none");
+                        diffAndSetAttribute(this.bearing1FixedGroup, "display", "none");
                     }
                 }
                 break;
@@ -831,100 +834,100 @@ class HSIndicator extends HTMLElement {
                 this.isBearing2Displayed = newValue == "true";
                 if (this.bearing2) {
                     if (this.isBearing1Displayed || this.isBearing2Displayed) {
-                        this.innerCircle.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.innerCircle, "display", "inherit");
                     }
                     else {
-                        this.innerCircle.setAttribute("display", "none");
+                        diffAndSetAttribute(this.innerCircle, "display", "none");
                     }
                     if (this.isBearing2Displayed) {
-                        this.bearing2.setAttribute("display", "inherit");
-                        this.bearing2FixedGroup.setAttribute("display", "inherit");
+                        diffAndSetAttribute(this.bearing2, "display", "inherit");
+                        diffAndSetAttribute(this.bearing2FixedGroup, "display", "inherit");
                     }
                     else {
-                        this.bearing2.setAttribute("display", "none");
-                        this.bearing2FixedGroup.setAttribute("display", "none");
+                        diffAndSetAttribute(this.bearing2, "display", "none");
+                        diffAndSetAttribute(this.bearing2FixedGroup, "display", "none");
                     }
                 }
                 break;
             case "bearing1_source":
                 if (this.bearing1Source)
-                    this.bearing1Source.textContent = newValue;
+                    diffAndSetText(this.bearing1Source, newValue);
                 break;
             case "bearing1_ident":
                 if (this.bearing1Ident)
-                    this.bearing1Ident.textContent = newValue;
+                    diffAndSetText(this.bearing1Ident, newValue);
                 break;
             case "bearing1_distance":
                 if (this.bearing1Distance)
-                    this.bearing1Distance.textContent = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
+                    diffAndSetText(this.bearing1Distance, (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM"));
                 break;
             case "bearing1_bearing":
                 if (this.bearing1) {
                     if (newValue != "") {
-                        this.bearing1.setAttribute("transform", "rotate(" + newValue + ", 50, 50)");
-                        this.bearing1.setAttribute("visibility", "visible");
+                        diffAndSetAttribute(this.bearing1, "transform", "rotate(" + newValue + ", 50, 50)");
+                        diffAndSetAttribute(this.bearing1, "visibility", "visible");
                     }
                     else {
-                        this.bearing1.setAttribute("visibility", "hidden");
+                        diffAndSetAttribute(this.bearing1, "visibility", "hidden");
                     }
                 }
                 break;
             case "bearing2_source":
                 if (this.bearing2Source)
-                    this.bearing2Source.textContent = newValue;
+                    diffAndSetText(this.bearing2Source, newValue);
                 break;
             case "bearing2_ident":
                 if (this.bearing2Ident)
-                    this.bearing2Ident.textContent = newValue;
+                    diffAndSetText(this.bearing2Ident, newValue);
                 break;
             case "bearing2_distance":
                 if (this.bearing2Distance)
-                    this.bearing2Distance.textContent = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
+                    diffAndSetText(this.bearing2Distance, (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM"));
                 break;
             case "bearing2_bearing":
                 if (this.bearing2) {
                     if (newValue != "") {
-                        this.bearing2.setAttribute("transform", "rotate(" + newValue + ", 50, 50)");
-                        this.bearing2.setAttribute("visibility", "visible");
+                        diffAndSetAttribute(this.bearing2, "transform", "rotate(" + newValue + ", 50, 50)");
+                        diffAndSetAttribute(this.bearing2, "visibility", "visible");
                     }
                     else {
-                        this.bearing2.setAttribute("visibility", "hidden");
+                        diffAndSetAttribute(this.bearing2, "visibility", "hidden");
                     }
                 }
                 break;
             case "dme_source":
                 if (this.dmeSource)
-                    this.dmeSource.textContent = newValue;
+                    diffAndSetText(this.dmeSource, newValue);
                 break;
             case "dme_ident":
                 if (this.dmeIdent)
-                    this.dmeIdent.textContent = newValue;
+                    diffAndSetText(this.dmeIdent, newValue);
                 break;
             case "dme_distance":
                 if (this.dmeDistance)
-                    this.dmeDistance.textContent = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
+                    diffAndSetText(this.dmeDistance, (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM"));
                 break;
             case "to_from":
                 if (this.toIndicator && this.fromIndicator) {
                     switch (newValue) {
                         case "0":
-                            this.toIndicator.setAttribute("display", "none");
-                            this.fromIndicator.setAttribute("display", "none");
+                            diffAndSetAttribute(this.toIndicator, "display", "none");
+                            diffAndSetAttribute(this.fromIndicator, "display", "none");
                             break;
                         case "1":
-                            this.toIndicator.setAttribute("display", "inherit");
-                            this.fromIndicator.setAttribute("display", "none");
+                            diffAndSetAttribute(this.toIndicator, "display", "inherit");
+                            diffAndSetAttribute(this.fromIndicator, "display", "none");
                             break;
                         case "2":
-                            this.toIndicator.setAttribute("display", "none");
-                            this.fromIndicator.setAttribute("display", "inherit");
+                            diffAndSetAttribute(this.toIndicator, "display", "none");
+                            diffAndSetAttribute(this.fromIndicator, "display", "inherit");
                             break;
                     }
                 }
                 break;
             case "current_track":
                 if (this.currentTrackIndicator)
-                    this.currentTrackIndicator.setAttribute("transform", "rotate(" + (newValue) + ", 50, 50)");
+                    diffAndSetAttribute(this.currentTrackIndicator, "transform", "rotate(" + (newValue) + ", 50, 50)");
                 break;
             case "displaystyle":
                 this.createSVG();
@@ -941,213 +944,236 @@ class HSIndicator extends HTMLElement {
         return path;
     }
     applyHUDStyle(_elem) {
-        _elem.setAttribute("fill", "rgb(26,29,33)");
-        _elem.setAttribute("fill-opacity", "0.5");
-        _elem.setAttribute("stroke", "rgb(255, 255, 255)");
-        _elem.setAttribute("stroke-width", "0.75");
-        _elem.setAttribute("stroke-opacity", "0.2");
+        diffAndSetAttribute(_elem, "fill", "rgb(26,29,33)");
+        diffAndSetAttribute(_elem, "fill-opacity", "0.5");
+        diffAndSetAttribute(_elem, "stroke", "rgb(255, 255, 255)");
+        diffAndSetAttribute(_elem, "stroke-width", "0.75");
+        diffAndSetAttribute(_elem, "stroke-opacity", "0.2");
     }
     init() {
+        this.logic_brg1Source = SimVar.GetSimVarValue("L:PFD_BRG1_Source", "number");
+        this.logic_brg2Source = SimVar.GetSimVarValue("L:PFD_BRG2_Source", "number");
+        if (this.logic_brg1Source != 0) {
+            this.setAttribute("show_bearing1", "true");
+        }
+        if (this.logic_brg2Source != 0) {
+            this.setAttribute("show_bearing2", "true");
+        }
     }
     update(_deltaTime) {
-        var compass = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
+        var compass = Simplane.getHeadingMagnetic();
         var roundedCompass = fastToFixed(compass, 3);
-        this.setAttribute("rotation", roundedCompass);
+        diffAndSetAttribute(this, "rotation", roundedCompass);
         var turnRate = SimVar.GetSimVarValue("TURN INDICATOR RATE", "degree per second");
         var roundedTurnRate = fastToFixed(turnRate, 3);
-        this.setAttribute("turn_rate", roundedTurnRate);
-        var heading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
+        diffAndSetAttribute(this, "turn_rate", roundedTurnRate);
+        var heading = Simplane.getAutoPilotHeadingLockValueDegrees();
         var roundedHeading = fastToFixed(heading, 3);
-        this.setAttribute("heading_bug_rotation", roundedHeading);
-        this.setAttribute("current_track", SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degrees"));
-        this.logic_cdiSource = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+        diffAndSetAttribute(this, "heading_bug_rotation", roundedHeading);
+        diffAndSetAttribute(this, "current_track", "" + Simplane.getTrackAngle());
+        this.logic_cdiSource = 3;
+        if (!Simplane.getAutopilotGPSDriven() || (Simplane.getAutoPilotAPPRHold() && Simplane.getAutoPilotApproachType() != ApproachType.APPROACH_TYPE_RNAV)) {
+            this.logic_navSelected = Simplane.getAutoPilotSelectedNav();
+            this.logic_cdiSource = ((this.logic_navSelected - 1) % 2) + 1;
+        }
+        if (this.displayStyle === HSIndicatorDisplayType.HUD || this.displayStyle === HSIndicatorDisplayType.HUD_Simplified) {
+            this.logic_brg1Source = SimVar.GetSimVarValue("L:PFD_BRG1_Source", "number");
+            if (this.logic_brg1Source == 0) {
+                diffAndSetAttribute(this, "show_bearing1", "false");
+            }
+            else {
+                diffAndSetAttribute(this, "show_bearing1", "true");
+            }
+            this.logic_brg2Source = SimVar.GetSimVarValue("L:PFD_BRG2_Source", "number");
+            if (this.logic_brg2Source == 0) {
+                diffAndSetAttribute(this, "show_bearing2", "false");
+            }
+            else {
+                diffAndSetAttribute(this, "show_bearing2", "true");
+            }
+        }
         switch (this.logic_cdiSource) {
             case 1:
-                this.setAttribute("display_deviation", SimVar.GetSimVarValue("NAV HAS NAV:1", "boolean") != 0 ? "True" : "False");
-                if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "Bool")) {
-                    this.setAttribute("nav_source", "LOC1");
-                    this.setAttribute("course", SimVar.GetSimVarValue("NAV LOCALIZER:1", "degree").toString());
+                diffAndSetAttribute(this, "display_deviation", Simplane.getNavHasNav(this.logic_navSelected) ? "True" : "False");
+                if (Simplane.getAutoPilotNavHasLoc(this.logic_navSelected)) {
+                    diffAndSetAttribute(this, "nav_source", "LOC1");
+                    diffAndSetAttribute(this, "course", SimVar.GetSimVarValue("NAV LOCALIZER:" + this.logic_navSelected, "degree") + '');
                 }
                 else {
-                    this.setAttribute("nav_source", "VOR1");
-                    this.setAttribute("course", SimVar.GetSimVarValue("NAV OBS:1", "degree").toString());
+                    diffAndSetAttribute(this, "nav_source", "VOR1");
+                    diffAndSetAttribute(this, "course", SimVar.GetSimVarValue("NAV OBS:" + this.logic_navSelected, "degree") + '');
                 }
-                this.setAttribute("course_deviation", (SimVar.GetSimVarValue("NAV CDI:1", "number") / 127).toString());
-                this.setAttribute("to_from", SimVar.GetSimVarValue("NAV TOFROM:1", "Enum").toString());
+                diffAndSetAttribute(this, "course_deviation", (SimVar.GetSimVarValue("NAV CDI:" + this.logic_navSelected, "number") / 127) + '');
+                diffAndSetAttribute(this, "to_from", SimVar.GetSimVarValue("NAV TOFROM:" + this.logic_navSelected, "Enum") + '');
                 break;
             case 2:
-                this.setAttribute("display_deviation", SimVar.GetSimVarValue("NAV HAS NAV:2", "boolean") != 0 ? "True" : "False");
-                if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:2", "Bool")) {
-                    this.setAttribute("nav_source", "LOC2");
-                    this.setAttribute("course", SimVar.GetSimVarValue("NAV LOCALIZER:2", "degree").toString());
+                diffAndSetAttribute(this, "display_deviation", Simplane.getNavHasNav(this.logic_navSelected) ? "True" : "False");
+                if (Simplane.getAutoPilotNavHasLoc(this.logic_navSelected)) {
+                    diffAndSetAttribute(this, "nav_source", "LOC2");
+                    diffAndSetAttribute(this, "course", SimVar.GetSimVarValue("NAV LOCALIZER:" + this.logic_navSelected, "degree") + '');
                 }
                 else {
-                    this.setAttribute("nav_source", "VOR2");
-                    this.setAttribute("course", SimVar.GetSimVarValue("NAV OBS:2", "degree").toString());
+                    diffAndSetAttribute(this, "nav_source", "VOR2");
+                    diffAndSetAttribute(this, "course", SimVar.GetSimVarValue("NAV OBS:" + this.logic_navSelected, "degree") + '');
                 }
-                this.setAttribute("course_deviation", (SimVar.GetSimVarValue("NAV CDI:2", "number") / 127).toString());
-                this.setAttribute("to_from", SimVar.GetSimVarValue("NAV TOFROM:2", "Enum").toString());
+                diffAndSetAttribute(this, "course_deviation", (SimVar.GetSimVarValue("NAV CDI:" + this.logic_navSelected, "number") / 127) + '');
+                diffAndSetAttribute(this, "to_from", SimVar.GetSimVarValue("NAV TOFROM:" + this.logic_navSelected, "Enum") + '');
                 break;
             case 3:
-                this.setAttribute("nav_source", "FMS");
-                this.setAttribute("display_deviation", SimVar.GetSimVarValue("GPS WP NEXT ID", "string") != "" ? "True" : "False");
-                this.setAttribute("course", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
-                this.setAttribute("course_deviation", SimVar.GetSimVarValue("GPS WP CROSS TRK", "nautical mile"));
-                this.setAttribute("to_from", "1");
+                diffAndSetAttribute(this, "nav_source", "GPS");
+                diffAndSetAttribute(this, "display_deviation", Simplane.getGPSWpNextID() != "" ? "True" : "False");
+                diffAndSetAttribute(this, "course", SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"));
+                diffAndSetAttribute(this, "course_deviation", SimVar.GetSimVarValue("GPS WP CROSS TRK", "nautical mile"));
+                diffAndSetAttribute(this, "to_from", "1");
                 let curPhase = SimVar.GetSimVarValue("L:GPS_Current_Phase", "number");
                 switch (curPhase) {
                     case 1:
-                        this.setAttribute("flight_phase", "DPRT");
-                        this.setAttribute("crosstrack_full_error", "0.3");
+                        diffAndSetAttribute(this, "flight_phase", "DPRT");
+                        diffAndSetAttribute(this, "crosstrack_full_error", "0.3");
                         break;
                     case 2:
-                        this.setAttribute("flight_phase", "TERM");
-                        this.setAttribute("crosstrack_full_error", "1.0");
+                        diffAndSetAttribute(this, "flight_phase", "TERM");
+                        diffAndSetAttribute(this, "crosstrack_full_error", "1.0");
                         break;
                     case 4:
-                        this.setAttribute("flight_phase", "OCN");
-                        this.setAttribute("crosstrack_full_error", "4.0");
+                        diffAndSetAttribute(this, "flight_phase", "OCN");
+                        diffAndSetAttribute(this, "crosstrack_full_error", "4.0");
                         break;
                     default:
-                        this.setAttribute("flight_phase", "ENR");
-                        this.setAttribute("crosstrack_full_error", "2.0");
+                        diffAndSetAttribute(this, "flight_phase", "ENR");
+                        diffAndSetAttribute(this, "crosstrack_full_error", "2.0");
                         break;
                 }
                 break;
         }
         this.logic_brg1Source = SimVar.GetSimVarValue("L:PFD_BRG1_Source", "Number");
-        if (this.logic_brg1Source)
-            this.setAttribute("show_bearing1", "true");
-        else
-            this.setAttribute("show_bearing1", "false");
         switch (this.logic_brg1Source) {
+            case 0:
+                diffAndSetAttribute(this, "bearing1_source", "");
+                break;
             case 1:
-                this.setAttribute("bearing1_source", "NAV1");
-                if (SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool")) {
-                    this.setAttribute("bearing1_ident", SimVar.GetSimVarValue("NAV IDENT:1", "string"));
-                    this.setAttribute("bearing1_distance", SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? SimVar.GetSimVarValue("NAV DME:1", "nautical miles") : "");
-                    this.setAttribute("bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360).toString());
+                diffAndSetAttribute(this, "bearing1_source", "NAV1");
+                if (Simplane.getNavHasNav(1)) {
+                    diffAndSetAttribute(this, "bearing1_ident", SimVar.GetSimVarValue("NAV SIGNAL:1", "number") == 0 ? "" : SimVar.GetSimVarValue("NAV IDENT:1", "string"));
+                    diffAndSetAttribute(this, "bearing1_distance", SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? SimVar.GetSimVarValue("NAV DME:1", "nautical miles") : "");
+                    diffAndSetAttribute(this, "bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360) + '');
                 }
                 else {
-                    this.setAttribute("bearing1_ident", "NO DATA");
-                    this.setAttribute("bearing1_distance", "");
-                    this.setAttribute("bearing1_bearing", "");
+                    diffAndSetAttribute(this, "bearing1_ident", "NO DATA");
+                    diffAndSetAttribute(this, "bearing1_distance", "");
+                    diffAndSetAttribute(this, "bearing1_bearing", "");
                 }
                 break;
             case 2:
-                this.setAttribute("bearing1_source", "NAV2");
-                if (SimVar.GetSimVarValue("NAV HAS NAV:2", "Bool")) {
-                    this.setAttribute("bearing1_ident", SimVar.GetSimVarValue("NAV IDENT:2", "string"));
-                    this.setAttribute("bearing1_distance", SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? SimVar.GetSimVarValue("NAV DME:2", "nautical miles") : "");
-                    this.setAttribute("bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360).toString());
+                diffAndSetAttribute(this, "bearing1_source", "NAV2");
+                if (Simplane.getNavHasNav(2)) {
+                    diffAndSetAttribute(this, "bearing1_ident", SimVar.GetSimVarValue("NAV SIGNAL:2", "number") == 0 ? "" : SimVar.GetSimVarValue("NAV IDENT:2", "string"));
+                    diffAndSetAttribute(this, "bearing1_distance", SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? SimVar.GetSimVarValue("NAV DME:2", "nautical miles") : "");
+                    diffAndSetAttribute(this, "bearing1_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360) + '');
                 }
                 else {
-                    this.setAttribute("bearing1_ident", "NO DATA");
-                    this.setAttribute("bearing1_distance", "");
-                    this.setAttribute("bearing1_bearing", "");
+                    diffAndSetAttribute(this, "bearing1_ident", "NO DATA");
+                    diffAndSetAttribute(this, "bearing1_distance", "");
+                    diffAndSetAttribute(this, "bearing1_bearing", "");
                 }
                 break;
             case 3:
-                this.setAttribute("bearing1_source", "GPS");
-                this.setAttribute("bearing1_ident", SimVar.GetSimVarValue("GPS WP NEXT ID", "string"));
-                this.setAttribute("bearing1_distance", SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"));
-                this.setAttribute("bearing1_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                diffAndSetAttribute(this, "bearing1_source", "GPS");
+                diffAndSetAttribute(this, "bearing1_ident", Simplane.getGPSWpNextID());
+                diffAndSetAttribute(this, "bearing1_distance", SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"));
+                diffAndSetAttribute(this, "bearing1_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
                 break;
             case 4:
-                this.setAttribute("bearing1_source", "ADF");
-                this.setAttribute("bearing1_distance", "");
+                diffAndSetAttribute(this, "bearing1_source", "ADF");
+                diffAndSetAttribute(this, "bearing1_distance", "");
                 if (SimVar.GetSimVarValue("ADF SIGNAL:1", "number")) {
-                    this.setAttribute("bearing1_ident", fastToFixed(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
-                    this.setAttribute("bearing1_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360).toString());
+                    diffAndSetAttribute(this, "bearing1_ident", fastToFixed(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
+                    diffAndSetAttribute(this, "bearing1_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360) + '');
                 }
                 else {
-                    this.setAttribute("bearing1_ident", "NO DATA");
-                    this.setAttribute("bearing1_bearing", "");
+                    diffAndSetAttribute(this, "bearing1_ident", "NO DATA");
+                    diffAndSetAttribute(this, "bearing1_bearing", "");
                 }
                 break;
         }
         this.logic_brg2Source = SimVar.GetSimVarValue("L:PFD_BRG2_Source", "Number");
-        if (this.logic_brg2Source)
-            this.setAttribute("show_bearing2", "true");
-        else
-            this.setAttribute("show_bearing2", "false");
         switch (this.logic_brg2Source) {
             case 1:
-                this.setAttribute("bearing2_source", "NAV1");
-                if (SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool")) {
-                    this.setAttribute("bearing2_ident", SimVar.GetSimVarValue("NAV IDENT:1", "string"));
-                    this.setAttribute("bearing2_distance", SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? SimVar.GetSimVarValue("NAV DME:1", "nautical miles") : "");
-                    this.setAttribute("bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360).toString());
+                diffAndSetAttribute(this, "bearing2_source", "NAV1");
+                if (Simplane.getNavHasNav(1)) {
+                    diffAndSetAttribute(this, "bearing2_ident", SimVar.GetSimVarValue("NAV SIGNAL:1", "number") == 0 ? "" : SimVar.GetSimVarValue("NAV IDENT:1", "string"));
+                    diffAndSetAttribute(this, "bearing2_distance", SimVar.GetSimVarValue("NAV HAS DME:1", "Bool") ? SimVar.GetSimVarValue("NAV DME:1", "nautical miles") : "");
+                    diffAndSetAttribute(this, "bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:1", "degree")) % 360) + '');
                 }
                 else {
-                    this.setAttribute("bearing2_ident", "NO DATA");
-                    this.setAttribute("bearing2_distance", "");
-                    this.setAttribute("bearing2_bearing", "");
+                    diffAndSetAttribute(this, "bearing2_ident", "NO DATA");
+                    diffAndSetAttribute(this, "bearing2_distance", "");
+                    diffAndSetAttribute(this, "bearing2_bearing", "");
                 }
                 break;
             case 2:
-                this.setAttribute("bearing2_source", "NAV2");
-                if (SimVar.GetSimVarValue("NAV HAS NAV:2", "Bool")) {
-                    this.setAttribute("bearing2_ident", SimVar.GetSimVarValue("NAV IDENT:2", "string"));
-                    this.setAttribute("bearing2_distance", SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? SimVar.GetSimVarValue("NAV DME:2", "nautical miles") : "");
-                    this.setAttribute("bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360).toString());
+                diffAndSetAttribute(this, "bearing2_source", "NAV2");
+                if (Simplane.getNavHasNav(2)) {
+                    diffAndSetAttribute(this, "bearing2_ident", SimVar.GetSimVarValue("NAV SIGNAL:2", "number") == 0 ? "" : SimVar.GetSimVarValue("NAV IDENT:2", "string"));
+                    diffAndSetAttribute(this, "bearing2_distance", SimVar.GetSimVarValue("NAV HAS DME:2", "Bool") ? SimVar.GetSimVarValue("NAV DME:2", "nautical miles") : "");
+                    diffAndSetAttribute(this, "bearing2_bearing", ((180 + SimVar.GetSimVarValue("NAV RADIAL:2", "degree")) % 360) + '');
                 }
                 else {
-                    this.setAttribute("bearing2_ident", "NO DATA");
-                    this.setAttribute("bearing2_distance", "");
-                    this.setAttribute("bearing2_bearing", "");
+                    diffAndSetAttribute(this, "bearing2_ident", "NO DATA");
+                    diffAndSetAttribute(this, "bearing2_distance", "");
+                    diffAndSetAttribute(this, "bearing2_bearing", "");
                 }
                 break;
             case 3:
-                this.setAttribute("bearing2_source", "GPS");
-                this.setAttribute("bearing2_ident", SimVar.GetSimVarValue("GPS WP NEXT ID", "string"));
-                this.setAttribute("bearing2_distance", SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"));
-                this.setAttribute("bearing2_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                diffAndSetAttribute(this, "bearing2_source", "GPS");
+                diffAndSetAttribute(this, "bearing2_ident", Simplane.getGPSWpNextID());
+                diffAndSetAttribute(this, "bearing2_distance", SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"));
+                diffAndSetAttribute(this, "bearing2_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
                 break;
             case 4:
-                this.setAttribute("bearing2_source", "ADF");
-                this.setAttribute("bearing2_distance", "");
+                diffAndSetAttribute(this, "bearing2_source", "ADF");
+                diffAndSetAttribute(this, "bearing2_distance", "");
                 if (SimVar.GetSimVarValue("ADF SIGNAL:1", "number")) {
-                    this.setAttribute("bearing2_ident", fastToFixed(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
-                    this.setAttribute("bearing2_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360).toString());
+                    diffAndSetAttribute(this, "bearing2_ident", fastToFixed(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
+                    diffAndSetAttribute(this, "bearing2_bearing", ((SimVar.GetSimVarValue("ADF RADIAL:1", "degree") + compass) % 360) + '');
                 }
                 else {
-                    this.setAttribute("bearing2_ident", "NO DATA");
-                    this.setAttribute("bearing2_bearing", "");
+                    diffAndSetAttribute(this, "bearing2_ident", "NO DATA");
+                    diffAndSetAttribute(this, "bearing2_bearing", "");
                 }
                 break;
         }
         this.logic_dmeDisplayed = SimVar.GetSimVarValue("L:PFD_DME_Displayed", "number");
         if (this.logic_dmeDisplayed) {
-            this.setAttribute("show_dme", "true");
+            diffAndSetAttribute(this, "show_dme", "true");
         }
         else {
-            this.setAttribute("show_dme", "false");
+            diffAndSetAttribute(this, "show_dme", "false");
         }
         this.logic_dmeSource = SimVar.GetSimVarValue("L:Glasscockpit_DmeSource", "Number");
         switch (this.logic_dmeSource) {
             case 0:
                 SimVar.SetSimVarValue("L:Glasscockpit_DmeSource", "Number", 1);
             case 1:
-                this.setAttribute("dme_source", "NAV1");
-                if (SimVar.GetSimVarValue("NAV HAS DME:1", "Bool")) {
-                    this.setAttribute("dme_ident", fastToFixed(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2));
-                    this.setAttribute("dme_distance", SimVar.GetSimVarValue("NAV DME:1", "nautical miles"));
+                diffAndSetAttribute(this, "dme_source", "NAV1");
+                if (SimVar.GetSimVarValue("NAV SIGNAL:1", "number") > 0 && SimVar.GetSimVarValue("NAV HAS DME:1", "Bool")) {
+                    diffAndSetAttribute(this, "dme_ident", fastToFixed(Simplane.getNavActFreq(1), 2));
+                    diffAndSetAttribute(this, "dme_distance", SimVar.GetSimVarValue("NAV DME:1", "nautical miles"));
                 }
                 else {
-                    this.setAttribute("dme_ident", "");
-                    this.setAttribute("dme_distance", "");
+                    diffAndSetAttribute(this, "dme_ident", "");
+                    diffAndSetAttribute(this, "dme_distance", "");
                 }
                 break;
             case 2:
-                this.setAttribute("dme_source", "NAV2");
-                if (SimVar.GetSimVarValue("NAV HAS DME:2", "Bool")) {
-                    this.setAttribute("dme_ident", fastToFixed(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz"), 2));
-                    this.setAttribute("dme_distance", SimVar.GetSimVarValue("NAV DME:2", "nautical miles"));
+                diffAndSetAttribute(this, "dme_source", "NAV2");
+                if (SimVar.GetSimVarValue("NAV SIGNAL:2", "number") > 0 && SimVar.GetSimVarValue("NAV HAS DME:2", "Bool")) {
+                    diffAndSetAttribute(this, "dme_ident", fastToFixed(Simplane.getNavActFreq(2), 2));
+                    diffAndSetAttribute(this, "dme_distance", SimVar.GetSimVarValue("NAV DME:2", "nautical miles"));
                 }
                 else {
-                    this.setAttribute("dme_ident", "");
-                    this.setAttribute("dme_distance", "");
+                    diffAndSetAttribute(this, "dme_ident", "");
+                    diffAndSetAttribute(this, "dme_distance", "");
                 }
                 break;
         }
@@ -1175,6 +1201,9 @@ class HSIndicator extends HTMLElement {
                 else if (this.logic_cdiSource == 2) {
                     SimVar.SetSimVarValue("K:VOR2_OBI_INC", "number", 0);
                 }
+                else if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+                    SimVar.SetSimVarValue("K:GPS_OBS_INC", "number", 0);
+                }
                 break;
             case "CRS_DEC":
                 if (this.logic_cdiSource == 1) {
@@ -1183,6 +1212,10 @@ class HSIndicator extends HTMLElement {
                 else if (this.logic_cdiSource == 2) {
                     SimVar.SetSimVarValue("K:VOR2_OBI_DEC", "number", 0);
                 }
+                else if (SimVar.GetSimVarValue("GPS OBS ACTIVE", "boolean")) {
+                    SimVar.SetSimVarValue("K:GPS_OBS_DEC", "number", 0);
+                }
+
                 break;
             case "CRS_PUSH":
                 if (this.logic_cdiSource == 1) {
@@ -1197,34 +1230,34 @@ class HSIndicator extends HTMLElement {
                 SimVar.SetSimVarValue("L:PFD_DME_Displayed", "number", this.logic_dmeDisplayed ? 1 : 0);
                 WTDataStore.set("HSI.ShowDme", this.logic_dmeDisplayed);
                 if (this.logic_dmeDisplayed) {
-                    this.setAttribute("show_dme", "true");
+                    diffAndSetAttribute(this, "show_dme", "true");
                 }
                 else {
-                    this.setAttribute("show_dme", "false");
+                    diffAndSetAttribute(this, "show_dme", "false");
                 }
                 break;
             case "SoftKeys_PFD_BRG1":
             case "BRG1Switch":
-                this.logic_brg1Source = (this.logic_brg1Source + 1) % 5;
+                this.logic_brg1Source = (SimVar.GetSimVarValue("L:PFD_BRG1_Source", "number") + 1) % 5;
                 SimVar.SetSimVarValue("L:PFD_BRG1_Source", "number", this.logic_brg1Source);
                 WTDataStore.set("HSI.Brg1Src", this.logic_brg1Source);
                 if (this.logic_brg1Source == 0) {
-                    this.setAttribute("show_bearing1", "false");
+                    diffAndSetAttribute(this, "show_bearing1", "false");
                 }
                 else {
-                    this.setAttribute("show_bearing1", "true");
+                    diffAndSetAttribute(this, "show_bearing1", "true");
                 }
                 break;
             case "SoftKeys_PFD_BRG2":
             case "BRG2Switch":
-                this.logic_brg2Source = (this.logic_brg2Source + 1) % 5;
+                this.logic_brg2Source = (SimVar.GetSimVarValue("L:PFD_BRG2_Source", "number") + 1) % 5;
                 SimVar.SetSimVarValue("L:PFD_BRG2_Source", "number", this.logic_brg2Source);
                 WTDataStore.set("HSI.Brg2Src", this.logic_brg2Source);
                 if (this.logic_brg2Source == 0) {
-                    this.setAttribute("show_bearing2", "false");
+                    diffAndSetAttribute(this, "show_bearing2", "false");
                 }
                 else {
-                    this.setAttribute("show_bearing2", "true");
+                    diffAndSetAttribute(this, "show_bearing2", "true");
                 }
                 break;
             case "SoftKey_CDI":
@@ -1238,7 +1271,7 @@ class HSIndicator extends HTMLElement {
                     SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "Bool", 0);
                 }
                 if (this.logic_cdiSource != 3) {
-                    SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", this.logic_cdiSource);
+                    Simplane.setAutoPilotSelectedNav(this.logic_cdiSource);
                 }
                 break;
         }
