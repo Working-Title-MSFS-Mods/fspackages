@@ -2,7 +2,7 @@
 
 ### v0.7.5
 **Fixes**
-- \[Compatibility\] Now compatible with game patch xxxxx (Sim Update 6).
+- \[Compatibility\] Now compatible with game patch 1.20.6.0 (Sim Update 6).
 - \[PFD\] SVT can now be toggled off.
 - \[Misc\] Changed the default Vspeeds for the Longitude to more sensible values.
   - Takeoff Vspeeds are now reflective of published values for takeoff at MTOW, sea level, ISA, dry runway, Flaps 1, anti-ice OFF.

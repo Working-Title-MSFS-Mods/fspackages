@@ -31,7 +31,7 @@ During a flight, you can check your Navigraph account link status in the GTC Dat
 
 ### Release Highlights for v0.7.5
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Now compatible with game patch xxxxx (Sim Update 6).
+- Now compatible with game patch 1.20.6.0 (Sim Update 6).
 
 **Fixes**
 - \[PFD\] SVT can now be toggled off.
