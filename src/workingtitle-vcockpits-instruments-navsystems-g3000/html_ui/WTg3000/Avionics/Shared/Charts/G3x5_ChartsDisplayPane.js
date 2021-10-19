@@ -377,8 +377,8 @@ class WT_G3x5_ChartsMapController {
         this._geoRef.geoHeight.set(this._tempGeoPoint.set(chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.TOP], centerLong).distance(chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.BOTTOM], centerLong));
 
         this._geoRef.projectedBounds = chart.planview.bbox_local;
-        this._geoRef.projectedWidth = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.RIGHT] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.LEFT];
-        this._geoRef.projectedHeight = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.BOTTOM] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.TOP];
+        this._geoRef.projectedWidth = Math.abs(chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.RIGHT] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.LEFT]);
+        this._geoRef.projectedHeight = Math.abs(chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.BOTTOM] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.TOP]);
         this._geoRef.viewCenter.set((this._geoRef.chartVisibleBounds.left + this._geoRef.chartVisibleBounds.right) / 2, (this._geoRef.chartVisibleBounds.top + this._geoRef.chartVisibleBounds.bottom) / 2);
     }
 

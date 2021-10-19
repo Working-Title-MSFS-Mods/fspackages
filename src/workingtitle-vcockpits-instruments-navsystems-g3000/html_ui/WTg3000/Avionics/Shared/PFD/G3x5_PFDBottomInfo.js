@@ -153,23 +153,9 @@ class WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.TEMPLATE.content.cloneNode(true));
 
-        let formatter = new WT_NumberFormatter({
+        this._formatter = new WT_NumberFormatter({
             precision: 1,
             unitCaps: true
-        });
-        this._htmlFormatter = new WT_NumberHTMLFormatter(formatter, {
-            classGetter: {
-                _numberClassList: [],
-                _unitClassList: [WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.UNIT_CLASS],
-
-                getNumberClassList(numberUnit, forceUnit) {
-                    return this._numberClassList;
-                },
-                getUnitClassList(numberUnit, forceUnit) {
-                    return this._unitClassList;
-                }
-            },
-            numberUnitDelim: ""
         });
 
         /**
@@ -179,14 +165,23 @@ class WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement extends HTMLElement {
         this._isInit = false;
     }
 
-    _defineChildren() {
-        this._tasValue = new WT_CachedElement(this.shadowRoot.querySelector(`#tas .value`));
-        this._gsValue = new WT_CachedElement(this.shadowRoot.querySelector(`#gs .value`));
+    async _defineChildren() {
+        [
+            this._tasValue,
+            this._gsValue
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, "#tas .value", WT_NumberUnitView),
+            WT_CustomElementSelector.select(this.shadowRoot, "#gs .value", WT_NumberUnitView)
+        ]);
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._isInit = true;
     }
 
     connectedCallback() {
-        this._defineChildren();
-        this._isInit = true;
+        this._connectedCallbackHelper();
     }
 
     setContext(context) {
@@ -195,12 +190,18 @@ class WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement extends HTMLElement {
 
     _updateTAS() {
         let tasModel = this._context.tasModel;
-        this._tasValue.innerHTML = this._htmlFormatter.getFormattedHTML(tasModel.getValue(), tasModel.getUnit());
+        let value = tasModel.getValue();
+        let displayUnit = tasModel.getUnit();
+        this._tasValue.setNumberText(this._formatter.getFormattedNumber(value, displayUnit));
+        this._tasValue.setUnitText(this._formatter.getFormattedUnit(value, displayUnit));
     }
 
     _updateGS() {
         let gsModel = this._context.gsModel;
-        this._gsValue.innerHTML = this._htmlFormatter.getFormattedHTML(gsModel.getValue(), gsModel.getUnit());
+        let value = gsModel.getValue();
+        let displayUnit = gsModel.getUnit();
+        this._gsValue.setNumberText(this._formatter.getFormattedNumber(value, displayUnit));
+        this._gsValue.setUnitText(this._formatter.getFormattedUnit(value, displayUnit));
     }
 
     update() {
@@ -213,7 +214,6 @@ class WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement extends HTMLElement {
     }
 }
 WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.NAME = "wt-pfd-bottominfo-airspeedcell";
-WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.UNIT_CLASS = "unit";
 WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.TEMPLATE.innerHTML = `
     <style>
@@ -240,21 +240,15 @@ WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.TEMPLATE.innerHTML = `
                 .title {
                     font-size: var(--airspeedcell-title-font-size, 0.75em);
                 }
-                .value {
-                    display: block;
-                }
-                .${WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.UNIT_CLASS} {
-                    font-size: var(--airspeedcell-unit-font-size, 0.75em);
-                }
     </style>
     <div id="wrapper">
         <div id="tas">
             <div class="title">TAS</div>
-            <div class="value"></div>
+            <wt-numberunit class="value"></wt-numberunit>
         </div>
         <div id="gs">
             <div class="title">GS</div>
-            <div class="value"></div>
+            <wt-numberunit class="value"></wt-numberunit>
         </div>
     </div>
 `;
@@ -318,22 +312,8 @@ class WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.TEMPLATE.content.cloneNode(true));
 
-        let formatter = new WT_NumberFormatter({
+        this._formatter = new WT_NumberFormatter({
             precision: 1
-        });
-        this._htmlFormatter = new WT_NumberHTMLFormatter(formatter, {
-            classGetter: {
-                _numberClassList: [],
-                _unitClassList: [WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.UNIT_CLASS],
-
-                getNumberClassList(numberUnit, forceUnit) {
-                    return this._numberClassList;
-                },
-                getUnitClassList(numberUnit, forceUnit) {
-                    return this._unitClassList;
-                }
-            },
-            numberUnitDelim: ""
         });
 
         /**
@@ -343,14 +323,23 @@ class WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement extends HTMLElement {
         this._isInit = false;
     }
 
-    _defineChildren() {
-        this._oatValue = new WT_CachedElement(this.shadowRoot.querySelector(`#oat .value`));
-        this._isaValue = new WT_CachedElement(this.shadowRoot.querySelector(`#isa .value`));
+    async _defineChildren() {
+        [
+            this._oatValue,
+            this._isaValue
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, "#oat .value", WT_NumberUnitView),
+            WT_CustomElementSelector.select(this.shadowRoot, "#isa .value", WT_NumberUnitView)
+        ]);
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._isInit = true;
     }
 
     connectedCallback() {
-        this._defineChildren();
-        this._isInit = true;
+        this._connectedCallbackHelper();
     }
 
     setContext(context) {
@@ -359,12 +348,18 @@ class WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement extends HTMLElement {
 
     _updateOAT() {
         let oatModel = this._context.oatModel;
-        this._oatValue.innerHTML = this._htmlFormatter.getFormattedHTML(oatModel.getValue(), oatModel.getUnit());
+        let value = oatModel.getValue();
+        let displayUnit = oatModel.getUnit();
+        this._oatValue.setNumberText(this._formatter.getFormattedNumber(value, displayUnit));
+        this._oatValue.setUnitText(this._formatter.getFormattedUnit(value, displayUnit));
     }
 
     _updateISA() {
         let isaModel = this._context.isaModel;
-        this._isaValue.innerHTML = this._htmlFormatter.getFormattedHTML(isaModel.getValue(), isaModel.getUnit());
+        let value = isaModel.getValue();
+        let displayUnit = isaModel.getUnit();
+        this._isaValue.setNumberText(this._formatter.getFormattedNumber(value, displayUnit));
+        this._isaValue.setUnitText(this._formatter.getFormattedUnit(value, displayUnit));
     }
 
     update() {
@@ -377,7 +372,6 @@ class WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement extends HTMLElement {
     }
 }
 WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.NAME = "wt-pfd-bottominfo-temperaturecell";
-WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.UNIT_CLASS = "unit";
 WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.TEMPLATE.innerHTML = `
     <style>
@@ -405,20 +399,17 @@ WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.TEMPLATE.innerHTML = `
                     font-size: var(--temperaturecell-title-font-size, 0.75em);
                 }
                 .value {
-                    display: block;
-                }
-                .${WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.UNIT_CLASS} {
-                    font-size: var(--temperaturecell-unit-font-size, 1em);
+                    --numberunit-unit-font-size: 1em;
                 }
     </style>
     <div id="wrapper">
         <div id="oat">
             <div class="title">OAT</div>
-            <div class="value"></div>
+            <wt-numberunit class="value"></wt-numberunit>
         </div>
         <div id="isa">
             <div class="title">ISA</div>
-            <div class="value"></div>
+            <wt-numberunit class="value"></wt-numberunit>
         </div>
     </div>
 `;
@@ -468,25 +459,11 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
     }
 
     _initDistanceFormatter() {
-        let formatter = new WT_NumberFormatter({
+        this._distanceFormatter = new WT_NumberFormatter({
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
-        });
-        this._distanceFormatter = new WT_NumberHTMLFormatter(formatter, {
-            classGetter: {
-                _numberClassList: [],
-                _unitClassList: [WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS],
-
-                getNumberClassList(numberUnit, forceUnit) {
-                    return this._numberClassList;
-                },
-                getUnitClassList(numberUnit, forceUnit) {
-                    return this._unitClassList;
-                }
-            },
-            numberUnitDelim: ""
         });
     }
 
@@ -497,22 +474,27 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
         });
     }
 
-    _defineChildren() {
+    async _defineChildren() {
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
         this._arrow = this.shadowRoot.querySelector(`#arrow`);
-        this._sourceValue = new WT_CachedElement(this.shadowRoot.querySelector(`#source`));
-        this._identValue = new WT_CachedElement(this.shadowRoot.querySelector(`#ident`));
-        this._distanceValue = new WT_CachedElement(this.shadowRoot.querySelector(`#distance`));
-        this._bearingValue = new WT_CachedElement(this.shadowRoot.querySelector(`#bearing`));
+        this._sourceValue = new WT_CachedElement(this.shadowRoot.querySelector(`#source`), {cacheAttributes: false});
+        this._identValue = new WT_CachedElement(this.shadowRoot.querySelector(`#ident`), {cacheAttributes: false});
+        this._bearingValue = new WT_CachedElement(this.shadowRoot.querySelector(`#bearing`), {cacheAttributes: false});
+
+        this._distanceValue = await WT_CustomElementSelector.select(this.shadowRoot, "#distance");
     }
 
-    connectedCallback() {
-        this._defineChildren();
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
         this._isInit = true;
 
         if (this._context) {
             this._updateFromContext();
         }
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
     }
 
     _updateArrow() {
@@ -540,7 +522,7 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
     }
 
     _updateSource(source, hasData) {
-        this._sourceValue.innerHTML = WT_G3x5_PFDBottomInfoBearingCellHTMLElement.SOURCE_TEXT[source];
+        this._sourceValue.textContent = WT_G3x5_PFDBottomInfoBearingCellHTMLElement.SOURCE_TEXT[source];
     }
 
     _updateIdent(source, hasData) {
@@ -554,14 +536,20 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
     }
 
     _updateDistance(source, hasData) {
-        let text;
+        let numberText;
+        let unitText;
         if (hasData && this._context.model.hasDistance()) {
-            let numberModel = this._context.model.getDistance();
-            text = this._distanceFormatter.getFormattedHTML(numberModel.getValue(), numberModel.getUnit());
+            let model = this._context.model.getDistance();
+            let value = model.getValue();
+            let displayUnit = model.getUnit();
+            numberText = this._distanceFormatter.getFormattedNumber(value, displayUnit);
+            unitText = this._distanceFormatter.getFormattedUnit(value, displayUnit);
         } else {
-            text = "";
+            numberText = "";
+            unitText = "";
         }
-        this._distanceValue.innerHTML = text;
+        this._distanceValue.setNumberText(numberText);
+        this._distanceValue.setUnitText(unitText);
     }
 
     _updateBearing(source, hasData) {
@@ -594,7 +582,6 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
         this._updateDisplay();
     }
 }
-WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS = "unit";
 WT_G3x5_PFDBottomInfoBearingCellHTMLElement.SOURCE_TEXT = [
     "OFF",
     "NAV1",

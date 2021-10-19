@@ -20,7 +20,7 @@ class WT_G5000_TSCFlightPlan extends WT_G3x5_TSCFlightPlan {
             return false;
         }
 
-        let previousLeg = this._findPreviousLegFromSegmentIndex(this._displayedFlightPlan, segment, index);
+        let previousLeg = this._displayedFlightPlan.getPreviousLeg(segment, index);
         let previousWaypoint = previousLeg ? previousLeg.fix : null;
         if ((!referenceWaypoint && previousWaypoint) || (referenceWaypoint && !referenceWaypoint.equals(previousWaypoint))) {
             return false;
@@ -28,10 +28,10 @@ class WT_G5000_TSCFlightPlan extends WT_G3x5_TSCFlightPlan {
 
         let success;
         if (command.type === WT_G5000_TSCFlightPlanKeyboard.CommandType.INSERT_WAYPOINT) {
-            success = await this._insertWaypointToIndex(segment, command.waypoint, index);
+            success = await this._insertWaypointToIndex(flightPlan, segment, index, command.waypoint);
             referenceWaypoint = command.waypoint;
         } else {
-            success = await this._insertAirwayToIndex(segment, command.airway, command.sequence, index);
+            success = await this._insertAirwayToIndex(flightPlan, segment, index, command.airway, command.sequence);
             referenceWaypoint = command.sequence[command.sequence.length - 1];
         }
 
@@ -44,7 +44,7 @@ class WT_G5000_TSCFlightPlan extends WT_G3x5_TSCFlightPlan {
     }
 
     _openFlightPlanKeyboard(flightPlan, segment, index) {
-        let previousLeg = this._findPreviousLegFromSegmentIndex(this._displayedFlightPlan, segment, index);
+        let previousLeg = this._displayedFlightPlan.getPreviousLeg(segment, index);
         this._flightPlanKeyboardPopUp.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
@@ -57,6 +57,10 @@ class WT_G5000_TSCFlightPlan extends WT_G3x5_TSCFlightPlan {
 
     _onEnrouteAddButtonPressed(event) {
         this._openFlightPlanKeyboard(this._displayedFlightPlan, WT_FlightPlan.Segment.ENROUTE, this._displayedFlightPlan.getSegment(WT_FlightPlan.Segment.ENROUTE).elements.length);
+    }
+
+    _onEnrouteInsertButtonPressed(event) {
+        this._openFlightPlanKeyboard(this._displayedFlightPlan, WT_FlightPlan.Segment.ENROUTE, 0);
     }
 
     /**

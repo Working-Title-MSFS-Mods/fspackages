@@ -2847,7 +2847,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanSequenceRenderer extends WT_G3x5_NavMap
 
         let modeHTMLElement = row.getActiveModeHTMLElement();
         modeHTMLElement.setIndent(2);
-        modeHTMLElement.setHeaderText(`Airway – ${this.sequence.airway.name}.${this.sequence.legs.last().fix.ident}${this._isCollapsed ? " (collapsed)" : ""}`);
+        modeHTMLElement.setHeaderText(`Airway – ${WT_G3x5_FlightPlanTextFormatting.getAirwaySequenceIdent(this.sequence)}${this._isCollapsed ? " (collapsed)" : ""}`);
     }
 }
 
@@ -2991,12 +2991,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanDepartureHeaderRowRenderer extends WT_G
         super._doRender(row, activeLeg);
 
         let modeHTMLElement = row.getActiveModeHTMLElement();
-        let departure = this.sequence.procedure;
-        let rwyTransition = departure.runwayTransitions.getByIndex(this.sequence.runwayTransitionIndex);
-        let enrouteTransition = departure.enrouteTransitions.getByIndex(this.sequence.enrouteTransitionIndex);
-        let prefix = `${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}.`;
-        let suffix = (enrouteTransition && this.sequence.legs.length > 0) ? `.${this.sequence.legs.last().fix.ident}` : "";
-        modeHTMLElement.setHeaderText(`Departure – ${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
+        modeHTMLElement.setHeaderText(`Departure – ${WT_G3x5_FlightPlanTextFormatting.getDepartureIdent(this.sequence)}`);
     }
 }
 
@@ -3067,12 +3062,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanArrivalHeaderRowRenderer extends WT_G3x
         super._doRender(row, activeLeg);
 
         let modeHTMLElement = row.getActiveModeHTMLElement();
-        let arrival = this.sequence.procedure;
-        let enrouteTransition = arrival.enrouteTransitions.getByIndex(this.sequence.enrouteTransitionIndex);
-        let rwyTransition = arrival.runwayTransitions.getByIndex(this.sequence.runwayTransitionIndex);
-        let prefix = (enrouteTransition && this.sequence.legs.length > 0) ? `${this.sequence.legs.first().fix.ident}.` : "";
-        let suffix = `.${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}`;
-        modeHTMLElement.setHeaderText(`Arrival – ${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
+        modeHTMLElement.setHeaderText(`Arrival – ${WT_G3x5_FlightPlanTextFormatting.getArrivalIdent(this.sequence)}`);
     }
 }
 
@@ -3109,8 +3099,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanApproachHeaderRowRenderer extends WT_G3
         super._doRender(row, activeLeg);
 
         let modeHTMLElement = row.getActiveModeHTMLElement();
-        let approach = this.sequence.procedure;
-        modeHTMLElement.setHeaderText(`Approach – ${approach.airport.ident}–${approach.name}`);
+        modeHTMLElement.setHeaderText(`Approach – ${WT_G3x5_FlightPlanTextFormatting.getApproachIdent(this.sequence)}`);
     }
 }
 

@@ -25,6 +25,9 @@ class WT_FlightPlanManager {
         this._standby.addListener(this._onStandbyFlightPlanChanged.bind(this));
         this._directTo = new WT_DirectTo();
 
+        this._activeDesyncCount = 0;
+        this._isActiveDesynced = false;
+
         this._isVNAVEnabled = false;
         this._activeVNAVFPA = NaN;
 
@@ -88,6 +91,15 @@ class WT_FlightPlanManager {
      */
     get isMaster() {
         return this._isMaster;
+    }
+
+    /**
+     * Whether the active flight plan is desynced from the sim's default flight plan manager.
+     * @readonly
+     * @type {Boolean}
+     */
+    get isActiveDesynced() {
+        return this._isActiveDesynced;
     }
 
     /**
@@ -196,15 +208,22 @@ class WT_FlightPlanManager {
      * Syncs this manager's active flight plan from the sim's default flight plan manager.
      * @param {Boolean} [forceEnrouteSync] - whether to force syncing of the enroute segment from the sim's flight plan
      *        manager. False by default.
+     * @param {Boolean} [trackDesync] - whether to track desynchronizations from the sim's flight plan manager. False
+     *        by default.
      * @returns {Promise<void>} a Promise which is fulfilled when the sync completes.
      */
-    async syncActiveFromGame(forceEnrouteSync) {
+    async syncActiveFromGame(forceEnrouteSync, trackDesync) {
         if (this._isActiveLocked) {
             return;
         }
 
         this._lastActivePlanSyncTime = Date.now();
-        await this._asoboInterface.syncFromGame(this._active, this._directTo, forceEnrouteSync);
+        let isSynced = await this._asoboInterface.syncFromGame(this._active, this._directTo, forceEnrouteSync);
+
+        if (trackDesync) {
+            this._activeDesyncCount = isSynced ? 0 : this._activeDesyncCount + 1;
+            this._isActiveDesynced = this._activeDesyncCount >= WT_FlightPlanManager.DESYNC_CONSECUTIVE_THRESHOLD;
+        }
 
         if (!this.directTo.isActive()) {
             this._activeLegCached = await this._asoboInterface.getActiveLeg(this._active);
@@ -1240,7 +1259,7 @@ class WT_FlightPlanManager {
         }
 
         let activeVNAVPath = this._getActiveVNAVPath();
-        if (activeVNAVPath) {
+        if (activeVNAVPath && activeVNAVPath.deltaAltitude.number !== 0) {
             return this._distanceToActiveVNAVWaypoint(reference).subtract(activeVNAVPath.getTotalDistance());
         } else {
             return undefined;
@@ -2252,6 +2271,7 @@ WT_FlightPlanManager._tempNM = WT_Unit.NMILE.createNumber(0);
 WT_FlightPlanManager._tempKnot = WT_Unit.KNOT.createNumber(0);
 WT_FlightPlanManager._tempSeconds = WT_Unit.SECOND.createNumber(0);
 WT_FlightPlanManager._tempGeoPoint = new WT_GeoPoint(0, 0);
+WT_FlightPlanManager.DESYNC_CONSECUTIVE_THRESHOLD = 3;
 WT_FlightPlanManager.ACTIVE_STEP_FIX_TOLERANCE = 1e-6; // ~6 m
 WT_FlightPlanManager.VNAV_UPDATE_INTERVAL = 2000; // ms
 WT_FlightPlanManager.INITIAL_TOD_TIME_THRESHOLD = WT_Unit.MINUTE.createNumber(1);

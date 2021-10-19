@@ -21,11 +21,29 @@ class WT_G3x5_NavDataBarModel {
         let airplane = this._instrument.airplane;
 
         this._infos = {
-            BRG: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.BRG, new WT_NavAngleModelSimVar(true, {
-                updateLocation(location) {
-                    airplane.navigation.position(location);
+            BRG: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.BRG, new WT_NumberUnitModelAutoUpdated(new WT_NavAngleUnit(false), {
+                _tempGeoPoint: new WT_GeoPoint(0, 0),
+
+                updateValue(value) {
+                    let target = null;
+                    if (flightPlanManager.directTo.isActive()) {
+                        target = flightPlanManager.directTo.getDestination().location;
+                    } else {
+                        let activeLeg = flightPlanManager.getActiveLeg(true);
+                        if (activeLeg) {
+                            target = activeLeg.fix.location;
+                        }
+                    }
+
+                    if (target) {
+                        let airplanePos = airplane.navigation.position(this._tempGeoPoint);
+                        value.unit.setLocation(airplanePos);
+                        value.set(airplanePos.bearingTo(target));
+                    } else {
+                        value.set(NaN);
+                    }
                 }
-            }, "PLANE HEADING DEGREES MAGNETIC", "degree")),
+            })),
             DIS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {
                 updateValue(value) {
                     let result;

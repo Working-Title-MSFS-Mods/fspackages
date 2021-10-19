@@ -205,9 +205,6 @@ class WT_Approach extends WT_Procedure {
     _initRunway(data) {
         let runwayDesignation = data.runway.trim();
         this._runway = this.airport.runways.getByDesignation(runwayDesignation);
-        if (!this._runway) {
-            this._runway = this.airport.runways.getByDesignation(runwayDesignation + "C"); // data from the game leaves out the C for center runways
-        }
     }
 
     _initLegs(data) {
@@ -229,7 +226,7 @@ class WT_Approach extends WT_Procedure {
             return;
         }
 
-        let name = `RW${this.runway.number.toFixed(0).padStart(2, "0")}${this.runway.suffix}`;
+        let name = `${this.runway.number.toFixed(0).padStart(2, "0")}${this.runway.suffix}`;
         let airportFreq = this.airport.frequencies.array.find(airportFreq => airportFreq.name.search(name) >= 0);
         if (airportFreq) {
             this._frequency = airportFreq.frequency;

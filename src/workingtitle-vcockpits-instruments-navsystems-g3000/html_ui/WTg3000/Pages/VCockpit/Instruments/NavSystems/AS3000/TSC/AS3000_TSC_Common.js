@@ -97,6 +97,8 @@ class WT_G3x5_TSCPage extends WT_G3x5_TSCElementContainer {
 }
 
 class AS3000_TSC extends NavSystemTouch {
+    get manageFlightPlan() { return false; }
+
     constructor() {
         super();
 
@@ -143,6 +145,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _initLightingControl() {
+        SimVar.SetSimVarValue("L:AS3000_Brightness", "number", 1); // test
         if (this.isLightingControlAllowed()) {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
@@ -638,6 +641,20 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _onMFDPaneFlightPlanDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Map Pointer Control")) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
+    _onMFDPaneProcedureDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Map Pointer Control")) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
         if (!this._isChangingPages && setting === this.getSelectedPaneSettings().display) {
             let currentPageGroup = this.getCurrentPageGroup();
@@ -654,6 +671,12 @@ class AS3000_TSC extends NavSystemTouch {
                     break;
                 case WT_G3x5_PaneDisplaySetting.Mode.CHARTS:
                     this._onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                    this._onMFDPaneFlightPlanDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
+                    this._onMFDPaneProcedureDisplaySwitch(currentPageGroup, currentPage);
                     break;
             }
         }
@@ -709,6 +732,20 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    /**
+     *
+     * @param {String} suffix
+     * @param {Number} maxIndex
+     * @param {Number} deltaIndex
+     * @param {Boolean} isSyncable
+     */
+    _changeMapRange(suffix, maxIndex, deltaIndex, isSyncable) {
+        let id = `MFD-${this.getSelectedMFDPane()}_${suffix}`;
+        let currentIndex = WT_MapSettingModel.getSettingValue(id, WT_MapRangeSetting.KEY_DEFAULT, 0);
+        let toIndex = Math.max(0, Math.min(maxIndex, currentIndex + deltaIndex));
+        WT_MapSettingModel.setSettingValue(id, WT_MapRangeSetting.KEY_DEFAULT, toIndex, isSyncable);
+    }
+
     _handleZoomEventMFD(event) {
         switch (this.getSelectedPaneSettings().display.mode) {
             case WT_G3x5_PaneDisplaySetting.Mode.NAVMAP:
@@ -748,6 +785,26 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                     case "BottomKnob_Small_DEC":
                         this.getSelectedMFDPanePages().charts.element.changeZoom(1);
+                        break;
+                }
+                break;
+            case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this._changeMapRange(WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, 1, false);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this._changeMapRange(WT_G3x5_FlightPlanDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, -1, false);
+                        break;
+                }
+                break;
+            case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this._changeMapRange(WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, 1, false);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this._changeMapRange(WT_G3x5_ProcedureDisplayPane.MAP_ID_SUFFIX, WT_G3x5_FlightPlanPreviewSettings.MAP_RANGE_LEVELS.length - 1, -1, false);
                         break;
                 }
                 break;
@@ -806,9 +863,18 @@ class AS3000_TSC extends NavSystemTouch {
     _handleMapPointerControlNavigationEvent(event) {
         if (this.getCurrentPage().title === "Map Pointer Control") {
             this.goBack();
-        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedPaneSettings().display.mode === WT_G3x5_PaneDisplaySetting.Mode.NAVMAP) {
-            this.closePopUpElement();
-            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
+        } else if (this.getCurrentPageGroup().name === "MFD") {
+            let displayMode = this.getSelectedPaneSettings().display.mode;
+            switch (displayMode) {
+                case WT_G3x5_PaneDisplaySetting.Mode.NAVMAP:
+                case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
+                    this.closePopUpElement();
+                    let controlPage = this.getSelectedMFDPanePages().mapPointerControl;
+                    controlPage.element.setControlledPane(displayMode);
+                    this.SwitchToPageName("MFD", controlPage.name);
+                    break;
+            }
         }
     }
 
@@ -1076,50 +1142,50 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
 
     onUpdate(_deltaTime) {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-            diffAndSetText(this.NavSourceButton_Value, "FMS");
+            diffAndSetHTML(this.NavSourceButton_Value, "FMS");
         }
         else {
             if (SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number") == 1) {
-                diffAndSetText(this.NavSourceButton_Value, "NAV1");
+                diffAndSetHTML(this.NavSourceButton_Value, "NAV1");
             }
             else {
-                diffAndSetText(this.NavSourceButton_Value, "NAV2");
+                diffAndSetHTML(this.NavSourceButton_Value, "NAV2");
             }
         }
         let brg1Src = SimVar.GetSimVarValue("L:PFD_BRG1_Source", "number");
         switch (brg1Src) {
             case 0:
-                diffAndSetText(this.Bearing1Button_Value, "OFF");
+                diffAndSetHTML(this.Bearing1Button_Value, "OFF");
                 break;
             case 1:
-                diffAndSetText(this.Bearing1Button_Value, "NAV1");
+                diffAndSetHTML(this.Bearing1Button_Value, "NAV1");
                 break;
             case 2:
-                diffAndSetText(this.Bearing1Button_Value, "NAV2");
+                diffAndSetHTML(this.Bearing1Button_Value, "NAV2");
                 break;
             case 3:
-                diffAndSetText(this.Bearing1Button_Value, "GPS");
+                diffAndSetHTML(this.Bearing1Button_Value, "GPS");
                 break;
             case 4:
-                diffAndSetText(this.Bearing1Button_Value, "ADF");
+                diffAndSetHTML(this.Bearing1Button_Value, "ADF");
                 break;
         }
         let brg2Src = SimVar.GetSimVarValue("L:PFD_BRG2_Source", "number");
         switch (brg2Src) {
             case 0:
-                diffAndSetText(this.Bearing2Button_Value, "OFF");
+                diffAndSetHTML(this.Bearing2Button_Value, "OFF");
                 break;
             case 1:
-                diffAndSetText(this.Bearing2Button_Value, "NAV1");
+                diffAndSetHTML(this.Bearing2Button_Value, "NAV1");
                 break;
             case 2:
-                diffAndSetText(this.Bearing2Button_Value, "NAV2");
+                diffAndSetHTML(this.Bearing2Button_Value, "NAV2");
                 break;
             case 3:
-                diffAndSetText(this.Bearing2Button_Value, "GPS");
+                diffAndSetHTML(this.Bearing2Button_Value, "GPS");
                 break;
             case 4:
-                diffAndSetText(this.Bearing2Button_Value, "ADF");
+                diffAndSetHTML(this.Bearing2Button_Value, "ADF");
                 break;
         }
     }
@@ -1402,27 +1468,27 @@ class AS3000_TSC_WeatherSelection extends NavSystemElement {
     updateWeatherMapButtons(_newIndex = undefined) {
         let currMap = _newIndex == undefined ? SimVar.GetSimVarValue("L:AS3000_MFD_Current_WeatherMap", "number") : _newIndex;
         if (currMap == 0) {
-            diffAndSetText(this.nexradButton_text, "NEXRAD Settings");
+            diffAndSetHTML(this.nexradButton_text, "NEXRAD Settings");
             diffAndSetAttribute(this.nexradButton, "state", "Active");
         }
         else {
-            diffAndSetText(this.nexradButton_text, "NEXRAD");
+            diffAndSetHTML(this.nexradButton_text, "NEXRAD");
             diffAndSetAttribute(this.nexradButton, "state", "");
         }
         if (currMap == 1) {
-            diffAndSetText(this.wxRadarButton_text, "WX RADAR Settings");
+            diffAndSetHTML(this.wxRadarButton_text, "WX RADAR Settings");
             diffAndSetAttribute(this.wxRadarButton, "state", "Active");
         }
         else {
-            diffAndSetText(this.wxRadarButton_text, "WX RADAR Horizontal");
+            diffAndSetHTML(this.wxRadarButton_text, "WX RADAR Horizontal");
             diffAndSetAttribute(this.wxRadarButton, "state", "");
         }
         if (currMap == 2) {
-            diffAndSetText(this.wxRadarVertButton_text, "WX RADAR Settings");
+            diffAndSetHTML(this.wxRadarVertButton_text, "WX RADAR Settings");
             diffAndSetAttribute(this.wxRadarVertButton, "state", "Active");
         }
         else {
-            diffAndSetText(this.wxRadarVertButton_text, "WX RADAR Vertical");
+            diffAndSetHTML(this.wxRadarVertButton_text, "WX RADAR Vertical");
             diffAndSetAttribute(this.wxRadarVertButton, "state", "");
         }
     }
@@ -1490,7 +1556,7 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
     updateSlider() {
         let currValue = SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number") * 100;
         let displayValue = fastToFixed(currValue, 0)
-        diffAndSetText(this.displayValue, currValue.toFixed(0) + "%"); // update readout display
+        diffAndSetHTML(this.displayValue, currValue.toFixed(0) + "%"); // update readout display
         this.slider.value = currValue;
         this.sliderBackground.style.webkitClipPath = "polygon(0 0, " + displayValue + "% 0, " + displayValue + "% 100%, 0 100%)"; // update the range slider's track background to only show on the left of the thumb
     }
@@ -2051,15 +2117,15 @@ class AS3000_TSC_Transponder extends NavSystemTouch_Transponder {
     }
 
     _activateNavButtons() {
-        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), true, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "ICON_TSC_BUTTONBAR_HOME.png");
         this.gps.activateNavButton(6, "Enter", this.validateCode.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
     }
 
     _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.gps.deactivateNavButton(6);
     }
 
     onFocusGained() {
@@ -2222,18 +2288,18 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
         }
         this.scrollElement.update();
 
-        diffAndSetText(this.Nav1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2));
-        diffAndSetText(this.Nav1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz"), 2));
-        diffAndSetText(this.Nav1_ID, SimVar.GetSimVarValue("NAV IDENT:1", "string"));
-        diffAndSetText(this.Nav2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz"), 2));
-        diffAndSetText(this.Nav2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:2", "MHz"), 2));
-        diffAndSetText(this.Nav2_ID, SimVar.GetSimVarValue("NAV IDENT:2", "string"));
-        diffAndSetText(this.Com1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
-        diffAndSetText(this.Com1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
-        diffAndSetText(this.Com2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
-        diffAndSetText(this.Com2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
-        diffAndSetText(this.Adf_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
-        diffAndSetText(this.Adf_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF STANDBY FREQUENCY:1", "KHz"), 1));
+        diffAndSetHTML(this.Nav1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:1", "MHz"), 2));
+        diffAndSetHTML(this.Nav1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz"), 2));
+        diffAndSetHTML(this.Nav1_ID, SimVar.GetSimVarValue("NAV IDENT:1", "string"));
+        diffAndSetHTML(this.Nav2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz"), 2));
+        diffAndSetHTML(this.Nav2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:2", "MHz"), 2));
+        diffAndSetHTML(this.Nav2_ID, SimVar.GetSimVarValue("NAV IDENT:2", "string"));
+        diffAndSetHTML(this.Com1_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        diffAndSetHTML(this.Com1_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        diffAndSetHTML(this.Com2_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+        diffAndSetHTML(this.Com2_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:2", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+        diffAndSetHTML(this.Adf_Active, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF ACTIVE FREQUENCY:1", "KHz"), 1));
+        diffAndSetHTML(this.Adf_Stby, this.gps.frequencyFormat(SimVar.GetSimVarValue("ADF STANDBY FREQUENCY:1", "KHz"), 1));
     }
     onExit() {
         this.window.setAttribute("state", "Inactive");
@@ -2791,8 +2857,8 @@ class AS3000_TSC_InsertBeforeWaypoint extends NavSystemElement {
                 this.elements.push(newElem);
             }
             let infos = this.gps.currFlightPlanManager.getWaypoint(i).infos;
-            diffAndSetText(this.elements[i].ident, infos.ident);
-            diffAndSetText(this.elements[i].name, infos.name);
+            diffAndSetHTML(this.elements[i].ident, infos.ident);
+            diffAndSetHTML(this.elements[i].name, infos.name);
             let symbol = infos.imageFileName();
             diffAndSetAttribute(this.elements[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
         }
@@ -2912,12 +2978,12 @@ class AS3000_TSC_Minimums extends NavSystemElement {
                 display += this.digits[i].toString();
             }
             display += '</span><span class="Writing">' + this.digits[this.digits.length - 1] + '</span><span class="Writed">FT</span>';
-            diffAndSetText(this.display, display);
+            diffAndSetHTML(this.display, display);
         }
         else {
             let display = '<span class="Initial">';
             display += SimVar.GetSimVarValue("L:AS3000_MinimalsValue", "number");
-            diffAndSetText(this.display, display + "FT</span>");
+            diffAndSetHTML(this.display, display + "FT</span>");
         }
     }
 
@@ -2971,7 +3037,7 @@ class AS3000_TSC_Minimums extends NavSystemElement {
                 newValue = "Radio Alt";
                 break;
         }
-        diffAndSetText(this.typeButtonValue, newValue);
+        diffAndSetHTML(this.typeButtonValue, newValue);
     }
     cancelEdit() {
         this.gps.goBack();
