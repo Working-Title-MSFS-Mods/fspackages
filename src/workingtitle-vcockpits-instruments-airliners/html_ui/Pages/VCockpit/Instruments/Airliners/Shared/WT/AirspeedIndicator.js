@@ -141,8 +141,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machPrefixSVG.setAttribute("font-size", (this.fontSize * 1.1).toString());
             this.machPrefixSVG.setAttribute("font-family", "Roboto-Light");
             this.machPrefixSVG.setAttribute("text-anchor", "end");
-            this.machPrefixSVG.setAttribute("stroke", "black");
-            this.machPrefixSVG.setAttribute("stroke-width", "0.6px");
+            this.machPrefixSVG.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
             this.machPrefixSVG.setAttribute("alignment-baseline", "top");
             this.rootGroup.appendChild(this.machPrefixSVG);
             this.machPrefixdecimalSVG = document.createElementNS(Avionics.SVG.NS, "text");
@@ -153,8 +152,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machPrefixdecimalSVG.setAttribute("font-size", (this.fontSize * 2.3).toString());
             this.machPrefixdecimalSVG.setAttribute("font-family", "Roboto-Light");
             this.machPrefixdecimalSVG.setAttribute("text-anchor", "end");
-			this.machPrefixdecimalSVG.setAttribute("stroke", "black");
-			this.machPrefixdecimalSVG.setAttribute("stroke-width", "0.85px");
+            this.machPrefixdecimalSVG.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
             this.machPrefixdecimalSVG.setAttribute("alignment-baseline", "top");
             this.rootGroup.appendChild(this.machPrefixdecimalSVG);
             this.machValueSVG = document.createElementNS(Avionics.SVG.NS, "text");
@@ -162,8 +160,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machValueSVG.setAttribute("x", (posX - 16).toString());
             this.machValueSVG.setAttribute("y", (posY + 30).toString());
             this.machValueSVG.setAttribute("fill", "var(--green)");
-			      this.machValueSVG.setAttribute("stroke", "black");
-			      this.machValueSVG.setAttribute("stroke-width", "0.85px");
+            this.machValueSVG.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
             this.machValueSVG.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.machValueSVG.setAttribute("font-family", "Roboto-Light");
             this.machValueSVG.setAttribute("text-anchor", "start");

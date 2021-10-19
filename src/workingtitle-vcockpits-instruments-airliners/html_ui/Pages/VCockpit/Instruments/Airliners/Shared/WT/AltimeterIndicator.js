@@ -182,8 +182,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGLeftPart.setAttribute("x", (posX - 59).toString());
         this.pressureSVGLeftPart.setAttribute("y", (posY + 30).toString());
         this.pressureSVGLeftPart.setAttribute("fill", "var(--cyan)");
-        this.pressureSVGLeftPart.setAttribute("stroke", "black");
-        this.pressureSVGLeftPart.setAttribute("stroke-width", "0.85px");
+        this.pressureSVGLeftPart.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
         this.pressureSVGLeftPart.setAttribute("font-size", (this.fontSize * 1.2).toString());
         this.pressureSVGLeftPart.setAttribute("font-family", "Roboto-Light");
         this.pressureSVGLeftPart.setAttribute("text-anchor", "center");
@@ -196,8 +195,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGCenterPart.setAttribute("x", (posX - 39).toString());
         this.pressureSVGCenterPart.setAttribute("y", (posY + 30).toString());
         this.pressureSVGCenterPart.setAttribute("fill", "var(--cyan)");
-        this.pressureSVGCenterPart.setAttribute("stroke", "black");
-        this.pressureSVGCenterPart.setAttribute("stroke-width", "0.85px");
+        this.pressureSVGCenterPart.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
         this.pressureSVGCenterPart.setAttribute("font-size", (this.fontSize * 2.3).toString());
         this.pressureSVGCenterPart.setAttribute("font-family", "Roboto-Light");
         this.pressureSVGCenterPart.setAttribute("text-anchor", "center");
@@ -210,8 +208,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGRightPart.setAttribute("x", (posX - 20).toString());
         this.pressureSVGRightPart.setAttribute("y", (posY + 30).toString());
         this.pressureSVGRightPart.setAttribute("fill", "var(--cyan)");
-        this.pressureSVGRightPart.setAttribute("stroke", "black");
-        this.pressureSVGRightPart.setAttribute("stroke-width", "0.85px");
+        this.pressureSVGRightPart.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
         this.pressureSVGRightPart.setAttribute("font-size", (this.fontSize * 1.2).toString());
         this.pressureSVGRightPart.setAttribute("font-family", "Roboto-Light");
         this.pressureSVGRightPart.setAttribute("text-anchor", "center");
@@ -224,8 +221,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGUnits.setAttribute("x", (posX + 16).toString());
         this.pressureSVGUnits.setAttribute("y", (posY + 30).toString());
         this.pressureSVGUnits.setAttribute("fill", "var(--cyan)");
-        this.pressureSVGUnits.setAttribute("stroke", "black");
-        this.pressureSVGUnits.setAttribute("stroke-width", "0.8px");
+        this.pressureSVGUnits.style.textShadow = "1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black";
         this.pressureSVGUnits.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.pressureSVGUnits.setAttribute("font-family", "Roboto-Light");
         this.pressureSVGUnits.setAttribute("text-anchor", "left");
