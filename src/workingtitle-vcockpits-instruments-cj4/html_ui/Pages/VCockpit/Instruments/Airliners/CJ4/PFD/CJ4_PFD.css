@@ -207,7 +207,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VnavAlt {
     font-size: 26px;
     color: var(--magenta);
     font: "Robot-Bold";
-    -webkit-text-stroke: 1px black;
+    -webkit-text-stroke: 0.6px black;
     text-align: center;
     top: 4.6%;
     left: 85.2%;

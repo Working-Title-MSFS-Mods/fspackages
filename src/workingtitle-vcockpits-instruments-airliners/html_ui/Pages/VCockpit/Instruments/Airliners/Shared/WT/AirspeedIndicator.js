@@ -142,7 +142,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machPrefixSVG.setAttribute("font-family", "Roboto-Light");
             this.machPrefixSVG.setAttribute("text-anchor", "end");
             this.machPrefixSVG.setAttribute("stroke", "black");
-            this.machPrefixSVG.setAttribute("stroke-width", "1px");
+            this.machPrefixSVG.setAttribute("stroke-width", "0.6px");
             this.machPrefixSVG.setAttribute("alignment-baseline", "top");
             this.rootGroup.appendChild(this.machPrefixSVG);
             this.machPrefixdecimalSVG = document.createElementNS(Avionics.SVG.NS, "text");
@@ -154,7 +154,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machPrefixdecimalSVG.setAttribute("font-family", "Roboto-Light");
             this.machPrefixdecimalSVG.setAttribute("text-anchor", "end");
 			this.machPrefixdecimalSVG.setAttribute("stroke", "black");
-			this.machPrefixdecimalSVG.setAttribute("stroke-width", "1px");
+			this.machPrefixdecimalSVG.setAttribute("stroke-width", "0.6px");
             this.machPrefixdecimalSVG.setAttribute("alignment-baseline", "top");
             this.rootGroup.appendChild(this.machPrefixdecimalSVG);
             this.machValueSVG = document.createElementNS(Avionics.SVG.NS, "text");
@@ -163,7 +163,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machValueSVG.setAttribute("y", (posY + 30).toString());
             this.machValueSVG.setAttribute("fill", "var(--green)");
 			      this.machValueSVG.setAttribute("stroke", "black");
-			      this.machValueSVG.setAttribute("stroke-width", "1px");
+			      this.machValueSVG.setAttribute("stroke-width", "0.6px");
             this.machValueSVG.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.machValueSVG.setAttribute("font-family", "Roboto-Light");
             this.machValueSVG.setAttribute("text-anchor", "start");
