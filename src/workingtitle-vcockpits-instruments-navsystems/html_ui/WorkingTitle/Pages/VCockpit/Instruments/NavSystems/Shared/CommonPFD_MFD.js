@@ -677,7 +677,6 @@ class PFD_XPDR extends NavSystemElement {
         super(...arguments);
         this.newCode = [-1, -1, -1, -1];
         this.editTime = 0;
-        this.identTime = 0;
         this.stateBeforeShutDown = 1;
         this.codeValue = "";
         this.modeValue = "";
@@ -702,7 +701,11 @@ class PFD_XPDR extends NavSystemElement {
             }
             var mode = "";
             let currMode = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
-            if (this.identTime <= 0) {
+            let ident = SimVar.GetSimVarValue("TRANSPONDER IDENT:1", "bool");
+            if (ident) {
+                mode = "IDNT";
+            }
+            else {
                 switch (currMode) {
                     case 1:
                         mode = "STBY";
@@ -715,18 +718,9 @@ class PFD_XPDR extends NavSystemElement {
                         break;
                 }
             }
-            else {
-                mode = "IDNT";
-            }
             if (this.modeValue != mode) {
                 diffAndSetText(this.XPDRModeElement, mode);
                 this.modeValue = mode;
-            }
-            if (this.identTime > 0) {
-                this.identTime -= _deltaTime;
-                if (this.identTime <= 0) {
-                    this.identTime = 0;
-                }
             }
             if (this.editTime > 0) {
                 this.editTime -= _deltaTime;
@@ -746,10 +740,7 @@ class PFD_XPDR extends NavSystemElement {
     onEvent(_event) {
         switch (_event) {
             case "SoftKeys_XPNDR_IDENT":
-                let currMode = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
-                if (currMode == 3 || currMode == 4) {
-                    this.identTime = 18000;
-                }
+                SimVar.SetSimVarValue("K:XPNDR_IDENT_ON", "bool", true);
                 break;
             case "SoftKeys_XPNDR_BKSP":
                 if (this.editTime > 0) {
@@ -910,149 +901,147 @@ class PFD_Annunciations extends Annunciations {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (this.engineType == EngineType.ENGINE_TYPE_PISTON) {
+        for (var i = 0; i < this.allMessages.length; i++) {
+            var message = this.allMessages[i];
+            var value = false;
+            if (message.Handler)
+                value = message.Handler();
+            if (value != message.Visible) {
+                this.needReload = true;
+                if (!value) {
+                    message.Acknowledged = false;
+                }
+                message.Visible = value;
+            }
+        }
+        if (this.needReload) {
+            let newAnnunc = "";
+            let acknowledgedAnnunc = "";
+            this.alertLevel = 0;
+            this.alert = false;
+            this.needReload = false;
             for (var i = 0; i < this.allMessages.length; i++) {
                 var message = this.allMessages[i];
-                var value = false;
-                if (message.Handler)
-                    value = message.Handler();
-                if (value != message.Visible) {
-                    this.needReload = true;
-                    if (!value) {
-                        message.Acknowledged = false;
+                if (message.Visible) {
+                    this.alert = true;
+                    if (!message.Acknowledged) {
+                        switch (message.Type) {
+                            case Annunciation_MessageType.WARNING:
+                                this.alertLevel = 3;
+                                break;
+                            case Annunciation_MessageType.CAUTION:
+                                if (this.alertLevel < 2) {
+                                    let res = this.gps.playInstrumentSound("tone_caution");
+                                    if (res) {
+                                        this.isPlayingWarningTone = true;
+                                        this.alertLevel = 2;
+                                    }
+                                }
+                                break;
+                            case Annunciation_MessageType.ADVISORY:
+                                if (this.alertLevel < 1) {
+                                    this.alertLevel = 1;
+                                }
+                                break;
+                        }
                     }
-                    message.Visible = value;
-                }
-            }
-            if (this.needReload) {
-                let newAnnunc = "";
-                let acknowledgedAnnunc = "";
-                this.alertLevel = 0;
-                this.alert = false;
-                this.needReload = false;
-                for (var i = 0; i < this.allMessages.length; i++) {
-                    var message = this.allMessages[i];
-                    if (message.Visible) {
-                        this.alert = true;
+                    if (message.Type == Annunciation_MessageType.WARNING || message.Type == Annunciation_MessageType.CAUTION || message.Type == Annunciation_MessageType.ADVISORY) {
                         if (!message.Acknowledged) {
+                            newAnnunc += "<div class=";
                             switch (message.Type) {
                                 case Annunciation_MessageType.WARNING:
-                                    this.alertLevel = 3;
+                                    newAnnunc += '"Warning"';
                                     break;
                                 case Annunciation_MessageType.CAUTION:
-                                    if (this.alertLevel < 2) {
-                                        let res = this.gps.playInstrumentSound("tone_caution");
-                                        if (res) {
-                                            this.isPlayingWarningTone = true;
-                                            this.alertLevel = 2;
-                                        }
-                                    }
+                                    newAnnunc += '"Caution"';
                                     break;
                                 case Annunciation_MessageType.ADVISORY:
-                                    if (this.alertLevel < 1) {
-                                        this.alertLevel = 1;
-                                    }
+                                    newAnnunc += '"Advisory"';
                                     break;
                             }
-                        }
-                        if (message.Type == Annunciation_MessageType.WARNING || message.Type == Annunciation_MessageType.CAUTION || message.Type == Annunciation_MessageType.ADVISORY) {
-                            if (!message.Acknowledged) {
-                                newAnnunc += "<div class=";
-                                switch (message.Type) {
-                                    case Annunciation_MessageType.WARNING:
-                                        newAnnunc += '"Warning"';
-                                        break;
-                                    case Annunciation_MessageType.CAUTION:
-                                        newAnnunc += '"Caution"';
-                                        break;
-                                    case Annunciation_MessageType.ADVISORY:
-                                        newAnnunc += '"Advisory"';
-                                        break;
-                                }
-                                newAnnunc += ">" + message.Text + "</div><br/>";
-                            }
-                            else {
-                                acknowledgedAnnunc += "<div class=";
-                                switch (message.Type) {
-                                    case Annunciation_MessageType.WARNING:
-                                        acknowledgedAnnunc += '"Warning"';
-                                        break;
-                                    case Annunciation_MessageType.CAUTION:
-                                        acknowledgedAnnunc += '"Caution"';
-                                        break;
-                                    case Annunciation_MessageType.ADVISORY:
-                                        acknowledgedAnnunc += '"Advisory"';
-                                        break;
-                                }
-                                acknowledgedAnnunc += ">" + message.Text + "</div><br/>";
-                            }
-                        }
-                    }
-                }
-                if (this.alertSoftkey) {
-                    switch (this.alertLevel) {
-                        case 0:
-                            this.alertSoftkey.name = "ALERTS";
-                            break;
-                        case 1:
-                            this.alertSoftkey.name = "ADVISORY";
-                            break;
-                        case 2:
-                            this.alertSoftkey.name = "CAUTION";
-                            break;
-                        case 3:
-                            this.alertSoftkey.name = "WARNING";
-                            break;
-                    }
-                }
-                diffAndSetHTML(this.newAnnunciations, newAnnunc);
-                diffAndSetHTML(this.acknowledged, acknowledgedAnnunc);
-                if (newAnnunc.length > 0 || acknowledgedAnnunc.length > 0) {
-                    diffAndSetAttribute(this.annunciations, "state", "Visible");
-                    this.alert = true;
-                    if (newAnnunc.length > 0 && acknowledgedAnnunc.length > 0) {
-                        diffAndSetAttribute(this.newAnnunciations, "state", "Bordered");
-                    }
-                    else {
-                        diffAndSetAttribute(this.newAnnunciations, "state", "None");
-                    }
-                }
-                else {
-                    diffAndSetAttribute(this.annunciations, "state", "Hidden");
-                }
-            }
-            if (this.alertLevel == 3 && !this.isPlayingWarningTone) {
-                let res = this.gps.playInstrumentSound("tone_warning");
-                if (res)
-                    this.isPlayingWarningTone = true;
-            }
-            if (this.alertSoftkey) {
-                if (this.alert) {
-                    if (this.alertLevel == 0) {
-                        this.alertSoftkey.state = "White";
-                    }
-                    else {
-                        if (this.gps.blinkGetState(800, 400)) {
-                            switch (this.alertLevel) {
-                                case 1:
-                                    this.alertSoftkey.state = "AdvisoryAlert";
-                                    break;
-                                case 2:
-                                    this.alertSoftkey.state = "YellowAlert";
-                                    break;
-                                case 3:
-                                    this.alertSoftkey.state = "RedAlert";
-                                    break;
-                            }
+                            newAnnunc += ">" + message.Text + "</div><br/>";
                         }
                         else {
-                            this.alertSoftkey.state = "None";
+                            acknowledgedAnnunc += "<div class=";
+                            switch (message.Type) {
+                                case Annunciation_MessageType.WARNING:
+                                    acknowledgedAnnunc += '"Warning"';
+                                    break;
+                                case Annunciation_MessageType.CAUTION:
+                                    acknowledgedAnnunc += '"Caution"';
+                                    break;
+                                case Annunciation_MessageType.ADVISORY:
+                                    acknowledgedAnnunc += '"Advisory"';
+                                    break;
+                            }
+                            acknowledgedAnnunc += ">" + message.Text + "</div><br/>";
                         }
                     }
                 }
-                else {
-                    this.alertSoftkey.state = "None";
+            }
+            if (this.alertSoftkey) {
+                switch (this.alertLevel) {
+                    case 0:
+                        this.alertSoftkey.name = "ALERTS";
+                        break;
+                    case 1:
+                        this.alertSoftkey.name = "ADVISORY";
+                        break;
+                    case 2:
+                        this.alertSoftkey.name = "CAUTION";
+                        break;
+                    case 3:
+                        this.alertSoftkey.name = "WARNING";
+                        break;
                 }
+            }
+            diffAndSetHTML(this.newAnnunciations, newAnnunc);
+            diffAndSetHTML(this.acknowledged, acknowledgedAnnunc);
+            if (newAnnunc.length > 0 || acknowledgedAnnunc.length > 0) {
+                diffAndSetAttribute(this.annunciations, "state", "Visible");
+                this.alert = true;
+                if (newAnnunc.length > 0 && acknowledgedAnnunc.length > 0) {
+                    diffAndSetAttribute(this.newAnnunciations, "state", "Bordered");
+                }
+                else {
+                    diffAndSetAttribute(this.newAnnunciations, "state", "None");
+                }
+            }
+            else {
+                diffAndSetAttribute(this.annunciations, "state", "Hidden");
+            }
+        }
+        if (this.alertLevel == 3 && !this.isPlayingWarningTone) {
+            let res = this.gps.playInstrumentSound("tone_warning");
+            if (res)
+                this.isPlayingWarningTone = true;
+        }
+        if (this.alertSoftkey) {
+            if (this.alert) {
+                if (this.alertLevel == 0) {
+                    this.alertSoftkey.state = "White";
+                }
+                else {
+                    if (this.gps.blinkGetState(800, 400)) {
+                        switch (this.alertLevel) {
+                            case 1:
+                                this.alertSoftkey.state = "AdvisoryAlert";
+                                break;
+                            case 2:
+                                this.alertSoftkey.state = "YellowAlert";
+                                break;
+                            case 3:
+                                this.alertSoftkey.state = "RedAlert";
+                                break;
+                        }
+                    }
+                    else {
+                        this.alertSoftkey.state = "None";
+                    }
+                }
+            }
+            else {
+                this.alertSoftkey.state = "None";
             }
         }
     }
@@ -1266,7 +1255,7 @@ class MFD_WindData extends NavSystemElement {
     onUpdate(_deltaTime) {
         let windStrength = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
         if (windStrength >= 1) {
-            var wind = fastToFixed((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) % 360 - (this.relatedMap ? this.relatedMap.getMapUpDirection() : 0), 0);
+            var wind = fastToFixed((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + SimVar.GetSimVarValue("MAGVAR", "degrees") + 180) % 360 - (this.relatedMap ? this.relatedMap.getMapUpDirection() : 0), 0);
             if (wind != this.windValue) {
                 diffAndSetAttribute(this.svg, "wind-direction", wind);
                 this.windValue = wind;
@@ -2225,7 +2214,7 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
     invertFlightPlan() {
     }
     removeFlightPlan() {
-        this.gps.currFlightPlanManager.clearFlightPlan();
+        this.gps.currFlightPlanManager.clearAllFlightPlans();
         this.gps.SwitchToInteractionState(0);
     }
     removeWaypoint(_index) {
@@ -3537,6 +3526,8 @@ class MFD_ApproachSelection extends NavSystemElement {
     }
     onExit() {
         diffAndSetAttribute(this.root, "state", "Inactive");
+        diffAndSetAttribute(this.approachList, "state", "Inactive");
+        diffAndSetAttribute(this.transitionList, "state", "Inactive");
         this.gps.currFlightPlanManager.updateFlightPlan(() => {
             this.gps.currFlightPlanManager.updateCurrentApproach();
         });
@@ -3853,6 +3844,8 @@ class MFD_ArrivalSelection extends NavSystemElement {
     }
     onExit() {
         diffAndSetAttribute(this.root, "state", "Inactive");
+        diffAndSetAttribute(this.arrivalList, "state", "Inactive");
+        diffAndSetAttribute(this.transitionList, "state", "Inactive");
         this.gps.currFlightPlanManager.updateFlightPlan(() => {
             this.gps.currFlightPlanManager.updateCurrentApproach();
         });
@@ -4171,6 +4164,8 @@ class MFD_DepartureSelection extends NavSystemElement {
     }
     onExit() {
         diffAndSetAttribute(this.root, "state", "Inactive");
+        diffAndSetAttribute(this.departureList, "state", "Inactive");
+        diffAndSetAttribute(this.transitionList, "state", "Inactive");
         this.gps.currFlightPlanManager.updateFlightPlan(() => {
             this.gps.currFlightPlanManager.updateCurrentApproach();
         });

@@ -1,3 +1,7 @@
+# Changes in 0.1.0
+* Compatibility with SU6.
+* Removing the dev tag from the version number.
+
 # Changes in 0.1.0-dev10
 * Fix bug that caused menu button to not open main MFD menu.
 
