@@ -34,6 +34,7 @@ Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https
     *   Added capability to customize the MFD display and use the PLAN view to step through flight plan via the MFD ADV and DSPL MENU functions on the FMS
     *   Added bearing pointer functionality
     *   Rebuilt pitch trim gauge because it was reversed and mislabeled in the default model
+    *   HSI and Map overhaul with true to life visuals and functionality
 *   Flight Model
     *   Adjusted engines to reflect real world performance, including the elimination of reverse thrust.
     *   Adjusted fuel flow with a custom fuel flow utility that accurately tracks and reports fuel usage reflective of real aircraft performance
