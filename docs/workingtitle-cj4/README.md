@@ -1,7 +1,9 @@
 # Working Title CJ4
 
 ## UPDATES
-Latest Version: [v0.12.5](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.12.5)
+Latest Version: [v0.12.8](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.12.8)
+
+Working Title Packages Website: [www.workingtitle.aero/packages](https://www.workingtitle.aero/packages/)
 
 User Guide: https://docs.google.com/document/d/1qzxPMTSQRkvau8QOi7xUqNvjx9rbww_qHlso5AT5OnI/
 
@@ -72,6 +74,8 @@ This list is incomplete, but thanks to everyone that contributed from inside and
 * aznricepuff
 * metzgergva
 * TheFlieger
+* charles-vomacka
+* billtt
 * musurca
 * uwajimaya
 * tscharlii
