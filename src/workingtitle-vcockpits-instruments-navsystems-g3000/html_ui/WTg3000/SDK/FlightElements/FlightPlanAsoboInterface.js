@@ -49,10 +49,7 @@ class WT_FlightPlanAsoboInterface {
         return SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean") !== 0;
     }
 
-    async _updateAsoboFlightPlanInfo(data, forceDRCTDestination) {
-        if (forceDRCTDestination && SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean") === 0) {
-            await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean", 1);
-        }
+    async _updateAsoboFlightPlanInfo(data) {
         if (data.waypoints.length > 0 && data.waypoints[0].icao[0] === "U" && SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean") !== 0) {
             // do not count USER waypoints as origin
             await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean", 0);
@@ -97,17 +94,7 @@ class WT_FlightPlanAsoboInterface {
         this._asoboFlightPlanInfo.originIndex = -1;
         this._asoboFlightPlanInfo.hasDestination = false;
         this._asoboFlightPlanInfo.destinationIndex = -1;
-
-        let forceDRCTDestination = false;
-        if (data.waypoints.length > 0) {
-            let firstICAO = data.waypoints[0].icao;
-            let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
-            if ((firstICAO[0] === "U" && data.waypoints.length === 2 && lastICAO[0] === "A" && data.approachIndex < 0)) {
-                forceDRCTDestination = true;
-            }
-        }
-
-        this._updateAsoboFlightPlanInfo(data, forceDRCTDestination);
+        this._updateAsoboFlightPlanInfo(data);
     }
 
     /**
@@ -250,14 +237,16 @@ class WT_FlightPlanAsoboInterface {
      * @param {WT_FlightPlan} flightPlan
      * @param {Object} data
      * @param {Object} approachData
-     * @param {Boolean} forceDRCTDestination
      * @param {Boolean} forceEnrouteSync
-     * @returns {Promise<void>}
+     * @param {Boolean} isDRCTInFlightPlan
+     * @returns {Promise<Boolean>}
      */
-    async _syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination, forceEnrouteSync) {
+    async _syncFlightPlan(flightPlan, data, approachData, forceEnrouteSync, isDRCTInFlightPlan) {
+        let isSynced = true;
+
         let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
 
-        this._updateAsoboFlightPlanInfo(data, forceDRCTDestination);
+        this._updateAsoboFlightPlanInfo(data);
 
         if (this._asoboFlightPlanInfo.hasOrigin) {
             tempFlightPlan.setOrigin(await this._getWaypointFromAsoboLeg(data.waypoints[0]));
@@ -282,12 +271,28 @@ class WT_FlightPlanAsoboInterface {
             waypointEntries = [];
         }
 
-        if (forceEnrouteSync) {
-            let enrouteEnd = this._asoboFlightPlanInfo.enrouteStartIndex + this._asoboFlightPlanInfo.enrouteLength;
-            await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.enrouteStartIndex, enrouteEnd), waypointEntries, false);
-            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
-        } else {
-            tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
+        if (!isDRCTInFlightPlan) {
+            if (forceEnrouteSync) {
+                let enrouteEnd = this._asoboFlightPlanInfo.enrouteStartIndex + this._asoboFlightPlanInfo.enrouteLength;
+                await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.enrouteStartIndex, enrouteEnd), waypointEntries, false);
+                await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
+            } else {
+                tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
+
+                let enrouteSegment = tempFlightPlan.getEnroute();
+                if (enrouteSegment.legs.length === this._asoboFlightPlanInfo.enrouteLength) {
+                    for (let i = 0; i < enrouteSegment.length; i++) {
+                        let leg = enrouteSegment.legs.get(i);
+                        let asoboWaypoint = await this._getWaypointFromAsoboLeg(data.waypoints[this._asoboFlightPlanInfo.enrouteStartIndex + i]);
+                        if (!leg.fix.equals(asoboWaypoint)) {
+                            isSynced = false;
+                            break;
+                        }
+                    }
+                } else {
+                    isSynced = false;
+                }
+            }
         }
 
         if (tempFlightPlan.hasDestination() && data.arrivalProcIndex >= 0) {
@@ -322,6 +327,8 @@ class WT_FlightPlanAsoboInterface {
         }
 
         flightPlan.copyFrom(tempFlightPlan);
+
+        return isSynced;
     }
 
     async _syncDirectTo(directTo, isActive, origin, destination) {
@@ -348,38 +355,36 @@ class WT_FlightPlanAsoboInterface {
      * @param {WT_FlightPlan} flightPlan
      * @param {WT_DirectTo} [directTo]
      * @param {Boolean} [forceEnrouteSync]
+     * @returns {Promise<Boolean>}
      */
     async syncFromGame(flightPlan, directTo, forceEnrouteSync) {
         let data = await Coherent.call("GET_FLIGHTPLAN");
         let approachData = await Coherent.call("GET_APPROACH_FLIGHTPLAN");
 
-        let isDRCTActive = false;
+        let isDRCTActive = data.isDirectTo;
         let drctOrigin = null;
         let drctDestination = null;
-        let forceDRCTDestination = false;
-        if (data.waypoints.length > 0) {
-            let firstICAO = data.waypoints[0].icao;
-            let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
-            if ((firstICAO[0] === "U" && data.waypoints.length === 2 && lastICAO[0] === "A" && data.approachIndex < 0)) {
-                // when activating a direct-to to an airport, the game will replace the entire active flight plan with two waypoints:
-                // a USER waypoint at P.POS, and the destination airport waypoint
-                isDRCTActive = true;
+
+        // If flight plan is otherwise empty, DRCT waypoint information is stored in the flight plan instead of the directToOrigin/Target fields.
+        let isDRCTInFlightPlan = isDRCTActive && data.directToTarget.icao === "" && data.waypoints.length === 2;
+
+        let isSynced = await this._syncFlightPlan(flightPlan, data, approachData, forceEnrouteSync, isDRCTInFlightPlan);
+
+        if (isDRCTActive) {
+            if (isDRCTInFlightPlan) {
                 drctOrigin = data.waypoints[0].lla;
                 drctDestination = data.waypoints[1];
-                forceDRCTDestination = true;
+            } else {
+                drctOrigin = data.directToOrigin;
+                drctDestination = data.directToTarget;
             }
-        }
-        await this._syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination, forceEnrouteSync || isDRCTActive);
-
-        if (data.isDirectTo) {
-            isDRCTActive = true;
-            drctOrigin = data.directToOrigin;
-            drctDestination = data.directToTarget;
         }
 
         if (directTo) {
             await this._syncDirectTo(directTo, isDRCTActive, drctOrigin, drctDestination);
         }
+
+        return isSynced;
     }
 
     /**

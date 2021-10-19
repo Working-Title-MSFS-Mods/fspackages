@@ -671,7 +671,7 @@ class NavSystemTouch_SelectionList extends NavSystemElement {
                 this.buttons.push(elem);
             }
             diffAndSetAttribute(this.buttons[i].button, "state", "Active");
-            diffAndSetText(this.buttons[i].value, _elements[i]);
+            diffAndSetHTML(this.buttons[i].value, _elements[i]);
         }
         for (let i = _elements.length; i < this.buttons.length; i++) {
             diffAndSetAttribute(this.buttons[i].button, "state", "Inactive");

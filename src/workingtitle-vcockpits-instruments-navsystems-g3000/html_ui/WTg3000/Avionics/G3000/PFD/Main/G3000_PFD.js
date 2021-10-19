@@ -391,7 +391,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _softkeySyntheticVisionCompare(_val) {
-        return this._attitude.syntheticVisionEnabled == _val;
+        return this._attitude.isSVTEnabled() === _val;
     }
 
     _getBearing1Value() {

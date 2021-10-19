@@ -170,6 +170,8 @@ class WT_VNAVPath {
         let value;
         if (this._totalDistance.isNaN()) {
             value = NaN;
+        } else if (this._deltaAltitude.number === 0) {
+            value = this.finalAltitude.asUnit(WT_Unit.FOOT);
         } else {
             let distanceRatio = distanceRemaining.ratio(this._totalDistance);
             if (!shouldProject) {
