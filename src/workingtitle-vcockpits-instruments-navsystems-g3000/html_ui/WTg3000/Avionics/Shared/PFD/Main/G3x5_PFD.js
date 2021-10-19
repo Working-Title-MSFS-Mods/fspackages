@@ -583,11 +583,12 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
      * @returns whether synthetic terrain is enabled.
      */
     isSVTEnabled() {
-        return this._svg ? this._svg.getSyntheticVisionEnabled() : false;
+        return this.svg ? this.svg.getSyntheticVisionEnabled() : false;
     }
 
     init(root) {
-        this._svg = this.gps.getChildById("Horizon");
+        super.init(root);
+
         this._initSettingModel();
     }
 
@@ -601,7 +602,7 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
     }
 
     _setSVTShow(value) {
-        this._svg.setSyntheticVisionEnabled(value);
+        this.svg.setSyntheticVisionEnabled(value);
     }
 
     _onSVTShowSettingChanged(setting, newValue, oldValue) {
