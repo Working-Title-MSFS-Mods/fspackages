@@ -404,7 +404,7 @@ class AttitudeIndicator extends HTMLElement {
         }
 
         {
-            let radius = 10;
+            let radius = 15;
             let strokeWidth = 2;
             let barbThickness = 3;
             let barbLength = 10;
