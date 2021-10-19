@@ -260,7 +260,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     this.cj4_FlightDirector = document.createElementNS(Avionics.SVG.NS, "g");
                     attitudePitchContainer.appendChild(this.cj4_FlightDirector);
                     let triangleOuterLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    diffAndSetAttribute(triangleOuterLeft, "d", "M -128 20 l 20 7 L 0 -2 Z");
+                    diffAndSetAttribute(triangleOuterLeft, "d", "M -128 20 l 20 7 L -7 0 Z");
                     diffAndSetAttribute(triangleOuterLeft, "fill", "var(--magenta)");
                     diffAndSetAttribute(triangleOuterLeft, "stroke", "black");
                     diffAndSetAttribute(triangleOuterLeft, "stroke-width", "1.5");
@@ -272,7 +272,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     diffAndSetAttribute(triangleBottomLeft, "stroke-width", "1.5");
                     this.cj4_FlightDirector.appendChild(triangleBottomLeft);
                     let triangleOuterRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    diffAndSetAttribute(triangleOuterRight, "d", "M128 20 l-20 7 L0 -2 Z");
+                    diffAndSetAttribute(triangleOuterRight, "d", "M128 20 l-20 7 L 7 0 Z");
                     diffAndSetAttribute(triangleOuterRight, "fill", "var(--magenta)");
                     diffAndSetAttribute(triangleOuterRight, "stroke", "black");
                     diffAndSetAttribute(triangleOuterRight, "stroke-width", "1.5");
