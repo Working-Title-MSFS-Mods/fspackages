@@ -434,6 +434,9 @@ class WT_G3x5_PFDTrafficInsetMapContainer extends WT_G3x5_PFDElement {
 }
 
 class WT_G3x5_PFDMainPage extends NavSystemPage {
+    /**
+     * @param {WT_G3x5_PFD} instrument
+     */
     constructor(instrument) {
         super("Main", "Mainframe", new AS3000_PFD_MainElement());
 
@@ -503,7 +506,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
     _createElements() {
         return [
             this._autopilotDisplay = this._createAutopilotDisplay(),
-            this._attitude = new AS3000_PFD_Attitude("PFD"),
+            this._attitude = new AS3000_PFD_Attitude("PFD", this._instrument),
             this._airspeed = this._createAirspeedIndicator(),
             this._altimeter = this._createAltimeter(),
             this._annunciations = new PFD_Annunciations(),
@@ -554,10 +557,18 @@ class AS3000_PFD_MainElement extends NavSystemElement {
 }
 
 class AS3000_PFD_Attitude extends PFD_Attitude {
-    constructor(instrumentID) {
+    /**
+     * @param {String} instrumentID
+     * @param {WT_G3x5_PFD} instrument
+     */
+    constructor(instrumentID, instrument) {
         super();
 
         this._instrumentID = instrumentID;
+        this._instrument = instrument;
+
+        this._tempGS = WT_Unit.KNOT.createNumber(0);
+        this._tempVS = WT_Unit.KNOT.createNumber(0);
     }
 
     /**
@@ -607,6 +618,19 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
 
     _onSVTShowSettingChanged(setting, newValue, oldValue) {
         this._setSVTShow(newValue);
+    }
+
+    onUpdate(deltaTime) {
+        super.onUpdate(deltaTime);
+
+        diffAndSetAttribute(this.svg, "track", `${this._instrument.airplane.navigation.trackTrue()}`);
+        diffAndSetAttribute(this.svg, "heading", `${this._instrument.airplane.navigation.headingTrue()}`);
+
+        const gs = this._instrument.airplane.navigation.groundSpeed(this._tempGS);
+        const vs = this._instrument.airplane.sensors.verticalSpeed(this._tempVS);
+
+        diffAndSetAttribute(this.svg, "ground-speed", `${gs.number}`);
+        diffAndSetAttribute(this.svg, "actual-pitch", `${Math.atan2(vs.number, gs.number) * Avionics.Utils.RAD2DEG}`);
     }
 }
 
