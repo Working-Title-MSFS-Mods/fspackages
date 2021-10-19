@@ -18,6 +18,7 @@ Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https
 *   FMS - Rockwell Collins Pro Line 21 represented at over 75% accuracy
     *   Over 40 screens/pages of the FMS have been developed
     *   Route planning complete with departure and arrival procedures, airways and direct waypoints, including many procedures and procedure types missing from the default aircraft
+    *   Flight planning and navigation supports missed approaches
     *   Performance init pages including complete takeoff and approach performance calculations, with field lengths and Vspeeds
     *   Custom developed and implemented a flight plan import directly from Simbrief via the FMS, allowing users to spawn without a flight plan, then load a Simbrief OFP/Flight Plan directly over the web (requires internet connection); this feature also makes it easier to fly multiple legs without exiting the simulation session
     *   Custom LNAV and VNAV capabilties reflective of the real aircraft's capabilities
