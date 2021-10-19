@@ -15,18 +15,19 @@ Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https
 
 ## KEY FEATURES
 
-*   FMS - Rockwell Collins Pro Line 21 represented at over 75% accuracy
+*   FMS - Rockwell Collins Pro Line 21 represented to high accuracy
     *   Over 40 screens/pages of the FMS have been developed
     *   Route planning complete with departure and arrival procedures, airways and direct waypoints, including many procedures and procedure types missing from the default aircraft
     *   Flight planning and navigation supports missed approaches
-    *   Performance init pages including complete takeoff and approach performance calculations, with field lengths and Vspeeds
-    *   Custom developed and implemented a flight plan import directly from Simbrief via the FMS, allowing users to spawn without a flight plan, then load a Simbrief OFP/Flight Plan directly over the web (requires internet connection); this feature also makes it easier to fly multiple legs without exiting the simulation session
+    *   Support for LAT/LON waypoints, Point/Bearing/Distance waypoints, along-track offsets, and custom waypoint names.
+    *   Performance pages including takeoff and landing calculations with field lengths, Vspeeds, wind, runway slope, dry/wet, temp and pressure altitude corrections.
+    *   Custom developed and implemented a flight plan import directly from Simbrief via the FMS, allowing users to spawn without a flight plan, then load a Simbrief OFP/Flight Plan        directly over the web (requires internet connection); this feature also makes it easier to fly multiple legs without exiting the simulation session
     *   Custom LNAV and VNAV capabilties reflective of the real aircraft's capabilities
-    *   Improved performance of FMS by streamlining data access behind the code
+    *   Improved performance of FMS by streamlining data access
     *   Added custom mechanism for saving and storing default settings to remain persistent between sim sessions
     *   Added transponder functionality and completely redesigned the TUN page for radio tuning
 *   PFD/MFD - Major functional and visual enhancements
-    *   Navigraph Charts integration on the MFD
+    *   Navigraph Charts integration on the MFD with panning and zooming
     *   Custom font, sizing and coloring introduced to PFD and MFD to improve readability and accuracy of displays
     *   Customized Vspeeds and visibility behavior to reflect the real aircraft
     *   Adjusted the display of data, the visibility of the AoA and other functions to match the real world
@@ -34,18 +35,18 @@ Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https
     *   Added passenger briefing menu and announcement playing to the MFD
     *   Added capability to customize the MFD display and use the PLAN view to step through flight plan via the MFD ADV and DSPL MENU functions on the FMS
     *   Added bearing pointer functionality
-    *   Rebuilt pitch trim gauge because it was reversed and mislabeled in the default model
-    *   HSI and Map overhaul with true to life visuals and functionality
+    *   Fixed incorrect pitch trim indication
+    *   HSI and Map overhaul with accurate icons, labels, and flight plan leg depiction
 *   Flight Model
-    *   Adjusted engines to reflect real world performance, including the elimination of reverse thrust.
+    *   Adjusted engines to reflect real world performance, including the elimination of reverse thrust and accurate thrust output with N1.
     *   Adjusted fuel flow with a custom fuel flow utility that accurately tracks and reports fuel usage reflective of real aircraft performance
     *   Tweaked autopilot performance, gear/flap/spoiler drag and other QoL improvements on the flight characteristics
 *   Lights & Sounds
-    *   Enhanced exterior lighting, including volumetric lights
+    *   Enhanced exterior lighting including volumetric lights and correct strobe light positioning
     *   Enhanced interior lighting, including cabin lights with adjustable dim level (controlled through our custom MOD SETTINGS menu in the FMS)
-    *   Enhanced and growing soundset, including fans and passenger briefings
+    *   Enhanced and growing soundset, including real CJ4 recordings of engine start, shutdown, cabin ambiance, avioncs fans, and passenger briefings
 *   Cockpit Model
-    *   Added lighting and functionality to many buttons and knobs in the cockpit model.
+    *   Added lighting and functionality to several buttons and knobs in the cockpit model.
 
 ## BETA
 This is a beta, and as such you will surely encounter bugs and problems with the aircraft and functions. Please log these bugs under Issues at the [Working Title Github Repo](https://github.com/Working-Title-MSFS-Mods/fspackages/issues), and please **TAG THEM** as CJ4 issues. 
