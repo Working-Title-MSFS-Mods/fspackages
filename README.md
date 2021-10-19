@@ -6,13 +6,12 @@
 
 ## About
 
-This is the home of mods for the new Microsoft Flight Simulator from the Working Title team.  We have a number of projects either in the works or planned.  Here is the status of what is currently being worked on and links to downloadable releases.
+This is the home for Working Title freeware mods for Microsoft Flight Simulator.  You can find the G1000NXi open beta through the in-game marketplace.  Below are the latest download links for active projects. You can get more information for all of these at our website: [www.workingtitle.aero/packages](https://www.workingtitle.aero/packages/).
 
-Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK)
+You can keep track of Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK).
 
 Project | Description | Current Version | Documentation
 --------|-------------|-----------------|--------------
-CJ4 | OPEN BETA - Performance and avionics improvements for the Citation CJ4 | [v0.12.7](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.12.7) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-cj4)
-LEGACY G1000 | Fixes and enhancements for the stock G1000 avionics package | [v0.4.1](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/g1000-v0.4.1) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-g1000)
-G3000 | Fixes and enhancements for the stock G3000 avionics package | [v0.7.4](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/g3000-v0.7.4) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-g3000)
-GX | Fixes and enhancements for the stock G3X Touch avionics package | [v0.1.0-dev10](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/gx-v0.1.0-dev10) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-gx)
+CJ4 | Performance and avionics improvements for the Citation CJ4 | [v0.12.8](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.12.8) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-cj4)
+G3000 | Fixes and enhancements for the stock G3000 avionics package | [v0.7.5](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/g3000-v0.7.5) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-g3000)
+GX | Fixes and enhancements for the stock G3X Touch avionics package | [v0.1.0](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/gx-v0.1.0) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-gx)
