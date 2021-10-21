@@ -29,7 +29,7 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
-### Release Highlights for v0.7.5a
+### Release Highlights for v0.7.6
 *Please refer to the changelog for a more detailed description of changes in this release.*
 - Now compatible with game patch 1.20.6.0 (Sim Update 6).
 
