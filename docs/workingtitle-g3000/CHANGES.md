@@ -1,6 +1,6 @@
 # Changelog
 
-### v0.7.5a
+### v0.7.6
 **Fixes**
 - \[FPL\] Fixed an error when activating a Direct To without an active flight plan that would cause both the PFD and MFD to freeze.
 - \[PFD\] Fixed a bug where the attitude indicator would not update.
