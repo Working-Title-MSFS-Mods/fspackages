@@ -366,7 +366,7 @@ class WT_FlightPlanAsoboInterface {
         let drctDestination = null;
 
         // If flight plan is otherwise empty, DRCT waypoint information is stored in the flight plan instead of the directToOrigin/Target fields.
-        let isDRCTInFlightPlan = isDRCTActive && data.directToTarget.icao === "" && data.waypoints.length === 2;
+        let isDRCTInFlightPlan = isDRCTActive && data.directToTarget.icao === "U FPIS DRCT" && data.waypoints.length === 2;
 
         let isSynced = await this._syncFlightPlan(flightPlan, data, approachData, forceEnrouteSync, isDRCTInFlightPlan);
 

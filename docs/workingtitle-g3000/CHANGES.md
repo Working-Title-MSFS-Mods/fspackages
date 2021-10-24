@@ -1,5 +1,11 @@
 # Changelog
 
+### v0.7.6
+**Fixes**
+- \[FPL\] Fixed an error when activating a Direct To without an active flight plan that would cause both the PFD and MFD to freeze.
+- \[PFD\] Fixed a bug where the attitude indicator would not update.
+- \[PFD\] The flight path marker is now visible when SVT is enabled.
+
 ### v0.7.5
 **Fixes**
 - \[Compatibility\] Now compatible with game patch 1.20.6.0 (Sim Update 6).
