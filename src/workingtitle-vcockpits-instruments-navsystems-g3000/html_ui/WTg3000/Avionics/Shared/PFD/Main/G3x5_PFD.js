@@ -509,7 +509,9 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._attitude = new AS3000_PFD_Attitude("PFD", this._instrument),
             this._airspeed = this._createAirspeedIndicator(),
             this._altimeter = this._createAltimeter(),
-            this._annunciations = new PFD_Annunciations(),
+            this._annunciations = WT_PlayerAirplane.getAircraftType() == WT_PlayerAirplane.Type.CITATION_LONGITUDE
+                ? new Cabin_Annunciations() // The Longitude does not have annunciations on the MFD, it needs to have them on the PFD instead
+                : new PFD_Annunciations(), // The TBM has stripped-down annunciations on the PFD and has the full-fledged one on the MFD
             this._compass = new WT_G3x5_PFDCompass(),
             this._aoaIndicator = this._createAoAIndicator(),
             this._minimums = this._createMinimums(),
