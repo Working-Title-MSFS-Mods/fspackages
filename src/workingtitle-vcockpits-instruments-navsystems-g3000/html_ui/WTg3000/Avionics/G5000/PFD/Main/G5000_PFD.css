@@ -239,10 +239,16 @@ as3000-pfd-element wt-pfd-trafficalert {
       as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations #newAnnunciations[state=Bordered] {
         border-bottom: solid 0.3vh white;
         margin-bottom: calc( 1 * 1vh * var(--bodyHeightScale)); }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations .Warning {
-        color: red; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations .Caution {
-        color: yellow; }
+    as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations .Warning, as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations .Warning_Blink {
+      color: red; }
+    as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations .Caution, as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations .Caution_Blink {
+      color: yellow; }
+    as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations[state=Blink] .Warning_Blink {
+      color: white;
+      background-color: red; }
+    as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations[state=Blink] .Caution_Blink {
+      color: black;
+      background-color: yellow; }
     as3000-pfd-element #Mainframe #InstrumentsContainer #XPDRTimeBox {
       transform: rotateX(0);
       position: absolute;
