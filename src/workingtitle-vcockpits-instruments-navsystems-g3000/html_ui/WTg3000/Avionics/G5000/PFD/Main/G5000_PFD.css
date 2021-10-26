@@ -232,6 +232,8 @@ as3000-pfd-element wt-pfd-trafficalert {
       font-size: calc( 1.8 * 1vh * var(--bodyHeightScale));
       line-height: calc( 1.5 * 1vh * var(--bodyHeightScale));
       padding: 0.5%; }
+      as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations:empty {
+        display: none; }
       as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations[state=Hidden] {
         display: none; }
       as3000-pfd-element #Mainframe #InstrumentsContainer #Annunciations #newAnnunciations[state=Bordered] {
