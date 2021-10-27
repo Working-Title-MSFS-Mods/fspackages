@@ -407,6 +407,19 @@ as3000-pfd-element wt-pfd-trafficalert {
         bottom: 0%;
         left: 5%;
         text-align: center; }
+      as3000-pfd-element #Mainframe #InstrumentsContainer #ComInfos #StandbyCom {
+        position: absolute;
+        height: 50%;
+        width: 45%;
+        bottom: 0%;
+        left: 5%;
+        text-align: left; }
+      as3000-pfd-element #Mainframe #InstrumentsContainer #ComInfos #StandbyComFreq {
+        position: absolute;
+        height: 50%;
+        bottom: 0%;
+        right: 5%;
+        text-align: right; }
 
 as3000-pfd-element wt-pfd-minimums {
     position: absolute;

@@ -679,12 +679,14 @@ class AS3000_PFD_ActiveCom extends NavSystemElement {
     init(root) {
         this.activeCom = this.gps.getChildById("ActiveCom");
         this.activeComFreq = this.gps.getChildById("ActiveComFreq");
-        this.activeComName = this.gps.getChildById("ActiveComName");
+        this.standbyComFreq = this.gps.getChildById("StandbyComFreq");
     }
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        diffAndSetHTML(this.activeComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        let spacing = SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3;
+        diffAndSetHTML(this.activeComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), spacing));
+        diffAndSetHTML(this.standbyComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz"), spacing));
     }
     onExit() {
     }
