@@ -2047,7 +2047,7 @@ class XMLLongitudeFuelGauge extends XMLGauge {
         diffAndSetAttribute(rightText, "font-family", "Roboto-Bold");
         diffAndSetAttribute(rightText, "text-anchor", "start");
         this.rootSvg.appendChild(rightText);
-        diffAndSetText(rightText, "GAL");
+        diffAndSetText(rightText, "LBS");
         this.leftText = document.createElementNS(Avionics.SVG.NS, "text");
         diffAndSetAttribute(this.leftText, "x", "17.5");
         diffAndSetAttribute(this.leftText, "y", "28");
@@ -2089,9 +2089,10 @@ class XMLLongitudeFuelGauge extends XMLGauge {
     updateReferenceBug(_element, _pos, _displayed) {
     }
     updateValue(_value, _value2) {
-        diffAndSetText(this.leftText, fastToFixed(_value, 0));
-        diffAndSetText(this.rightText, fastToFixed(_value2, 0));
-        diffAndSetText(this.totalText, fastToFixed(_value + _value2, 0));
+        let galToLbs = 6.7;
+        diffAndSetText(this.leftText, fastToFixed(_value * galToLbs, 0));
+        diffAndSetText(this.rightText, fastToFixed(_value2 * galToLbs, 0));
+        diffAndSetText(this.totalText, fastToFixed((_value + _value2) * galToLbs, 0));
     }
     setTitleAndUnit(_title, _unit) {
     }
