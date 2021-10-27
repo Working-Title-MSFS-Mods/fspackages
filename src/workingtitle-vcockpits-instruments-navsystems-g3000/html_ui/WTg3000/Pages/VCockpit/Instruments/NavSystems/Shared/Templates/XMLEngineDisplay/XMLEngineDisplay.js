@@ -2113,11 +2113,11 @@ class XMLFlapsSpeedbrakesGauge extends XMLGauge {
     drawBase() {
         this.rootSvg = document.createElementNS(Avionics.SVG.NS, "svg");
         diffAndSetAttribute(this.rootSvg, "width", this.sizePercent + "%");
-        diffAndSetAttribute(this.rootSvg, "viewBox", "-10 0 120 40");
+        diffAndSetAttribute(this.rootSvg, "viewBox", "-10 -5 120 55");
         diffAndSetAttribute(this.rootSvg, "overflow", "visible");
         this.appendChild(this.rootSvg);
         let wing = document.createElementNS(Avionics.SVG.NS, "path");
-        diffAndSetAttribute(wing, "d", "M45 12 C40 11, 30 10, 22 10 C0 13, 0 24, 23 24 C35 25, 50 25, 70 24 C65 21, 70 15, 71 17 L62 15");
+        diffAndSetAttribute(wing, "d", "M45 12 C40 11, 30 10, 22 10 C0 13, 0 24, 23 24 C35 25, 50 25, 70 24 C65 21, 70 17, 71 17 L62 15");
         diffAndSetAttribute(wing, "stroke", "white");
         diffAndSetAttribute(wing, "stroke-width", "0.5");
         diffAndSetAttribute(wing, "fill", "none");
@@ -2126,10 +2126,24 @@ class XMLFlapsSpeedbrakesGauge extends XMLGauge {
         diffAndSetAttribute(this.speedbrakes, "d", "M49 14 Q44.75 12, 49 11 Q71.5 15.5, 49 14");
         diffAndSetAttribute(this.speedbrakes, "fill", "white");
         this.rootSvg.appendChild(this.speedbrakes);
+
+        this.speedbrakeIndicator = document.createElementNS(Avionics.SVG.NS, "path");
+        diffAndSetAttribute(this.speedbrakeIndicator, "d", "M61 15 C62,5 55,0 50,0 L49 3");
+        diffAndSetAttribute(this.speedbrakeIndicator, "stroke", "white");
+        diffAndSetAttribute(this.speedbrakeIndicator, "stroke-width", "0.5");
+        diffAndSetAttribute(this.speedbrakeIndicator, "fill", "none");
+        diffAndSetAttribute(this.speedbrakeIndicator, "visibility", "hidden");
+        this.rootSvg.appendChild(this.speedbrakeIndicator);
+
         this.flaps = document.createElementNS(Avionics.SVG.NS, "path");
-        diffAndSetAttribute(this.flaps, "d", "M75 23.5 Q68 20.5, 75 17.5 Q110 22.5, 75 23.5");
+        diffAndSetAttribute(this.flaps, "d", "M75 23.5 Q68 20.5, 75 17.5 Q110 22.5, 75 23.5 M75 22.5");
         diffAndSetAttribute(this.flaps, "fill", "white");
         this.rootSvg.appendChild(this.flaps);
+
+        this.flapsIndicator = document.createElementNS(Avionics.SVG.NS, "path");
+        diffAndSetAttribute(this.flapsIndicator, "d", "M94 21.5 L97 18.5 L96 21.5 L97 24.5");
+        diffAndSetAttribute(this.flapsIndicator, "fill", "cyan");
+        this.rootSvg.appendChild(this.flapsIndicator);
     }
     addColorZone(_begin, _end, _color) {
         console.warn("ColorZone on XMLFlapsSpeedbrakesGauge is not implemented");
@@ -2147,8 +2161,10 @@ class XMLFlapsSpeedbrakesGauge extends XMLGauge {
     updateReferenceBug(_element, _pos, _displayed) {
     }
     updateValue(_value, _value2) {
-        diffAndSetAttribute(this.flaps, "transform", "rotate(" + _value + " 72.5 20.5)");
+        diffAndSetAttribute(this.flaps, "transform", "rotate(" + _value * 2 + " 72.5 20.5)");
+        diffAndSetAttribute(this.flapsIndicator, "transform", "rotate(" + _value * 2 + " 72.5 20.5)");
         diffAndSetAttribute(this.speedbrakes, "transform", "rotate(" + _value2 + " 48 12.4)");
+        diffAndSetAttribute(this.speedbrakeIndicator, "visibility", _value2 < 0 ? "visible" : "hidden");
     }
     setTitleAndUnit(_title, _unit) {
     }
@@ -2161,6 +2177,46 @@ class XMLFlapsSpeedbrakesGauge extends XMLGauge {
     forceEndText(_text) {
     }
     setCursorLabel(_label1, _label2) {
+    }
+    setLimitValues(_begin, _end) {
+        super.setLimitValues(_begin, _end);
+
+        let rotationAxisX = 72.5;
+        let rotationAxisY = 20.5;
+        var getPositionX = function(angle, distance) {
+            let radAngle = angle * 2 * Math.PI / 180;
+            return (rotationAxisX + distance * Math.cos(radAngle));
+        };
+
+        var getPositionY = function(angle, distance) {
+          let radAngle = angle * 2 * Math.PI / 180;
+          return (rotationAxisY + distance * Math.sin(radAngle));
+        };
+
+        let distance = 21;
+        let upPosX = getPositionX(this.minValue + 1, distance);
+        let upPosY = getPositionY(this.minValue + 1, distance);
+        let downPosX = getPositionX(this.maxValue + 2, distance);
+        let downPosY = getPositionY(this.maxValue + 2, distance);
+
+        let flapsArc = document.createElementNS(Avionics.SVG.NS, "path");
+        diffAndSetAttribute(flapsArc, "d", `M${upPosX} ${upPosY} C${upPosX},${upPosY + 10} ${downPosX + 2},${downPosY} ${downPosX},${downPosY}`);
+        diffAndSetAttribute(flapsArc, "stroke", "white");
+        diffAndSetAttribute(flapsArc, "stroke-width", "0.5");
+        diffAndSetAttribute(flapsArc, "fill", "none");
+        this.rootSvg.appendChild(flapsArc);
+
+        let angles = [this.minValue, this.maxValue * 0.3, this.maxValue * 0.6, this.maxValue * 1.2];
+        let texts = ["UP", "1", "2", "FULL"];
+        for (let i = 0; i < angles.length; i++) {
+            let text = document.createElementNS(Avionics.SVG.NS, "text");
+            diffAndSetAttribute(text, "x", getPositionX(angles[i], 26) + '');
+            diffAndSetAttribute(text, "y", getPositionY(angles[i], 26) + 4 + '');
+            diffAndSetAttribute(text, "fill", "white");
+            diffAndSetAttribute(text, "font-size", "8");
+            diffAndSetText(text, texts[i]);
+            this.rootSvg.appendChild(text);
+        }
     }
 }
 customElements.define('glasscockpit-xmlflapsspeedbrakesgauge', XMLFlapsSpeedbrakesGauge);
