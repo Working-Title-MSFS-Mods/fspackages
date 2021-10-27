@@ -189,6 +189,14 @@ as3000-mfd-element {
             display: none; }
           as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=XML] #PistonEngine {
             display: none; }
+        as3000-mfd-element #Mainframe #Electricity #CenterDisplay[displayCom=false] #ComFreq {
+          display: none;
+        }
+        as3000-mfd-element #Mainframe #Electricity #CenterDisplay[displayCom=false] #LeftInfos {
+          top: 0%;
+          height: 100%;
+          padding-top: 1%;
+        }
         as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos {
           transform: rotateX(0);
           height: 100%;
