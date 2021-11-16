@@ -1,11 +1,7 @@
-# Working Title CJ4 v0.12.9
-Welcome to the Working Title CJ4 v0.12.9. This version brings compatibility for MSFS Sim Update 7, as well as a number of other enhancements and small fixes.
+# Working Title CJ4 v0.12.8
+Welcome to the Working Title CJ4 v0.12.8. This version brings compatibility for MSFS Sim Update 6, as well as a number of other enhancements and small fixes.
 
 In this release we also have a number of community submissions. Thanks to everyone, as always, for your contributions! We really love working with you all.
-
-## Note about Liveries
-To accomodate for future work on the CJ4 there have been model changes in SU7. This means that all liveries that still fully override panel.cfg with their own version won't work anymore.
-Liveries should use methods as described in our [Repainter's Guide](https://www.workingtitle.aero/packages/cj4/guide/repainter) or use the newer panel.cfg override method as you can see for example in Asobo's Livery 01 for the CJ4.
 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
@@ -18,10 +14,9 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 # General Changes
-- SU7 Compatibility
-- Adjustments to default screen brightness. (Thanks @charles-vomacka)
-- Improved stroke fix for some cyan text displays on the PFD to make them more readable. (Thanks @charles-vomacka).
-- Fix COM switch buttons on the audio panel.
+- SU6 Compatibility
+- Improved custom font on Altimeter when showing BLOCKS instead of zeros. (Thanks @charles-vomacka)
+- Improved the Flight Director V-Bar rendering. (Thanks @charles-vomacka).
 
 ## ⚠️ Known Issues
 ** The Lower CCP LONG Press does not work for reselecting charts - we will look further at this.
