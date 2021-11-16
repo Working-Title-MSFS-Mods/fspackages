@@ -150,7 +150,7 @@
 				<AS3000>CJ4</AS3000>
 			</DefaultTemplateParameters>
 			<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-				<SCREEN_NODE_ID>PFD_Screen_1</SCREEN_NODE_ID>
+				<SCREEN_NODE_ID>AS_PFD_Screen_L</SCREEN_NODE_ID>
 				<KEY_PREFIX>CJ4_PFD</KEY_PREFIX>
 				<CIRCUIT_ID>39</CIRCUIT_ID>
 				<DISPLAY>PFD</DISPLAY>
@@ -159,7 +159,7 @@
 				<INSTR_ID>1</INSTR_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-				<SCREEN_NODE_ID>PFD_Screen_2</SCREEN_NODE_ID>
+				<SCREEN_NODE_ID>AS_PFD_Screen_R</SCREEN_NODE_ID>
 				<KEY_PREFIX>CJ4_PFD</KEY_PREFIX>
 				<CIRCUIT_ID>40</CIRCUIT_ID>
 				<DISPLAY>PFD</DISPLAY>
@@ -167,8 +167,19 @@
 				<POTENTIOMETER>16</POTENTIOMETER>
 				<INSTR_ID>2</INSTR_ID>
 			</UseTemplate>
+			<Component ID="WT_AS3000_PFD_Screen_L" Node="WT_PFD_Screen_L">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
+			<Component ID="WT_AS3000_PFD_Screen_R" Node="WT_PFD_Screen_R">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
+			
 			<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-				<SCREEN_NODE_ID>MFD_Screen_1</SCREEN_NODE_ID>
+				<SCREEN_NODE_ID>AS_MFD_Screen_L</SCREEN_NODE_ID>
 				<KEY_PREFIX>CJ4_MFD</KEY_PREFIX>
 				<CIRCUIT_ID>41</CIRCUIT_ID>
 				<DISPLAY>MFD</DISPLAY>
@@ -177,7 +188,7 @@
 				<INSTR_ID>1</INSTR_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_AS3000_Screen_Template">
-				<SCREEN_NODE_ID>MFD_Screen_2</SCREEN_NODE_ID>
+				<SCREEN_NODE_ID>AS_MFD_Screen_R</SCREEN_NODE_ID>
 				<KEY_PREFIX>CJ4_MFD</KEY_PREFIX>
 				<CIRCUIT_ID>42</CIRCUIT_ID>
 				<DISPLAY>MFD</DISPLAY>
@@ -185,6 +196,17 @@
 				<POTENTIOMETER>18</POTENTIOMETER>
 				<INSTR_ID>2</INSTR_ID>
 			</UseTemplate>
+			<Component ID="WT_AS3000_MFD_Screen_L" Node="WT_MFD_Screen_L">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
+			<Component ID="WT_AS3000_MFD_Screen_R" Node="WT_MFD_Screen_R">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
+			
 			<UseTemplate Name="ASOBO_AS3000_Screen_Template">
 				<SCREEN_NODE_ID>AttitudeBackup_Screen</SCREEN_NODE_ID>
 				<KEY_PREFIX>CJ4_BackupDisplay</KEY_PREFIX>
@@ -192,6 +214,16 @@
 				<CIRCUIT_ID>49</CIRCUIT_ID>
 				<POTENTIOMETER>3</POTENTIOMETER>
 			</UseTemplate>
+			<Component ID="WT_AS3000_PFD_Screen_L" Node="WT_PFD_Screen_L">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
+			<Component ID="WT_AS3000_PFD_Screen_R" Node="WT_PFD_Screen_R">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
 			<Component ID="Detached_Control_Panels">
 				<UseTemplate Name="ASOBO_AS3000_Detached_Control_Panel_Template">
 					<PANEL_TYPE>UPPER</PANEL_TYPE>
@@ -806,6 +838,11 @@
 				<ANIM_NAME_DEP_ARR>CDU_Push_DEPARR_1</ANIM_NAME_DEP_ARR>
 				<NODE_ID_SCREEN>FMS_Screen_1</NODE_ID_SCREEN>
 			</UseTemplate>
+			<Component ID="WT_AS3000_FMS_Screen_L" Node="WT_FMS_Screen_L">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
 
 			<!--
 				Note - Interactions do not actually work currently are only events for the 1st FMC are handled HTML-side.
@@ -853,6 +890,11 @@
 				<NODE_ID_SCREEN>FMS_Screen_ID_2</NODE_ID_SCREEN>
 				-->
 			</UseTemplate>
+			<Component ID="WT_AS3000_FMS_Screen_R" Node="WT_FMS_Screen_R">
+				<UseTemplate Name="ASOBO_GT_Visibility_Code">
+					<VISIBILITY_CODE>0</VISIBILITY_CODE>
+				</UseTemplate>
+			</Component>
 			<UseTemplate Name="ASOBO_GT_Update">
 				<UPDATE_ONCE>True</UPDATE_ONCE>
 				<UPDATE_CODE>
