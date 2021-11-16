@@ -154,9 +154,10 @@ export class FlightPlanManager {
   /**
    * Switches the active flight plan index to the supplied index.
    * @param index The index to now use for the active flight plan.
+   * @param thenSetActive Indicates if the flight plan should become the active flightplan. (inop here)
    * @param callback A callback to call when the operation has completed.
    */
-  public setCurrentFlightPlanIndex(index: number, callback = EmptyCallback.Boolean): void {
+  public setCurrentFlightPlanIndex(index: number, thenSetActive = false, callback = EmptyCallback.Boolean): void {
     if (index >= 0 && index < this._flightPlans.length) {
       this._currentFlightPlanIndex = index;
       callback(true);
