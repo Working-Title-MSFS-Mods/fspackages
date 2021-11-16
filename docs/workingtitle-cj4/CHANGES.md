@@ -5,7 +5,7 @@ In this release we also have a number of community submissions. Thanks to everyo
 
 ## Note about Liveries
 To accomodate for future work on the CJ4 there have been model changes in SU7. This means that all liveries that still fully override panel.cfg with their own version won't work anymore.
-Liveries should use methods as described in our [Repainter's Guide](https://www.workingtitle.aero/packages/cj4/guides/repainter) or use the newer panel.cfg override method as you can see for example in Asobo's Livery 01 for the CJ4.
+Liveries should use the methods as described in our [Repainter's Guide](https://www.workingtitle.aero/packages/cj4/guides/repainter) or use the newer panel.cfg override method as you can see for example in Asobo's Livery 01 for the CJ4.
 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
