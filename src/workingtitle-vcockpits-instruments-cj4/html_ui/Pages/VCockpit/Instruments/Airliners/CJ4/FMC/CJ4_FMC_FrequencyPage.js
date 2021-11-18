@@ -8,6 +8,27 @@ class CJ4_FMC_FrequencyPage_State {
 
 let cj4FmcFrequencyPageState = new CJ4_FMC_FrequencyPage_State();
 
+const FacilityFrequencyType = {
+    "None":0,
+    "ATIS":1,
+    "Multicom":2,
+    "Unicom":3,
+    "CTAF":4,
+    "Ground":5,
+    "Tower":6,
+    "Clearance":7,
+    "Approach":8,
+    "Departure":9,
+    "Center":10,
+    "FSS":11,
+    "AWOS":12,
+    "ASOS":13,
+    /** Clearance Pre-Taxi*/
+    "CPT":14,
+    /** Remote Clearance Delivery */
+    "GCO":15
+}
+
 class CJ4_FMC_FrequencyPage {
 
     static async ShowMainPage(fmc, currentPage = 1) {
@@ -21,7 +42,14 @@ class CJ4_FMC_FrequencyPage {
         let pageCount;
 
         let origin = fmc.flightPlanManager.getOrigin();
+        if(origin && origin.ident !== '')  {
+            origin = await fmc.dataManager.GetAirportByIdent(origin.ident);
+        }
+
         let destination = fmc.flightPlanManager.getDestination();
+        if(destination && destination.ident !== '')  {
+            destination = await fmc.dataManager.GetAirportByIdent(destination.ident);
+        }
         let alternate; // Not supported yet, flightPlanManager does not manage alternate
         let pilotDefined = cj4FmcFrequencyPageState.pilotDefinedAirport;
 
@@ -66,16 +94,17 @@ class CJ4_FMC_FrequencyPage {
             showNoDataAvailable();
         } else {
             fmc.setMsg("Working...");
-            await selectedWaypoint.infos.UpdateNamedFrequencies();
-            let namedFrequencies = selectedWaypoint.infos.namedFrequencies;
+            // await selectedWaypoint.infos.UpdateNamedFrequencies();
+            // let namedFrequencies = selectedWaypoint.infos.namedFrequencies;
             
-            // Group frequencies by name. For instance, an airport can have multiple Ground frequencies.
+            // // Group frequencies by name. For instance, an airport can have multiple Ground frequencies.
             let frequenciesByName = new Map();
-            namedFrequencies.forEach(frequency => {
-                if (!frequenciesByName.has(frequency.name)) {
-                    frequenciesByName.set(frequency.name, []);
+            selectedWaypoint.infos.frequencies.forEach(frequency => {
+                let freqName = CJ4_FMC_FrequencyPage.buildName(frequency); 
+                if (!frequenciesByName.has(freqName)) {
+                    frequenciesByName.set(freqName, []);
                 }
-                frequenciesByName.get(frequency.name).push(frequency.value);
+                frequenciesByName.get(freqName).push(frequency.mhValue);
             });
             
             let headlines = [];
@@ -198,6 +227,42 @@ class CJ4_FMC_FrequencyPage {
         fmc.onPrevPage = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc, currentPage === 1 ? pageCount : (currentPage - 1)); };
         fmc.onNextPage = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc, currentPage === pageCount ? 1 : (currentPage + 1)); };
         fmc.updateSideButtonActiveStatus();
+    }
+
+    static buildName(freqObj) {
+        switch (freqObj.type) {
+            case FacilityFrequencyType.ASOS:
+              return 'ASOS';
+            case FacilityFrequencyType.ATIS:
+              return 'ATIS';
+            case FacilityFrequencyType.AWOS:
+              return 'AWOS';
+            case FacilityFrequencyType.Approach:
+              return 'APPROACH';
+            case FacilityFrequencyType.CPT:
+            case FacilityFrequencyType.Clearance:
+              return 'CLEARANCE';
+            case FacilityFrequencyType.CTAF:
+              return 'CTAF';
+            case FacilityFrequencyType.Center:
+              return 'CENTER';
+            case FacilityFrequencyType.Departure:
+              return 'DEPARTURE';
+            case FacilityFrequencyType.FSS:
+              return 'FSS';
+            case FacilityFrequencyType.GCO:
+              return 'GCO';
+            case FacilityFrequencyType.Ground:
+              return 'GROUND';
+            case FacilityFrequencyType.Multicom:
+              return 'MULTICOM';
+            case FacilityFrequencyType.Tower:
+              return 'TOWER';
+            case FacilityFrequencyType.Unicom:
+              return 'UNICOM';
+            default:
+              return freqObj.name;
+          }
     }
 
     /*
