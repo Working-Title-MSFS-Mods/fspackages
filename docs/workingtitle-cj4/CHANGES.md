@@ -1,17 +1,19 @@
 # Working Title CJ4 v0.12.9
 Welcome to the Working Title CJ4 v0.12.9. This version brings compatibility for MSFS Sim Update 7, as well as a number of other enhancements and small fixes.
 
-In this release we also have a number of community submissions. Thanks to everyone, as always, for your contributions! We really love working with you all.
+Thanks to everyone, as always, for your contributions! We really love working with you all.
 
 ## Note about Liveries
-To accomodate for future work on the CJ4 there have been model changes in SU7. This means that all liveries that still fully override panel.cfg with their own version (which they really shouldn't) won't work anymore.
+To accommodate for future work on the CJ4 there have been model changes made to the plane in SU7. This means that all liveries that still fully override panel.cfg with their own version (which they really shouldn't) won't work anymore. 
+You will notice a bad livery or other mods interferring by having all white screens in the cockpit.  
+
 Liveries should use the method as described in our [Repainter's Guide](https://www.workingtitle.aero/packages/cj4/guides/repainter).
 Many liveries already use that method and should work alright after the update.
 
 ## READ THE GUIDE
-Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
+Please, please, please read the operators guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
 
-GUIDE: https://docs.google.com/document/d/1qzxPMTSQRkvau8QOi7xUqNvjx9rbww_qHlso5AT5OnI
+GUIDES: https://www.workingtitle.aero/packages/cj4/guides/
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
