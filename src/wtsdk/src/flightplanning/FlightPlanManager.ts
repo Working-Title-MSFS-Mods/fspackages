@@ -1233,10 +1233,10 @@ export class FlightPlanManager {
       const approachRunway = this.getApproach().runway.trim();
 
       const aptInfo = destination.infos as AirportInfo;
-      const frequency = aptInfo.namedFrequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachRunway) !== -1);
+      const frequency = aptInfo.frequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachRunway) !== -1);
 
       if (frequency) {
-        return frequency.value;
+        return frequency.freqMHz;
       }
     }
 

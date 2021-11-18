@@ -427,7 +427,7 @@ class AirportInfo extends WayPointInfo {
         this.frequencies = [];
         if (data.frequencies) {
             for (let i = 0; i < data.frequencies.length; i++) {
-                this.frequencies.push(new Frequency(data.frequencies[i].name, data.frequencies[i].freqMHz, data.frequencies[i].freqBCD16));
+                this.frequencies.push(new Frequency(data.frequencies[i].name, data.frequencies[i].freqMHz, data.frequencies[i].freqBCD16, data.frequencies[i].type));
             }
         }
         this.runways = [];
@@ -941,10 +941,12 @@ class IntersectionInfo extends WayPointInfo {
 IntersectionInfo.readManager = new InstrumentDataReadManager();
 IntersectionInfo.longestAirway = 0;
 class Frequency {
-    constructor(_name, _mhValue, _bcd16Value) {
+    constructor(_name, _mhValue, _bcd16Value, _type) {
         this.name = _name;
         this.mhValue = _mhValue;
         this.bcd16Value = _bcd16Value;
+        this.bcd16Value = _bcd16Value;
+        this.type = _type;
     }
 }
 
