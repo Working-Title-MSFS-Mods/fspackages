@@ -21,12 +21,15 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 # General Changes
 - SU7 Compatibility
 - Adjustments to default screen brightness. (Thanks @charles-vomacka)
-- Improved stroke fix for some cyan text displays on the PFD to make them more readable. (Thanks @charles-vomacka).
+- Improved stroke fix for some cyan text displays on the PFD to make them more readable. (Thanks @charles-vomacka)
 - Fix COM switch buttons on the audio panel.
+- FMS now also accepts input from Co-Pilot keypad.
+
 
 ## ⚠️ Known Issues
-** The Lower CCP LONG Press does not work for reselecting charts - we will look further at this.
-** B/C button throws an error in the FMC - do not use B/C for now.
+* Wing Light Button does not light up.
+* The Lower CCP LONG Press does not work for reselecting charts - we will look further at this.
+* B/C button throws an error in the FMC - do not use B/C for now.
 * Some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
