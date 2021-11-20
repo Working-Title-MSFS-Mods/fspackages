@@ -1236,7 +1236,7 @@ export class FlightPlanManager {
       const frequency = aptInfo.frequencies.find(f => f.name.replace("RW0", "").replace("RW", "").indexOf(approachRunway) !== -1);
 
       if (frequency) {
-        return frequency.freqMHz;
+        return Math.round(frequency.freqMHz * 100) / 100;
       }
     }
 
