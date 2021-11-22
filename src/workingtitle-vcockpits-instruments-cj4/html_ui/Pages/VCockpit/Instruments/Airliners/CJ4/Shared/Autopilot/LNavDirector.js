@@ -277,11 +277,11 @@ class LNavDirector {
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
 
         this.state = LNavState.TURN_COMPLETING;
-        this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1);
+        this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
       }
       else {
         this.state = LNavState.TURN_COMPLETING;
-        this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1);
+        this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
       }
     }
   }
@@ -297,8 +297,8 @@ class LNavDirector {
 
       const nextWaypointIndex = this.activeFlightPlan.activeWaypointIndex + 1;
 
-      this.fpm.setActiveWaypointIndex(nextWaypointIndex);
-      this.fpm.clearDiscontinuity(nextWaypointIndex - 1);
+      this.fpm.setActiveWaypointIndex(nextWaypointIndex, EmptyCallback.Void, 0);
+      this.fpm.clearDiscontinuity(nextWaypointIndex - 1, 0);
     }
 
     this.sequencingMode = FlightPlanSequencing.AUTO;

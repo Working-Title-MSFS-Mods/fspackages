@@ -1047,8 +1047,8 @@ export class FlightPlanManager {
    * Clears a discontinuity from the end of a waypoint.
    * @param index 
    */
-  public clearDiscontinuity(index: number): void {
-    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+  public clearDiscontinuity(index: number, fplnIndex = this._currentFlightPlanIndex): void {
+    const currentFlightPlan = this._flightPlans[fplnIndex];
     const waypoint = currentFlightPlan.getWaypoint(index);
 
     if (waypoint !== undefined) {
