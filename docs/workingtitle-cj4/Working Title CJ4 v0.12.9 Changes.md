@@ -1,5 +1,5 @@
-# Working Title CJ4 v0.12.10
-Welcome to the Working Title CJ4 v0.12.10. This version contains a few important fixes for bugs found since the SU7 release.
+# Working Title CJ4 v0.12.9
+Welcome to the Working Title CJ4 v0.12.9. This version brings compatibility for MSFS Sim Update 7, as well as a number of other enhancements and small fixes.
 
 Thanks to everyone, as always, for your contributions! We really love working with you all.
 
@@ -20,9 +20,13 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Fixes
-- Fixed an issue where ILS would not auto-tune, auto-switch, or track for some ILS frequencies
-- LNAV should no longer fail to provide guidance while a flight plan change is pending execution
+# General Changes
+- SU7 Compatibility
+- Adjustments to default screen brightness. (Thanks @charles-vomacka)
+- Improved stroke fix for some cyan text displays on the PFD to make them more readable. (Thanks @charles-vomacka)
+- Fix COM switch buttons on the audio panel.
+- FMS now also accepts input from Co-Pilot keypad.
+
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
