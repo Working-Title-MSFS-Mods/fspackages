@@ -312,8 +312,13 @@
 
 		<Sound WwiseData="true" WwiseEvent="WT_AP_Disconnect" SimVar="AUTOPILOT MASTER" Units="BOOL" Continuous="false">
 			<Range UpperBound="0" />
+			<Requires SimVar="AUTOPILOT AVAILABLE" Index="0" Units="BOOL">
+					<Range LowerBound="1" />
+			</Requires>
+			<Requires SimVar="CIRCUIT ON" Index="37" Units="BOOL">
+					<Range LowerBound="1" />
+			</Requires>
 		</Sound>
-
 
 		<!--      PASSENGER AIR     -->
 
