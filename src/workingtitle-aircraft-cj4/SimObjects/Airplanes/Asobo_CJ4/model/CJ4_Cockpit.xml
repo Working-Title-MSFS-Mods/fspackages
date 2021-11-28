@@ -212,6 +212,7 @@
 				<KEY_PREFIX>CJ4_BackupDisplay</KEY_PREFIX>
 				<DISPLAY>BackupDisplay</DISPLAY>
 				<CIRCUIT_ID>49</CIRCUIT_ID>
+				<MAX_EMISSIVE_PERCENT>0.4</MAX_EMISSIVE_PERCENT>
 				<POTENTIOMETER>3</POTENTIOMETER>
 			</UseTemplate>
 			<Component ID="WT_AS3000_PFD_Screen_L" Node="WT_PFD_Screen_L">
