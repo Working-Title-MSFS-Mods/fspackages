@@ -303,23 +303,29 @@
 		</Sound>
 
 		<Sound WwiseData="true" WwiseEvent="WT_chime" LocalVar="SEATBELT_LIGHT_ON" Continuous="false">
-			<Range UpperBound="0" />
 			<Requires SimVar="CIRCUIT ON" Index="37" Units="BOOL">
 					<Range LowerBound="1" />
+			</Requires>
+			<Requires LocalVar="SEATBELT_LIGHT_ON" Units="BOOL" Index="0">
+				<Range UpperBound="0" />
 			</Requires>
 		</Sound>
 
 		<Sound WwiseData="true" WwiseEvent="WT_chime" LocalVar="SAFETY_LIGHT_ON" Continuous="false">
-			<Range UpperBound="0" />
 			<Requires SimVar="CIRCUIT ON" Index="37" Units="BOOL">
 					<Range LowerBound="1" />
+			</Requires>
+			<Requires LocalVar="SAFETY_LIGHT_ON" Units="BOOL" Index="0">
+				<Range UpperBound="0" />
 			</Requires>			
 		</Sound>
 
 		<Sound WwiseData="true" WwiseEvent="WT_AP_Disconnect" SimVar="AUTOPILOT MASTER" Units="BOOL" Index="0" Continuous="false">
-			<Range UpperBound="0" />
 			<Requires SimVar="CIRCUIT ON" Index="37" Units="BOOL">
 					<Range LowerBound="1" />
+			</Requires>
+			<Requires SimVar="AUTOPILOT MASTER" Units="BOOL" Index="0">
+				<Range UpperBound="0" />
 			</Requires>
 		</Sound>
 
