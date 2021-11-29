@@ -1,5 +1,5 @@
 # Working Title CJ4 v0.12.10
-Welcome to the Working Title CJ4 v0.12.11. This version contains a few Quality of Life fixes.
+Welcome to the Working Title CJ4 v0.12.10. This version contains a few important fixes for bugs found since the SU7 release.
 
 Thanks to everyone, as always, for your contributions! We really love working with you all.
 
@@ -21,9 +21,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Fixes
-- Fixes aural warnings and chimes when spawning Cold & Dark
-- Adjust excessive Standby Attitude Indicator brightness
-- SAI brightness now automatically adjusts to daylight conditions
+- Fixed an issue where ILS would not auto-tune, auto-switch, or track for some ILS frequencies
+- LNAV should no longer fail to provide guidance while a flight plan change is pending execution
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
