@@ -1269,7 +1269,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.12.10[s-text white]"],
+            ["0.12.11[s-text white]"],
             [""],
             [""],
             [""],
