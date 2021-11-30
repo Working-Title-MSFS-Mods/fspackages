@@ -21,8 +21,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Fixes
-- Fix aural warnings and chimes playing when spawning Cold & Dark
-- Fix gear up/down sounds playing at unappropriate times
+- Fix aural warnings and chimes playing after plane spawns
+- Fix gear up/down sounds playing at inappropriate times
 - Adjust excessive Standby Attitude Indicator brightness
 - SAI brightness now automatically adjusts to daylight conditions
 
