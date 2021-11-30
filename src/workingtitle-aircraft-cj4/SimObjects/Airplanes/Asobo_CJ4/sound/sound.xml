@@ -361,15 +361,19 @@
 		</Sound>
 
 		<Sound WwiseEvent="WT_gear_down" WwiseData="true" FadeOutType="2" Continuous="false" FadeOutTime="1" SimVar="GEAR HANDLE POSITION" Units="NUMBER">
-			<Range LowerBound="1" />
 			<Requires SimVar="SIM ON GROUND" Units="BOOLEAN">
 				<Range UpperBound="0" />
+			</Requires>
+			<Requires SimVar="GEAR HANDLE POSITION" Units="NUMBER">
+				<Range LowerBound="1" />
 			</Requires>
 		</Sound>
 
 		<Sound WwiseEvent="WT_gear_up" WwiseData="true" FadeOutType="2" Continuous="false" FadeOutTime="1" SimVar="GEAR HANDLE POSITION" Units="NUMBER">
-			<Range UpperBound="0" />
 			<Requires SimVar="SIM ON GROUND" Units="BOOLEAN">
+				<Range UpperBound="0" />
+			</Requires>
+			<Requires SimVar="GEAR HANDLE POSITION" Units="NUMBER">
 				<Range UpperBound="0" />
 			</Requires>
 		</Sound>
