@@ -1,4 +1,4 @@
-# Working Title CJ4 v0.12.10
+# Working Title CJ4 v0.12.11
 Welcome to the Working Title CJ4 v0.12.11. This version contains a few Quality of Life fixes.
 
 Thanks to everyone, as always, for your contributions! We really love working with you all.
