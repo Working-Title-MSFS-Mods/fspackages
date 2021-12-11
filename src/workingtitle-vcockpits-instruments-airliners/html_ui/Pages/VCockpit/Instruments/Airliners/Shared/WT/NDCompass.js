@@ -157,7 +157,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             diffAndSetAttribute(line, "x2", "50");
                             diffAndSetAttribute(line, "y2", lineEnd.toString());
                             diffAndSetAttribute(line, "transform", "rotate(" + (-degrees + 180) + " 50 50)");
-                            diffAndSetAttribute(line, "stroke", "var(--cyan)");
+                            diffAndSetAttribute(line, "stroke", "var(--light-grey)");
                             diffAndSetAttribute(line, "stroke-width", "3");
                             diffAndSetAttribute(line, "stroke-opacity", "0.8");
                             tfcGroup.appendChild(line);
