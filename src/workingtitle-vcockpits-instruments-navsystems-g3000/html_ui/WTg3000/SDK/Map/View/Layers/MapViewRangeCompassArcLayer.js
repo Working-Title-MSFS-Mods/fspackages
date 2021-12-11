@@ -509,7 +509,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {Number} fontSizePx - the font size of the label.
      */
     _drawBearingLabel(angle, tickLengthPx, offsetPx, fontSizePx) {
-        let text = angle.toString().padStart(3, "0") + (this.isMagnetic ? "" : "ᵀ");
+        let text = (360 - (360 - angle) % 360).toFixed(0).padStart(3, "0") + (this.isMagnetic ? "" : "ᵀ");
         let position = this._calculateBearingLabelPosition(angle, text, tickLengthPx, offsetPx, fontSizePx);
 
         if (this.bearingLabelFontOutlineWidth > 0) {

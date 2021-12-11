@@ -69,12 +69,12 @@ class SvgFlightPlanElement extends SvgMapElement {
 
                     //Active leg
                     if (waypoints[activeWaypointIndex] && waypoints[activeWaypointIndex - 1]) {
-                        this.buildPathFromWaypoints(waypoints, activeWaypointIndex - 1, activeWaypointIndex + 1, map, 'magenta', false);
+                        this.buildPathFromWaypoints(waypoints, activeWaypointIndex - 1, activeWaypointIndex + 1, map, '#FF73FF', false);
                     }
 
                     //Missed approach preview
                     if (missedSegment.offset > -1 && CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.MISSEDAPPR)) {
-                        this.buildPathFromWaypoints(waypoints, missedSegment.offset - 1, waypoints.length - 1, map, 'cyan', (index !== 0));
+                        this.buildPathFromWaypoints(waypoints, missedSegment.offset - 1, waypoints.length - 1, map, '#33FFFF', (index !== 0));
                     }
 
                     //Remainder of plan
@@ -211,7 +211,7 @@ class SvgBackOnTrackElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "overflow", "visible");
         if (map.config.flightPlanDirectLegStrokeWidth > 0) {
             this._outlineLine = document.createElementNS(Avionics.SVG.NS, "line");
             this._outlineLine.setAttribute("stroke", this.overrideColor != "" ? this.overrideColor : map.config.flightPlanDirectLegStrokeColor);
@@ -244,7 +244,7 @@ class SvgApproachFlightPlanDebugElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "overflow", "visible");
         this._path = document.createElementNS(Avionics.SVG.NS, "path");
         this._path.setAttribute("stroke", "red");
         this._path.setAttribute("stroke-width", "4");

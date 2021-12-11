@@ -44,6 +44,15 @@ class AS3000_TSC_Horizontal extends AS3000_TSC {
     _createChartsLightThresholdPopUp() {
         return new WT_G3x5_TSCChartsLightThreshold(() => WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1));
     }
+
+    _initPaneControlSettings() {
+        this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`).control.setValue(WT_G3x5_PaneControlSetting.Touchscreen.LEFT | WT_G3x5_PaneControlSetting.Touchscreen.RIGHT);
+        this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`).control.setValue(0);
+    }
+
+    _initPaneControl() {
+        this._setSelectedMFDHalfPane(WT_G3x5_MFDHalfPane.ID.LEFT);
+    }
 }
 registerInstrument("as3000-tsc-horizontal-element", AS3000_TSC_Horizontal);
 //# sourceMappingURL=AS3000_TSC_Horizontal.js.map

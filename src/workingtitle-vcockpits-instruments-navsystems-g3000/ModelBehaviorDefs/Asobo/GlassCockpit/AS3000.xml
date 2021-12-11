@@ -1,725 +1,620 @@
 <ModelBehaviors>
-    <Include ModelBehaviorFile="Asobo\Generic.xml"/>
+	<Include ModelBehaviorFile="Asobo\Generic.xml"/>
+	<Include RelativeFile="Inputs\\AS1000_Inputs.xml"/>
 
-    <!-- generic templates for AS3000 -->
-    <!--
-        DISPLAY_POS:    L, M, R
-        DISPLAY:        PFD, MFD
-    -->
-    <Template Name="ASOBO_AS3000_Softkey_Template">
-        <DefaultTemplateParameters>
-            <PREFIX>#AS3000#_#DISPLAY#</PREFIX>
-            <Switch Param="DISPLAY">
-                <Case Value="PFD">
-                    <KEY_PREFIX>#AS3000#_PFD_#ID#</KEY_PREFIX>
-                </Case>
-                <Case Value="MFD">
-                    <KEY_PREFIX>#AS3000#_MFD</KEY_PREFIX>
-                </Case>
-            </Switch>
-            <Condition>
-                <Test>
-                    <Lower>
-                        <Value>KEY_ID</Value>
-                        <Number>10</Number>
-                    </Lower>
-                </Test>
-                <True>
-                    <UID>0#KEY_ID#</UID>
-                </True>
-                <False>
-                    <UID>#KEY_ID#</UID>
-                </False>
-            </Condition>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_SubTemplate"></UseTemplate>
-    </Template>
-    <Template Name="ASOBO_AS3000_Softkey_SubTemplate">
-        <DefaultTemplateParameters>
-            <NODE_ID>#AS3000#_Push_#DISPLAY_POS#_#UID##SUFFIX_ID#</NODE_ID>
-            <ANIM_NAME>#AS3000#_Push_#DISPLAY_POS#_#UID##SUFFIX_ID#</ANIM_NAME>
-            <PART_ID>#PREFIX#_Push_Softkey_#KEY_ID#</PART_ID>
-            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-        </DefaultTemplateParameters>
-        <Component ID="#NODE_ID#_#ID#" Node="#NODE_ID#">
-            <UseTemplate Name="ASOBO_GT_Emissive_Gauge"/>
-            <UseTemplate Name="ASOBO_GT_Push_Button">
-                <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_SOFTKEYS_#KEY_ID#)</LEFT_SINGLE_CODE>
-            </UseTemplate>
-        </Component>
-    </Template>
-    <Template Name="ASOBO_AS3000_12_Softkeys_Template">
-        <DefaultTemplateParameters>
-            <ID>1</ID>
-        </DefaultTemplateParameters>
+	<!-- ############## -->
+	<!-- AS3000 Presets -->
 
-        <UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
-            <TEMPLATE_TO_CALL>ASOBO_AS3000_12_Softkeys_SubTemplate</TEMPLATE_TO_CALL>
-        </UseTemplate>
-    </Template>
+	<Template Name="ASOBO_AS3000_Template">
+		<Parameters Type="Default">
+			<ID>1</ID>
+		</Parameters>
+		<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
+			<TEMPLATE_TO_CALL>ASOBO_AS3000_SubTemplate</TEMPLATE_TO_CALL>
+		</UseTemplate>
+	</Template>
+	<!-- AS3000_PFD -->
+	<Template Name="ASOBO_AS3000_PFD">
+		<UseTemplate Name="ASOBO_AS3000_Template">
+			<DISPLAY>PFD</DISPLAY>
+		</UseTemplate>
+	</Template>
+	<!-- AS3000_MFD -->
+	<Template Name="ASOBO_AS3000_MFD">
+		<UseTemplate Name="ASOBO_AS3000_Template">
+			<DISPLAY>MFD</DISPLAY>
+		</UseTemplate>
+	</Template>
 
-    <Template Name="ASOBO_AS3000_12_Softkeys_SubTemplate">
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>1</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>2</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>3</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>4</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>5</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>6</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>7</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>8</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>9</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>10</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>11</KEY_ID></UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Softkey_Template"><KEY_ID>12</KEY_ID></UseTemplate>
-    </Template>
+	<Template Name="ASOBO_AS3000_Screen_Template">
+		<Parameters Type="Default">
+			<ID>1</ID>
+		</Parameters>
+		<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
+			<TEMPLATE_TO_CALL>ASOBO_AS3000_Screen_SubTemplate</TEMPLATE_TO_CALL>
+		</UseTemplate>
+	</Template>
 
-    <!-- AS3000 screen template -->
-    <Template Name="ASOBO_AS3000_Screen_Template">
-        <DefaultTemplateParameters>
-            <POTENTIOMETER>4</POTENTIOMETER>
-            <SCREEN_LIGHT_DIMMING_SCALE>0.5</SCREEN_LIGHT_DIMMING_SCALE>
-            <SCREEN_MIN_EMISSIVE_PERCENT>0.05</SCREEN_MIN_EMISSIVE_PERCENT>
-            <MIN_AMBIENT_EMISSIVE_PERCENT>0.1</MIN_AMBIENT_EMISSIVE_PERCENT>
-            <MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
-            <INSTR_ID>1</INSTR_ID>
-            <ID>1</ID>
-            <AS3000>AS3000</AS3000>
-        </DefaultTemplateParameters>
+	<Template Name="ASOBO_AS3000_Detached_Control_Panel_Template">
+		<Parameters Type="Default">
+			<ID>1</ID>
+		</Parameters>
+		<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
+			<TEMPLATE_TO_CALL>ASOBO_AS3000_Detached_Control_Panel_SubTemplate</TEMPLATE_TO_CALL>
+		</UseTemplate>
+	</Template>
 
-        <UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
-            <TEMPLATE_TO_CALL>ASOBO_AS3000_Screen_SubTemplate</TEMPLATE_TO_CALL>
-        </UseTemplate>
-    </Template>
+	<!-- AS3000_TSC -->
+	<Template Name="ASOBO_AS3000_TSC_Screen_Template">
+		<Parameters Type="Default">
+			<STATIC_SCREEN_EMISSIVE_VALUE>0.5</STATIC_SCREEN_EMISSIVE_VALUE>
+		</Parameters>
+		<UseTemplate Name="ASOBO_AS3000_Screen_Template">
+			<DISPLAY>TSC</DISPLAY>
+			<Condition Valid="USE_STATIC_SCREEN_EMISSIVE">
+				<SCREEN_EMISSIVE_CODE>
+					(L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+						(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) 0.5 * 1 0.05 - * 0.05 +
+					} els{
+						#STATIC_SCREEN_EMISSIVE_VALUE# (L:AS3000_Brightness, number) *
+					}
+				</SCREEN_EMISSIVE_CODE>
+			</Condition>
+		</UseTemplate>
+	</Template>
 
-    <Template Name="ASOBO_AS3000_Screen_SubTemplate">
-        <DefaultTemplateParameters>
-            <Condition Check="SCREEN_NODE_ID">
-                <True>
-                    <NODE_ID>#SCREEN_NODE_ID#</NODE_ID>
-                    <DISPLAY>Display</DISPLAY>
-                    <KEY_PREFIX>#AS3000#_Display_#INSTR_ID#</KEY_PREFIX>
-                </True>
-                <False>
-                    <Condition Check="DISPLAY">
-                        <True>
-                    <Switch Param="DISPLAY">
-                        <Case Value="PFD">
-                            <NODE_ID>#AS3000#_PFD#SUFFIX_ID#</NODE_ID>
-                            <KEY_PREFIX>#AS3000#_PFD_#INSTR_ID#</KEY_PREFIX>
-                        </Case>
-                        <Case Value="MFD">
-                            <NODE_ID>#AS3000#_MFD#SUFFIX_ID#</NODE_ID>
-                            <KEY_PREFIX>#AS3000#_MFD</KEY_PREFIX>
-                        </Case>
-                        <Default>
-                            <NODE_ID>#AS3000#_#DISPLAY##SUFFIX_ID#</NODE_ID>
-                            <KEY_PREFIX>#AS3000#_#DISPLAY#_#INSTR_ID#</KEY_PREFIX>
-                        </Default>
-                    </Switch>
-                        </True>
-                        <False>
-                            <DISPLAY>Display</DISPLAY>
-                            <NODE_ID>#AS3000#_Display_#ID#</NODE_ID>
-                            <KEY_PREFIX>#AS3000#_Display_#INSTR_ID#</KEY_PREFIX>
-                </False>
-            </Condition>
-                </False>
-            </Condition>
-            <Condition Check="USE_STATIC_SCREEN_EMISSIVE">
-                    <True>
-                        <SCREEN_EMISSIVE_CODE>
-                            (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
-                                (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
-                            } els{ 0.5 }
-                        </SCREEN_EMISSIVE_CODE>
-                    </True>
-                    <False>
-                        <SCREEN_EMISSIVE_CODE>
-                            (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
-                                (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
-                            } els{
-                                (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
-                            }
-                        </SCREEN_EMISSIVE_CODE>
-                    </False>
-                </Condition>
-            <Condition Check="CIRCUIT_ID">
-                <True>
-                    <FAILURE>(A:CIRCUIT ON:#CIRCUIT_ID#, Bool)</FAILURE>
-                </True>
-                <False>
-                    <FAILURE>(A:CIRCUIT GENERAL PANEL ON, Bool)</FAILURE>
-                </False>
-            </Condition>
-        </DefaultTemplateParameters>
-        <Condition Check="AMBIENT_POTENTIOMETER">
-            <Component ID="#AS3000#_#DISPLAY#_Ambient_#INSTR_ID#_#ID#">
-                <UseTemplate Name="ASOBO_LIGHTING_Ambient_Template">
-                    <BOUNCE_POTENTIOMETER_PERCENT>
-                        (L:#KEY_PREFIX#_ScreenLuminosity) (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * * #MIN_AMBIENT_EMISSIVE_PERCENT# + #FAILURE# (L:#KEY_PREFIX#_ScreenLuminosity) 0 &gt; and * 100 *
-                    </BOUNCE_POTENTIOMETER_PERCENT>
-                    <POTENTIOMETER>#AMBIENT_POTENTIOMETER#</POTENTIOMETER>
-                </UseTemplate>
-            </Component>
-        </Condition>
-        <Component ID="#AS3000#_#DISPLAY#_Screen_#INSTR_ID#_#ID#" Node="#NODE_ID#">
-            <UseTemplate Name="ASOBO_GT_Emissive_Gauge">
-                <PART_ID>#AS3000#_#DISPLAY#</PART_ID>
-                <EMISSIVE_CODE>#SCREEN_EMISSIVE_CODE#</EMISSIVE_CODE>
-            </UseTemplate>
-        </Component>
-    </Template>
+	<!-- ################### -->
+	<!-- AS3000 subtemplates -->
 
-    <!-- AS3000 general template -->
-    <Template Name="ASOBO_AS3000_Template">
-        <DefaultTemplateParameters>
-            <AS3000>AS3000</AS3000>
-            <MIN_EMISSIVE_PERCENT>0.02</MIN_EMISSIVE_PERCENT>
-            <MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
-            <LIGHT_DIMMING_SCALE>0.3</LIGHT_DIMMING_SCALE>
-            <POTENTIOMETER>4</POTENTIOMETER>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_AS3000_12_Softkeys_Template">
-            <Condition Check="USE_STATIC_SCREEN_EMISSIVE">
-                <True>
-                    <EMISSIVE_CODE>
-                        (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
-                            (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +
-                        } els{
-                            (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100)
-                        }
-                    </EMISSIVE_CODE>
-                    <SCREEN_EMISSIVE_CODE>
-                        (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
-                            (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
-                        } els{ 0.5 }
-                    </SCREEN_EMISSIVE_CODE>
-                </True>
-                <False>
-                    <EMISSIVE_CODE>
-                        (L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
-                            (L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +
-                        } els{
-                            (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) #LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #MIN_EMISSIVE_PERCENT# - * #MIN_EMISSIVE_PERCENT# +
-                        }
-                    </EMISSIVE_CODE>
-                </False>
-            </Condition>
-        </UseTemplate>
-        <UseTemplate Name="ASOBO_AS3000_Screen_Template">
-        </UseTemplate>
-    </Template>
+	<Template Name="ASOBO_AS3000_Screen_SubTemplate">
+		<Parameters Type="Default">
+			<POTENTIOMETER>4</POTENTIOMETER>
+			<SCREEN_LIGHT_DIMMING_SCALE>0.5</SCREEN_LIGHT_DIMMING_SCALE>
+			<SCREEN_MIN_EMISSIVE_PERCENT>0.05</SCREEN_MIN_EMISSIVE_PERCENT>
+			<MIN_AMBIENT_EMISSIVE_PERCENT>0.1</MIN_AMBIENT_EMISSIVE_PERCENT>
+			<MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
+			<INSTR_ID>1</INSTR_ID>
+			<AS3000>AS3000</AS3000>
+		</Parameters>
+		<Parameters Type="Default">
+			<Condition Check="SCREEN_NODE_ID">
+				<True>
+					<NODE_ID>#SCREEN_NODE_ID#</NODE_ID>
+					<DISPLAY>Display</DISPLAY>
+					<KEY_PREFIX>#AS3000#_Display_#INSTR_ID#</KEY_PREFIX>
+				</True>
+				<False>
+					<Condition Check="DISPLAY">
+						<True>
+							<Switch Param="DISPLAY">
+								<Case Value="PFD">
+									<NODE_ID>#AS3000#_PFD#SUFFIX_ID#</NODE_ID>
+									<KEY_PREFIX>#AS3000#_PFD_#INSTR_ID#</KEY_PREFIX>
+								</Case>
+								<Case Value="MFD">
+									<NODE_ID>#AS3000#_MFD#SUFFIX_ID#</NODE_ID>
+									<KEY_PREFIX>#AS3000#_MFD</KEY_PREFIX>
+								</Case>
+								<Default>
+									<NODE_ID>#AS3000#_#DISPLAY##SUFFIX_ID#</NODE_ID>
+									<KEY_PREFIX>#AS3000#_#DISPLAY#_#INSTR_ID#</KEY_PREFIX>
+								</Default>
+							</Switch>
+						</True>
+						<False>
+							<DISPLAY>Display</DISPLAY>
+							<NODE_ID>#AS3000#_Display_#ID#</NODE_ID>
+							<KEY_PREFIX>#AS3000#_Display_#INSTR_ID#</KEY_PREFIX>
+						</False>
+					</Condition>
+				</False>
+			</Condition>
+			<SCREEN_EMISSIVE_CODE>
+				(L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+					(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
+				} els{
+					(A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) (L:AS3000_Brightness, number) * #SCREEN_LIGHT_DIMMING_SCALE# * #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * #SCREEN_MIN_EMISSIVE_PERCENT# +
+				}
+			</SCREEN_EMISSIVE_CODE>
+			<Condition Check="CIRCUIT_ID">
+				<True>
+					<FAILURE>(A:CIRCUIT ON:#CIRCUIT_ID#, Bool)</FAILURE>
+				</True>
+				<False>
+					<FAILURE>(A:CIRCUIT GENERAL PANEL ON, Bool)</FAILURE>
+				</False>
+			</Condition>
+		</Parameters>
+		<Condition Check="AMBIENT_POTENTIOMETER">
+			<Component ID="#AS3000#_#DISPLAY#_Ambient_#INSTR_ID#_#ID#">
+				<UseTemplate Name="ASOBO_LIGHTING_Ambient_Template">
+					<BOUNCE_POTENTIOMETER_PERCENT>
+						(L:#KEY_PREFIX#_ScreenLuminosity) (A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) #MAX_EMISSIVE_PERCENT# #SCREEN_MIN_EMISSIVE_PERCENT# - * * #MIN_AMBIENT_EMISSIVE_PERCENT# + #FAILURE# (L:#KEY_PREFIX#_ScreenLuminosity) 0 &gt; and * 100 *
+					</BOUNCE_POTENTIOMETER_PERCENT>
+					<POTENTIOMETER>#AMBIENT_POTENTIOMETER#</POTENTIOMETER>
+				</UseTemplate>
+			</Component>
+		</Condition>
+		<Component ID="#AS3000#_#DISPLAY#_Screen_#INSTR_ID#_#ID#" Node="#NODE_ID#">
+			<UseTemplate Name="ASOBO_GT_Emissive_Gauge">
+				<PART_ID>#AS3000#_#DISPLAY#</PART_ID>
+				<EMISSIVE_CODE>#SCREEN_EMISSIVE_CODE#</EMISSIVE_CODE>
+			</UseTemplate>
+		</Component>
+	</Template>
 
-    <!-- AS3000_PFD -->
-    <Template Name="ASOBO_AS3000_PFD">
-        <DefaultTemplateParameters>
-            <ID>1</ID>
-            <POTENTIOMETER>4</POTENTIOMETER>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_AS3000_Template">
-            <DISPLAY>PFD</DISPLAY>
-            <Switch Param="ID">
-                <Case Value="1">
-                    <DISPLAY_POS>L</DISPLAY_POS>
-                </Case>
-                <Case Value="2">
-                    <DISPLAY_POS>R</DISPLAY_POS>
-                </Case>
-            </Switch>
-        </UseTemplate>
-    </Template>
+	<Template Name="ASOBO_AS3000_SubTemplate">
+		<Parameters Type="Default">
+			<AS3000>AS3000</AS3000>
+			<Switch Param="DISPLAY">
+				<Case Value="PFD">
+					<Switch Param="ID">
+						<Case Value="1">
+							<DISPLAY_POS>L</DISPLAY_POS>
+						</Case>
+						<Case Value="2">
+							<DISPLAY_POS>R</DISPLAY_POS>
+						</Case>
+					</Switch>
+					<DISPLAY_ID>#DISPLAY#_#ID#</DISPLAY_ID>
+				</Case>
+				<Case Value="MFD">
+					<DISPLAY_POS>M</DISPLAY_POS>
+					<DISPLAY_ID>#DISPLAY#</DISPLAY_ID>
+				</Case>
+			</Switch>
+			<USE_STATIC_SCREEN_EMISSIVE>True</USE_STATIC_SCREEN_EMISSIVE>
+			<POTENTIOMETER>4</POTENTIOMETER>
+			<STATIC_SCREEN_EMISSIVE_VALUE>0.5</STATIC_SCREEN_EMISSIVE_VALUE>
+		</Parameters>
+		<Parameters Type="Default">
+			<SCREEN_NODE_ID>AS1000_#DISPLAY_ID#</SCREEN_NODE_ID>
+		</Parameters>
+		<Component ID="#AS3000#_Softkeys_#DISPLAY_ID#">
+			<Parameters Type="Override">
+				<EMISSIVE_CODE>(A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100)</EMISSIVE_CODE>
+			</Parameters>
+			<Loop>
+				<Setup>
+					<Param>KEY_ID</Param>
+					<From>1</From>
+					<Inc>1</Inc>
+					<To>12</To>
+				</Setup>
+				<Do>
+					<UseTemplate Name="ASOBO_AS3000_Softkey_Template"/>
+				</Do>
+			</Loop>
+		</Component>
+		<UseTemplate Name="ASOBO_AS3000_Screen_Template">
+			<SCREEN_EMISSIVE_CODE>
+				(L:XMLVAR_AS3000_DisplayLightingBool, bool) if{
+					(L:XMLVAR_AS3000_DisplayLighting, Percent over 100) 0.5 * 1 0.05 - * 0.05 +
+				} els{
+					#STATIC_SCREEN_EMISSIVE_VALUE# (L:AS3000_Brightness, number) *
+				}
+			</SCREEN_EMISSIVE_CODE>
+		</UseTemplate>
+	</Template>
 
-    <!-- AS3000_MFD -->
-    <Template Name="ASOBO_AS3000_MFD">
-        <DefaultTemplateParameters>
-            <ID>1</ID>
-            <POTENTIOMETER>4</POTENTIOMETER>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_AS3000_Template">
-            <DISPLAY>MFD</DISPLAY>
-            <DISPLAY_POS>M</DISPLAY_POS>
-        </UseTemplate>
-    </Template>
+	<Template Name="ASOBO_AS3000_Softkey_Template">
+		<Parameters Type="Default">
+			<Switch Param="DISPLAY">
+				<Case Value="PFD">
+					<KEY_PREFIX>#AS3000#_PFD_#ID#</KEY_PREFIX>
+				</Case>
+				<Case Value="MFD">
+					<KEY_PREFIX>#AS3000#_MFD</KEY_PREFIX>
+				</Case>
+			</Switch>
+			<Condition>
+				<Test>
+					<Lower>
+						<Value>KEY_ID</Value>
+						<Number>10</Number>
+					</Lower>
+				</Test>
+				<True>
+					<UID>0#KEY_ID#</UID>
+				</True>
+				<False>
+					<UID>#KEY_ID#</UID>
+				</False>
+			</Condition>
+		</Parameters>
+		<Parameters Type="Default">
+			<NODE_ID>#AS3000#_Push_#DISPLAY_POS#_#UID##SUFFIX_ID#</NODE_ID>
+			<ANIM_NAME>#AS3000#_Push_#DISPLAY_POS#_#UID##SUFFIX_ID#</ANIM_NAME>
+			<Condition NotEmpty="DISPLAY">
+				<PART_ID>#AS3000#_#DISPLAY#_Push_Softkey_#KEY_ID#</PART_ID>
+				<BTN_ID>#DISPLAY#_#ID#_Softkey_#KEY_ID#</BTN_ID>
+			</Condition>
+			<WWISE_EVENT_1>#AS3000#_push_button_on</WWISE_EVENT_1>
+			<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+			<WWISE_EVENT_2>#AS3000#_push_button_off</WWISE_EVENT_2>
+			<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+			<USE_INPUT_EVENT>AS3000</USE_INPUT_EVENT>
+			<INPUT_EVENT_ID_SOURCE>AS3000</INPUT_EVENT_ID_SOURCE>
+			<TOOLTIP_TITLE_SOFTKEY>@TT_Package.AS1000_PFD_PUSH_SOFTKEY_TITLE</TOOLTIP_TITLE_SOFTKEY>
+			<TT_DESCRIPTION_ID_SOFTKEY>@TT_Package.AS1000_PFD_PUSH_SOFTKEY_ACTION</TT_DESCRIPTION_ID_SOFTKEY>
+			<TT_DESCRIPTION_INDEX>'#KEY_ID#'</TT_DESCRIPTION_INDEX>
+		</Parameters>
+		<Parameters Type="Override">
+			<TOOLTIP_TITLE>#TOOLTIP_TITLE_SOFTKEY#</TOOLTIP_TITLE>
+			<TOOLTIP_ENTRY_0>#INPUT_EVENT_ID_SOURCE#_#BTN_ID#</TOOLTIP_ENTRY_0>
+			<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_SOFTKEY#</TT_DESCRIPTION_ID>
+			<Condition NotEmpty="HTML_KEY">
+				<False>
+					<HTML_KEY>#KEY_PREFIX#_SOFTKEYS_#KEY_ID#</HTML_KEY>
+				</False>
+			</Condition>
+		</Parameters>
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<UseInputEvent ID="#USE_INPUT_EVENT#">
+				<BINDING_INC_0>Push</BINDING_INC_0>
+				<BINDING_INC_0_PARAM_0>1</BINDING_INC_0_PARAM_0>
+				<Condition NotEmpty="EVENT_ID">
+					<BINDING_INC_0_EVENT_ID>#EVENT_ID#</BINDING_INC_0_EVENT_ID>
+				</Condition>
+				<SET_STATE_EXTERNAL>(&gt;H:#HTML_KEY#)</SET_STATE_EXTERNAL>
+			</UseInputEvent>
+			<UseTemplate Name="ASOBO_GT_Emissive_Gauge"/>
+			<UseTemplate Name="ASOBO_GT_Push_Button">
+				<LEFT_SINGLE_CODE>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID#_Push)</LEFT_SINGLE_CODE>
+			</UseTemplate>
+		</Component>
+	</Template>
 
-    <!-- AS3000_TSC -->
-    <Template Name="ASOBO_AS3000_TSC">
-        <DefaultTemplateParameters>
-            <ID>1</ID>
-            <MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
-            <AS3000>AS3000</AS3000>
-        </DefaultTemplateParameters>
-        <UseTemplate Name="ASOBO_AS3000_Screen_Template">
-            <DISPLAY>TSC</DISPLAY>
-        </UseTemplate>
-    </Template>
-
-    <!-- AS580 -->
-    <Template Name="ASOBO_AS580_Template">
-        <DefaultTemplateParameters>
-            <ID>1</ID>
-            <MAX_EMISSIVE_PERCENT>1</MAX_EMISSIVE_PERCENT>
-            <AS3000>AS580</AS3000>
-            <ORIENTATION>Vertical</ORIENTATION>
-        </DefaultTemplateParameters>
-
-        <UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
-            <TEMPLATE_TO_CALL>ASOBO_AS580_SubTemplate</TEMPLATE_TO_CALL>
-        </UseTemplate>
-    </Template>
-    <Template Name="ASOBO_AS580_SubTemplate">
-        <DefaultTemplateParameters>
-            <Switch Param="TYPE">
-                <Case Value="PFD">
-                    <KEY_PREFIX>AS3000_TSC_#ORIENTATION#_1</KEY_PREFIX>
-                </Case>
-                <Case Value="MFD">
-                    <KEY_PREFIX>AS3000_TSC_#ORIENTATION#_2</KEY_PREFIX>
-                </Case>
-            </Switch>
-        </DefaultTemplateParameters>
-        <Component ID="#AS3000#_Screen#SUFFIX_ID#">
-            <DefaultTemplateParameters>
-                <SCREEN_NODE_ID>#AS3000#_Screen#SUFFIX_ID#</SCREEN_NODE_ID>
-                <NODE_ID_INTERACTION>#AS3000#_Screen#SUFFIX_ID#</NODE_ID_INTERACTION>
-            </DefaultTemplateParameters>
-            <UseTemplate Name="ASOBO_AS3000_Screen_Template">
-            </UseTemplate>
-        </Component>
-        <Component ID="#AS3000#_Knob_01_Small#SUFFIX_ID#" Node="#AS3000#_Knob_01_Small#SUFFIX_ID#">
-            <UseTemplate Name="ASOBO_GT_Knob_Infinite_Push_Timed">
-                <CURSOR_LEFT>TurnLeftSmall</CURSOR_LEFT>
-                <CURSOR_RIGHT>TurnRightSmall</CURSOR_RIGHT>
-                <ANIM_NAME_KNOB>#AS3000#_Knob_01_Small#SUFFIX_ID#</ANIM_NAME_KNOB>
-                <ANIM_NAME_PUSH>#AS3000#_Knob_01_Small_Push#SUFFIX_ID#</ANIM_NAME_PUSH>
-                <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_BottomKnob_Small_INC)</CLOCKWISE_CODE>
-                <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_BottomKnob_Small_DEC)</ANTICLOCKWISE_CODE>
-                <LONG_CLICK_CODE>(&gt;H:#KEY_PREFIX#_BottomKnob_Push_Long)</LONG_CLICK_CODE>
-                <SHORT_CLICK_CODE>(&gt;H:#KEY_PREFIX#_BottomKnob_Push)</SHORT_CLICK_CODE>
-                <LONG_CLICK_TIME>2</LONG_CLICK_TIME>
-                <ANIMREF_ID>0</ANIMREF_ID>
-                <ANIMCURSOR_DIR>-1.0</ANIMCURSOR_DIR>
-                <ANIMCURSOR_MIN>-1</ANIMCURSOR_MIN>
-                <ANIMCURSOR_MAX>2</ANIMCURSOR_MAX>
-                <WWISE_EVENT>AS580_knob_turn</WWISE_EVENT>
-                <COUNT>36</COUNT>
-                <WWISE_EVENT_1>AS580_knob_push_button_on</WWISE_EVENT_1>
-                <WWISE_EVENT_2>AS580_knob_push_button_off</WWISE_EVENT_2>
-            </UseTemplate>
-        </Component>
-        <Component ID="#AS3000#_Knob_01#SUFFIX_ID#" Node="#AS3000#_Knob_01#SUFFIX_ID#">
-            <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                <ANIM_NAME>#AS3000#_Knob_01#SUFFIX_ID#</ANIM_NAME>
-                <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_BottomKnob_Large_INC)</CLOCKWISE_CODE>
-                <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_BottomKnob_Large_DEC)</ANTICLOCKWISE_CODE>
-                <WWISE_EVENT>AS580_big_knob_turn</WWISE_EVENT>
-                <COUNT>36</COUNT>
-            </UseTemplate>
-        </Component>
-        <Component ID="#AS3000#_Knob_02#SUFFIX_ID#" Node="#AS3000#_Knob_02#SUFFIX_ID#">
-            <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                <ANIM_NAME>#AS3000#_Knob_02#SUFFIX_ID#</ANIM_NAME>
-                <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_TopKnob_Large_INC)</CLOCKWISE_CODE>
-                <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_TopKnob_Large_DEC)</ANTICLOCKWISE_CODE>
-                <WWISE_EVENT>AS580_big_knob_turn</WWISE_EVENT>
-                <COUNT>36</COUNT>
-            </UseTemplate>
-        </Component>
-        <Component ID="#AS3000#_Knob_03#SUFFIX_ID#" Node="#AS3000#_Knob_03#SUFFIX_ID#">
-            <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                <ANIM_NAME>#AS3000#_Knob_03#SUFFIX_ID#</ANIM_NAME>
-                <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_TopKnob_Small_INC)</CLOCKWISE_CODE>
-                <ANTICLOCKWISE_CODE>(&gt;#KEY_PREFIX#_TopKnob_Small_DEC)</ANTICLOCKWISE_CODE>
-                <WWISE_EVENT>AS580_knob_turn</WWISE_EVENT>
-                <COUNT>36</COUNT>
-            </UseTemplate>
-        </Component>
-    </Template>
-
-    <Template Name="ASOBO_AS3000_Detached_Control_Panel_Template">
-        <DefaultTemplateParameters>
-            <AS3000>AS3000</AS3000>
-            <DISPLAY>MFD</DISPLAY>
-            <TYPE></TYPE>
-            <ID>1</ID>
-            <ANIM_NEVER_FAILS/>
-        </DefaultTemplateParameters>
-
-        <UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
-            <TEMPLATE_TO_CALL>ASOBO_AS3000_Detached_Control_Panel_SubTemplate</TEMPLATE_TO_CALL>
-        </UseTemplate>
-    </Template>
-    <Template Name="ASOBO_AS3000_Detached_Control_Panel_SubTemplate">
-        <DefaultTemplateParameters>
-            <KEY_PREFIX>#AS3000#_#DISPLAY#</KEY_PREFIX>
-        </DefaultTemplateParameters>
-        <Switch Param="TYPE">
-            <Case Value="CJ4">
-                <!-- LOWER PANEL -->
-                <Condition Valid="NODE_ID_ESC">
-                    <Component ID="#NODE_ID_ESC##SUFFIX_ID#" Node="#NODE_ID_ESC##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_ESC##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_ESC)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_ESC</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_NAV_DATA">
-                    <Component ID="#NODE_ID_NAV_DATA##SUFFIX_ID#" Node="#NODE_ID_NAV_DATA##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_NAV_DATA##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_NAV_DATA)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_NAVDATA</TOOLTIPID>
-
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_UPR_MENU">
-                    <Component ID="#NODE_ID_UPR_MENU##SUFFIX_ID#" Node="#NODE_ID_UPR_MENU##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_UPR_MENU##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_UPR_MENU)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_UPR_MENU</TOOLTIPID>
-
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_LWR_MENU">
-                    <Component ID="#NODE_ID_LWR_MENU##SUFFIX_ID#" Node="#NODE_ID_LWR_MENU##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_LWR_MENU##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_LWR_MENU)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_LWR_MENU</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_TERR_WX">
-                    <Component ID="#NODE_ID_TERR_WX##SUFFIX_ID#" Node="#NODE_ID_TERR_WX##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_TERR_WX##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_TERR_WX)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_TERRWX</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_TFC">
-                    <Component ID="#NODE_ID_TFC##SUFFIX_ID#" Node="#NODE_ID_TFC##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_TFC##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_TFC)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.EFIS_PANEL_RANGE_SELECTOR_TFC</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_SYS">
-                    <Component ID="#NODE_ID_SYS##SUFFIX_ID#" Node="#NODE_ID_SYS##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_SYS##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_SYS)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_SYS</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_ENG">
-                    <Component ID="#NODE_ID_ENG##SUFFIX_ID#" Node="#NODE_ID_ENG##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_ENG##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_ENG)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_ENG</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_ZOOM">
-                    <Component ID="#NODE_ID_ZOOM##SUFFIX_ID#" Node="#NODE_ID_ZOOM##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_ZOOM##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>
-                                (M:RelativeX) 0 &gt;
-                                 if{ (&gt;H:#KEY_PREFIX#_Push_ZOOM_INC) }
-                                els{ (&gt;H:#KEY_PREFIX#_Push_ZOOM_DEC) }
-                            </LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_ZOOM</TOOLTIPID>
-
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_CAS_PAGE">
-                    <Component ID="#NODE_ID_CAS_PAGE##SUFFIX_ID#" Node="#NODE_ID_CAS_PAGE##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_CAS_PAGE##SUFFIX_ID#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_CAS_PAGE)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_CAS_MESSAGES</TOOLTIPID>
-
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_RANGE_STICK">
-                    <Component ID="#NODE_ID_RANGE_STICK##SUFFIX_ID#" Node="#NODE_ID_RANGE_STICK##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Joystick">
-                            <JOYSTICK_X_CODE_LEFT>(&gt;H:#KEY_PREFIX#_JOYSTICK_LEFT)</JOYSTICK_X_CODE_LEFT>
-                            <JOYSTICK_X_CODE_RIGHT>(&gt;H:#KEY_PREFIX#_JOYSTICK_RIGHT)</JOYSTICK_X_CODE_RIGHT>
-                            <JOYSTICK_Y_CODE_DOWN>(&gt;H:#KEY_PREFIX#_JOYSTICK_DOWN)</JOYSTICK_Y_CODE_DOWN>
-                            <JOYSTICK_Y_CODE_UP>(&gt;H:#KEY_PREFIX#_JOYSTICK_UP)</JOYSTICK_Y_CODE_UP>
-                            <UPDATE_FREQUENCY>20</UPDATE_FREQUENCY>
-                            <ANIM_NAME_L_R>#ANIM_NAME_RANGE_STICK_L_R##SUFFIX_ID#</ANIM_NAME_L_R>
-                            <ANIM_NAME_DN_UP>#ANIM_NAME_RANGE_STICK_DN_UP##SUFFIX_ID#</ANIM_NAME_DN_UP>
-                            <WWISE_JOYSTICK_EVENT_L>as3000_joystick</WWISE_JOYSTICK_EVENT_L>
-                            <WWISE_JOYSTICK_EVENT_R>as3000_joystick</WWISE_JOYSTICK_EVENT_R >
-                            <WWISE_JOYSTICK_EVENT_UP>as3000_joystick</WWISE_JOYSTICK_EVENT_UP>
-                            <WWISE_JOYSTICK_EVENT_DN>as3000_joystick</WWISE_JOYSTICK_EVENT_DN>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.INOP TT:COCKPIT.TOOLTIPS.AS1000_KNOB_RANGE_PAN</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_KNOB_MENU_ADV">
-                    <Component ID="#NODE_ID_KNOB_MENU_ADV##SUFFIX_ID#" Node="#NODE_ID_KNOB_MENU_ADV##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                            <ANIM_NAME>#NODE_ID_KNOB_MENU_ADV##SUFFIX_ID#</ANIM_NAME>
-                            <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_MENU_ADV_INC)</CLOCKWISE_CODE>
-                            <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_MENU_ADV_DEC)</ANTICLOCKWISE_CODE>
-                            <WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
-                            <COUNT>36</COUNT>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_ADV_MENU</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_KNOB_DATA">
-                    <Component ID="#NODE_ID_KNOB_DATA##SUFFIX_ID#" Node="#NODE_ID_KNOB_DATA##SUFFIX_ID#">
-                        <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                            <ANIM_NAME>#NODE_ID_KNOB_DATA##SUFFIX_ID#</ANIM_NAME>
-                            <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_DATA_INC)</CLOCKWISE_CODE>
-                            <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_DATA_DEC)</ANTICLOCKWISE_CODE>
-                            <EXTRA_INTERACTION>_LeftSingle</EXTRA_INTERACTION>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_DATA_PUSH)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
-                            <COUNT>36</COUNT>
-                            <ANIMREF_ID>0</ANIMREF_ID>
-                            <ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
-                            <ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
-                            <ANIMTIP_2_ON_CURSOR>Hand</ANIMTIP_2_ON_CURSOR>
-                            <ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_ADV_MENU</ANIMTIP_0>
-                            <ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_ADV_MENU</ANIMTIP_1>
-                            <ANIMTIP_2>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_SELECT</ANIMTIP_2>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <!-- UPPER PANEL -->
-                <Condition Valid="NODE_ID_KNOB_MENU_ADV_UPR">
-                    <Component ID="#NODE_ID_KNOB_MENU_ADV_UPR#" Node="#NODE_ID_KNOB_MENU_ADV_UPR#">
-                        <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                            <ANIM_NAME>#NODE_ID_KNOB_MENU_ADV_UPR#</ANIM_NAME>
-                            <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_MENU_ADV_INC)</CLOCKWISE_CODE>
-                            <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_MENU_ADV_DEC)</ANTICLOCKWISE_CODE>
-                            <WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
-                            <COUNT>36</COUNT>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_ADV_MENU</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_KNOB_DATA_UPR">
-                    <Component ID="#NODE_ID_KNOB_DATA_UPR#" Node="#NODE_ID_KNOB_DATA_UPR#">
-                        <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                            <ANIM_NAME>#NODE_ID_KNOB_DATA_UPR#</ANIM_NAME>
-                            <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_DATA_INC)</CLOCKWISE_CODE>
-                            <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_DATA_DEC)</ANTICLOCKWISE_CODE>
-                            <EXTRA_INTERACTION>_LeftSingle</EXTRA_INTERACTION>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_DATA_PUSH)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
-                            <COUNT>36</COUNT>
-                            <ANIMREF_ID>0</ANIMREF_ID>
-                            <ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
-                            <ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
-                            <ANIMTIP_2_ON_CURSOR>Hand</ANIMTIP_2_ON_CURSOR>
-                            <ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_ADV_MENU</ANIMTIP_0>
-                            <ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_ADV_MENU</ANIMTIP_1>
-                            <ANIMTIP_2>TT:COCKPIT.TOOLTIPS.AS3000_KNOB_SELECT</ANIMTIP_2>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_NAV">
-                    <Component ID="#NODE_ID_NAV#" Node="#NODE_ID_NAV#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_NAV#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_NAV)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.NAV_FREQUENCY_TRANSFER_KEY</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_PFD_MENU">
-                    <Component ID="#NODE_ID_PFD_MENU#" Node="#NODE_ID_PFD_MENU#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_PFD_MENU#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_PFD_MENU)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_PFD</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_ESC_UPR">
-                    <Component ID="#NODE_ID_ESC_UPR#" Node="#NODE_ID_ESC_UPR#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_ESC_UPR#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_ESC)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_ESC</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_ET">
-                    <Component ID="#NODE_ID_ET#" Node="#NODE_ID_ET#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_ET#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_ET)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_ET</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_FRMT">
-                    <Component ID="#NODE_ID_FRMT#" Node="#NODE_ID_FRMT#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <ANIM_NAME>#NODE_ID_FRMT#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_FRMT)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_FRMT</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_TERR_WX_UPR">
-                    <Component ID="#NODE_ID_TERR_WX_UPR#" Node="#NODE_ID_TERR_WX_UPR#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <TOOLTIPID>TERRWX</TOOLTIPID> <!-- goto6 -->
-                            <ANIM_NAME>#NODE_ID_TERR_WX_UPR#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_TERR_WX)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_TERRWX</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_TFC_UPR">
-                    <Component ID="#NODE_ID_TFC_UPR#" Node="#NODE_ID_TFC_UPR#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <TOOLTIPID>TFC UPR</TOOLTIPID> <!-- goto6 -->
-                            <ANIM_NAME>#NODE_ID_TFC_UPR#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_TFC)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.EFIS_PANEL_RANGE_SELECTOR_TFC</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_REFS_MENU">
-                    <Component ID="#NODE_ID_REFS_MENU#" Node="#NODE_ID_REFS_MENU#">
-                        <UseTemplate Name="ASOBO_GT_Push_Button">
-                            <TOOLTIPID>REFS MENU</TOOLTIPID> <!-- goto6 -->
-                            <ANIM_NAME>#NODE_ID_REFS_MENU#</ANIM_NAME>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_REFS_MENU)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-                            <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                            <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-                            <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.AS3000_PUSH_REF</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_KNOB_RANGE">
-                    <Component ID="#NODE_ID_KNOB_RANGE#" Node="#NODE_ID_KNOB_RANGE#">
-                        <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                            <ANIM_NAME>#NODE_ID_KNOB_RANGE#</ANIM_NAME>
-                            <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_RANGE_INC)</CLOCKWISE_CODE>
-                            <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_RANGE_DEC)</ANTICLOCKWISE_CODE>
-                            <ANIMREF_ID>0</ANIMREF_ID>
-                            <ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
-                            <ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
-                            <ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AS430_RNG_ADJUST</ANIMTIP_0>
-                            <ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AS430_RNG_ADJUST</ANIMTIP_1>
-                            <ANIMTIP_2_ON_CURSOR>Hand</ANIMTIP_2_ON_CURSOR>
-                            <ANIMTIP_2>TT:COCKPIT.TOOLTIPS.INOP TT:COCKPIT.TOOLTIPS.AS3000_PUSH_AUTOTILT</ANIMTIP_2>
-                            <EXTRA_INTERACTION>_LeftSingle</EXTRA_INTERACTION>
-                            <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_TILT_PUSH)</LEFT_SINGLE_CODE>
-                            <WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
-                            <COUNT>36</COUNT>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-                <Condition Valid="NODE_ID_KNOB_TILT">
-                    <Component ID="#NODE_ID_KNOB_TILT#" Node="#NODE_ID_KNOB_TILT#">
-                        <UseTemplate Name="ASOBO_GT_Knob_Infinite">
-                            <TOOLTIPID>ADJUST TILT</TOOLTIPID>
-                            <ANIM_NAME>#NODE_ID_KNOB_TILT#</ANIM_NAME>
-                            <CLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_TILT_INC)</CLOCKWISE_CODE>
-                            <ANTICLOCKWISE_CODE>(&gt;H:#KEY_PREFIX#_TILT_DEC)</ANTICLOCKWISE_CODE>
-                            <WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
-                            <COUNT>36</COUNT>
-                            <TOOLTIPID>TT:COCKPIT.TOOLTIPS.INOP TT:COCKPIT.TOOLTIPS.AS3000_KNOB_TILT</TOOLTIPID>
-                        </UseTemplate>
-                    </Component>
-                </Condition>
-            </Case>
-        </Switch>
-    </Template>
+	<Template Name="ASOBO_AS3000_Detached_Control_Panel_SubTemplate">
+		<Parameters Type="Default">
+			<ANIM_NEVER_FAILS/>
+			<Switch Param="PANEL_TYPE">
+				<Case Value="UPPER">
+					<KEY_PREFIX>Generic_Upr</KEY_PREFIX>
+					<INPUT_EVENT_ID_SOURCE>AS3000_Upper_#ID#</INPUT_EVENT_ID_SOURCE>
+				</Case>
+				<Case Value="LOWER">
+					<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
+					<INPUT_EVENT_ID_SOURCE>AS3000_Lower_#ID#</INPUT_EVENT_ID_SOURCE>
+				</Case>
+			</Switch>
+		</Parameters>
+		<Parameters Type="Override">
+			<THRESHOLD_INPUT>0.0005</THRESHOLD_INPUT>
+			<THRESHOLD_MOUSE>0.01</THRESHOLD_MOUSE>
+			<Switch Param="PANEL_TYPE">
+				<Case Value="UPPER">
+					<TT_ID>DCP</TT_ID>
+					<BTN_COUNT>8</BTN_COUNT>
+					<BTN_ID_1>NAV</BTN_ID_1>
+					<BTN_ID_2>PFD_MENU</BTN_ID_2>
+					<BTN_ID_3>ESC</BTN_ID_3>
+					<BTN_ID_4>ET</BTN_ID_4>
+					<BTN_ID_5>FRMT</BTN_ID_5>
+					<BTN_ID_6>TERR_WX</BTN_ID_6>
+					<BTN_ID_7>TFC</BTN_ID_7>
+					<BTN_ID_8>REFS_MENU</BTN_ID_8>
+					<KNOB_COUNT>4</KNOB_COUNT>
+					<KNOB_ID_1>TILT</KNOB_ID_1>
+					<KNOB_ID_2>RANGE</KNOB_ID_2>
+					<KNOB_ID_2_PUSH>TILT_PUSH</KNOB_ID_2_PUSH>
+					<KNOB_ID_3>DATA</KNOB_ID_3>
+					<KNOB_ID_3_PUSH>DATA_PUSH</KNOB_ID_3_PUSH>
+					<KNOB_ID_4>MENU_ADV</KNOB_ID_4>
+				</Case>
+				<Case Value="LOWER">
+					<TT_ID>CCP</TT_ID>
+					<BTN_COUNT>9</BTN_COUNT>
+					<BTN_ID_1>ESC</BTN_ID_1>
+					<BTN_ID_2>NAV_DATA</BTN_ID_2>
+					<BTN_ID_3>UPR_MENU</BTN_ID_3>
+					<BTN_ID_4>LWR_MENU</BTN_ID_4>
+					<BTN_ID_5>TERR_WX</BTN_ID_5>
+					<BTN_ID_6>TFC</BTN_ID_6>
+					<BTN_ID_7>SYS</BTN_ID_7>
+					<BTN_ID_8>ENG</BTN_ID_8>
+					<BTN_ID_9>CAS_PAGE</BTN_ID_9>
+					<KNOB_COUNT>2</KNOB_COUNT>
+					<KNOB_ID_1>MENU_ADV</KNOB_ID_1>
+					<KNOB_ID_2>DATA</KNOB_ID_2>
+					<KNOB_ID_2_PUSH>DATA_PUSH</KNOB_ID_2_PUSH>
+				</Case>
+			</Switch>
+		</Parameters>
+		<Component ID="#INPUT_EVENT_ID_SOURCE#">
+			<Loop>
+				<Setup>
+					<Param>CUR_ID</Param>
+					<From>1</From>
+					<Inc>1</Inc>
+					<To>#BTN_COUNT#</To>
+				</Setup>
+				<Do>
+					<Parameters Type="Override">
+						<BTN_ID Process="Param">BTN_ID_#CUR_ID#</BTN_ID>
+					</Parameters>
+					<Parameters Type="Default">
+						<TT_DESCRIPTION_ID_#BTN_ID#>@TT_Package.#TT_ID#_PUSH_#BTN_ID#_ACTION</TT_DESCRIPTION_ID_#BTN_ID#>
+						<TOOLTIP_TITLE_#BTN_ID#>@TT_Package.#TT_ID#_PUSH_#BTN_ID#_TITLE</TOOLTIP_TITLE_#BTN_ID#>
+					</Parameters>
+					<UseTemplate Name="ASOBO_AS3000_Base_Template">
+						<HTML_EVENT>#KEY_PREFIX#_Push_#BTN_ID#</HTML_EVENT>
+						<NODE_ID Process="Param">NODE_ID_#BTN_ID#</NODE_ID>
+						<TT_DESCRIPTION_ID Process="Param">TT_DESCRIPTION_ID_#BTN_ID#</TT_DESCRIPTION_ID>
+						<TOOLTIP_TITLE Process="Param">TOOLTIP_TITLE_#BTN_ID#</TOOLTIP_TITLE>
+					</UseTemplate>
+				</Do>
+			</Loop>
+			<Loop>
+				<Setup>
+					<Param>CUR_ID</Param>
+					<From>1</From>
+					<Inc>1</Inc>
+					<To>#KNOB_COUNT#</To>
+				</Setup>
+				<Do>
+					<Parameters Type="Override">
+						<KNOB_ID Process="Param">KNOB_ID_#CUR_ID#</KNOB_ID>
+					</Parameters>
+					<Parameters Type="Override">
+						<Condition NotEmpty="KNOB_ID_#CUR_ID#_PUSH">
+							<BTN_ID_EXTERNAL>#KNOB_ID#_Button</BTN_ID_EXTERNAL>
+							<Condition Check="KNOB_ID_#CUR_ID#_PUSH" Match="True">
+								<True>
+									<PUSH_EVENT_ID>#KNOB_ID#_PUSH</PUSH_EVENT_ID>
+								</True>
+								<False>
+									<PUSH_EVENT_ID Process="Param">KNOB_ID_#CUR_ID#_PUSH</PUSH_EVENT_ID>
+								</True>
+							</Condition>
+						</Condition>
+					</Parameters>
+					<Parameters Type="Default">
+						<TOOLTIP_TITLE_#KNOB_ID#>@TT_Package.#TT_ID#_KNOB_#KNOB_ID#_TITLE</TOOLTIP_TITLE_#KNOB_ID#>
+						<TT_DESCRIPTION_ID_KNOB_#KNOB_ID#>@TT_Package.#TT_ID#_KNOB_#KNOB_ID#_ACTION</TT_DESCRIPTION_ID_KNOB_#KNOB_ID#>
+						<Condition NotEmpty="BTN_ID_EXTERNAL">
+							<TT_DESCRIPTION_ID_PUSH_#KNOB_ID#>@TT_Package.#TT_ID#_KNOB_#KNOB_ID#_ACTION_PUSH</TT_DESCRIPTION_ID_PUSH_#KNOB_ID#>
+						</Condition>
+					</Parameters>
+					<UseTemplate Name="ASOBO_AS3000_Base_Template">
+						<NODE_ID Process="Param">NODE_ID_#KNOB_ID#</NODE_ID>
+						<TOOLTIP_TITLE Process="Param">TOOLTIP_TITLE_#KNOB_ID#</TOOLTIP_TITLE>
+						<TT_DESCRIPTION_ID_KNOB Process="Param">TT_DESCRIPTION_ID_KNOB_#KNOB_ID#</TT_DESCRIPTION_ID_KNOB>
+						<HTML_EVENT_INC>#KEY_PREFIX#_#KNOB_ID#_INC</HTML_EVENT_INC>
+						<HTML_EVENT_DEC>#KEY_PREFIX#_#KNOB_ID#_DEC</HTML_EVENT_DEC>
+						<Condition NotEmpty="BTN_ID_EXTERNAL">
+							<TT_DESCRIPTION_ID_PUSH Process="Param">TT_DESCRIPTION_ID_PUSH_#KNOB_ID#</TT_DESCRIPTION_ID_PUSH>
+							<HTML_EVENT>#KEY_PREFIX#_#PUSH_EVENT_ID#</HTML_EVENT>
+							<ANIM_NAME_PUSH Process="Param">ANIM_NAME_#KNOB_ID#_PUSH</ANIM_NAME_PUSH>
+						</Condition>
+					</UseTemplate>
+				</Do>
+			</Loop>
+			<Switch Param="PANEL_TYPE">
+				<Case Value="LOWER">
+					<Component ID="#NODE_ID_ZOOM#" Node="#NODE_ID_ZOOM#">
+						<UseTemplate Name="ASOBO_AS3000_Base_Template">
+							<NODE_ID/>
+							<CREATE_COMPONENT>False</CREATE_COMPONENT>
+							<KNOB_ID>ZOOM</KNOB_ID>
+							<HTML_EVENT_INC>#KEY_PREFIX#_Push_ZOOM_INC</HTML_EVENT_INC>
+							<HTML_EVENT_DEC>#KEY_PREFIX#_Push_ZOOM_DEC</HTML_EVENT_DEC>
+							<TT_ICON>Push</TT_ICON>
+							<TT_DESCRIPTION_ID_KNOB>@TT_Package.#TT_ID#_PUSH_ZOOM_ACTION</TT_DESCRIPTION_ID_KNOB>
+							<TOOLTIP_TITLE>@TT_Package.#TT_ID#_PUSH_ZOOM_TITLE</TOOLTIP_TITLE>
+							<ANIM_HANDLED_SEPARATELY>True</ANIM_HANDLED_SEPARATELY>
+							<NO_ANIM_VAR_UPDATE>True</NO_ANIM_VAR_UPDATE>
+							<!-- + / - push button animation -->
+							<ON_STATE_CHANGED_EXTERNAL_CODE>1 0 p0 0 &gt; ? (&gt;O:#INPUT_EVENT_ID_SOURCE#_ZOOM_Position)</ON_STATE_CHANGED_EXTERNAL_CODE>
+						</UseTemplate>
+						<Update Frequency="1">(O:#INPUT_EVENT_ID_SOURCE#_ZOOM_Position) 0.5 != if{ 0.5 (&gt;O:#INPUT_EVENT_ID_SOURCE#_ZOOM_Position) }</Update>
+						<UseTemplate Name = "ASOBO_GT_Anim_Code">
+							<ANIM_NAME>#NODE_ID_ZOOM#</ANIM_NAME>
+							<ANIM_LENGTH>100</ANIM_LENGTH>
+							<ANIM_CODE>(O:#INPUT_EVENT_ID_SOURCE#_ZOOM_Position) 100 *</ANIM_CODE>
+						</UseTemplate>
+						<UseTemplate Name = "ASOBO_GT_AnimTriggers_2SoundEvents">
+							<ANIM_NAME>#NODE_ID_ZOOM#</ANIM_NAME>
+							<NORMALIZED_TIME_1>0.25</NORMALIZED_TIME_1>
+							<NORMALIZED_TIME_2>0.75</NORMALIZED_TIME_2>
+							<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+							<WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+						</UseTemplate>
+					</Component>
+					<UseTemplate Name="ASOBO_AS3000_Joystick_Template">
+						<NODE_ID>#NODE_ID_RANGE_STICK#</NODE_ID>
+						<ANIM_NAME_L_R>#ANIM_NAME_RANGE_STICK_L_R#</ANIM_NAME_L_R>
+						<ANIM_NAME_DN_UP>#ANIM_NAME_RANGE_STICK_DN_UP#</ANIM_NAME_DN_UP>
+					</UseTemplate>
+				</Case>
+			</Switch>
+		</Component>
+	</Template>
+	<!-- A template for simplifying UseTemplate statements -->
+	<Template Name="ASOBO_AS3000_Base_Template">
+		<Parameters Type="Default">
+			<USE_INPUT_EVENT>AS3000</USE_INPUT_EVENT>
+			<Switch>
+				<Case NotEmpty="BTN_ID">
+					<INTERACTION_TYPE>Push</INTERACTION_TYPE>
+					<PUSH_EVENT>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID#_Push)</PUSH_EVENT>
+					<ANIM_NAME>#NODE_ID#</ANIM_NAME>
+				</Case>
+				<Case NotEmpty="KNOB_ID">
+					<INTERACTION_TYPE>Knob</INTERACTION_TYPE>
+					<KNOB_INC>1 (&gt;B:#INPUT_EVENT_ID_SOURCE#_#KNOB_ID#_Inc)</KNOB_INC>
+					<KNOB_DEC>1 (&gt;B:#INPUT_EVENT_ID_SOURCE#_#KNOB_ID#_Dec)</KNOB_DEC>
+					<Condition Check="BTN_ID_EXTERNAL">
+						<True>
+							<TEMPLATE_VARIANT>_Push</TEMPLATE_VARIANT>
+							<PUSH_EVENT>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID_EXTERNAL#_Push)</PUSH_EVENT>
+							<ANIM_NAME_KNOB>#NODE_ID#</ANIM_NAME_KNOB>
+							<ANIM_NAME_PUSH>#NODE_ID#_PUSH</ANIM_NAME_PUSH>
+						</True>
+						<False>
+							<TEMPLATE_VARIANT/>
+							<ANIM_NAME>#NODE_ID#</ANIM_NAME>
+						</False>
+					</Condition>
+				</Case>
+			</Switch>
+		</Parameters>
+		<Parameters Type="Override">
+			<Switch Param="INTERACTION_TYPE">
+				<Case Value="Push">
+					<TEMPLATE_TO_CALL>ASOBO_GT_Push_Button</TEMPLATE_TO_CALL>
+				</Case>
+				<Case Value="Knob">
+					<TEMPLATE_TO_CALL>ASOBO_GT_Knob_Infinite#TEMPLATE_VARIANT#</TEMPLATE_TO_CALL>
+				</Case>
+			</Switch>
+		</Parameters>
+		<Parameters Type="Default">
+			<Condition>
+				<Test>
+					<Or>
+						<Arg NotEmpty="BTN_ID"/>
+						<Arg NotEmpty="BTN_ID_EXTERNAL"/>
+					</Or>
+				</Test>
+				<True>
+					<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+					<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+					<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+					<WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+				</True>
+			</Condition>
+			<Condition NotEmpty="KNOB_ID">
+				<WWISE_EVENT>as3000_knob_turn</WWISE_EVENT>
+				<COUNT>36</COUNT>
+			</Condition>
+			<CREATE_COMPONENT>True</CREATE_COMPONENT>
+		</Parameters>
+		<Condition Valid="CREATE_COMPONENT">
+			<True>
+				<Component ID="#NODE_ID#" Node="#NODE_ID#">
+					<UseTemplate Name="ASOBO_AS3000_Base_SubTemplate"/>
+				</Component>
+			</True>
+			<False>
+				<UseTemplate Name="ASOBO_AS3000_Base_SubTemplate"/>
+			</False>
+		</Condition>
+	</Template>
+	<Template Name="ASOBO_AS3000_Base_SubTemplate">
+		<Switch Param="INTERACTION_TYPE">
+			<Case Value="Push">
+				<UseInputEvent ID="#USE_INPUT_EVENT#">
+					<SET_STATE_EXTERNAL>p0 if{ (&gt;H:#HTML_EVENT#) }</SET_STATE_EXTERNAL>
+					<TT_ICON>Push</TT_ICON>
+					<TT_VALUE>@TT_Package.GT_STATE_NA</TT_VALUE>
+					<TT_VALUE_IS_DYNAMIC>False</TT_VALUE_IS_DYNAMIC>
+					<BINDING_INC_0>Push</BINDING_INC_0>
+					<BINDING_INC_0_PARAM_0>1</BINDING_INC_0_PARAM_0>
+				</UseInputEvent>
+				<UseTemplate Name="#TEMPLATE_TO_CALL#">
+					<LEFT_SINGLE_CODE>#PUSH_EVENT#</LEFT_SINGLE_CODE>
+					<TOOLTIP_ENTRY_0>#INPUT_EVENT_ID_SOURCE#_#BTN_ID#</TOOLTIP_ENTRY_0>
+				</UseTemplate>
+			</Case>
+			<Case Value="Knob">
+				<Condition NotEmpty="PUSH_EVENT">
+					<UseInputEvent ID="#USE_INPUT_EVENT#">
+						<BTN_ID>#BTN_ID_EXTERNAL#</BTN_ID>
+						<SET_STATE_EXTERNAL>p0 if{ (&gt;H:#HTML_EVENT#) }</SET_STATE_EXTERNAL>
+						<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_PUSH#</TT_DESCRIPTION_ID>
+						<TT_ICON>Push</TT_ICON>
+						<TT_VALUE>@TT_Package.GT_STATE_NA</TT_VALUE>
+						<TT_VALUE_IS_DYNAMIC>False</TT_VALUE_IS_DYNAMIC>
+						<BINDING_INC_0>Push</BINDING_INC_0>
+						<BINDING_INC_0_PARAM_0>1</BINDING_INC_0_PARAM_0>
+						<TT_INTERACTION>PRIMARY_DOWN+SECONDARY_DOWN</TT_INTERACTION>
+						<TT_INTERACTION_LOCKABLE>PRIMARY_DOWN</TT_INTERACTION_LOCKABLE>
+						<ANIM_VAR>_PushAnimVar</ANIM_VAR>
+						<ANIM>HOLD</ANIM>
+					</UseInputEvent>
+				</Condition>
+				<UseInputEvent ID="#USE_INPUT_EVENT#">
+					<SET_STATE_EXTERNAL>p0 0 &gt; if{ (&gt;H:#HTML_EVENT_INC#) } els{ (&gt;H:#HTML_EVENT_DEC#) }</SET_STATE_EXTERNAL>
+					<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_KNOB#</TT_DESCRIPTION_ID>
+				</UseInputEvent>
+				<UseTemplate Name="#TEMPLATE_TO_CALL#">
+					<TOOLTIP_ENTRY_0>#INPUT_EVENT_ID_SOURCE#_#KNOB_ID#</TOOLTIP_ENTRY_0>
+					<Condition NotEmpty="PUSH_EVENT">
+						<TOOLTIP_ENTRY_1>#INPUT_EVENT_ID_SOURCE#_#BTN_ID_EXTERNAL#</TOOLTIP_ENTRY_1>
+						<LEFT_SINGLE_CODE>#PUSH_EVENT#</LEFT_SINGLE_CODE>
+					</Condition>
+					<CLOCKWISE_CODE>#KNOB_INC#</CLOCKWISE_CODE>
+					<ANTICLOCKWISE_CODE>#KNOB_DEC#</ANTICLOCKWISE_CODE>
+				</UseTemplate>
+			</Case>
+		</Switch>
+	</Template>
+	<Template Name="ASOBO_AS3000_Joystick_Template">
+		<Parameters Type="Default">
+			<USE_INPUT_EVENT>AS3000</USE_INPUT_EVENT>
+			<VAR_NAME>#INPUT_EVENT_ID_SOURCE#_Joystick_#ID#_Interacting</VAR_NAME>
+			<RANGE_HTML_ID>MFD</RANGE_HTML_ID>
+			<TT_DESCRIPTION_ID_PAN_X>@TT_Package.#TT_ID#_JOYSTICK_X_ACTION</TT_DESCRIPTION_ID_PAN_X>
+			<TT_DESCRIPTION_ID_PAN_Y>@TT_Package.#TT_ID#_JOYSTICK_Y_ACTION</TT_DESCRIPTION_ID_PAN_Y>
+			<TOOLTIP_TITLE_EXTERNAL>@TT_Package.#TT_ID#_JOYSTICK_TITLE</TOOLTIP_TITLE_EXTERNAL>
+			<WWISE_JOYSTICK_EVENT_L>as3000_joystick</WWISE_JOYSTICK_EVENT_L>
+			<WWISE_JOYSTICK_EVENT_R>as3000_joystick</WWISE_JOYSTICK_EVENT_R >
+			<WWISE_JOYSTICK_EVENT_UP>as3000_joystick</WWISE_JOYSTICK_EVENT_UP>
+			<WWISE_JOYSTICK_EVENT_DN>as3000_joystick</WWISE_JOYSTICK_EVENT_DN>
+		</Parameters>
+		<Parameters Type="Override">
+			<KNOB_X_ID>Navigation_X</KNOB_X_ID>
+			<KNOB_Y_ID>Navigation_Y</KNOB_Y_ID>
+		</Parameters>
+		<Parameters Type="Override">
+			<JOYSTICK_X_CODE_LEFT>1 (&gt;B:#INPUT_EVENT_ID_SOURCE#_#KNOB_X_ID#_Left)</JOYSTICK_X_CODE_LEFT>
+			<JOYSTICK_X_CODE_RIGHT>1 (&gt;B:#INPUT_EVENT_ID_SOURCE#_#KNOB_X_ID#_Right)</JOYSTICK_X_CODE_RIGHT>
+			<JOYSTICK_Y_CODE_DOWN>1 (&gt;B:#INPUT_EVENT_ID_SOURCE#_#KNOB_Y_ID#_Down)</JOYSTICK_Y_CODE_DOWN>
+			<JOYSTICK_Y_CODE_UP>1 (&gt;B:#INPUT_EVENT_ID_SOURCE#_#KNOB_Y_ID#_Up)</JOYSTICK_Y_CODE_UP>
+		</Parameters>
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<Parameters Type="Override">
+				<TOOLTIP_TITLE>#TOOLTIP_TITLE_EXTERNAL#</TOOLTIP_TITLE>
+				<TOOLTIP_ENTRY_0>#INPUT_EVENT_ID_SOURCE#_#KNOB_X_ID#</TOOLTIP_ENTRY_0>
+				<TOOLTIP_ENTRY_1>#INPUT_EVENT_ID_SOURCE#_#KNOB_Y_ID#</TOOLTIP_ENTRY_1>
+			</Parameters>
+			<UseInputEvent ID="#USE_INPUT_EVENT#">
+				<KNOB_ID>#KNOB_X_ID#</KNOB_ID>
+				<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_PAN_X#</TT_DESCRIPTION_ID>
+				<TT_ICON>MOVE_AXIS</TT_ICON>
+				<SET_STATE_EXTERNAL>p0 0 &gt; if{ (&gt;H:#KEY_PREFIX#_JOYSTICK_RIGHT) } els{ (&gt;H:#KEY_PREFIX#_JOYSTICK_LEFT) }</SET_STATE_EXTERNAL>
+				<BINDING_INC_0>Right</BINDING_INC_0>
+				<BINDING_INC_0_PARAM_0>1</BINDING_INC_0_PARAM_0>
+				<BINDING_DEC_0>Left</BINDING_DEC_0>
+				<BINDING_DEC_0_PARAM_0>1</BINDING_DEC_0_PARAM_0>
+				<NO_ANIM_VAR_UPDATE>True</NO_ANIM_VAR_UPDATE>
+			</UseInputEvent>
+			<UseInputEvent ID="#USE_INPUT_EVENT#">
+				<KNOB_ID>#KNOB_Y_ID#</KNOB_ID>
+				<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_PAN_X#</TT_DESCRIPTION_ID>
+				<TT_ICON>MOVE_AXIS</TT_ICON>
+				<TT_INTERACTION>PRIMARY_DOWN+Y_AXIS</TT_INTERACTION>
+				<TT_INTERACTION_LOCKABLE>Y_AXIS</TT_INTERACTION_LOCKABLE>
+				<SET_STATE_EXTERNAL>p0 0 &gt; if{ (&gt;H:#KEY_PREFIX#_JOYSTICK_UP) } els{ (&gt;H:#KEY_PREFIX#_JOYSTICK_DOWN) }</SET_STATE_EXTERNAL>
+				<BINDING_INC_0>Up</BINDING_INC_0>
+				<BINDING_INC_0_PARAM_0>1</BINDING_INC_0_PARAM_0>
+				<BINDING_DEC_0>Down</BINDING_DEC_0>
+				<BINDING_DEC_0_PARAM_0>1</BINDING_DEC_0_PARAM_0>
+				<NO_ANIM_VAR_UPDATE>True</NO_ANIM_VAR_UPDATE>
+			</UseInputEvent>
+			<UseTemplate Name="ASOBO_GT_Joystick_Interaction_Knob">
+				<!-- Spacial case for DRAG_IM to condense inputs to only one node -->
+				<JOYSTICK_TYPE>PAN_ONLY</JOYSTICK_TYPE>
+				<UPDATE_FREQUENCY>20</UPDATE_FREQUENCY>
+				<COUNT>36</COUNT>
+				<THRESHOLD_X_INPUT>0.1</THRESHOLD_X_INPUT>
+				<THRESHOLD_X_MOUSE>0.01</THRESHOLD_X_MOUSE>
+				<THRESHOLD_Y_INPUT>0.1</THRESHOLD_Y_INPUT>
+				<THRESHOLD_Y_MOUSE>0.01</THRESHOLD_Y_MOUSE>
+				<TIMEOUT_DELAY_RESET_AXIS>0.25</TIMEOUT_DELAY_RESET_AXIS>
+				<IM_DRAG_ADDITIONAL_EVENT_HANDLING/>
+			</UseTemplate>
+		</Component>
+	</Template>
 </ModelBehaviors>

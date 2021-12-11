@@ -57,6 +57,16 @@ class WT_Airway {
         await WT_Wait.awaitCallback(() => this._builder.isDone, this);
         return this._waypointsReadOnly;
     }
+
+    /**
+     * Checks if this airway is equal to another value. Returns true if and only if the specified value is a WT_Airway
+     * object with the same name as this airway.
+     * @param {*} other - the value to check for equality against this airway.
+     * @returns {Boolean} whether this airway is equal to the specified value.
+     */
+    equals(other) {
+        return other instanceof WT_Airway && this.name === other.name;
+    }
 }
 /**
  * @enum {Number}

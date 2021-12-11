@@ -124,6 +124,12 @@ class WT_G3x5_PFDAltimeterModel {
         this._showReferenceVSpeed = false;
         this._referenceVSpeed = WT_Unit.FPM.createNumber(0);
 
+        this._activeVNAVPath = null;
+        this._showVNAV = false;
+        this._distanceToActiveVNAVWaypoint = WT_Unit.NMILE.createNumber(0);
+        this._vnavTargetAltitude = WT_Unit.FOOT.createNumber(0);
+        this._vnavVSpeedRequired = WT_Unit.FPM.createNumber(0);
+
         this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
         this._verticalTrackDeflection = 0;
         this._verticalDeviationError = WT_Unit.FOOT.createNumber(0);
@@ -132,6 +138,8 @@ class WT_G3x5_PFDAltimeterModel {
 
         this._tempFoot1 = WT_Unit.FOOT.createNumber(0);
         this._tempFoot2 = WT_Unit.FOOT.createNumber(0);
+        this._tempSecond = WT_Unit.SECOND.createNumber(0);
+        this._tempKnot = WT_Unit.KNOT.createNumber(0);
     }
 
     /**
@@ -212,6 +220,22 @@ class WT_G3x5_PFDAltimeterModel {
      */
     get referenceVSpeed() {
         return this._showReferenceVSpeed ? this._referenceVSpeed.readonly() : null;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get vnavTargetAltitude() {
+        return this._showVNAV ? this._vnavTargetAltitude.readonly() : null;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get vnavVSpeedRequired() {
+        return this._showVNAV ? this._vnavVSpeedRequired.readonly() : null;
     }
 
     /**
@@ -351,12 +375,55 @@ class WT_G3x5_PFDAltimeterModel {
         }
     }
 
+    /**
+     *
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     */
+    _shouldShowVNAV(activeVNAVPath) {
+        if (!activeVNAVPath) {
+            return false;
+        }
+
+        // conditions for showing VNAV indications:
+        // * VNAV path is a descent
+        // * current altitude > 250 ft below VNAV target altitude
+        // * time to TOD <= 1 minute
+        // * flight path angle required to meet VNAV target altitude restriction within limits
+
+        let timeToTOD = this.airplane.fms.flightPlanManager.timeToTOD(true, this._tempSecond);
+
+        return activeVNAVPath.deltaAltitude.number <= 0 &&
+            this._tempFoot1.set(this.indicatedAltitude).subtract(activeVNAVPath.finalAltitude).compare(WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_ALTITUDE_DELTA_THRESHOLD) >= 0 &&
+            (timeToTOD && timeToTOD.compare(WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_TIME_TO_TOD_THRESHOLD) <= 0) &&
+            activeVNAVPath.getFlightPathAngleRequiredAt(this._distanceToActiveVNAVWaypoint, this.indicatedAltitude) >= WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_FPA_REQUIRED_THRESHOLD;
+    }
+
+    _updateVNAVPath() {
+        this._activeVNAVPath = this.airplane.fms.flightPlanManager.getActiveVNAVPath(true);
+        if (this._activeVNAVPath) {
+            this.airplane.fms.flightPlanManager.distanceToActiveVNAVWaypoint(true, this._distanceToActiveVNAVWaypoint);
+        }
+        this._showVNAV = this._shouldShowVNAV(this._activeVNAVPath);
+    }
+
     _updateReferenceVSpeed() {
         if (this.airplane.autopilot.isVSActive()) {
             this._showReferenceVSpeed = true;
             this.airplane.autopilot.referenceVS(this._referenceVSpeed);
         } else {
             this._showReferenceVSpeed = false;
+        }
+    }
+
+    _updateVNAVTargetAltitude() {
+        if (this._showVNAV) {
+            this._vnavTargetAltitude.set(this._activeVNAVPath.finalAltitude);
+        }
+    }
+
+    _updateVNAVVSpeedRequired() {
+        if (this._showVNAV) {
+            this._activeVNAVPath.getVerticalSpeedRequiredAt(this._distanceToActiveVNAVWaypoint, this.indicatedAltitude, this.airplane.navigation.groundSpeed(this._tempKnot), this._vnavVSpeedRequired);
         }
     }
 
@@ -369,6 +436,7 @@ class WT_G3x5_PFDAltimeterModel {
      * @param {Number} angle
      * @param {Number} error
      * @param {WT_NumberUnit} deviation
+     * @returns {Number}
      */
     _calculateGlidepathDeflection(angle, error, deviation) {
         let angleRad = angle * Avionics.Utils.DEG2RAD;
@@ -381,6 +449,15 @@ class WT_G3x5_PFDAltimeterModel {
             maxDeflection.set(WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MIN);
         }
         return -deviation.ratio(maxDeflection);
+    }
+
+    /**
+     *
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     * @returns {Number}
+     */
+    _calculateVNAVDeflection(activeVNAVPath) {
+        return -activeVNAVPath.getVerticalDeviationAt(this._distanceToActiveVNAVWaypoint, this.indicatedAltitude, true, this._tempFoot1).ratio(WT_G3x5_PFDAltimeterModel.VDI_FULL_DEFLECTION);
     }
 
     _updateVerticalTrackGlidePreview() {
@@ -425,6 +502,7 @@ class WT_G3x5_PFDAltimeterModel {
             if (this.airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
                 this._verticalTrackDeflection = this._calculateGlidepathDeflection(this.airplane.fms.glidepathAngle(), this.airplane.fms.glidepathError(), this.airplane.fms.glidepathDeviation(this._tempFoot1));
                 this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDEPATH;
+                return;
             } else {
                 for (let i = 1; i < 3; i++) {
                     let nav = this.airplane.navCom.getNav(i);
@@ -435,8 +513,12 @@ class WT_G3x5_PFDAltimeterModel {
                         return;
                     }
                 }
-                this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
             }
+        }
+
+        if (this._showVNAV) {
+            this._verticalTrackDeflection = this._calculateVNAVDeflection(this._activeVNAVPath);
+            this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.VERTICAL_DEVIATION;
         } else {
             this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
         }
@@ -482,7 +564,10 @@ class WT_G3x5_PFDAltimeterModel {
         this._updateSelectedAltitude();
         this._updateAltitudeAlertState();
         this._updateMinimums();
+        this._updateVNAVPath();
         this._updateReferenceVSpeed();
+        this._updateVNAVTargetAltitude();
+        this._updateVNAVVSpeedRequired();
         this._updateVerticalTrack();
     }
 }
@@ -509,6 +594,10 @@ WT_G3x5_PFDAltimeterModel.GLIDESLOPE_FULL_DEFLECTION = 0.7;
 WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_ANGLE = 0.7;
 WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MIN = WT_Unit.METER.createNumber(45);
 WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MAX = WT_Unit.METER.createNumber(150);
+WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_ALTITUDE_DELTA_THRESHOLD = WT_Unit.FOOT.createNumber(-250);
+WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_TIME_TO_TOD_THRESHOLD = WT_Unit.MINUTE.createNumber(1);
+WT_G3x5_PFDAltimeterModel.VDI_DISPLAY_FPA_REQUIRED_THRESHOLD = -6;
+WT_G3x5_PFDAltimeterModel.VDI_FULL_DEFLECTION = WT_Unit.FOOT.createNumber(1000);
 /**
  * @enum {Number}
  */
@@ -1067,19 +1156,22 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector("#wrapper"));
 
-        this._majorTickLayer = this.shadowRoot.querySelector(`#majorticks`);
-        this._labelLayer = this.shadowRoot.querySelector(`#labels`);
-        this._minorTickLayer = this.shadowRoot.querySelector(`#minorticks`);
+        this._majorTickLayer = this.shadowRoot.querySelector("#majorticks");
+        this._labelLayer = this.shadowRoot.querySelector("#labels");
+        this._minorTickLayer = this.shadowRoot.querySelector("#minorticks");
 
-        this._pointerContainer = this.shadowRoot.querySelector(`#pointercontainer`);
-        this._pointer = new WT_CachedElement(this.shadowRoot.querySelector(`#pointer`));
-        this._pointerNumber = new WT_CachedElement(this.shadowRoot.querySelector(`#pointernumber`));
-        this._pointerSign = new WT_CachedElement(this.shadowRoot.querySelector(`#pointersign`));
+        this._pointerContainer = this.shadowRoot.querySelector("#pointercontainer");
+        this._pointer = new WT_CachedElement(this.shadowRoot.querySelector("#pointer"));
+        this._pointerNumber = new WT_CachedElement(this.shadowRoot.querySelector("#pointernumber"), {cacheAttributes: false});
+        this._pointerSign = new WT_CachedElement(this.shadowRoot.querySelector("#pointersign"));
 
-        this._reference = new WT_CachedElement(this.shadowRoot.querySelector(`#reference`));
-        this._referenceBugContainer = new WT_CachedElement(this.shadowRoot.querySelector(`#referencebugcontainer`));
+        this._reference = new WT_CachedElement(this.shadowRoot.querySelector("#reference"), {cacheAttributes: false});
+        this._referenceBugContainer = new WT_CachedElement(this.shadowRoot.querySelector("#referencebugcontainer"));
+
+        this._vnavTargetAltitude = new WT_CachedElement(this.shadowRoot.querySelector("#vnavtarget"), {cacheAttributes: false});
+        this._vnavBugContainer = new WT_CachedElement(this.shadowRoot.querySelector("#vnavbugcontainer"));
     }
 
     connectedCallback() {
@@ -1239,7 +1331,7 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
     }
 
     _setReferenceNumber(fpm) {
-        this._reference.textContent = `${fpm.toFixed(0)}`;
+        this._reference.textContent = fpm.toFixed(0);
     }
 
     _moveReferenceBug(pos) {
@@ -1250,17 +1342,40 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
         let reference = this._context.model.referenceVSpeed;
         if (reference) {
             let fpm = reference.asUnit(WT_Unit.FPM);
-            this._showReference(true);
             this._setReferenceNumber(fpm);
             this._moveReferenceBug(this._calculateVSPosition(fpm));
+            this._showReference(true);
         } else {
             this._showReference(false);
+        }
+    }
+
+    _showVNAV(value) {
+        this._wrapper.setAttribute("show-vnav", `${value}`);
+    }
+
+    _setVNAVTargetAltitudeNumber(feet) {
+        this._vnavTargetAltitude.textContent = feet.toFixed(0);
+    }
+
+    _moveVNAVBug(pos) {
+        this._vnavBugContainer.setAttribute("style", `transform: translateY(${Math.min(0.5, Math.max(-0.5, pos)) * 100}%) rotateX(0deg);`);
+    }
+
+    _updateVNAV() {
+        if (this._context.model.vnavTargetAltitude) {
+            this._setVNAVTargetAltitudeNumber(this._context.model.vnavTargetAltitude.asUnit(WT_Unit.FOOT));
+            this._moveVNAVBug(this._calculateVSPosition(this._context.model.vnavVSpeedRequired.asUnit(WT_Unit.FPM)));
+            this._showVNAV(true);
+        } else {
+            this._showVNAV(false);
         }
     }
 
     _updateDisplay() {
         this._updatePointer();
         this._updateReference();
+        this._updateVNAV();
     }
 
     update() {
@@ -1308,6 +1423,27 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                     transform: translate(-50%, -50%);
                     color: var(--wt-g3x5-lightblue);
                 }
+            #vnavtargetcontainer {
+                position: absolute;
+                left: 0%;
+                top: 0%;
+                width: 100%;
+                height: 7%;
+                font-size: var(--altimeter-vspeed-vnavtarget-font-size, 0.9em);
+                background-color: var(--wt-g3x5-bggray);
+                border-radius: var(--altimeter-vspeed-vnavtarget-border-radius, 3px);
+                display: none;
+            }
+                #wrapper[show-vnav="true"] #vnavtargetcontainer {
+                    display: block;
+                }
+                    #vnavtarget {
+                        position: absolute;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%, -50%);
+                        color: var(--wt-g3x5-purple);
+                    }
             #bgclip {
                 position: absolute;
                 left: 0%;
@@ -1372,7 +1508,7 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                         .label {
                             dominant-baseline: middle;
                         }
-                #referencebugclip {
+                #bugclip {
                     position: absolute;
                     left: 0%;
                     top: 0%;
@@ -1380,6 +1516,29 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                     width: 100%;
                     overflow-y: hidden;
                 }
+                    #vnavbugcontainer {
+                        position: absolute;
+                        left: 0%;
+                        top: 0%;
+                        width: var(--altimeter-vspeed-minortick-width, 15%);
+                        height: 100%;
+                        transform: rotateX(0deg);
+                    }
+                        #vnavbug {
+                            position: absolute;
+                            left: 0%;
+                            top: 50%;
+                            width: 150%;
+                            height: calc(var(--altimeter-vspeed-pointer-font-size, 0.9em) * 1.25);
+                            transform: translateY(-50%);
+                            fill: var(--wt-g3x5-purple);
+                            stroke: black;
+                            stroke-width: 1;
+                            display: none;
+                        }
+                        #wrapper[show-vnav="true"] #vnavbug {
+                            display: block;
+                        }
                     #referencebugcontainer {
                         position: absolute;
                         left: 0%;
@@ -1392,9 +1551,9 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                             position: absolute;
                             left: 0%;
                             top: 50%;
+                            width: 66.67%;
                             height: var(--altimeter-vspeed-pointer-font-size, 0.9em);
                             transform: translateY(-50%);
-                            width: 66.67%;
                             fill: var(--wt-g3x5-lightblue);
                             stroke: #299aa0;
                             stroke-width: 5;
@@ -1405,9 +1564,8 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                         }
                 #pointercontainer {
                     position: absolute;
-                    left: 0%;
+                    left: var(--altimeter-vspeed-pointer-margin-left, calc(var(--altimeter-vspeed-minortick-width, 15%) * 0.25));
                     top: 0%;
-                    width: 100%;
                     height: 100%;
                     font-size: var(--altimeter-vspeed-pointer-font-size, 0.9em);
                     color: white;
@@ -1457,6 +1615,9 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
         <div id="referencecontainer">
             <div id="reference"></div>
         </div>
+        <div id="vnavtargetcontainer">
+            <div id="vnavtarget"></div>
+        </div>
         <div id="bgclip">
             <svg id="bg" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path id="bgglass" d="M 0 0 L 100 0 L 100 40 L 0 50 L 100 60 L 100 100 L 0 100 Z" />
@@ -1469,7 +1630,12 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                 <svg id="majorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                 <svg id="labels"></svg>
             </div>
-            <div id="referencebugclip">
+            <div id="bugclip">
+                <div id="vnavbugcontainer">
+                    <svg id="vnavbug" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M 5 50 L 95 95 L 95 75 L 45 50 L 95 25 L 95 5 Z" vector-effect="non-scaling-stroke" />
+                    </svg>
+                </div>
                 <div id="referencebugcontainer">
                     <svg id="referencemanualbug" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <path d="M 100 0 h -100 v 100 h 100 v -33 L 33.33 50 L 100 33 Z" />
@@ -1513,7 +1679,7 @@ class WT_G3x5_PFDAltimeterVerticalTrackHTMLElement extends HTMLElement {
     _defineChildren() {
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
-        this._label = new WT_CachedElement(this.shadowRoot.querySelector(`#label`));
+        this._label = new WT_CachedElement(this.shadowRoot.querySelector(`#label`), {cacheAttributes: false});
         this._previewContainer = new WT_CachedElement(this.shadowRoot.querySelector(`#previewcontainer`));
         this._indicatorContainer = new WT_CachedElement(this.shadowRoot.querySelector(`#indicatorcontainer`));
     }
@@ -1737,17 +1903,17 @@ WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.TEMPLATE.innerHTML = `
                 display: block;
             }
                 .indicator {
+                    display: none;
                     position: absolute;
                     top: 50%;
-                    height: 10%;
                     transform: translateY(-50%);
                 }
                 #glideindicator {
                     left: 15%;
                     width: 70%;
+                    height: 10%;
                     stroke: black;
                     stroke-width: 1;
-                    display: block;
                 }
                 #wrapper[mode^="glide"] #glideindicator {
                     display: block;
@@ -1759,7 +1925,11 @@ WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.TEMPLATE.innerHTML = `
                     fill: var(--wt-g3x5-purple);
                 }
                 #vdeviationindicator {
-                    display: none;
+                    width: 90%;
+                    height: 12.5%;
+                    fill: var(--wt-g3x5-purple);
+                    stroke: black;
+                    stroke-width: 1;
                 }
                 #wrapper[mode="vdev"] #vdeviationindicator {
                     display: block;
@@ -1797,7 +1967,7 @@ WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.TEMPLATE.innerHTML = `
                     <path d="M 50 5 L 95 50 L 50 95 L 5 50 Z" vector-effect="non-scaling-stroke" />
                 </svg>
                 <svg id="vdeviationindicator" class="indicator" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M 5 50 L 95 95 L 95 85 L 25 50 L 95 15 L 95 5 Z" vector-effect="non-scaling-stroke" />
+                    <path d="M 5 50 L 95 95 L 95 75 L 45 50 L 95 25 L 95 5 Z" vector-effect="non-scaling-stroke" />
                 </svg>
             </div>
         </div>

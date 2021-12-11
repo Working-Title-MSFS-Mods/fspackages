@@ -1,5 +1,10 @@
 class WT_PlayerAirplane {
-    constructor() {
+    /**
+     * @param {() => Number} timeStampGetter - a function for getting the current update cycle time stamp.
+     */
+    constructor(timeStampGetter) {
+        this._timeStampGetter = timeStampGetter;
+
         this._type = WT_PlayerAirplane.getAircraftType();
         this._sensors = this._createSensors();
         this._environment = this._createEnvironment();
@@ -58,6 +63,15 @@ class WT_PlayerAirplane {
 
     _createReferences() {
         return undefined;
+    }
+
+    /**
+     * The real-world time stamp of the current update cycle.
+     * @readonly
+     * @type {Number}
+     */
+    get currentTimeStamp() {
+        return this._timeStampGetter();
     }
 
     /**
@@ -150,7 +164,7 @@ class WT_PlayerAirplane {
         return this._references;
     }
 }
-WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH);
+WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH_FUEL);
 /**
  * @enum {Number}
  */
@@ -178,8 +192,8 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
     constructor(airplane, airspeedSensorCount = 2, altimeterCount = 2) {
         super(airplane);
 
-        this._airspeedSensors = [...Array(airspeedSensorCount)].map((value, index) => new WT_AirplaneAirspeedSensor(index + 1));
-        this._altimeters = [...Array(altimeterCount)].map((value, index) => new WT_AirplaneAltimeter(index + 1));
+        this._airspeedSensors = [...Array(airspeedSensorCount)].map((value, index) => new WT_AirplaneAirspeedSensor(airplane, index + 1));
+        this._altimeters = [...Array(altimeterCount)].map((value, index) => new WT_AirplaneAltimeter(airplane, index + 1));
     }
 
     /**
@@ -229,7 +243,12 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      * @returns {Boolean} whether the airplane is currently on the ground.
      */
     isOnGround() {
-        return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._isOnGroundTimeStamp !== timeStamp) {
+            this._isOnGroundCached = SimVar.GetSimVarValue("SIM ON GROUND", "bool");
+            this._isOnGroundTimeStamp = timeStamp;
+        }
+        return this._isOnGroundCached;
     }
 
     /**
@@ -239,8 +258,12 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      * @returns {WT_NumberUnit} the current vertical speed of the airplane. Default unit is feet per minute.
      */
     verticalSpeed(reference) {
-        let vs = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
-        return reference ? reference.set(vs, WT_Unit.FPM) : new WT_NumberUnit(vs, WT_Unit.FPM);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._verticalSpeedTimeStamp !== timeStamp) {
+            this._verticalSpeedCached = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
+            this._verticalSpeedTimeStamp = timeStamp;
+        }
+        return reference ? reference.set(this._verticalSpeedCached, WT_Unit.FPM) : new WT_NumberUnit(this._verticalSpeedCached, WT_Unit.FPM);
     }
 
     /**
@@ -250,8 +273,12 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      * @returns {WT_NumberUnit} the current radar altitude of the airplane.
      */
     radarAltitude(reference) {
-        let value = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
-        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._radarAltitudeTimeStamp !== timeStamp) {
+            this._radarAltitudeCached = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
+            this._radarAltitudeTimeStamp = timeStamp;
+        }
+        return reference ? reference.set(this._radarAltitudeCached, WT_Unit.FOOT) : new WT_NumberUnit(this._radarAltitudeCached, WT_Unit.FOOT);
     }
 
     /**
@@ -277,8 +304,18 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
 }
 
 class WT_AirplaneAirspeedSensor {
-    constructor(index) {
+    constructor(airplane, index) {
+        this._airplane = airplane;
         this._index = index;
+    }
+
+    /**
+     * The airplane to which this airspeed sensor belongs.
+     * @readonly
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return this._airplane;
     }
 
     /**
@@ -297,8 +334,12 @@ class WT_AirplaneAirspeedSensor {
      * @returns {WT_NumberUnit} this sensor's current calculated indicated airspeed.
      */
     ias(reference) {
-        let value = SimVar.GetSimVarValue(`AIRSPEED INDICATED:${this.index}`, "knots");
-        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._iasTimeStamp !== timeStamp) {
+            this._iasCached = SimVar.GetSimVarValue(`AIRSPEED INDICATED:${this.index}`, "knots");
+            this._iasTimeStamp = timeStamp;
+        }
+        return reference ? reference.set(this._iasCached, WT_Unit.KNOT) : new WT_NumberUnit(this._iasCached, WT_Unit.KNOT);
     }
 
     /**
@@ -308,8 +349,12 @@ class WT_AirplaneAirspeedSensor {
      * @returns {WT_NumberUnit} this sensor's current calculated true airspeed.
      */
     tas(reference) {
-        let value = SimVar.GetSimVarValue(`AIRSPEED TRUE:${this.index}`, "knots");
-        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._tasTimeStamp !== timeStamp) {
+            this._tasCached = SimVar.GetSimVarValue(`AIRSPEED TRUE:${this.index}`, "knots");
+            this._tasTimeStamp = timeStamp;
+        }
+        return reference ? reference.set(this._tasCached, WT_Unit.KNOT) : new WT_NumberUnit(this._tasCached, WT_Unit.KNOT);
     }
 
     /**
@@ -317,13 +362,28 @@ class WT_AirplaneAirspeedSensor {
      * @returns {Number} this sensor's current calculated true airspeed in mach units.
      */
     mach() {
-        return SimVar.GetSimVarValue(`AIRSPEED MACH:${this.index}`, "mach");
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._machTimeStamp !== timeStamp) {
+            this._machCached = SimVar.GetSimVarValue(`AIRSPEED MACH:${this.index}`, "mach");
+            this._machTimeStamp = timeStamp;
+        }
+        return this._machCached;
     }
 }
 
 class WT_AirplaneAltimeter {
-    constructor(index) {
+    constructor(airplane, index) {
+        this._airplane = airplane;
         this._index = index;
+    }
+
+    /**
+     * The airplane to which this altimeter belongs.
+     * @readonly
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return this._airplane;
     }
 
     /**
@@ -342,8 +402,12 @@ class WT_AirplaneAltimeter {
      * @returns {WT_NumberUnit} the current indicated altitude.
      */
     altitudeIndicated(reference) {
-        let value = SimVar.GetSimVarValue(`INDICATED ALTITUDE:${this.index}`, "feet");
-        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._altitudeIndicatedTimeStamp !== timeStamp) {
+            this._altitudeIndicatedCached = SimVar.GetSimVarValue(`INDICATED ALTITUDE:${this.index}`, "feet");
+            this._altitudeIndicatedTimeStamp = timeStamp;
+        }
+        return reference ? reference.set(this._altitudeIndicatedCached, WT_Unit.FOOT) : new WT_NumberUnit(this._altitudeIndicatedCached, WT_Unit.FOOT);
     }
 
     /**
@@ -472,9 +536,13 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
      * @returns {WT_GeoPoint} the current position of the airplane.
      */
     position(reference) {
-        let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-        let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-        return reference? reference.set(lat, long) : new WT_GeoPoint(lat, long);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._positionTimeStamp !== timeStamp) {
+            this._positionLatCached = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            this._positionLongCached = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            this._positionTimeStamp = timeStamp;
+        }
+        return reference? reference.set(this._positionLatCached, this._positionLongCached) : new WT_GeoPoint(this._positionLatCached, this._positionLongCached);
     }
 
     /**
@@ -484,15 +552,20 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
      * @returns {WT_NumberUnit} the airplane's current heading.
      */
     heading(reference) {
-        let value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._headingTimeStamp !== timeStamp) {
+            this._headingCached = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
+            this._headingTimeStamp = timeStamp;
+        }
+
         let position = this.position(WT_AirplaneNavigation._tempGeoPoint);
         if (reference) {
             WT_AirplaneNavigation._tempNavAngleUnit.setLocation(position);
             reference.unit.setLocation(position);
-            reference.set(value, WT_AirplaneNavigation._tempNavAngleUnit);
+            reference.set(this._headingCached, WT_AirplaneNavigation._tempNavAngleUnit);
             return reference;
         } else {
-            return new WT_NavAngleUnit(true, position).createNumber(value);
+            return new WT_NavAngleUnit(true, position).createNumber(this._headingCached);
         }
     }
 
@@ -501,7 +574,12 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
      * @returns {Number} the true heading of the airplane in degrees.
      */
     headingTrue() {
-        return SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._headingTrueTimeStamp !== timeStamp) {
+            this._headingTrueCached = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+            this._headingTrueTimeStamp = timeStamp;
+        }
+        return this._headingTrueCached;
     }
 
     /**
@@ -509,7 +587,12 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
      * @returns {Number} the true track of the airplane in degrees.
      */
     trackTrue() {
-        return SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._trackTrueTimeStamp !== timeStamp) {
+            this._trackTrueCached = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+            this._trackTrueTimeStamp = timeStamp;
+        }
+        return this._trackTrueCached;
     }
 
     /**
@@ -546,8 +629,12 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
      * @returns {WT_NumberUnit} the current ground speed of the airplane. Default unit is knots.
      */
     groundSpeed(reference) {
-        let gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-        return reference ? reference.set(gs, WT_Unit.KNOT) : new WT_NumberUnit(gs, WT_Unit.KNOT);
+        let timeStamp = this.airplane.currentTimeStamp;
+        if (this._groundSpeedTimeStamp !== timeStamp) {
+            this._groundSpeedCached = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+            this._groundSpeedTimeStamp = timeStamp;
+        }
+        return reference ? reference.set(this._groundSpeedCached, WT_Unit.KNOT) : new WT_NumberUnit(this._groundSpeedCached, WT_Unit.KNOT);
     }
 }
 WT_AirplaneNavigation._tempGeoPoint = new WT_GeoPoint(0, 0);
@@ -1164,7 +1251,7 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
      */
     fuelOnboard(reference) {
         let value = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
-        return reference ? reference.set(value, WT_Unit.GALLON) : WT_Unit.GALLON.createNumber(value);
+        return reference ? reference.set(value, WT_Unit.GALLON_FUEL) : WT_Unit.GALLON_FUEL.createNumber(value);
     }
 
     /**
@@ -1174,7 +1261,7 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
      * @returns {WT_NumberUnit} the current total fuel consumption of the airplane.
      */
     fuelFlowTotal(reference) {
-        let fuelFlow = reference ? reference.set(0) : WT_Unit.GPH.createNumber(0);
+        let fuelFlow = reference ? reference.set(0) : WT_Unit.GPH_FUEL.createNumber(0);
         for (let i = 0; i < this.engineCount; i++) {
             fuelFlow.add(this.getEngine(i + 1).fuelFlow(WT_PlayerAirplane._tempGPH));
         }
@@ -1190,7 +1277,7 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
      */
     fuelFlow(index, reference) {
         let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${index + 1}`, "gallons per hour");
-        return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
+        return reference ? reference.set(value, WT_Unit.GPH_FUEL) : WT_Unit.GPH_FUEL.createNumber(value);
     }
 
     /**
@@ -1243,7 +1330,7 @@ class WT_AirplaneEngine {
      */
     fuelFlow(reference) {
         let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${this.index}`, "gallons per hour");
-        return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
+        return reference ? reference.set(value, WT_Unit.GPH_FUEL) : WT_Unit.GPH_FUEL.createNumber(value);
     }
 
     /**

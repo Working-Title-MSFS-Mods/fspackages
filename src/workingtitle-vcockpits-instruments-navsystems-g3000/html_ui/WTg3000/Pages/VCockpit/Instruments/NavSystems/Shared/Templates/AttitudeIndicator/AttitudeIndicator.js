@@ -172,7 +172,7 @@ class AttitudeIndicator extends HTMLElement {
             this.horizonTop.setAttribute("height", "2000");
             this.horizon.appendChild(this.horizonTop);
             this.bottomPart = document.createElementNS(Avionics.SVG.NS, "g");
-            this.horizon.appendChild(this.bottomPart);            
+            this.horizon.appendChild(this.bottomPart);
             this.horizonTopGradient = document.createElementNS(Avionics.SVG.NS, "rect");
             this.horizonTopGradient.setAttribute("fill", (this.backgroundVisible) ? "url(#sky)" : "transparent");
             this.horizonTopGradient.setAttribute("x", "-1000");
@@ -230,7 +230,7 @@ class AttitudeIndicator extends HTMLElement {
         triangleOuterRight.setAttribute("d", "M140 30 l-50 0 L0 0 Z");
         triangleOuterRight.setAttribute("fill", "#d12bc7");
         //this.flightDirector.appendChild(triangleOuterRight);
- 
+
         let triangleHeight = 16;
         let triangleHalfHeight = triangleHeight / 2;
         let triangleWidth = 110;
@@ -402,9 +402,9 @@ class AttitudeIndicator extends HTMLElement {
             this.slipSkid.setAttribute("fill", "white");
             this.root.appendChild(this.slipSkid);
         }
-        
+
         {
-            let radius = 10;
+            let radius = 15;
             let strokeWidth = 2;
             let barbThickness = 3;
             let barbLength = 10;
@@ -442,7 +442,7 @@ class AttitudeIndicator extends HTMLElement {
             actualDirectionMarker.appendChild(createBarb(0, false));
             actualDirectionMarker.appendChild(createBarb(90, false));
             actualDirectionMarker.appendChild(createBarb(180, false));
-            
+
             let fill = document.createElementNS(Avionics.SVG.NS, "circle");
             fill.setAttribute("cx",0);
             fill.setAttribute("cy",0);
@@ -472,7 +472,7 @@ class AttitudeIndicator extends HTMLElement {
                 break;
             case "actual-pitch":
                 this.actualPitch = parseFloat(newValue);
-                break;               
+                break;
             case "ground-speed":
                 this.groundSpeed = parseFloat(newValue);
                 break;
@@ -515,7 +515,7 @@ class AttitudeIndicator extends HTMLElement {
     getSyntheticVisionEnabled() {
         return this.syntheticVision;
     }
-    setSytheticVisionEnabled(enabled) {
+    setSyntheticVisionEnabled(enabled) {
         this.syntheticVision = enabled;
         if (this.syntheticVision) {
             this.setAttribute("background", "false");
@@ -537,7 +537,7 @@ class AttitudeIndicator extends HTMLElement {
             let az = Math.cos(a);
             let screenWidth = 400 * 100/47.0; //From the css setting the width
             let screenHeight = screenWidth * 3/4;
-            let fov = (80/2) * Math.PI / 180.0; 
+            let fov = (80/2) * Math.PI / 180.0;
             let focalLength = 1 / Math.tan(fov);
             let screenX = (ax * (focalLength / az)) * screenWidth;
             let screenY = (ay * (focalLength / az)) * screenHeight;

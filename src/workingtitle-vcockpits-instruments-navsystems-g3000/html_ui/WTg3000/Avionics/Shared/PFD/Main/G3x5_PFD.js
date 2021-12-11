@@ -14,6 +14,8 @@ class WT_G3x5_PFD extends NavSystem {
         return undefined;
     }
 
+    get manageFlightPlan() { return false; }
+
     /**
      * @readonly
      * @type {WT_AirplaneAirspeedSensor}
@@ -139,8 +141,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _initTrafficTracker() {
-        let dataRetriever = this.modConfig.traffic.useTrafficService ? new WT_TrafficServiceTrafficDataRetriever(this.modConfig.traffic.trafficServicePort) : new WT_CoherentTrafficDataRetriever();
-        this._trafficTracker = new WT_TrafficTracker(dataRetriever);
+        this._trafficTracker = new WT_TrafficTracker(new WT_CoherentTrafficDataRetriever());
     }
 
     /**
@@ -433,6 +434,9 @@ class WT_G3x5_PFDTrafficInsetMapContainer extends WT_G3x5_PFDElement {
 }
 
 class WT_G3x5_PFDMainPage extends NavSystemPage {
+    /**
+     * @param {WT_G3x5_PFD} instrument
+     */
     constructor(instrument) {
         super("Main", "Mainframe", new AS3000_PFD_MainElement());
 
@@ -502,7 +506,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
     _createElements() {
         return [
             this._autopilotDisplay = this._createAutopilotDisplay(),
-            this._attitude = new AS3000_PFD_Attitude("PFD"),
+            this._attitude = new AS3000_PFD_Attitude("PFD", this._instrument),
             this._airspeed = this._createAirspeedIndicator(),
             this._altimeter = this._createAltimeter(),
             this._annunciations = new PFD_Annunciations(),
@@ -533,9 +537,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         this._mapInstrument.setGPS(this.gps);
     }
 
-    onUpdate(deltaTime) {
-    }
-
     reset() {
         if (this._annunciations)
             this._annunciations.reset();
@@ -556,21 +557,18 @@ class AS3000_PFD_MainElement extends NavSystemElement {
 }
 
 class AS3000_PFD_Attitude extends PFD_Attitude {
-    constructor(instrumentID) {
+    /**
+     * @param {String} instrumentID
+     * @param {WT_G3x5_PFD} instrument
+     */
+    constructor(instrumentID, instrument) {
         super();
 
         this._instrumentID = instrumentID;
+        this._instrument = instrument;
 
-        this._initSettingModel();
-    }
-
-    _initSettingModel() {
-        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
-        this._settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._settingModel));
-        this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
-
-        this._settingModel.init();
-        this._setSVTShow(this.svtShowSetting.getValue());
+        this._tempGS = WT_Unit.KNOT.createNumber(0);
+        this._tempVS = WT_Unit.KNOT.createNumber(0);
     }
 
     /**
@@ -591,23 +589,48 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
         return this._svtShowSetting;
     }
 
-    get syntheticVisionEnabled() {
-        return this._syntheticVisionEnabled;
-    }
-
-    set syntheticVisionEnabled(enabled) {
+    /**
+     * Checks whether synthetic terrain is enabled.
+     * @returns whether synthetic terrain is enabled.
+     */
+    isSVTEnabled() {
+        return this.svg ? this.svg.getSyntheticVisionEnabled() : false;
     }
 
     init(root) {
-        this.svg = this.gps.getChildById("Horizon");
+        super.init(root);
+
+        this._initSettingModel();
+    }
+
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._settingModel));
+        this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
+
+        this._settingModel.init();
+        this._setSVTShow(this.svtShowSetting.getValue());
     }
 
     _setSVTShow(value) {
-        this._syntheticVisionEnabled = value;
+        this.svg.setSyntheticVisionEnabled(value);
     }
 
     _onSVTShowSettingChanged(setting, newValue, oldValue) {
         this._setSVTShow(newValue);
+    }
+
+    onUpdate(deltaTime) {
+        super.onUpdate(deltaTime);
+
+        diffAndSetAttribute(this.svg, "track", `${this._instrument.airplane.navigation.trackTrue()}`);
+        diffAndSetAttribute(this.svg, "heading", `${this._instrument.airplane.navigation.headingTrue()}`);
+
+        const gs = this._instrument.airplane.navigation.groundSpeed(this._tempGS);
+        const vs = this._instrument.airplane.sensors.verticalSpeed(this._tempVS);
+
+        diffAndSetAttribute(this.svg, "ground-speed", `${gs.number}`);
+        diffAndSetAttribute(this.svg, "actual-pitch", `${Math.atan2(vs.number, gs.number) * Avionics.Utils.RAD2DEG}`);
     }
 }
 
@@ -630,11 +653,28 @@ class WT_G3x5_PFDCompass extends PFD_Compass {
     }
 
     onUpdate(deltaTime) {
-        super.onUpdate(deltaTime);
+        if (this.displayArc) {
+            diffAndSetAttribute(this.hsi, "state", "Inactive");
+            diffAndSetAttribute(this.arcHsi, "state", "Active");
+            this.arcHsi.update(deltaTime);
+        }
+        else {
+            diffAndSetAttribute(this.hsi, "state", "Active");
+            diffAndSetAttribute(this.arcHsi, "state", "Inactive");
+            this.hsi.update(deltaTime);
+        }
+        this.nearestAirport.Update(25, 200);
+        if (this.nearestAirport.airports.length == 0) {
+            SimVar.SetSimVarValue("L:GPS_Current_Phase", "number", 4);
+        }
+        else {
+            SimVar.SetSimVarValue("L:GPS_Current_Phase", "number", 3);
+        }
 
         this._refreshFormatting();
     }
 }
+
 class AS3000_PFD_ActiveCom extends NavSystemElement {
     init(root) {
         this.activeCom = this.gps.getChildById("ActiveCom");
@@ -644,7 +684,7 @@ class AS3000_PFD_ActiveCom extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        Avionics.Utils.diffAndSet(this.activeComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+        diffAndSetHTML(this.activeComFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
     }
     onExit() {
     }

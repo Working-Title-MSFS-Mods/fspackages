@@ -5,7 +5,6 @@ class WT_G3x5_MFD extends NavSystem {
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
 
-        this._trafficTracker = new WT_TrafficTracker();
         this._lastTrafficUpdateTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
@@ -18,6 +17,8 @@ class WT_G3x5_MFD extends NavSystem {
     get facilityLoader() {
         return undefined;
     }
+
+    get manageFlightPlan() { return false; }
 
     /**
      * @readonly
@@ -61,10 +62,10 @@ class WT_G3x5_MFD extends NavSystem {
 
     /**
      * @readonly
-     * @type {WT_NavigraphAPI}
+     * @type {WT_NavigraphNetworkAPI}
      */
-    get navigraphAPI() {
-        return this._navigraphAPI;
+    get navigraphNetworkAPI() {
+        return this._navigraphNetworkAPI;
     }
 
     /**
@@ -91,6 +92,10 @@ class WT_G3x5_MFD extends NavSystem {
     disconnectedCallback() {
     }
 
+    _isFlightPlanManagerMaster() {
+        return true;
+    }
+
     _getReferenceAirspeedSensor() {
         return this.airplane.sensors.getAirspeedSensor(1);
     }
@@ -112,8 +117,7 @@ class WT_G3x5_MFD extends NavSystem {
     }
 
     _initTrafficTracker() {
-        let dataRetriever = this.modConfig.traffic.useTrafficService ? new WT_TrafficServiceTrafficDataRetriever(this.modConfig.traffic.trafficServicePort) : new WT_CoherentTrafficDataRetriever();
-        this._trafficTracker = new WT_TrafficTracker(dataRetriever);
+        this._trafficTracker = new WT_TrafficTracker(new WT_CoherentTrafficDataRetriever());
     }
 
     /**
@@ -128,7 +132,7 @@ class WT_G3x5_MFD extends NavSystem {
     }
 
     _initNavigraphAPI() {
-        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
+        this._navigraphNetworkAPI = new WT_NavigraphNetworkAPI(WT_NavigraphNetworkAPI.MAGIC_STRINGS_G3000);
     }
 
     Init() {
@@ -624,16 +628,16 @@ class AS3000_MFD_ComFrequencies extends NavSystemElement {
     onUpdate(_deltaTime) {
         var com1Active = SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz");
         if (com1Active)
-            Avionics.Utils.diffAndSet(this.com1Active, com1Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com1Active, com1Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
         var com1Sby = SimVar.GetSimVarValue("COM STANDBY FREQUENCY:1", "MHz");
         if (com1Sby)
-            Avionics.Utils.diffAndSet(this.com1Stby, com1Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com1Stby, com1Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3));
         var com2Active = SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:2", "MHz");
         if (com2Active)
-            Avionics.Utils.diffAndSet(this.com2Active, com2Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com2Active, com2Active.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
         var com2Sby = SimVar.GetSimVarValue("COM STANDBY FREQUENCY:2", "MHz");
         if (com2Sby)
-            Avionics.Utils.diffAndSet(this.com2Stby, com2Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
+            diffAndSetHTML(this.com2Stby, com2Sby.toFixed(SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum") == 0 ? 2 : 3));
     }
     onExit() {
     }

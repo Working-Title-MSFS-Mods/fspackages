@@ -1,4 +1,4 @@
-<AssetPackage Name="workingtitle-gx" Version="0.1.0-dev7">
+<AssetPackage Name="workingtitle-gx" Version="0.1.0">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
 		<Title>Working Title GX</Title>
@@ -18,7 +18,7 @@
 			<AssetDir>src\workingtitle-core-library</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
-        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">
+		<AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">
 			<Type>Copy</Type>
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>
@@ -26,7 +26,7 @@
 			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
-        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems-gx">
+		<AssetGroup Name="workingtitle-vcockpits-instruments-navsystems-gx">
 			<Type>Copy</Type>
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>
@@ -34,7 +34,7 @@
 			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems-gx</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
-        <AssetGroup Name="workingtitle-vcockpits-instruments">
+		<AssetGroup Name="workingtitle-vcockpits-instruments">
 			<Type>Copy</Type>
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>

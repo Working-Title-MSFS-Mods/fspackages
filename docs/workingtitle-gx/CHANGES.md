@@ -1,3 +1,16 @@
+# Changes in 0.1.0
+* Compatibility with SU6.
+* Removing the dev tag from the version number.
+
+# Changes in 0.1.0-dev10
+* Fix bug that caused menu button to not open main MFD menu.
+
+# Changes in 0.1.0-dev9
+* Compatibility with SU5.
+
+# Changes in 0.1.0-dev8
+* Fixed bug that could cause display issues in the same area as live traffic.
+
 # Changes in 0.1.0-dev7
 
 * Fixed bug in synthetic vision toggle

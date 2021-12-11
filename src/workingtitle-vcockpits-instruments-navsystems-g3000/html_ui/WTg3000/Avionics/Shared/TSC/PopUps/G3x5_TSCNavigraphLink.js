@@ -1,11 +1,11 @@
 class WT_G3x5_TSCNavigraphLink extends WT_G3x5_TSCPopUpElement {
     /**
-     * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_NavigraphNetworkAPI} navigraphNetworkAPI
      */
-    constructor(navigraphAPI) {
+    constructor(navigraphNetworkAPI) {
         super();
 
-        this._navigraphAPI = navigraphAPI;
+        this._navigraphAPI = navigraphNetworkAPI;
         this._isReady = false;
 
         this._accountLinkData = null;

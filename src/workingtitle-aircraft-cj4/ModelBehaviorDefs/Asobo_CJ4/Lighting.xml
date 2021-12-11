@@ -6,25 +6,25 @@
             <PART_ID>INSTRUMENT_Indicator_AOA</PART_ID>
             <Condition Valid="NO_NORM_WARN_INDICATOR">
                 <False>
-                    <NORMAL_WARN_THRESHOLD_RANGE>173 180</NORMAL_WARN_THRESHOLD_RANGE>
+                    <NORMAL_WARN_THRESHOLD_RANGE>176 183</NORMAL_WARN_THRESHOLD_RANGE>
                     <NORMAL_WARN_NODE_ID>AOA_Indicator_BOTTOM</NORMAL_WARN_NODE_ID>
                 </False>
             </Condition>
             <Condition Valid="NO_LOW_WARN_INDICATOR">
                 <False>
-                    <LOW_WARN_THRESHOLD_RANGE>160 173</LOW_WARN_THRESHOLD_RANGE>
+                    <LOW_WARN_THRESHOLD_RANGE>163 176</LOW_WARN_THRESHOLD_RANGE>
                     <LOW_WARN_NODE_ID>AOA_Indicator_DOWN</LOW_WARN_NODE_ID>
                 </False>
             </Condition>
             <Condition Valid="NO_MIDDLE_WARN_INDICATOR">
                 <False>
-                    <MIDDLE_WARN_THRESHOLD_RANGE>150 165</MIDDLE_WARN_THRESHOLD_RANGE>
+                    <MIDDLE_WARN_THRESHOLD_RANGE>153 168</MIDDLE_WARN_THRESHOLD_RANGE>
                     <MIDDLE_WARN_NODE_ID>AOA_Indicator_MIDDLE</MIDDLE_WARN_NODE_ID>
                 </False>
             </Condition>
             <Condition Valid="NO_TOP_WARN_INDICATOR">
                 <False>
-                    <TOP_WARN_THRESHOLD_RANGE>0 155</TOP_WARN_THRESHOLD_RANGE>
+                    <TOP_WARN_THRESHOLD_RANGE>0 158</TOP_WARN_THRESHOLD_RANGE>
                     <TOP_WARN_NODE_ID>AOA_Indicator_UP</TOP_WARN_NODE_ID>
                 </False>
             </Condition>
@@ -72,17 +72,17 @@
 
     <!-- Lights ################################################################ -->
 
-    <Template Name="ASOBO_LIGHTING_Switch_Light_Template">
+    <Template Name="ASOBO_LIGHTING_Push_Light_Template">
         <DefaultTemplateParameters>
             <ID>1</ID>
             <SIMVAR_INDEX>0</SIMVAR_INDEX>
-            <INTERACTION>Switch</INTERACTION>
+            <INTERACTION>Push</INTERACTION>
         </DefaultTemplateParameters>
         <OverrideTemplateParameters>
             <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
             <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
         </OverrideTemplateParameters>
-        <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SubTemplate">
+        <UseTemplate Name="ASOBO_LIGHTING_Push_Light_SubTemplate">
         </UseTemplate>
     </Template>
 
@@ -132,6 +132,9 @@
             <KNOB_POSITION_VAR>#NODE_ID#</KNOB_POSITION_VAR>
             <KNOB_SPEED>10</KNOB_SPEED>
             <WRAP>False</WRAP>
+            <WWISE_EVENT>lighting_master_knob</WWISE_EVENT>
+            <TOOLTIP_TITLE>@TT_Package.LIGHTING_KNOB_PANEL_TITLE</TOOLTIP_TITLE>	
+			<TT_DESCRIPTION_ID>@TT_Package.LIGHTING_KNOB_PANEL_ACTION</TT_DESCRIPTION_ID>	
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_GT_Update">
             <FREQUENCY>2</FREQUENCY>

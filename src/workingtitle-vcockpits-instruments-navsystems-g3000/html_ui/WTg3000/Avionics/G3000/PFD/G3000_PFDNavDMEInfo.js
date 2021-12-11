@@ -110,10 +110,6 @@ WT_G3000_PFDNavDMEInfoHTMLElement.TEMPLATE.innerHTML = `
                     color: var(--wt-g3x5-lightgreen);
                     text-align: right;
                 }
-
-        .${WT_G3x5_PFDNavDMEInfoHTMLElement.UNIT_CLASS} {
-            font-size: var(--navdmeinfo-unit-font-size, 0.75em);
-        }
     </style>
     <div id="wrapper">
         <div id="top" class="row">
@@ -123,7 +119,7 @@ WT_G3000_PFDNavDMEInfoHTMLElement.TEMPLATE.innerHTML = `
         </div>
         <div id="bottom" class="row">
             <div id="dmetitle" class="title"></div>
-            <div id="dme"></div>
+            <wt-numberunit id="dme"></wt-numberunit>
         </div>
     </div>
 `;

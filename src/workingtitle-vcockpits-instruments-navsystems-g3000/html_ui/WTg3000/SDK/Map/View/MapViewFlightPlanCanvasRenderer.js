@@ -304,6 +304,10 @@ class WT_MapViewFlightPlanLegCanvasLineRenderer extends WT_MapViewFlightPlanLegC
      */
     _loadPath(projectionRenderer, context, leg, previousEndpoint) {
         context.beginPath();
+        if (previousEndpoint) {
+            let projected = projectionRenderer.project(previousEndpoint, this._tempVector1);
+            context.moveTo(projected.x, projected.y);
+        }
         let step = leg.firstStep();
         let from = previousEndpoint;
         while (step) {

@@ -314,8 +314,8 @@
 					</Not>
 					<Not>
 						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_1" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_2" unit="Bool"/>
 						</Or>
 					</Not>
 				</And>
@@ -326,8 +326,8 @@
 					</Greater>
 					<Not>
 						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_1" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_2" unit="Bool"/>
 						</Or>
 					</Not>
 				</And>
@@ -341,7 +341,7 @@
 					</Not>
 					<Not>
 						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_1" unit="Bool"/>
 						</Or>
 					</Not>
 				</And>
@@ -352,7 +352,7 @@
 					</Greater>
 					<Not>
 						<Or>
-							<Simvar name="L:XMLVAR_Pitot_1" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_1" unit="Bool"/>
 						</Or>
 					</Not>
 				</And>
@@ -366,7 +366,7 @@
 					</Not>
 					<Not>
 						<Or>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_2" unit="Bool"/>
 						</Or>
 					</Not>
 				</And>
@@ -377,7 +377,7 @@
 					</Greater>
 					<Not>
 						<Or>
-							<Simvar name="L:XMLVAR_Pitot_2" unit="Bool"/>
+							<Simvar name="L:DEICE_Pitot_2" unit="Bool"/>
 						</Or>
 					</Not>
 				</And>

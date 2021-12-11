@@ -14,6 +14,10 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
          */
         this._infos = [];
         this._isInit = false;
+
+        this._tempFoot = WT_Unit.FOOT.createNumber(0);
+        this._tempNM = WT_Unit.NMILE.createNumber(0);
+        this._tempSecond = WT_Unit.SECOND.createNumber(0);
     }
 
     _getTemplate() {
@@ -21,10 +25,11 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._main = new WT_CachedElement(this.shadowRoot.querySelector(`#main`));
-        this._left = new WT_CachedElement(this.shadowRoot.querySelector(`#mainleft`));
-        this._right = new WT_CachedElement(this.shadowRoot.querySelector(`#mainright`));
-        this._infosContainer = this.shadowRoot.querySelector(`#infoscontainer`);
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector("#wrapper"));
+
+        this._left = new WT_CachedElement(this.shadowRoot.querySelector("#mainleft"), {cacheAttributes: false});
+        this._right = new WT_CachedElement(this.shadowRoot.querySelector("#mainright"), {cacheAttributes: false});
+        this._infosContainer = this.shadowRoot.querySelector("#infoscontainer");
 
         this._navDataInfoViewRecycler = new WT_G3x5_NavDataInfoViewRecycler(this._infosContainer);
     }
@@ -139,16 +144,16 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
     _updateMain() {
         let fpm = this._context.airplane.fms.flightPlanManager;
         if (fpm.directTo.isActive()) {
-            this._main.setAttribute("mode", "drct");
+            this._wrapper.setAttribute("mode", "drct");
             this._updateDirectTo();
         } else {
             let activeLeg = fpm.getActiveLeg(true);
             let previousLeg = activeLeg ? fpm.activePlan.legs.get(activeLeg.index - 1) : null;
             if (previousLeg) {
-                this._main.setAttribute("mode", "leg");
+                this._wrapper.setAttribute("mode", "leg");
                 this._updateLeg(activeLeg, previousLeg);
             } else {
-                this._main.setAttribute("mode", "none");
+                this._wrapper.setAttribute("mode", "none");
             }
         }
     }
@@ -157,9 +162,46 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
         this._infos.forEach(entry => entry.view.update(entry.model, entry.formatter));
     }
 
-    _updateDisplay() {
+    _setTODWarning(value) {
+        this._wrapper.setAttribute("todwarning", `${value}`);
+    }
+
+    /**
+     *
+     * @param {WT_VNAVPathReadOnly} activeVNAVPath
+     */
+    _shouldShowTODWarning(activeVNAVPath) {
+        if (!activeVNAVPath || activeVNAVPath.deltaAltitude.number > 0) {
+            return false;
+        }
+
+        // conditions for showing TOD warning:
+        // * VNAV path is a descent
+        // * current altitude > 250 ft below VNAV target altitude
+        // * time to TOD <= 1 minute
+        // * flight path angle required to meet VNAV target altitude restriction within limits
+
+        let indicatedAltitude = this._context.airplane.sensors.getAltimeter(this._context.airplane.fms.flightPlanManager.altimeterIndex).altitudeIndicated(this._tempFoot);
+        let distanceRemaining = this._context.airplane.fms.flightPlanManager.distanceToActiveVNAVWaypoint(true, this._tempNM);
+        let fpaRequired = activeVNAVPath.getFlightPathAngleRequiredAt(distanceRemaining, indicatedAltitude);
+        let altitudeDelta = indicatedAltitude.subtract(activeVNAVPath.finalAltitude);
+        let timeToTOD = this._context.airplane.fms.flightPlanManager.timeToTOD(true, this._tempSecond);
+
+        return altitudeDelta.compare(WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_ALTITUDE_DELTA_THRESHOLD) >= 0 &&
+            fpaRequired >= WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_FPA_REQUIRED_THRESHOLD &&
+            (timeToTOD && timeToTOD.compare(WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_THRESHOLD) <= 0);
+    }
+
+    _updateTODWarning() {
+        let activeVNAVPath = this._context.airplane.fms.flightPlanManager.getActiveVNAVPath(true);
+        let shouldShowTODWarning = this._shouldShowTODWarning(activeVNAVPath);
+        this._setTODWarning(shouldShowTODWarning);
+    }
+
+    _doUpdate() {
         this._updateNavDataInfos();
         this._updateMain();
+        this._updateTODWarning();
     }
 
     update() {
@@ -167,15 +209,33 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
             return;
         }
 
-        this._updateDisplay();
+        this._doUpdate();
     }
 }
+WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_THRESHOLD = WT_Unit.MINUTE.createNumber(1);
+WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_ALTITUDE_DELTA_THRESHOLD = WT_Unit.FOOT.createNumber(-250);
+WT_G3x5_PFDNavStatusHTMLElement.TIME_TO_TOD_WARNING_FPA_REQUIRED_THRESHOLD = -6;
 WT_G3x5_PFDNavStatusHTMLElement.NAME = "wt-pfd-navstatus";
 WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
+        }
+
+        @keyframes todwarning-blink {
+            0% {
+                visibility: visible;
+                color: var(--wt-g3x5-bggray);
+            }
+            67% {
+                visibility: visible;
+                color: transparent;
+            }
+            100% {
+                visibility: visible;
+                color: var(--wt-g3x5-bggray);
+            }
         }
 
         #wrapper {
@@ -204,7 +264,7 @@ WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE.innerHTML = `
                         margin: 0 0.1em;
                         color: var(--wt-g3x5-purple);
                     }
-                    #main[mode="none"] .mainsub {
+                    #wrapper[mode="none"] .mainsub {
                         display: none;
                     }
                         .middleicon {
@@ -212,10 +272,10 @@ WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE.innerHTML = `
                             height: 1.1em;
                             display: none;
                         }
-                        #main[mode="leg"] #arrow {
+                        #wrapper[mode="leg"] #arrow {
                             display: block;
                         }
-                        #main[mode="drct"] #drct {
+                        #wrapper[mode="drct"] #drct {
                             display: block;
                         }
                         #arrow {
@@ -255,6 +315,22 @@ WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE.innerHTML = `
                         --navdatainfo-justify-content: center;
                         --navdatainfo-value-color: var(--wt-g3x5-purple);
                     }
+                #todwarning {
+                    visibility: hidden;
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    width: 90%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                    background: white;
+                    border-radius: 3px;
+                    font-weight: bold;
+                    font-size: var(--navstatus-todwarning-font-size, 1em);
+                }
+                #wrapper[todwarning="true"] #todwarning {
+                    animation: todwarning-blink 1s step-end 10;
+                }
     </style>
     <div id="wrapper">
         <div id="top">
@@ -275,6 +351,7 @@ WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE.innerHTML = `
         <div id="bottom">
             <div id="infoscontainer">
             </div>
+            <div id="todwarning">TOD within 1 minute</div>
         </div>
     </div>
 `;

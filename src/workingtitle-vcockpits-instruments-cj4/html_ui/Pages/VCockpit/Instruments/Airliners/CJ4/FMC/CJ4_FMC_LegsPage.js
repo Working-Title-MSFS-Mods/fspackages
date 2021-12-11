@@ -736,6 +736,8 @@ class CJ4_FMC_LegsPage {
                 }
                 // alt desc
                 if (match[7] !== "") {
+                    waypoint.legAltitude2 = waypoint.legAltitude1;
+                    waypoint.legAltitude1 = alt;
                     waypoint.legAltitudeDescription = 4;
                 } else {
                     waypoint.legAltitudeDescription = 1;

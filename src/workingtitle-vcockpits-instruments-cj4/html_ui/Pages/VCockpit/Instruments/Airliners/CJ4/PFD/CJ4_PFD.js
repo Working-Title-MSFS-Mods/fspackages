@@ -24,6 +24,9 @@ class CJ4_PFD extends BaseAirliners {
         this._msgInfo = undefined;
         this.presetMapNavigationSource = 1;
         this.previousNavToNavTransferState = 0;
+        this.climbMach = 0.64;
+        this.descentIas = 290;
+        this.crossoverSetTime = 0;
     }
     get templateID() {
         return "CJ4_PFD";
@@ -70,6 +73,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", WTDataStore.get("CJ4_BARO_MODE", false));
         SimVar.SetSimVarValue("L:WT_CJ4_MIN_SRC", "Number", 0);
         document.documentElement.classList.add("animationsEnabled");
+        this.getCrossoverSpeeds(0, true);
     }
     reboot() {
         super.reboot();
@@ -88,7 +92,7 @@ class CJ4_PFD extends BaseAirliners {
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
                 this.modeChangeTimer -= this.deltaTime / 1000;
                 if (this.modeChangeTimer <= 0) {
-                    this.modeChangeMask.style.display = "none";
+                    diffAndSetStyle(this.modeChangeMask, StyleProperty.display, "none");
                     this.modeChangeTimer = -1;
                 }
             }
@@ -141,7 +145,7 @@ class CJ4_PFD extends BaseAirliners {
             const vnavAltEl = document.getElementById("VnavAlt");
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
-                vnavAltEl.textContent = localStorage.getItem("WT_CJ4_CONSTRAINT");
+                diffAndSetText(vnavAltEl, localStorage.getItem("WT_CJ4_CONSTRAINT"));
             }
 
             this.map.setMode(this.mapDisplayMode);
@@ -252,24 +256,41 @@ class CJ4_PFD extends BaseAirliners {
                 this.autoSwitchedToILS1 = false;
             }
         }
-
+        this.getCrossoverSpeeds(_deltaTime);
         this.updateMachTransition(_deltaTime);
     }
+
+    /** Method to get the climb mach speed from vnav setup page if it exists
+     * @param _deltaTime is the update time passed
+     * @param force is a param to force an update
+     * @returns the climb mach speed
+    */
+    getCrossoverSpeeds(_deltaTime, force = false) {
+        if (force || this.crossoverSetTime < 0) {
+            this.crossoverSetTime = 5000;
+            this.climbMach = WTDataStore.get('CJ4_vnavClimbMach', 64) / 100;
+            this.descentIas = WTDataStore.get('CJ4_vnavDescentIas', 290);
+        }
+        this.crossoverSetTime -= _deltaTime;
+    }
+
     updateMachTransition(_deltaTime) {
         this._machSyncTimer -= _deltaTime;
-        const cruiseMach = 0.64; // TODO: change this when cruise mach becomes settable
-        // let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
-        const mach = Simplane.getMachSpeed();
+        // const cruiseMach = 0.64; // TODO: change this when cruise mach becomes settable
+        // const cruiseMach = this.climbMach;
+        const vs = Simplane.getVerticalSpeed();
         switch (this.machTransition) {
             case 0:
-                if (mach >= cruiseMach) {
+                const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
+                if (mach >= this.climbMach && vs > 100) {
                     this.machTransition = 1;
                     SimVar.SetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool", true);
                     SimVar.SetSimVarValue("L:AIRLINER_FMC_FORCE_NEXT_UPDATE", "number", 1);
                 }
                 break;
             case 1:
-                if (mach < cruiseMach - 0.01) {
+                const ias = SimVar.GetSimVarValue("AIRSPEED INDICATED", "knots");
+                if (ias >= this.descentIas && vs < -300) {
                     this.machTransition = 0;
                     SimVar.SetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "bool", false);
                     SimVar.SetSimVarValue("L:AIRLINER_FMC_FORCE_NEXT_UPDATE", "number", 1);
@@ -280,15 +301,15 @@ class CJ4_PFD extends BaseAirliners {
         if (this.isMachActive != isMachActive) {
             this.isMachActive = isMachActive;
             if (isMachActive) {
-                Coherent.call("AP_MACH_VAR_SET", 0, cruiseMach);
+                Coherent.call("AP_MACH_VAR_SET", 0, this.climbMach);
             } else {
-                const knots = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", Simplane.getAutoPilotMachHoldValue());
-                Coherent.call("AP_SPD_VAR_SET", 1, knots);
+                // const knots = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", Simplane.getAutoPilotMachHoldValue());
+                Coherent.call("AP_SPD_VAR_SET", 0, this.descentIas);
             }
             return true;
         } else {
             // DONT DELETE: mach mode fix
-            const machAirspeed = Simplane.getAutoPilotMachHoldValue();
+            const machAirspeed = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "number");
             if (this.isMachActive && this._machAirpeed == machAirspeed && this._machSyncTimer < 0) {
                 this._machAirpeed = machAirspeed;
                 Coherent.call("AP_MACH_VAR_SET", 0, machAirspeed);
@@ -437,7 +458,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
         SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
-            this.modeChangeMask.style.display = "block";
+            diffAndSetStyle(this.modeChangeMask, StyleProperty.display, "block");
             this.modeChangeTimer = 0.15;
         }
     }
@@ -473,6 +494,12 @@ class CJ4_PFD extends BaseAirliners {
         } else {
             this.showTerrain = false;
             this.showWeather = false;
+        }
+        const overlayTfc = _dict.get(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY);
+        if (overlayTfc == "ON") {
+            this.showTfc = true;
+        } else {
+            this.showTfc = false;
         }
 
         const navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
@@ -668,6 +695,12 @@ class CJ4_PFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "OFF");
         }
 
+        if (this.showTfc) {
+            _dict.set(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY, "ON");
+        } else {
+            _dict.set(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY, "OFF");
+        }
+
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR1");
         } else if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 2) {
@@ -791,8 +824,7 @@ class CJ4_AOA extends NavSystemElement {
     onUpdate(_deltaTime) {
         var angle = Simplane.getAngleOfAttack();
         this.aoaStyle = WTDataStore.get('WT_CJ4_aoaStyle');
-        let seconds = _deltaTime / 10;
-        this._angle = Utils.SmoothSin(0.0, angle, 0.5, seconds);
+        this._angle = Utils.SmoothSin(this._angle, angle, 0.4, _deltaTime / 1000);
         //AoA only visible when flaps 35
         this.aoa.setAttribute("angle", this._angle);
         const flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
@@ -1002,13 +1034,13 @@ class CJ4_APDisplay extends NavSystemElement {
         // }
 
         if (apMasterActive) {
-            Avionics.Utils.diffAndSet(this.AP_Status, "AP");
+            diffAndSetText(this.AP_Status, "AP");
             this.AP_FDIndicatorArrow.setAttribute("state", "Engaged");
         } else if (!apMasterActive && ydActive) {
-            Avionics.Utils.diffAndSet(this.AP_Status, "YD");
+            diffAndSetText(this.AP_Status, "YD");
             this.AP_FDIndicatorArrow.removeAttribute("state");
         } else {
-            Avionics.Utils.diffAndSet(this.AP_Status, "");
+            diffAndSetText(this.AP_Status, "");
             this.AP_FDIndicatorArrow.removeAttribute("state");
         }
 
@@ -1030,6 +1062,8 @@ class CJ4_APDisplay extends NavSystemElement {
                 const altitudeArmed = parsedFmaValues.altitudeArmed;
                 const vnavArmed = parsedFmaValues.vnavArmed;
                 const approachVerticalArmed = parsedFmaValues.approachVerticalArmed;
+                this.AP_ModeReference_Value.style.paddingLeft = '0px';
+
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
@@ -1037,7 +1071,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_ModeReference_Icon.style.display = "none";
                     this.AP_VerticalSpeedbug_Icon.style.display = "inline";
                     let targetVerticalSpeed = fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute") , 0);
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, Math.abs(targetVerticalSpeed));
+                    diffAndSetText(this.AP_ModeReference_Value, Math.abs(targetVerticalSpeed));
                     if (targetVerticalSpeed == 0) {
                         this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
                         this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
@@ -1058,7 +1092,8 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_VerticalSpeedbug_Icon.style.display = "none";
                     this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
                     this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, (pitchRef < 0 ? "&emsp; &emsp; +" : "&emsp; &emsp;") + (-1 * pitchRef).toFixed(1));
+                    diffAndSetText(this.AP_ModeReference_Value, (pitchRef < 0 ? " +" : " ") + (-1 * pitchRef).toFixed(1));
+                    this.AP_ModeReference_Value.style.paddingLeft = '10px';
                 } else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";
@@ -1067,9 +1102,9 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
                     if (Simplane.getAutoPilotMachModeActive()) {
                         const machValue = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
-                        Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "M" + machValue.toFixed(2).slice(1));
+                        diffAndSetText(this.AP_ModeReference_Value, "M" + machValue.toFixed(2).slice(1));
                     } else {
-                        Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0));
+                        diffAndSetText(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0));
                     }
                 } else {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
@@ -1077,7 +1112,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_VerticalSpeedbug_Icon.style.display = "none";
                     this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
                     this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
+                    diffAndSetText(this.AP_ModeReference_Value, "");
                 }
 
                 //VERTICAL ALTITUDE ARMED
@@ -1106,7 +1141,7 @@ class CJ4_APDisplay extends NavSystemElement {
             }
         } else {
             this.AP_VerticalActive.setDisplayValue(""); //VERTICAL MODE
-            Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
+            diffAndSetText(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
             this.AP_ModeReference_Icon.style.display = "none";
             this.AP_VerticalSpeedbug_Icon.style.display = "none";
             this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";

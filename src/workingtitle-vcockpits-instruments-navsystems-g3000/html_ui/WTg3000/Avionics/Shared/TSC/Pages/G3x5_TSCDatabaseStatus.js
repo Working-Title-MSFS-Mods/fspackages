@@ -2,12 +2,12 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     /**
      * @param {String} homePageGroup
      * @param {String} homePageName
-     * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_NavigraphNetworkAPI} navigraphNetworkAPI
      */
-    constructor(homePageGroup, homePageName, navigraphAPI) {
+    constructor(homePageGroup, homePageName, navigraphNetworkAPI) {
         super(homePageGroup, homePageName);
 
-        this._navigraphAPI = navigraphAPI;
+        this._navigraphNetworkAPI = navigraphNetworkAPI;
     }
 
     /**
@@ -19,7 +19,7 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     }
 
     _initNavigraphLinkPopUp() {
-        this._navigraphLinkWindow = new NavSystemElementContainer("Navigraph Link", "NavigraphLink", new WT_G3x5_TSCNavigraphLink(this._navigraphAPI));
+        this._navigraphLinkWindow = new WT_G3x5_TSCElementContainer("Navigraph Link", "NavigraphLink", new WT_G3x5_TSCNavigraphLink(this._navigraphNetworkAPI));
         this._navigraphLinkWindow.setGPS(this.instrument);
         this._navigraphLinkWindow.element.setContext({homePageGroup: this.homePageGroup, homePageName: this.homePageName});
     }
@@ -31,7 +31,7 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     _initNavigraphRow(row) {
         row.setContext({
             title: "Navigraph Charts",
-            navigraphAPI: this._navigraphAPI
+            navigraphNetworkAPI: this._navigraphNetworkAPI
         });
 
         row.addButtonListener(this._onNavigraphButtonPressed.bind(this));
@@ -61,15 +61,23 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
         this._openNavigraphLinkWindow(button);
     }
 
-    onEnter() {
-        super.onEnter();
+    onFocusGained() {
+        super.onFocusGained();
 
+        this.htmlElement.focus();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this.htmlElement.unfocus();
+    }
+
+    onEnter() {
         this.htmlElement.open();
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
     }
 }
@@ -122,12 +130,18 @@ class WT_G3x5_TSCDatabaseStatusHTMLElement extends HTMLElement {
         this.navigraphRow.update();
     }
 
-    open() {
+    focus() {
         if (!this._isInit) {
             return;
         }
 
         this._updateRows();
+    }
+
+    unfocus() {
+    }
+
+    open() {
     }
 
     close() {
@@ -360,9 +374,9 @@ class WT_G3x5_TSCDatabaseStatusNavigraphRowButton extends WT_G3x5_TSCDatabaseSta
 
     async _doUpdate() {
         let updateID = ++this._updateID;
-        let navigraphAPI = this._context.navigraphAPI;
-        let isAccountLinked = navigraphAPI.isAccountLinked;
-        let isAccessAvail = await navigraphAPI.validateToken();
+        let navigraphNetworkAPI = this._context.navigraphNetworkAPI;
+        let isAccountLinked = navigraphNetworkAPI.isAccountLinked;
+        let isAccessAvail = await navigraphNetworkAPI.validateToken();
 
         if (updateID !== this._updateID) {
             return;

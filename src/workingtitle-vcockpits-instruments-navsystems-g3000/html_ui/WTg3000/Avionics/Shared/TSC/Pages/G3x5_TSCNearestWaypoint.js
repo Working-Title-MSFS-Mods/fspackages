@@ -145,7 +145,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _getSettingModelID(instrumentID, halfPaneID) {
-        return `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID}`;
+        return `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplayPane.SETTING_MODEL_ID}`;
     }
 
     _initSettingModel() {
@@ -163,7 +163,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @type {WT_G3x5_MFDHalfPaneDisplaySetting}
+     * @type {WT_G3x5_PaneDisplaySetting}
      */
     get mfdPaneDisplaySetting() {
         return this._mfdPaneSettings.display;
@@ -238,15 +238,16 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _onDRCTButtonPressed() {
+        this.instrument.commonPages.directTo.element.presetWaypoint(this.selectedWaypoint);
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
 
     _toggleNearestWaypointDisplayPane() {
-        if (this.mfdPaneDisplaySetting.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT && this._displayPaneICAOSetting.getValue() === this.selectedWaypoint.icao) {
-            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        if (this.mfdPaneDisplaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.NRST_WAYPOINT && this._displayPaneICAOSetting.getValue() === this.selectedWaypoint.icao) {
+            this.mfdPaneDisplaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
         } else {
             this._displayPaneICAOSetting.setValue(this.selectedWaypoint.icao);
-            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT);
+            this.mfdPaneDisplaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.NRST_WAYPOINT);
         }
     }
 
@@ -334,8 +335,6 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this.htmlElement.open();
     }
 
@@ -350,10 +349,8 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
-        this._updateDirectTo();
+        this._setSelectedWaypoint(null);
     }
 }
 
@@ -632,7 +629,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         let selectedWaypoint = this._context.parentPage.selectedWaypoint;
         let selectedWaypointICAO = selectedWaypoint ? selectedWaypoint.icao : "";
         this._showMapButton.enabled = selectedWaypoint === null ? "false" : "true";
-        this._showMapButton.toggle = (paneDisplayMode === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT && selectedWaypoint && selectedWaypointICAO === this._context.displayPaneICAOSetting.getValue()) ? "on" : "off";
+        this._showMapButton.toggle = (paneDisplayMode === WT_G3x5_PaneDisplaySetting.Mode.NRST_WAYPOINT && selectedWaypoint && selectedWaypointICAO === this._context.displayPaneICAOSetting.getValue()) ? "on" : "off";
     }
 
     _updateOptions() {
@@ -735,12 +732,12 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
                 }
             #optionsbanner {
                 position: absolute;
-                right: -1vw;
+                right: var(--nearestwaypoints-options-right, -1vw);
                 top: 50%;
-                width: calc(var(--nearestwaypoints-options-width, 25%) + 1vw + var(--nearestwaypoints-options-margin-right, 0px));
+                width: calc(var(--nearestwaypoints-options-width, 25%) - var(--nearestwaypoints-options-right, -1vw) + var(--nearestwaypoints-options-margin-right, 0px));
                 height: var(--nearestwaypoints-options-height, 100%);
                 transform: translateY(-50%);
-                --slidingbanner-padding-right: calc(1vw + var(--nearestwaypoints-options-margin-right, 0px));
+                --slidingbanner-padding-right: calc(-1 * var(--nearestwaypoints-options-right, -1vw) + var(--nearestwaypoints-options-margin-right, 0px));
             }
                 #optionspadding {
                     position: relative;
@@ -1389,7 +1386,7 @@ WT_G3x5_TSCNearestAirportRowHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypointbutton {
                 font-size: var(--nearestwaypoint-row-waypointbutton-font-size, 0.75em);
-                --waypoint-ident-color: white;
+                --button-waypoint-ident-color: white;
             }
             #bearing {
                 position: relative;
@@ -1738,7 +1735,7 @@ WT_G3x5_TSCNearestNavAidRowHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypointbutton {
                 font-size: var(--nearestwaypoint-row-waypointbutton-font-size, 0.75em);
-                --waypoint-ident-color: white;
+                --button-waypoint-ident-color: white;
             }
             #bearing {
                 position: relative;
@@ -2157,7 +2154,7 @@ WT_G3x5_TSCNearestINTRowHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypointbutton {
                 font-size: var(--nearestwaypoint-row-waypointbutton-font-size, 0.75em);
-                --waypoint-ident-color: white;
+                --button-waypoint-ident-color: white;
             }
             #bearing {
                 position: relative;

@@ -72,12 +72,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.gs_mainGroup.setAttribute("id", "GlideSlopeGroup");
             {
                 let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-                bg.setAttribute("x", posX.toString());
-                bg.setAttribute("y", posY.toString());
-                bg.setAttribute("width", width.toString());
-                bg.setAttribute("height", height.toString());
-                bg.setAttribute("fill", "black");
-                bg.setAttribute("fill-opacity", "0.3");
+                diffAndSetAttribute(bg, "x", posX.toString());
+                diffAndSetAttribute(bg, "y", posY.toString());
+                diffAndSetAttribute(bg, "width", width.toString());
+                diffAndSetAttribute(bg, "height", height.toString());
+                diffAndSetAttribute(bg, "fill", "black");
+                diffAndSetAttribute(bg, "fill-opacity", "0.3");
                 this.gs_mainGroup.appendChild(bg);
                 let rangeFactor = 0.85;
                 let nbCircles = 2;
@@ -88,32 +88,32 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 for (let i = 0; i < nbCircles; i++) {
                     let y = posY + (height * 0.5) + ((rangeFactor * height * 0.5) * (i + 1)) / nbCircles;
                     let circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", this.gs_cursorPosX.toString());
-                    circle.setAttribute("cy", y.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", this.gs_cursorPosX.toString());
+                    diffAndSetAttribute(circle, "cy", y.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.gs_mainGroup.appendChild(circle);
                     y = posY + (height * 0.5) - ((rangeFactor * height * 0.5) * (i + 1)) / nbCircles;
                     circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", this.gs_cursorPosX.toString());
-                    circle.setAttribute("cy", y.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", this.gs_cursorPosX.toString());
+                    diffAndSetAttribute(circle, "cy", y.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.gs_mainGroup.appendChild(circle);
                 }
 
                 let neutralLine = document.createElementNS(Avionics.SVG.NS, "line");
-                neutralLine.setAttribute("id", "NeutralLine");
-                neutralLine.setAttribute("x1", (posX + 5).toString());
-                neutralLine.setAttribute("y1", (posY + height * 0.5).toString());
-                neutralLine.setAttribute("x2", (posX + width - 5).toString());
-                neutralLine.setAttribute("y2", (posY + height * 0.5).toString());
-                neutralLine.setAttribute("stroke", "white");
-                neutralLine.setAttribute("stroke-width", "2");
+                diffAndSetAttribute(neutralLine, "id", "NeutralLine");
+                diffAndSetAttribute(neutralLine, "x1", (posX + 5).toString());
+                diffAndSetAttribute(neutralLine, "y1", (posY + height * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "x2", (posX + width - 5).toString());
+                diffAndSetAttribute(neutralLine, "y2", (posY + height * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "stroke", "white");
+                diffAndSetAttribute(neutralLine, "stroke-width", "2");
                 this.gs_mainGroup.appendChild(neutralLine);
 
                 this.gs_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -130,18 +130,18 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let x = 12;
                     let y = 20;
                     this.gs_cursorShapeUp = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
+                    this.gs_cursorShapeUp.setAttribute("fill", "var(--green)");
                     this.gs_cursorShapeUp.setAttribute("d", "M -12 0 L 0 -20 L 12 0 L 7 0 L 0 -13 L -7 0");
                     this.gs_cursorGroup.appendChild(this.gs_cursorShapeUp);
                     this.gs_cursorShapeDown = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
+                    this.gs_cursorShapeDown.setAttribute("fill", "var(--green)");
                     this.gs_cursorShapeDown.setAttribute("d", "M -12 0 L 0 20 L 12 0 L 7 0 L 0 14 L -7 0");
                     this.gs_cursorGroup.appendChild(this.gs_cursorShapeDown);
 
                     this.vertical_snowFlake = document.createElementNS(Avionics.SVG.NS, "path");
                     this.vertical_snowFlake.setAttribute("fill", "none");
                     this.vertical_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
-                    this.vertical_snowFlake.setAttribute("stroke", "magenta");
+                    this.vertical_snowFlake.setAttribute("stroke", "var(--magenta)");
                     this.vertical_snowFlake.setAttribute("stroke-width", "2.5");
                     this.snowflake_Group.appendChild(this.vertical_snowFlake);
                 }
@@ -155,12 +155,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.loc_mainGroup.setAttribute("id", "LocalizerGroup");
             {
                 let bg = document.createElementNS(Avionics.SVG.NS, "rect");
-                bg.setAttribute("x", posX.toString());
-                bg.setAttribute("y", posY.toString());
-                bg.setAttribute("width", width.toString());
-                bg.setAttribute("height", height.toString());
-                bg.setAttribute("fill", "black");
-                bg.setAttribute("fill-opacity", "0.3");
+                diffAndSetAttribute(bg, "x", posX.toString());
+                diffAndSetAttribute(bg, "y", posY.toString());
+                diffAndSetAttribute(bg, "width", width.toString());
+                diffAndSetAttribute(bg, "height", height.toString());
+                diffAndSetAttribute(bg, "fill", "black");
+                diffAndSetAttribute(bg, "fill-opacity", "0.3");
                 this.loc_mainGroup.appendChild(bg);
                 let rangeFactor = 0.85;
                 let nbCircles = 2;
@@ -171,32 +171,32 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 for (let i = 0; i < nbCircles; i++) {
                     let x = posX + (width * 0.5) + ((rangeFactor * width * 0.5) * (i + 1)) / nbCircles;
                     let circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", x.toString());
-                    circle.setAttribute("cy", this.loc_cursorPosY.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", x.toString());
+                    diffAndSetAttribute(circle, "cy", this.loc_cursorPosY.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.loc_mainGroup.appendChild(circle);
                     x = posX + (width * 0.5) - ((rangeFactor * width * 0.5) * (i + 1)) / nbCircles;
                     circle = document.createElementNS(Avionics.SVG.NS, "circle");
-                    circle.setAttribute("cx", x.toString());
-                    circle.setAttribute("cy", this.loc_cursorPosY.toString());
-                    circle.setAttribute("r", "4");
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", "white");
-                    circle.setAttribute("stroke-width", "2");
+                    diffAndSetAttribute(circle, "cx", x.toString());
+                    diffAndSetAttribute(circle, "cy", this.loc_cursorPosY.toString());
+                    diffAndSetAttribute(circle, "r", "4");
+                    diffAndSetAttribute(circle, "fill", "none");
+                    diffAndSetAttribute(circle, "stroke", "white");
+                    diffAndSetAttribute(circle, "stroke-width", "2");
                     this.loc_mainGroup.appendChild(circle);
                 }
 
                 let neutralLine = document.createElementNS(Avionics.SVG.NS, "line");
-                neutralLine.setAttribute("id", "NeutralLine");
-                neutralLine.setAttribute("x1", (posX + width * 0.5).toString());
-                neutralLine.setAttribute("y1", (posY + 5).toString());
-                neutralLine.setAttribute("x2", (posX + width * 0.5).toString());
-                neutralLine.setAttribute("y2", (posY + height - 5).toString());
-                neutralLine.setAttribute("stroke", "white");
-                neutralLine.setAttribute("stroke-width", "2");
+                diffAndSetAttribute(neutralLine, "id", "NeutralLine");
+                diffAndSetAttribute(neutralLine, "x1", (posX + width * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "y1", (posY + 5).toString());
+                diffAndSetAttribute(neutralLine, "x2", (posX + width * 0.5).toString());
+                diffAndSetAttribute(neutralLine, "y2", (posY + height - 5).toString());
+                diffAndSetAttribute(neutralLine, "stroke", "white");
+                diffAndSetAttribute(neutralLine, "stroke-width", "2");
                 this.loc_mainGroup.appendChild(neutralLine);
 
                 this.loc_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -213,18 +213,18 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let x = 20;
                     let y = 12;
                     this.loc_cursorShapeRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+                    this.loc_cursorShapeRight.setAttribute("fill", "var(--green)");
                     this.loc_cursorShapeRight.setAttribute("d", "M 0 -12 L -20 0 L 0 12 L 0 6 L -14 0 L 0 -7");
                     this.loc_cursorGroup.appendChild(this.loc_cursorShapeRight);
                     this.loc_cursorShapeLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
+                    this.loc_cursorShapeLeft.setAttribute("fill", "var(--green)");
                     this.loc_cursorShapeLeft.setAttribute("d", "M 0 -12 L 20 0 L 0 12 L 0 6 L 14 0 L 0 -7");
                     this.loc_cursorGroup.appendChild(this.loc_cursorShapeLeft);
 
                     this.lateral_snowFlake = document.createElementNS(Avionics.SVG.NS, "path");
                     this.lateral_snowFlake.setAttribute("fill", "none");
                     this.lateral_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
-                    this.lateral_snowFlake.setAttribute("stroke", "magenta");
+                    this.lateral_snowFlake.setAttribute("stroke", "var(--magenta)");
                     this.lateral_snowFlake.setAttribute("stroke-width", "2.5");
                     this.loc_ldevGroup.appendChild(this.lateral_snowFlake);
 
@@ -390,13 +390,13 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             case LDevState.GHOST_ONLY:
             case LDevState.GHOST_AND_LNAV:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
-                this.loc_cursorShapeLeft.setAttribute("fill", "cyan");
-                this.loc_cursorShapeRight.setAttribute("fill", "cyan");
+                this.loc_cursorShapeLeft.setAttribute("fill", "var(--cyan)");
+                this.loc_cursorShapeRight.setAttribute("fill", "var(--cyan)");
                 break;
             case LDevState.ILS:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
-                this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
-                this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+                this.loc_cursorShapeLeft.setAttribute("fill", "var(--green)");
+                this.loc_cursorShapeRight.setAttribute("fill", "var(--green)");
                 break;
             case LDevState.LNAV:
                 this.loc_mainGroup.setAttribute("visibility", "visible");
@@ -419,13 +419,13 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             case VDevState.GHOST_ONLY:
             case VDevState.GHOST_AND_VNAV:
                 this.gs_mainGroup.setAttribute("visibility", "visible");
-                this.gs_cursorShapeDown.setAttribute("fill", "cyan");
-                this.gs_cursorShapeUp.setAttribute("fill", "cyan");
+                this.gs_cursorShapeDown.setAttribute("fill", "var(--cyan)");
+                this.gs_cursorShapeUp.setAttribute("fill", "var(--cyan)");
                 break;
             case VDevState.ILS:
                 this.gs_mainGroup.setAttribute("visibility", "visible");
-                this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
-                this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
+                this.gs_cursorShapeDown.setAttribute("fill", "var(--green)");
+                this.gs_cursorShapeUp.setAttribute("fill", "var(--green)");
                 break;
             case VDevState.VNAV:
                 this.gs_mainGroup.setAttribute("visibility", "visible");

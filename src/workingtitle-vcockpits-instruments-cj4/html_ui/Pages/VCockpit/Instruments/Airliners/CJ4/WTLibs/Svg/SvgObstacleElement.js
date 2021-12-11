@@ -42,7 +42,7 @@ class SvgObstacleElement extends SvgMapElement {
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
-        container.setAttribute("overflow", "visible");
+        diffAndSetAttribute(container, "overflow", "visible");
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
         this._image.classList.add("map-city-icon");
         this._image.setAttribute("width", "100%");
@@ -50,8 +50,8 @@ class SvgObstacleElement extends SvgMapElement {
         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName());
         container.appendChild(this._image);
         let iconSize = this.getIconSize(map);
-        container.setAttribute("width", fastToFixed(iconSize, 0));
-        container.setAttribute("height", fastToFixed(iconSize, 0));
+        diffAndSetAttribute(container, "width", fastToFixed(iconSize, 0));
+        diffAndSetAttribute(container, "height", fastToFixed(iconSize, 0));
         return container;
     }
 

@@ -1,15 +1,15 @@
 <ModelBehaviors>
 	<!-- AP -->
 	<Template Name="ASOBO_AUTOPILOT_Push_Heading_Template">
-		<DefaultTemplateParameters>
+		<Parameters Type="Default">
 			<DEFAULT_NAME>Heading</DEFAULT_NAME>
-			<HELPID>HELPID_AUTOPILOT_HEADING_HOLD</HELPID>
+			<ON_HEADING_MODE_SWITCH/>
 			<TOOLTIPID>Toggle HDG</TOOLTIPID>
 			<LEFT_SINGLE_CODE>
 				(&gt;H:WT_CJ4_AP_HDG_PRESSED)
 			</LEFT_SINGLE_CODE>
 			<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT HEADING LOCK</EMISSIVE_SIMVAR_ACTIVE>
-		</DefaultTemplateParameters>
+		</Parameters>
 		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
 		</UseTemplate>
 	</Template>
@@ -44,6 +44,8 @@
 				}
 			</LEFT_SINGLE_CODE>
 			<EMISSIVE_CODE_ACTIVE>(A:AUTOPILOT MAX BANK, degrees) #MAX_BANK_DEGREES# - abs 0.1 &lt; #REVERSAL_PARAM#</EMISSIVE_CODE_ACTIVE>
+			<TT_DESCRIPTION_ID>@TT_Package.AUTOPILOT_PUSH_BANK_ACTION_SET</TT_DESCRIPTION_ID>
+			<TOOLTIP_TITLE>@TT_Package.AUTOPILOT_PUSH_BANK_TITLE</TOOLTIP_TITLE>
 		</UseTemplate>
 	</Template>
 
@@ -54,24 +56,17 @@
 			<ANIM_NAME_PUSHPULL>AUTOPILOT_Knob_Heading_PushPull#SUFFIX_ID#</ANIM_NAME_PUSHPULL>
 			<PART_ID>AUTOPILOT_Knob_Heading</PART_ID>
 			<NODE_ID>AUTOPILOT_Knob_Heading#SUFFIX_ID#</NODE_ID>
-
-			<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_TUNING_LEFT</ANIMTIP_0>
-			<ANIMTIP_0_ON_CURSOR>TurnLeft</ANIMTIP_0_ON_CURSOR>
-			<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_TUNING_RIGHT</ANIMTIP_1>
-			<ANIMTIP_1_ON_CURSOR>TurnRight</ANIMTIP_1_ON_CURSOR>
-			<ANIMTIP_3_ON_CURSOR>Hand</ANIMTIP_3_ON_CURSOR>
 			<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
 			<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
 			<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
 			<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
 			<WWISE_EVENT>autopilot_heading_knob</WWISE_EVENT>
 			<COUNT>36</COUNT>
+			<THRESHOLD_X_INPUT>0.01</THRESHOLD_X_INPUT>
+			<THRESHOLD_X_MOUSE>0.001</THRESHOLD_X_MOUSE>
+			<THRESHOLD_INPUT>0.01</THRESHOLD_INPUT>
+			<THRESHOLD_MOUSE>0.001</THRESHOLD_MOUSE>
 
-			<Switch Param="TYPE">
-				<Default>
-					<ANIMTIP_3>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_HDG_PUSH</ANIMTIP_3>
-				</Default>
-			</Switch>
 		</DefaultTemplateParameters>
 		<EditableTemplateParameters>
 			<AddParams>
@@ -410,7 +405,7 @@
 		</Component>
 	</Template>
 
-	<Template Name="ASOBO_AUTOPILOT_Push_VerticalNavigation_Template">
+	<Template Name="ASOBO_AUTOPILOT_Push_Vertical_Navigation_Template">
 		<DefaultTemplateParameters>
 			<DEFAULT_NAME>VerticalNavigation</DEFAULT_NAME>
 			<EMISSIVE_DEFAULT_NAME>AUTOPILOT_Push_VerticalNavigation_Text</EMISSIVE_DEFAULT_NAME>
@@ -473,108 +468,186 @@
 		</UseTemplate>
 	</Template>
 
-	<Template Name="ASOBO_AUTOPILOT_Knob_Baro_SubTemplate2">
-		<DefaultTemplateParameters>
+	<Template Name="ASOBO_AUTOPILOT_Knob_Baro_SubTemplate">
+		<Parameters Type="Override">
+			<Condition>
+				<Test>
+					<Or>
+						<Arg Valid="USE_PUSH_STD"/>
+						<Arg Check="PUSH"/>
+					</Or>
+				</Test>
+				<True>
+					<TYPE>AIRLINER</TYPE>
+				</True>
+			</Condition>
+			<Condition Check="AIRLINER_TYPE">
+				<Condition NotEmpty="AIRLINER_TYPE">
+					<True>
+						<TYPE>#AIRLINER_TYPE#</TYPE>						
+					</True>
+					<False>
+						<TYPE>AIRLINER</TYPE>
+					</False>
+				</Condition>
+			</Condition>
+		</Condition>
+		<Parameters Type="Default">
+			<INPUT_EVENT_ID_SOURCE>AUTOPILOT</INPUT_EVENT_ID_SOURCE>
+			<NODE_ID>AUTOPILOT_Knob_Baro_#ID##SUFFIX_ID#</NODE_ID>
+			<ANIM_NAME>AUTOPILOT_Knob_Baro_#ID##SUFFIX_ID#</ANIM_NAME>
+			<PART_ID>AUTOPILOT_Knob_Baro</PART_ID>
+		</Parameters>
+		<Parameters Type="Default">
 			<BARO_ID>#ID#</BARO_ID>
-			<ANIM_NAME_KNOB>#ANIM_NAME#</ANIM_NAME_KNOB>
-			<ANIM_NAME_PUSH>AUTOPILOT_Knob_Baro_#ID#_push#SUFFIX_ID#</ANIM_NAME_PUSH>
-			<Switch Param="AIRLINER_TYPE">
+			<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
+			<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
+			<COUNT>36</COUNT>
+			<Switch Param="TYPE">
+				<Case Value="PUSH">
+					<ANIM_NAME_KNOB>#ANIM_NAME#</ANIM_NAME_KNOB>
+					<ANIM_NAME_PUSH>AUTOPILOT_Knob_Baro_#ID#_push#SUFFIX_ID#</ANIM_NAME_PUSH>
+					<THRESHOLD_X_INPUT>0.05</THRESHOLD_X_INPUT>
+					<THRESHOLD_X_MOUSE>0.01</THRESHOLD_X_MOUSE>
+					<THRESHOLD_INPUT>0.05</THRESHOLD_INPUT>
+					<THRESHOLD_MOUSE>0.01</THRESHOLD_MOUSE>	
+					<WWISE_EVENT>autopilot_knob</WWISE_EVENT>		
+				</Case>
 				<Case Value="A320">
+					<ANIM_NAME_PUSHPULL>AUTOPILOT_Knob_Baro_#ID#_pushpull#SUFFIX_ID#</ANIM_NAME_PUSHPULL>
 					<MODE_BARO>0</MODE_BARO>
 					<MODE_QNH>1</MODE_QNH>
 					<MODE_STD>2</MODE_STD>
-					<ANIM_NAME_PUSHPULL>AUTOPILOT_Knob_Baro_#ID#_pushpull#SUFFIX_ID#</ANIM_NAME_PUSHPULL>
+					<WWISE_EVENT>autopilot_selector_knob</WWISE_EVENT>
+					<CENTER_RADIUS>0</CENTER_RADIUS>
+				</Case>
+				<Default>
+					<Condition NotEmpty="AIRLINER_TYPE">
+						<True>
+							<WWISE_EVENT>autopilot_selector_knob</WWISE_EVENT>
+						</True>
+						<False>
+							<WWISE_EVENT>autopilot_knob</WWISE_EVENT>	
+						</False>
+					</Condition>
+				</Default>
+			</Switch>
+		</Parameters>
+		<Parameters Type="Override">
+			<Switch Param="TYPE">
+				<Case Value="PUSH">		
+					<ADDITIONAL_EVENT_TYPE>PUSH</ADDITIONAL_EVENT_TYPE>
+					<BTN_ID_EXTERNAL>Baro_#ID#_Sync</BTN_ID_EXTERNAL>
+					<BTN_SET_STATE_EXTERNAL>#BARO_ID# (&gt;K:BAROMETRIC)</BTN_SET_STATE_EXTERNAL>
+					<!-- <BTN_SET_STATE_EXTERNAL>BARO_ID# (&gt;K:BAROMETRIC_STD_PRESSURE)</BTN_SET_STATE_EXTERNAL> -->
+					<TT_DESCRIPTION_ID_BTN>@TT_Package.AUTOPILOT_KNOB_BARO_ACTION_SET</TT_DESCRIPTION_ID_BTN>
+				</Case>
+				<Case Value="A320">
+					<DEFAULT_BINDING_STR>Mode</DEFAULT_BINDING_STR>
+					<ADDITIONAL_EVENT_TYPE>PUSH_PULL</ADDITIONAL_EVENT_TYPE>
+					<BTN_ID_PULL>Baro_#ID#_STD</BTN_ID_PULL>
+					<BTN_ID_PUSH>Baro_#ID#_QNH</BTN_ID_PUSH>
+					<PULL_SET_STATE_EXTERNAL>#MODE_STD# (&gt;L:XMLVAR_Baro#BARO_ID#_Mode)</PULL_SET_STATE_EXTERNAL>
+					<PUSH_SET_STATE_EXTERNAL>(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# == if{ #MODE_BARO# (&gt;L:XMLVAR_Baro#BARO_ID#_Mode) } els{ (L:XMLVAR_Baro#BARO_ID#_Mode) ! (&gt;L:XMLVAR_Baro#BARO_ID#_Mode) }</PUSH_SET_STATE_EXTERNAL>
+					<TT_DESCRIPTION_ID_PULL>@TT_Package.AUTOPILOT_KNOB_BARO_ACTION_SET_STD</TT_DESCRIPTION_ID_PULL>
+					<TT_DESCRIPTION_ID_PUSH>@TT_Package.AUTOPILOT_KNOB_BARO_ACTION_SET_QNH</TT_DESCRIPTION_ID_PUSH>
+					<OVERRIDE_PUSH_ANIM_CODE>0 100 (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# == ? 50 (O:_PushAnimVar) ?</OVERRIDE_PUSH_ANIM_CODE>
+					<BARO_SET_CONDITION>(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# !=</BARO_SET_CONDITION>
+				</Case>
+				<Case Value="AIRLINER">
+					<ANIM_NAME_KNOB>#ANIM_NAME#</ANIM_NAME_KNOB>
+					<ANIM_NAME_PUSH>AUTOPILOT_Knob_Baro_#ID#_push#SUFFIX_ID#</ANIM_NAME_PUSH>
+					<ADDITIONAL_EVENT_TYPE>PUSH</ADDITIONAL_EVENT_TYPE>
+					<BTN_ID_EXTERNAL>Baro_#ID#_STD</BTN_ID_EXTERNAL>
+					<BTN_SET_STATE_EXTERNAL>
+						(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! (&gt;L:XMLVAR_Baro#BARO_ID#_ForcedToSTD)
+						(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) if{
+							(A:KOHLSMAN SETTING MB:#BARO_ID#, mbars) 16 * (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
+							#BARO_ID# (&gt;K:BAROMETRIC_STD_PRESSURE)
+						} els{
+							#BARO_ID# (L:XMLVAR_Baro#BARO_ID#_SavedPressure) (&gt;K:2:KOHLSMAN_SET)
+							2 (L:XMLVAR_Baro1_SavedPressure) (&gt;K:2:KOHLSMAN_SET)
+						}
+					</BTN_SET_STATE_EXTERNAL>
+					<TT_DESCRIPTION_ID_BTN>@TT_Package.AUTOPILOT_KNOB_BARO_ACTION_SET_STD</TT_DESCRIPTION_ID_BTN>
 				</Case>
 			</Switch>
-			<Condition Valid="USE_PUSH_STD">
-				<AIRLINER_TYPE/>
-			</Condition>
-		</DefaultTemplateParameters>
+			<KNOB_ID>Baro_#ID#</KNOB_ID>
 
-		<Switch>
-			<Case Check="PUSH">
-				<UseTemplate Name="ASOBO_GT_Knob_Infinite_Push">
-					<ANTICLOCKWISE_CODE>#BARO_ID# (&gt;K:KOHLSMAN_DEC) (&gt;H:AP_BARO_Down)</ANTICLOCKWISE_CODE>
-					<CLOCKWISE_CODE>#BARO_ID# (&gt;K:KOHLSMAN_INC) (&gt;H:AP_BARO_Up)</CLOCKWISE_CODE>
-					<LEFT_SINGLE_CODE>#BARO_ID# (&gt;K:BAROMETRIC)</LEFT_SINGLE_CODE>
-					<WWISE_EVENT>autopilot_knob_turn</WWISE_EVENT>
-					<COUNT>36</COUNT>
-					<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
-					<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
-				</UseTemplate>
-			</Case>
-			<Case Check="AIRLINER_TYPE">
-				<Switch Param="AIRLINER_TYPE">
-					<Case Value="A320">
-						<UseTemplate Name="ASOBO_GT_Knob_Infinite_PushPull">
-							<ANTICLOCKWISE_CODE>
-								#BARO_ID# (&gt;K:KOHLSMAN_DEC)
-							</ANTICLOCKWISE_CODE>
-							<CLOCKWISE_CODE>
-								#BARO_ID# (&gt;K:KOHLSMAN_INC)
-							</CLOCKWISE_CODE>
-							<CLOCKWISE_CONDITION>(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# !=</CLOCKWISE_CONDITION>
-							<ANTICLOCKWISE_CONDITION>(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# !=</ANTICLOCKWISE_CONDITION>
-							<PULL_CODE>
-								#MODE_STD# (&gt;L:XMLVAR_Baro#BARO_ID#_Mode)
-							</PULL_CODE>
-							<PUSH_CODE>
-								(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# == if{ #MODE_BARO# (&gt;L:XMLVAR_Baro#BARO_ID#_Mode) } els{ (L:XMLVAR_Baro#BARO_ID#_Mode) ! (&gt;L:XMLVAR_Baro#BARO_ID#_Mode) }
-							</PUSH_CODE>
-							<CENTER_RADIUS>0</CENTER_RADIUS>
-							<OVERRIDE_PUSH_ANIM_CODE>0 100 (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD# == ? 50 (O:_PushAnimVar) ?</OVERRIDE_PUSH_ANIM_CODE>
-							<WWISE_EVENT>autopilot_selector_knob</WWISE_EVENT>
-							<COUNT>36</COUNT>
-							<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
-							<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
-						</UseTemplate>
+			<SET_STATE_EXTERNAL>p0 0 &gt; if{ 
+				(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! if{
+						#BARO_ID# (&gt;K:KOHLSMAN_INC)
+						(A:KOHLSMAN SETTING MB:1, mbars) 16 * (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
+					} els{
+						(L:XMLVAR_Baro#BARO_ID#_SavedPressure) 5 + (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
+					}
+			 } els{ 
+					(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! if{
+						#BARO_ID# (&gt;K:KOHLSMAN_DEC)
+						(A:KOHLSMAN SETTING MB:1, mbars) 16 * (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
+					} els{
+						(L:XMLVAR_Baro#BARO_ID#_SavedPressure) 5 - (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
+					}
+			  }</SET_STATE_EXTERNAL>
+		</Parameters>
+		<Parameters Type="Override">
+			<Condition NotEmpty="BARO_SET_CONDITION">
+				<True>
+					<SET_STATE_EXTERNAL>#BARO_SET_CONDITION# if{ #SET_STATE_EXTERNAL# }</SET_STATE_EXTERNAL>
+				</True>
+			</Condition>
+			<GET_BARO>(A:KOHLSMAN SETTING MB:#BARO_ID#, inHg)</GET_BARO>
+		</Parameters>
+		<Component ID="#NODE_ID#" Node="#NODE_ID#">
+			<Switch Param="ADDITIONAL_EVENT_TYPE">
+				<Case Value="PUSH_PULL">
+					<UseTemplate Name="ASOBO_AUTOPILOT_Push_Event_Only_Template">
+						<BTN_ID>#BTN_ID_PULL#</BTN_ID>
+						<EVENT_TYPE>PULL</EVENT_TYPE>
+						<SET_STATE_EXTERNAL>#PULL_SET_STATE_EXTERNAL#</SET_STATE_EXTERNAL>
+						<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_PULL#</TT_DESCRIPTION_ID>
+						<Condition Valid="TT_DESCRIPTION_ID_PULL_IS_DYNAMIC">
+							<TT_DESCRIPTION_IS_DYNAMIC>#TT_DESCRIPTION_ID_PULL_IS_DYNAMIC#</TT_DESCRIPTION_IS_DYNAMIC>
+						</Condition>
+					</UseTemplate>
+					<UseTemplate Name="ASOBO_AUTOPILOT_Push_Event_Only_Template">
+						<BTN_ID>#BTN_ID_PUSH#</BTN_ID>
+						<EVENT_TYPE>PUSH</EVENT_TYPE>
+						<SET_STATE_EXTERNAL>#PUSH_SET_STATE_EXTERNAL#</SET_STATE_EXTERNAL>
+						<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_PUSH#</TT_DESCRIPTION_ID>
+						<Condition Valid="TT_DESCRIPTION_ID_PUSH_IS_DYNAMIC">
+							<TT_DESCRIPTION_IS_DYNAMIC>#TT_DESCRIPTION_ID_PUSH_IS_DYNAMIC#</TT_DESCRIPTION_IS_DYNAMIC>
+						</Condition>
+					</UseTemplate>
+				</Case>
+				<Case Value="PUSH">
+					<UseTemplate Name="ASOBO_AUTOPILOT_Push_Event_Only_Template">
+						<BTN_ID>#BTN_ID_EXTERNAL#</BTN_ID>
+						<EVENT_TYPE>PUSH</EVENT_TYPE>
+						<SET_STATE_EXTERNAL>#BTN_SET_STATE_EXTERNAL#</SET_STATE_EXTERNAL>
+						<TT_DESCRIPTION_ID>#TT_DESCRIPTION_ID_BTN#</TT_DESCRIPTION_ID>
+						<Condition Valid="TT_DESCRIPTION_ID_BTN_IS_DYNAMIC">
+							<TT_DESCRIPTION_IS_DYNAMIC>#TT_DESCRIPTION_ID_BTN_IS_DYNAMIC#</TT_DESCRIPTION_IS_DYNAMIC>
+						</Condition>
+					</UseTemplate>
+				</Case>
+			</Switch>
+			<UseTemplate Name="ASOBO_AUTOPILOT_Knob_Template">
+				<TT_DESCRIPTION_ID>@TT_Package.AUTOPILOT_KNOB_BARO_ACTION</TT_DESCRIPTION_ID>
+				<TOOLTIP_TITLE>@TT_Package.AUTOPILOT_KNOB_BARO_TITLE</TOOLTIP_TITLE>
+				<GET_TT_VALUE_STATE>#GET_BARO# sp0</GET_TT_VALUE_STATE>
+				<FORMAT_VALUE>l0 '%.2fIN' @sprintf</FORMAT_VALUE>
+				<Switch Param="ADDITIONAL_EVENT_TYPE">
+					<Case Value="PUSH_PULL">
+						<TEMPLATE_VARIANT>_PushPull</TEMPLATE_VARIANT>
+						<PULL_CODE>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID_PULL#_#DEFAULT_BINDING_STR#)</PULL_CODE>
+						<PUSH_CODE>(&gt;B:#INPUT_EVENT_ID_SOURCE#_#BTN_ID_PUSH#_#DEFAULT_BINDING_STR#)</PUSH_CODE>
+						<TOOLTIP_ENTRY_1>#INPUT_EVENT_ID_SOURCE#_#BTN_ID_PULL#</TOOLTIP_ENTRY_1>
+						<TOOLTIP_ENTRY_2>#INPUT_EVENT_ID_SOURCE#_#BTN_ID_PUSH#</TOOLTIP_ENTRY_2>
 					</Case>
-					<Default>
-						<UseTemplate Name="ASOBO_GT_Knob_Infinite_Push">
-							<ANTICLOCKWISE_CODE>
-							(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! if{
-								#BARO_ID# (&gt;K:KOHLSMAN_DEC)
-								(A:KOHLSMAN SETTING MB:1, mbars) 16 * (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
-							} els{
-								(L:XMLVAR_Baro#BARO_ID#_SavedPressure) 5 - (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
-							}
-							</ANTICLOCKWISE_CODE>
-							<CLOCKWISE_CODE>
-							(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! if{
-								#BARO_ID# (&gt;K:KOHLSMAN_INC)
-								(A:KOHLSMAN SETTING MB:1, mbars) 16 * (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
-							} els{
-								(L:XMLVAR_Baro#BARO_ID#_SavedPressure) 5 + (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
-							}
-							</CLOCKWISE_CODE>
-							<LEFT_SINGLE_CODE>
-								(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! (&gt;L:XMLVAR_Baro#BARO_ID#_ForcedToSTD)
-								(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) if{
-									(A:KOHLSMAN SETTING MB:1, mbars) 16 * (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
-									#BARO_ID# (&gt;K:BAROMETRIC_STD_PRESSURE)
-								} els{
-									#BARO_ID# (L:XMLVAR_Baro#BARO_ID#_SavedPressure) (&gt;K:2:KOHLSMAN_SET)
-								}
-							</LEFT_SINGLE_CODE>
-							<WWISE_EVENT>autopilot_selector_knob</WWISE_EVENT>
-							<COUNT>36</COUNT>
-							<WWISE_EVENT_1>autopilot_knob_push_button_on</WWISE_EVENT_1>
-							<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-							<WWISE_EVENT_2>autopilot_knob_push_button_off</WWISE_EVENT_2>
-							<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-						</UseTemplate>
-					</Default>
 				</Switch>
-			</Case>
-			<Default>
-				<UseTemplate Name="ASOBO_GT_Knob_Infinite">
-					<ANTICLOCKWISE_CODE>#BARO_ID# (&gt;K:KOHLSMAN_DEC)</ANTICLOCKWISE_CODE>
-					<CLOCKWISE_CODE>#BARO_ID# (&gt;K:KOHLSMAN_INC)</CLOCKWISE_CODE>
-					<WWISE_EVENT>autopilot_knob</WWISE_EVENT>
-					<COUNT>36</COUNT>
-				</UseTemplate>
-			</Default>
-		</Switch>
+			</UseTemplate>
+		</Component>
 	</Template>
 
 	<Template Name="ASOBO_AUTOPILOT_Knob_VerticalSpeed_SubTemplate">
@@ -804,9 +877,8 @@
 		</EditableTemplateParameters>
 
 		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
-			<LEFT_SINGLE_CODE>(&gt;H:WT_CJ4_AP_FD_TOGGLE)</LEFT_SINGLE_CODE>
 			<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT FLIGHT DIRECTOR ACTIVE</EMISSIVE_SIMVAR_ACTIVE>
+			<LEFT_SINGLE_CODE>(&gt;H:WT_CJ4_AP_FD_TOGGLE)</LEFT_SINGLE_CODE>
 		</UseTemplate>
 	</Template>
-
 </ModelBehaviors>

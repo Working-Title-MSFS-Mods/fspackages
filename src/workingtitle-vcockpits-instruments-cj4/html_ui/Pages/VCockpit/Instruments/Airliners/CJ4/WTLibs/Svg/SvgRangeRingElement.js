@@ -39,9 +39,9 @@ class SvgRangeRingElement extends SvgLabeledRingElement {
     createRing(map) {
         let rangeRing = super.createRing(map);
 
-        rangeRing.setAttribute("stroke", this.strokeColor);
-        rangeRing.setAttribute("stroke-width", this.strokeWidth);
-        rangeRing.setAttribute("stroke-opacity", "1");
+        diffAndSetAttribute(rangeRing, "stroke", this.strokeColor);
+        diffAndSetAttribute(rangeRing, "stroke-width", this.strokeWidth);
+        diffAndSetAttribute(rangeRing, "stroke-opacity", "1");
         return rangeRing;
     }
 

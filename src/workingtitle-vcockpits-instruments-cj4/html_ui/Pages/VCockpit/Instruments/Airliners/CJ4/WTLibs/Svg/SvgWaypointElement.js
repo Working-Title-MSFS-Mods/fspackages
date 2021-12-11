@@ -346,9 +346,9 @@ class SvgWaypointTextElement extends SvgMapElement {
             this._label.setAttribute("width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
             this._label.setAttribute("height", (this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
             canvas = document.createElement("canvas");
-            canvas.setAttribute("class", "labelCanvas");
-            canvas.setAttribute("width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
-            canvas.setAttribute("height", (this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
+            diffAndSetAttribute(canvas, "class", "labelCanvas");
+            diffAndSetAttribute(canvas, "width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
+            diffAndSetAttribute(canvas, "height", (this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
             this._label.appendChild(canvas);
 
         } else {
@@ -366,9 +366,9 @@ class SvgWaypointTextElement extends SvgMapElement {
         }
         if (!isActiveWaypoint) {
             if (this.waypointElement.ident === "TOD" || this.waypointElement.ident === "DES") {
-                context.fillStyle = "#11d011";
+                context.fillStyle = "#5AF25A";
             } else if (this.waypointElement.source.isInMissedAppr === true) {
-                context.fillStyle = "cyan";
+                context.fillStyle = "#33FFFF";
             } else if (this.waypointElement.isInFpln === true) {
                 context.fillStyle = map.config.waypointLabelColor;
             } else if (this.waypointElement.source instanceof IntersectionInfo) {
@@ -383,7 +383,7 @@ class SvgWaypointTextElement extends SvgMapElement {
                 context.fillStyle = map.config.waypointLabelColor;
             }
         } else {
-            context.fillStyle = "magenta";
+            context.fillStyle = "#FF73FF";
         }
         context.textAlign = "start";
         context.font = fontSize + "px " + map.config.waypointLabelFontFamily;

@@ -23,12 +23,12 @@ class WT_TSCTabbedContent {
 
     activateTab(_id) {
         if (this.activeTab != _id && this.tabButtons[_id].getAttribute("state") != "Disabled") {
-            Avionics.Utils.diffAndSetAttribute(this.tabContent[this.activeTab], "state", "Inactive");
-            Avionics.Utils.diffAndSetAttribute(this.tabButtons[this.activeTab], "state", "");
+            diffAndSetAttribute(this.tabContent[this.activeTab], "state", "Inactive");
+            diffAndSetAttribute(this.tabButtons[this.activeTab], "state", "");
             this.tabCloseCallback(this.activeTab);
 
-            Avionics.Utils.diffAndSetAttribute(this.tabContent[_id], "state", "Active");
-            Avionics.Utils.diffAndSetAttribute(this.tabButtons[_id], "state", "Highlight");
+            diffAndSetAttribute(this.tabContent[_id], "state", "Active");
+            diffAndSetAttribute(this.tabButtons[_id], "state", "Highlight");
             this.activeTab = _id;
             this.tabOpenCallback(this.activeTab);
         }

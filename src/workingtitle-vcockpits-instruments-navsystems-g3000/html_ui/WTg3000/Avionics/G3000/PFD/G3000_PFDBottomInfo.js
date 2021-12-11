@@ -32,8 +32,8 @@ class WT_G3000_PFDBottomInfoBearingCellHTMLElement extends WT_G3x5_PFDBottomInfo
         return WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE;
     }
 
-    connectedCallback() {
-        super.connectedCallback();
+    async _connectedCallbackHelper() {
+        await super._connectedCallbackHelper();
 
         this._updateOrientation();
     }
@@ -188,14 +188,10 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                     #arrow[infoSlot="${WT_G3x5_PFDBearingInfoContainer.Slot.TWO}"] #arrowSVG2 {
                         display: block;
                     }
-
-            .${WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS} {
-                font-size: var(--bearingcell-unit-font-size, 0.75em);
-            }
     </style>
     <div id="wrapper">
         <div id="top">
-            <div id="distance"></div>
+            <wt-numberunit id="distance"></wt-numberunit>
         </div>
         <div id="bottom">
             <div id="bottomText">
