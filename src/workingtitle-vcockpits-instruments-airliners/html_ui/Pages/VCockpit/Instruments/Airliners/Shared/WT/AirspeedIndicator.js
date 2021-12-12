@@ -306,7 +306,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 diffAndSetAttribute(dash, "stroke-width", "3");
                 this.speedTrendArrowSVG.appendChild(dash);
             }
-            var stripViewPosX = _left + gradWidth + 2;
+            var stripViewPosX = _left + gradWidth - 1;
             var stripViewPosY = this.stripBorderSize;
             var stripViewWidth = width;
             var stripViewHeight = _height - this.stripBorderSize * 2;
@@ -326,7 +326,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.vMaxStripSVG = document.createElementNS(Avionics.SVG.NS, "g");
                 this.vMaxStripSVG.setAttribute("id", "VMax");
                 {
-                    let stripWidth = 9;
+                    let stripWidth = 11;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
                     diffAndSetAttribute(shape, "fill", "var(--lighter-red)");
                     diffAndSetAttribute(shape, "d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
@@ -336,7 +336,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.stallStripSVG = document.createElementNS(Avionics.SVG.NS, "g");
                 this.stallStripSVG.setAttribute("id", "Stall");
                 {
-                    let stripWidth = 9;
+                    let stripWidth = 11;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
                     diffAndSetAttribute(shape, "fill", "var(--lighter-red)");
                     diffAndSetAttribute(shape, "d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
