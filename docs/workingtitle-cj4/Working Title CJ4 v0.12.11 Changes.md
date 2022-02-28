@@ -1,5 +1,5 @@
-# Working Title CJ4 v0.12.12
-Welcome to the Working Title CJ4 v0.12.12. This version contains compatibility fixes for SimUpdate 8.
+# Working Title CJ4 v0.12.11
+Welcome to the Working Title CJ4 v0.12.11. This version contains a few Quality of Life fixes.
 
 Thanks to everyone, as always, for your contributions! We really love working with you all.
 
@@ -21,8 +21,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Fixes
-- Accomodate for changes in the CAS system for SU8
-- Limit max fuel flow to try to avoid mysterious fuel loss bug
+- Fix aural warnings and chimes playing after plane spawns
+- Fix gear up/down sounds playing at inappropriate times
+- Adjust excessive Standby Attitude Indicator brightness
+- SAI brightness now automatically adjusts to daylight conditions
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.

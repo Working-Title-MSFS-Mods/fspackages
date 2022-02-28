@@ -43,6 +43,8 @@ export class RawDataMapper {
         info.oneWayRunways = [];
         facility.runways.forEach(runway => info.oneWayRunways.push(...Object.assign(new Runway(), runway).splitIfTwoWays()));
 
+        info.frequencies = facility.frequencies;
+
         info.oneWayRunways.sort(RawDataMapper.sortRunways);
         waypoint.infos = info;
       }

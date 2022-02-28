@@ -77,7 +77,7 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 1);
         SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 1);
-        SimVar.SetSimVarValue("L:AS3000_Brightness", "number", 0.85);
+        SimVar.SetSimVarValue("L:AS3000_Brightness", "number", 2.0);
         this._nearest = undefined;
         /** @type {CJ4_FMC_NavigationService} */
         this._navigationService = new CJ4_FMC_NavigationService(this);
@@ -306,7 +306,7 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
     onInputAircraftSpecific(input) {
-        console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
+        // console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
         this.previousInput = this.currentInput;
         this.currentInput = input;
         if (input === "LEGS") {
@@ -371,6 +371,9 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     onInteractionEvent(args) {
+        // hack in support for co pilot keypad
+        args[0] = args[0].replace(/^CJ4_FMC_2/, "CJ4_FMC_1");
+        // console.log("onInteractionEvent args = '" + args + "'");
         super.onInteractionEvent(args);
 
         const apPrefix = "WT_CJ4_AP_";
@@ -766,8 +769,8 @@ class CJ4_FMC extends FMCMainDisplay {
             const mach = SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
             const tsfc = Math.pow(1 + (1.2 * mach), mach) * 0.58; //Inspiration: https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780470117859.app4
 
-            const leftFuelFlow = pphLeft > 5 ? Math.max(thrustLeft * tsfc, 150) : 0;
-            const rightFuelFlow = pphRight > 5 ? Math.max(thrustRight * tsfc, 150) : 0;
+            const leftFuelFlow = Math.min(2500, pphLeft > 5 ? Math.max(thrustLeft * tsfc, 150) : 0);
+            const rightFuelFlow = Math.min(2500, pphRight > 5 ? Math.max(thrustRight * tsfc, 150) : 0);
 
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:1", "pounds per hour", leftFuelFlow);
             SimVar.SetSimVarValue("L:CJ4 FUEL FLOW:2", "pounds per hour", rightFuelFlow);
