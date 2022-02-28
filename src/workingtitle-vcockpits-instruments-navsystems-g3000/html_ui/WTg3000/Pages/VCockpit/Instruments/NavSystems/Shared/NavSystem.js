@@ -1,11 +1,3 @@
-var ScreenState;
-(function (ScreenState) {
-    ScreenState[ScreenState["OFF"] = 0] = "OFF";
-    ScreenState[ScreenState["INIT"] = 1] = "INIT";
-    ScreenState[ScreenState["WAITING_VALIDATION"] = 2] = "WAITING_VALIDATION";
-    ScreenState[ScreenState["ON"] = 3] = "ON";
-    ScreenState[ScreenState["REVERSIONARY"] = 4] = "REVERSIONARY";
-})(ScreenState || (ScreenState = {}));
 class NavSystem extends WT_G3x5_BaseInstrument {
     constructor() {
         super(...arguments);
@@ -37,13 +29,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.forcedAspectRatioSet = false;
         this.forcedAspectRatio = 1;
         this.forcedScreenRatio = 1;
-        this.initDuration = 0;
-        this.hasBeenOff = false;
-        this.isStarted = false;
-        this.needValidationAfterInit = false;
-        this.initAcknowledged = false;
-        this.screenState = ScreenState.OFF;
-        this.reversionaryMode = false;
     }
     get flightPlanManager() { return this.currFlightPlanManager; }
     get instrumentAlias() { return null; }
@@ -74,10 +59,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             this.soundSourceNode = soundSourceNodeElem[0].textContent;
         }
         if (this.instrumentXmlConfig) {
-            let skipValidationAfterInitElem = this.instrumentXmlConfig.getElementsByTagName("SkipValidationAfterInit");
-            if (skipValidationAfterInitElem.length > 0 && this.needValidationAfterInit) {
-                this.needValidationAfterInit = skipValidationAfterInitElem[0].textContent != "True";
-            }
             let styleNode = this.instrumentXmlConfig.getElementsByTagName("Style");
             if (styleNode.length > 0) {
                 diffAndSetAttribute(this.electricity, "displaystyle", styleNode[0].textContent);
@@ -331,11 +312,36 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     }
     reboot() {
         super.reboot();
-        this.startTime = Date.now();
-        this.hasBeenOff = false;
-        this.isStarted = false;
-        this.initAcknowledged = false;
         this.budgetedItemId = 0;
+    }
+    onShutDown() {
+        super.onShutDown();
+        for (let i = 0; i < this.pageGroups.length; i++) {
+            for (let j = 0; j < this.pageGroups[i].pages.length; j++) {
+                this.pageGroups[i].pages[j].onShutDown();
+            }
+        }
+        for (let i = 0; i < this.IndependentsElements.length; i++) {
+            this.IndependentsElements[i].onShutDown();
+        }
+        for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
+            this.eventLinkedPopUpElements[i].onShutDown();
+        }
+    }
+    onPowerOn() {
+        super.onPowerOn();
+        this.budgetedItemId = 0;
+        for (let i = 0; i < this.pageGroups.length; i++) {
+            for (let j = 0; j < this.pageGroups[i].pages.length; j++) {
+                this.pageGroups[i].pages[j].onPowerOn();
+            }
+        }
+        for (let i = 0; i < this.IndependentsElements.length; i++) {
+            this.IndependentsElements[i].onPowerOn();
+        }
+        for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
+            this.eventLinkedPopUpElements[i].onPowerOn();
+        }
     }
     Update() {
         super.Update();
@@ -391,64 +397,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         let factor = 1 / NavSystem._iterations;
         NavSystem.mediumTimeUpdate *= (1 - factor);
         NavSystem.mediumTimeUpdate += factor * t;
-    }
-    updateElectricity() {
-        if (this.isElectricityAvailable()) {
-            if (!this.isStarted) {
-                this.onPowerOn();
-            }
-            if (this.isBootProcedureComplete()) {
-                if (this.reversionaryMode) {
-                    if (this.screenState != ScreenState.REVERSIONARY) {
-                        this.screenState = ScreenState.REVERSIONARY;
-                        if (this.electricity)
-                            diffAndSetAttribute(this.electricity, "state", "Backup");
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 3);
-                    }
-                }
-                else {
-                    if (this.screenState != ScreenState.ON) {
-                        this.screenState = ScreenState.ON;
-                        if (this.electricity)
-                            diffAndSetAttribute(this.electricity, "state", "on");
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 2);
-                    }
-                }
-            }
-            else if (Date.now() - this.startTime > this.initDuration) {
-                if (this.screenState != ScreenState.WAITING_VALIDATION) {
-                    this.screenState = ScreenState.WAITING_VALIDATION;
-                    if (this.electricity)
-                        diffAndSetAttribute(this.electricity, "state", "initWaitingValidation");
-                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
-                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
-                }
-            }
-            else {
-                if (this.screenState != ScreenState.INIT) {
-                    this.screenState = ScreenState.INIT;
-                    if (this.electricity)
-                        diffAndSetAttribute(this.electricity, "state", "init");
-                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
-                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
-                }
-            }
-        }
-        else {
-            this.hasBeenOff = true;
-            if (this.isStarted) {
-                this.onShutDown();
-            }
-            if (this.screenState != ScreenState.OFF) {
-                this.screenState = ScreenState.OFF;
-                if (this.electricity)
-                    diffAndSetAttribute(this.electricity, "state", "off");
-                SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0);
-                SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 0);
-            }
-        }
     }
     updateGroups() {
         for (let i = 0; i < this.IndependentsElements.length; i++) {
@@ -896,58 +844,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
             this.eventLinkedPopUpElements[i].onSoundEnd(_eventId);
         }
-    }
-    onShutDown() {
-        console.log("System Turned Off");
-        this.hasBeenOff = true;
-        this.isStarted = false;
-        this.initAcknowledged = false;
-        for (let i = 0; i < this.pageGroups.length; i++) {
-            for (let j = 0; j < this.pageGroups[i].pages.length; j++) {
-                this.pageGroups[i].pages[j].onShutDown();
-            }
-        }
-        for (let i = 0; i < this.IndependentsElements.length; i++) {
-            this.IndependentsElements[i].onShutDown();
-        }
-        for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
-            this.eventLinkedPopUpElements[i].onShutDown();
-        }
-        this.clearAlwaysList();
-        this.clearPendingCalls();
-    }
-    onPowerOn() {
-        console.log("System Turned ON");
-        this.startTime = Date.now();
-        this.isStarted = true;
-        this.budgetedItemId = 0;
-        for (let i = 0; i < this.pageGroups.length; i++) {
-            for (let j = 0; j < this.pageGroups[i].pages.length; j++) {
-                this.pageGroups[i].pages[j].onPowerOn();
-            }
-        }
-        for (let i = 0; i < this.IndependentsElements.length; i++) {
-            this.IndependentsElements[i].onPowerOn();
-        }
-        for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
-            this.eventLinkedPopUpElements[i].onPowerOn();
-        }
-    }
-    isBootProcedureComplete() {
-        if (!this.hasBeenOff)
-            return true;
-        if ((Date.now() - this.startTime > this.initDuration) && (this.initAcknowledged || !this.needValidationAfterInit))
-            return true;
-        return false;
-    }
-    acknowledgeInit() {
-        this.initAcknowledged = true;
-    }
-    isInReversionaryMode() {
-        return this.reversionaryMode;
-    }
-    wasTurnedOff() {
-        return this.hasBeenOff;
     }
     hasWeatherRadar() {
         if (this.instrumentXmlConfig) {
@@ -2154,6 +2050,7 @@ class Annunciations extends NavSystemElement {
         this.alert = false;
         this.needReload = true;
         this.rootElementName = "Annunciations";
+        this.isAnnunciationsManager = false;
     }
     init(root) {
         this.engineType = Simplane.getEngineType();
@@ -2167,6 +2064,10 @@ class Annunciations extends NavSystemElement {
                     this.addXmlMessage(annunciations[i]);
                 }
             }
+        }
+        if (!SimVar.GetSimVarValue("L:Annunciations_Manager_Initialized", "Bool")) {
+            SimVar.SetSimVarValue("L:Annunciations_Manager_Initialized", "Bool", true);
+            this.isAnnunciationsManager = true;
         }
     }
     onEnter() {
@@ -2202,12 +2103,13 @@ class Annunciations extends NavSystemElement {
                 break;
         }
         msg.baseText = _element.getElementsByTagName("Text")[0].textContent;
-        let conditions = _element.getElementsByTagName("Condition");
-        for (let i = 0; i < conditions.length; i++) {
-            let condition = new XMLCondition();
-            condition.logic = new CompositeLogicXMLElement(this.gps, conditions[i]);
-            condition.suffix = conditions[i].getAttribute("Suffix");
-            msg.conditions.push(condition);
+        for (let i = 0; i < _element.children.length; i++) {
+            if (_element.children[i].tagName == "Condition") {
+                let condition = new XMLCondition();
+                condition.logic = new CompositeLogicXMLElement(this.gps, _element.children[i]);
+                condition.suffix = _element.children[i].getAttribute("Suffix");
+                msg.conditions.push(condition);
+            }
         }
         this.allMessages.push(msg);
     }
@@ -2280,6 +2182,25 @@ class Cabin_Annunciations extends Annunciations {
     }
     onUpdate(_deltaTime) {
         this.FrameCounterForAlternation++;
+        let masterWarningAcknowledged = SimVar.GetSimVarValue("MASTER WARNING ACKNOWLEDGED", "Bool");
+        let masterCautionAcknowledged = SimVar.GetSimVarValue("MASTER CAUTION ACKNOWLEDGED", "Bool");
+        for (let i = 0; i < this.allMessages.length; i++) {
+            let message = this.allMessages[i];
+            if (message.Visible && !message.Acknowledged) {
+                if (message.Type == Annunciation_MessageType.CAUTION && masterCautionAcknowledged) {
+                    this.needReload = true;
+                    message.Acknowledged = true;
+                    if (this.firstAcknowledge && this.isAnnunciationsManager) {
+                        if (this.gps.playInstrumentSound("aural_warning_ok"))
+                            this.firstAcknowledge = false;
+                    }
+                }
+                else if (message.Type == Annunciation_MessageType.WARNING && masterWarningAcknowledged) {
+                    this.needReload = true;
+                    message.Acknowledged = true;
+                }
+            }
+        }
         for (var i = (this.FrameCounterForAlternation & 7); i < this.allMessages.length; i += 8) {
             var message = this.allMessages[i];
             var value = false;
@@ -2296,7 +2217,7 @@ class Cabin_Annunciations extends Annunciations {
                             break;
                         case Annunciation_MessageType.CAUTION:
                             this.displayCaution.push(message);
-                            if (!message.Acknowledged && !this.isPlayingWarningTone && this.gps.isPrimary) {
+                            if (!message.Acknowledged && !this.isPlayingWarningTone && this.isAnnunciationsManager) {
                                 let res = this.gps.playInstrumentSound("tone_caution");
                                 if (res)
                                     this.isPlayingWarningTone = true;
@@ -2363,7 +2284,21 @@ class Cabin_Annunciations extends Annunciations {
                 messages += '<div class="Advisory">' + this.displayAdvisory[i].Text + "</div>";
             }
             this.warningTone = warningOn > 0;
-            if (this.gps.isPrimary) {
+            if (this.isAnnunciationsManager) {
+                let masterWarningActive = SimVar.GetSimVarValue("MASTER WARNING ACTIVE", "Bool");
+                if ((this.displayWarning.length > 0) != masterWarningActive || warningOn) {
+                    SimVar.SetSimVarValue("K:MASTER_WARNING_SET", "Bool", (this.displayWarning.length > 0));
+                }
+                if (this.displayWarning.length > 0 && !warningOn) {
+                    SimVar.SetSimVarValue("K:MASTER_WARNING_ACKNOWLEDGE", "Bool", 1);
+                }
+                let masterCautionActive = SimVar.GetSimVarValue("MASTER CAUTION ACTIVE", "Bool");
+                if ((this.displayCaution.length > 0) != masterCautionActive || cautionOn) {
+                    SimVar.SetSimVarValue("K:MASTER_CAUTION_SET", "Bool", (this.displayCaution.length > 0));
+                }
+                if (this.displayCaution.length > 0 && !cautionOn) {
+                    SimVar.SetSimVarValue("K:MASTER_CAUTION_ACKNOWLEDGE", "Bool", 1);
+                }
                 SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", warningOn);
                 SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", cautionOn);
             }
@@ -2371,7 +2306,7 @@ class Cabin_Annunciations extends Annunciations {
                 diffAndSetHTML(this.annunciations, messages);
             this.needReload = false;
         }
-        if (this.warningTone && !this.isPlayingWarningTone && this.gps.isPrimary) {
+        if (this.warningTone && !this.isPlayingWarningTone && this.isAnnunciationsManager) {
             let res = this.gps.playInstrumentSound("tone_warning");
             if (res)
                 this.isPlayingWarningTone = true;
@@ -2380,25 +2315,10 @@ class Cabin_Annunciations extends Annunciations {
     onEvent(_event) {
         switch (_event) {
             case "Master_Caution_Push":
-                for (let i = 0; i < this.allMessages.length; i++) {
-                    if (this.allMessages[i].Type == Annunciation_MessageType.CAUTION && this.allMessages[i].Visible) {
-                        this.allMessages[i].Acknowledged = true;
-                        this.needReload = true;
-                    }
-                }
+                SimVar.SetSimVarValue("K:MASTER_CAUTION_ACKNOWLEDGE", "Bool", 1);
                 break;
             case "Master_Warning_Push":
-                for (let i = 0; i < this.allMessages.length; i++) {
-                    if (this.allMessages[i].Type == Annunciation_MessageType.WARNING && this.allMessages[i].Visible) {
-                        this.allMessages[i].Acknowledged = true;
-                        this.needReload = true;
-                    }
-                }
-                if (this.needReload && this.firstAcknowledge && this.gps.isPrimary) {
-                    let res = this.gps.playInstrumentSound("aural_warning_ok");
-                    if (res)
-                        this.firstAcknowledge = false;
-                }
+                SimVar.SetSimVarValue("K:MASTER_WARNING_ACKNOWLEDGE", "Bool", 1);
                 break;
         }
     }
@@ -2415,7 +2335,9 @@ class Cabin_Annunciations extends Annunciations {
         this.displayCaution = [];
         this.displayWarning = [];
         this.displayAdvisory = [];
-        if (!this.gps || this.gps.isPrimary) {
+        if (this.isAnnunciationsManager) {
+            SimVar.SetSimVarValue("K:MASTER_WARNING_OFF", "Bool", 1);
+            SimVar.SetSimVarValue("K:MASTER_CAUTION_OFF", "Bool", 1);
             SimVar.SetSimVarValue("L:Generic_Master_Warning_Active", "Bool", 0);
             SimVar.SetSimVarValue("L:Generic_Master_Caution_Active", "Bool", 0);
         }

@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.7.7
+**Fixes**
+- \[Compatibility\] Now compatible with game patch 1.23.11.0 (Sim Update 8).
+
 ### v0.7.6
 **Fixes**
 - \[FPL\] Fixed an error when activating a Direct To without an active flight plan that would cause both the PFD and MFD to freeze.

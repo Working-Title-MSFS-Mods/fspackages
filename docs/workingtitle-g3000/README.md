@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.7.6
+### Latest version: v0.7.7
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.7.6.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.7.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -29,14 +29,9 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
-### Release Highlights for v0.7.6
+### Release Highlights for v0.7.7
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Now compatible with game patch 1.20.6.0 (Sim Update 6).
-
-**Fixes**
-- \[FPL\] Fixed an error when activating a Direct To without an active flight plan that would cause both the PFD and MFD to freeze.
-- \[PFD\] Fixed a bug where the attitude indicator would not update.
-- \[PFD\] The flight path marker is now visible when SVT is enabled.
+- Now compatible with game patch 1.23.11.0 (Sim Update 8).
 
 ### Known Issues
 - \[General\] The sim's load screen no longer waits for avionics to finish loading before starting a flight. Therefore, you may need to wait a few seconds after entering a flight before the avionics finish loading.
@@ -50,7 +45,6 @@ During a flight, you can check your Navigraph account link status in the GTC Dat
 - \[NavMap\] Airport waypoint symbols will only show around a certain geographic distance from the center of the map (this does not apply to airports that are part of the active flight plan). This is due to the way the game searches for airports (the number of results is limited for performance reasons and there is no option to filter the search e.g. by size to reduce the performance penalty).
 - \[Weather Radar\] When NEXRAD is enabled for the navigation map in the right MFD pane, the weather radar display in the left MFD pane will have artifacts. This does not occur with the opposite arrangement (i.e. NEXRAD enabled in left MFD pane, weather radar in right MFD pane). The bug also occurs when enabling NEXRAD for the PFD inset map. A workaround for now is to simply disable NEXRAD or to enable it in the left pane instead of the right (and disable it for the PFD inset map) if you wish to use it in conjunction with the weather radar.
 - \[Misc\] MSFS will take an increased amount of time to fully shut down (up to several minutes) when closing the game after starting a flight that uses the road data package. The game window will still close promptly, but the game process will run in the background and game audio can be heard. The process is not frozen and will eventually shut down on its own, however if you wish to speed up the process, you can manually end-task or end-process MSFS through Task Manager. Disabling world regions for the road data package in the mod configuration file will also speed up the shut down process.
-- \[Misc\] TBM 930: the standby airspeed indicator still redlines at lower speeds than it should. If this bothers you, change the `crossover_speed` setting in `asobo-aircraft-tbm930\SimObjects\Airplanes\Asobo_TBM930\flight_model.cfg` to 0. If you use the TBM improvement mod, you should change the value in the `flight_model.cfg` file found in that mod's folder.
 
 ### FAQ
 - **Q**: I copied the mod folder to my Community folder but don't get any of the new features. What do I do?
