@@ -3053,6 +3053,7 @@ class CJ4_SystemAnnunciations extends Cabin_Annunciations {
         super();
         this.rootElementName = "";
         this.offStart = true;
+        this.warningTone = true;
     }
     init(_root) {
         super.init(_root);
