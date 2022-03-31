@@ -731,9 +731,9 @@ class CJ4_FMC_AtcControlPage {
         this._fmc = fmc;
         this._isDirty = true;
         this._pressAlt = 0;
-		this._identPress = 0;
+		    this._identPress = 0;
         fmc.clearDisplay();
-		
+
         this._transponderMode = 1;
         const modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         if (modeValue == 4) {
@@ -794,12 +794,12 @@ class CJ4_FMC_AtcControlPage {
 
         }
 		
-		if (this._identPress != 0) {
-			let cTime = Math.floor(Date.now() / 1000);
-			if ((cTime - this._identPress) >= 10) {
-				this._identPress = 0;
-			}
-		}
+        if (this._identPress != 0) {
+            let cTime = Math.floor(Date.now() / 1000);
+            if ((cTime - this._identPress) >= 10) {
+              this._identPress = 0;
+            }
+        }
 		
         this._fmc.registerPeriodicPageRefresh(() => {
             this.update();
@@ -808,8 +808,8 @@ class CJ4_FMC_AtcControlPage {
     }
 
     render() {
-		const modeSwitch = this._fmc._templateRenderer.renderSwitch(["ON", "STBY"], this.transponderMode, "blue");
-		let identColor = (this._identPress === 0) ? "white" : "blue";
+		    const modeSwitch = this._fmc._templateRenderer.renderSwitch(["ON", "STBY"], this.transponderMode, "blue");
+		    let identColor = (this._identPress === 0) ? "white" : "blue";
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
             [" ATC1", "ALT REPORT "],
@@ -857,7 +857,7 @@ class CJ4_FMC_AtcControlPage {
 		
 		this._fmc.onLeftInput[1] = () => {
 			SimVar.SetSimVarValue("K:XPNDR_IDENT_ON", "number", 1);
-			this._identPress = Math.floor(Date.now() / 1000);;
+			this._identPress = Math.floor(Date.now() / 1000);
 			this._fmc.requestCall(() => {
 				this.update();
 			});
