@@ -731,8 +731,9 @@ class CJ4_FMC_AtcControlPage {
         this._fmc = fmc;
         this._isDirty = true;
         this._pressAlt = 0;
+		this._identPress = 0;
         fmc.clearDisplay();
-
+		
         this._transponderMode = 1;
         const modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         if (modeValue == 4) {
@@ -755,6 +756,7 @@ class CJ4_FMC_AtcControlPage {
                 return true;
             }.bind(this)
         });
+		
     }
 
     get transponderMode() {
@@ -781,7 +783,7 @@ class CJ4_FMC_AtcControlPage {
         this._freqProxy.atc1 = SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number").toFixed(0).padStart(4, "0");
 
         const pressAlt = SimVar.GetSimVarValue("PRESSURE ALTITUDE", "feet");
-
+		
         if (pressAlt !== this._pressAlt) {
             this._isDirty = true;
             this._pressAlt = " " + pressAlt.toFixed(0).padStart(4);
@@ -791,7 +793,14 @@ class CJ4_FMC_AtcControlPage {
             this.invalidate();
 
         }
-
+		
+		if (this._identPress != 0) {
+			let cTime = Math.floor(Date.now() / 1000);
+			if ((cTime - this._identPress) >= 10) {
+				this._identPress = 0;
+			}
+		}
+		
         this._fmc.registerPeriodicPageRefresh(() => {
             this.update();
             return true;
@@ -799,15 +808,14 @@ class CJ4_FMC_AtcControlPage {
     }
 
     render() {
-
-        const modeSwitch = this._fmc._templateRenderer.renderSwitch(["ON", "STBY"], this.transponderMode, "blue");
-
+		const modeSwitch = this._fmc._templateRenderer.renderSwitch(["ON", "STBY"], this.transponderMode, "blue");
+		let identColor = (this._identPress === 0) ? "white" : "blue";
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
             [" ATC1", "ALT REPORT "],
             [this._freqMap.atc1 + "[green]", "ON[blue]/OFF[s-text disabled]"],
             ["", "", " ALT[white]" + this._pressAlt + "FT[green]"],
-            ["IDENT[s-text disabled]", "TEST[s-text disabled]", "ADC2     [blue s-text]"],
+            ["IDENT["+ identColor +"]", "TEST[s-text disabled]", "ADC2     [blue s-text]"],
             [""],
             [""],
             [" SELECT"],
@@ -819,12 +827,7 @@ class CJ4_FMC_AtcControlPage {
             [""]
         ]);
     }
-    /**
-     *TODO - IDENT BUTTON
-     *   this._fmc.onLeftInput[1] = () => {
-     *       Ident here eventually......
-     *   };
-     */
+
     bindEvents() {
 
         this._fmc.onLeftInput[0] = () => {
@@ -851,7 +854,15 @@ class CJ4_FMC_AtcControlPage {
                 }
             }
         };
-
+		
+		this._fmc.onLeftInput[1] = () => {
+			SimVar.SetSimVarValue("K:XPNDR_IDENT_ON", "number", 1);
+			this._identPress = Math.floor(Date.now() / 1000);;
+			this._fmc.requestCall(() => {
+				this.update();
+			});
+		};
+	
         this._fmc.onLeftInput[4] = () => {
             this.transponderMode = this.transponderMode + 1;
             this._fmc.requestCall(() => {
