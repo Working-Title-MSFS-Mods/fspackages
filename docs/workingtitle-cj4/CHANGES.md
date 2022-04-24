@@ -20,8 +20,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Fixes
-- ...
+## Changes
+- Compatibility with SimUpdate 9
+- Added IDENT functionality on ATC CONTROL page (thanks to @grumpy-anonsaba )
+- Fixed names of payload stations (thanks to @rthom91 )
+- Anti Ice buttons are now mutually exclusive (fixed in stock plane by Asobo)
+- Adjusts SAI auto brightness curve to not be too bright
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
