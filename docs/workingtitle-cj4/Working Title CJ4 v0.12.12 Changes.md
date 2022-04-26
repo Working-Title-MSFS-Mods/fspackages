@@ -1,5 +1,5 @@
-# Working Title CJ4 v0.12.13
-Welcome to the Working Title CJ4 v0.12.13. This version contains compatibility fixes for SimUpdate 9 and some small additions.
+# Working Title CJ4 v0.12.12
+Welcome to the Working Title CJ4 v0.12.12. This version contains compatibility fixes for SimUpdate 8.
 
 Thanks to everyone, as always, for your contributions! We really love working with you all.
 
@@ -20,17 +20,15 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Changes
-- Compatibility with SimUpdate 9
-- Added IDENT functionality on ATC CONTROL page (thanks to @grumpy-anonsaba )
-- Fixed names of payload stations (thanks to @rthom91 )
-- Anti Ice buttons are now mutually exclusive (fixed in stock by Asobo)
-- Adjusted SAI auto brightness curve to not be too bright
-
+## Fixes
+- Accomodate for changes in the CAS system for SU8
+- Limit max fuel flow to try to avoid mysterious fuel loss bug
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
+* The Lower CCP LONG Press does not work for reselecting charts - we will look further at this.
 * B/C button throws an error in the FMC - do not use B/C for now.
+* Some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. Painters should reference our new [Repainter's Guide](https://www.workingtitle.aero/packages/cj4/guides/repainter) for solutions.

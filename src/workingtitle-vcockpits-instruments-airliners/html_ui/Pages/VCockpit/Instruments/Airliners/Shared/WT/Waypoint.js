@@ -696,7 +696,6 @@ class VORInfo extends WayPointInfo {
         });
     }
 }
-VORInfo.readManager = new InstrumentDataReadManager();
 class NDBInfo extends WayPointInfo {
     constructor(_instrument) {
         super(_instrument);
@@ -776,7 +775,6 @@ class NDBInfo extends WayPointInfo {
         });
     }
 }
-NDBInfo.readManager = new InstrumentDataReadManager();
 class IntersectionInfo extends WayPointInfo {
     constructor(_instrument) {
         super(_instrument);
@@ -938,7 +936,6 @@ class IntersectionInfo extends WayPointInfo {
         }
     }
 }
-IntersectionInfo.readManager = new InstrumentDataReadManager();
 IntersectionInfo.longestAirway = 0;
 class Frequency {
     constructor(_name, _mhValue, _bcd16Value, _type) {
