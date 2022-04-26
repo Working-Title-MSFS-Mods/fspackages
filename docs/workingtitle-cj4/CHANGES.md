@@ -24,13 +24,13 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 - Compatibility with SimUpdate 9
 - Added IDENT functionality on ATC CONTROL page (thanks to @grumpy-anonsaba )
 - Fixed names of payload stations (thanks to @rthom91 )
-- Anti Ice buttons are now mutually exclusive (fixed in stock plane by Asobo)
-- Adjusts SAI auto brightness curve to not be too bright
+- Anti Ice buttons are now mutually exclusive (fixed in stock by Asobo)
+- Adjusted SAI auto brightness curve to not be too bright
+
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
 * B/C button throws an error in the FMC - do not use B/C for now.
-* Some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. Painters should reference our new [Repainter's Guide](https://www.workingtitle.aero/packages/cj4/guides/repainter) for solutions.
