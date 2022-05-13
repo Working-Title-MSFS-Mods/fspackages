@@ -417,7 +417,7 @@ class LNavDirector {
     const windCorrection = AutopilotMath.windCorrectionAngle(degreesTrue, planeState.trueAirspeed, currWindDirection, planeState.windSpeed);
 
     let targetHeading = AutopilotMath.normalizeHeading(degreesTrue - windCorrection);
-    targetHeading = GeoMath.correctMagvar(targetHeading, planeState.magVar);
+    targetHeading = AutopilotMath.normalizeHeading(GeoMath.correctMagvar(targetHeading, planeState.magVar));
 
     Coherent.call("HEADING_BUG_SET", 2, targetHeading);
   }
