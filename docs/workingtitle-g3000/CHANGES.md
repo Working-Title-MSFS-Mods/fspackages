@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.7.8
+**Fixes**
+- \[Compatibility\] Removed the custom VFR Map functionality from the mod.
+
 ### v0.7.7
 **Fixes**
 - \[Compatibility\] Now compatible with game patch 1.23.11.0 (Sim Update 8).
