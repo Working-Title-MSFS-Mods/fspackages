@@ -13,5 +13,5 @@ You can keep track of Updates and Progress on Discord [https://discord.com/invit
 Project | Description | Current Version | Documentation
 --------|-------------|-----------------|--------------
 CJ4 | Performance and avionics improvements for the Citation CJ4 | [v0.12.13](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/cj4-v0.12.13) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-cj4)
-G3000 | Fixes and enhancements for the stock G3000 avionics package | [v0.7.7](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/g3000-v0.7.7) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-g3000)
+G3000 | Fixes and enhancements for the stock G3000 avionics package | [v0.7.8](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/g3000-v0.7.8) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-g3000)
 GX | Fixes and enhancements for the stock G3X Touch avionics package | [v0.1.0](https://github.com/Working-Title-MSFS-Mods/fspackages/releases/tag/gx-v0.1.0) | [docs](https://github.com/Working-Title-MSFS-Mods/fspackages/tree/main/docs/workingtitle-gx)

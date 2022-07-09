@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.7.7
+### Latest version: v0.7.8
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.7.7.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.8.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -29,9 +29,9 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
-### Release Highlights for v0.7.7
+### Release Highlights for v0.7.8
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Now compatible with game patch 1.23.11.0 (Sim Update 8).
+- Removed the custom VFR Map functionality from the mod.
 
 ### Known Issues
 - \[General\] The sim's load screen no longer waits for avionics to finish loading before starting a flight. Therefore, you may need to wait a few seconds after entering a flight before the avionics finish loading.
