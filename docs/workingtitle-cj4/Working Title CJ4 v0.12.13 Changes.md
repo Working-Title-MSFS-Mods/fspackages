@@ -1,5 +1,5 @@
-# Working Title CJ4 v0.12.14
-Welcome to the Working Title CJ4 v0.12.14. This version contains a compatibility fix for SimUpdate 10.
+# Working Title CJ4 v0.12.13
+Welcome to the Working Title CJ4 v0.12.13. This version contains compatibility fixes for SimUpdate 9 and some small additions.
 
 Thanks to everyone, as always, for your contributions! We really love working with you all.
 
@@ -21,7 +21,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Changes
-- Compatibility with SimUpdate 10
+- Compatibility with SimUpdate 9
+- Added IDENT functionality on ATC CONTROL page (thanks to @grumpy-anonsaba )
+- Fixed names of payload stations (thanks to @rthom91 )
+- Anti Ice buttons are now mutually exclusive (fixed in stock by Asobo)
+- Adjusted SAI auto brightness curve to not be too bright
+
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
