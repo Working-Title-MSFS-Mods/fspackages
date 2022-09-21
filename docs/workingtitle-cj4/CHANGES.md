@@ -21,7 +21,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 ## Changes
-- Compatibility with SimUpdate 10s
+- Compatibility with SimUpdate 10
 
 ## ⚠️ Known Issues
 * Wing Light Button does not light up.
