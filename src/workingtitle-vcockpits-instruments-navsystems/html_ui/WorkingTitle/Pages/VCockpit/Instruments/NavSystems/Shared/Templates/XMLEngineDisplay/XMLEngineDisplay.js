@@ -1023,7 +1023,7 @@ class XMLCircularGauge extends XMLGauge {
     updateValue(_value) {
         if (_value != this.lastValue) {
             diffAndSetAttribute(this.cursor, "transform", "rotate(" + this.valueToAngle(Math.max(Math.min(_value, this.maxValue), this.minValue)) + " 50 40)");
-            let text = this.textIncrement != 1 ? fastToFixed(Math.round(_value / this.textIncrement) * this.textIncrement, 0) : fastToFixed(_value, 0);
+            let text = this.textIncrement != 1 ? fastToFixed(Math.round(_value / this.textIncrement) * this.textIncrement, this.textPrecision) : fastToFixed(_value, this.textPrecision);
             ;
             diffAndSetText(this.valueText, text);
             this.lastValue = _value;
