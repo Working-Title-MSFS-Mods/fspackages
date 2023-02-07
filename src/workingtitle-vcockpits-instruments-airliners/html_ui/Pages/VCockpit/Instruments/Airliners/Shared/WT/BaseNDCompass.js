@@ -516,8 +516,8 @@ class Jet_NDCompass extends HTMLElement {
                             deviation = -deviation;
 
                         const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
-                        if (navToNavTransferState === 3)
-                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course); //Sets the OBS so the LOC needle gets set to the correct course
+                        if (navToNavTransferState === 3 && source === 1)
+                            SimVar.SetSimVarValue("K:VOR1_SET", "number", beacon.course); //Sets the OBS so the LOC needle gets set to the correct course
 
                         diffAndSetAttribute(this, "course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         diffAndSetAttribute(this, "course_deviation", deviation.toString());
