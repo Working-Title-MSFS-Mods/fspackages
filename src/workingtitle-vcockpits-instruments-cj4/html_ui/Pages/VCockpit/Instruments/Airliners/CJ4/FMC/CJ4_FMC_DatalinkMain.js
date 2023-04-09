@@ -256,7 +256,7 @@ class CJ4_FMC_DatalinkMain {
         fmc.onRightInput[0] = () => { this.handleTafInput(fmc, "1R"); };
         fmc.onRightInput[1] = () => { this.handleTafInput(fmc, "2R"); };
         fmc.onRightInput[2] = () => { this.handleTafInput(fmc, "3R"); };
-        fmc.onRightInput[4] = () => { this.handleTafQuery(fmc); };
+        fmc.onRightInput[4] = () => { if(tafOne !== "----" || tafTwo !== "----" || tafThree !== "----" || tafFour !== "----" || tafFive !== "----" || tafSix !== "----") this.handleTafQuery(fmc); };
         fmc.onLeftInput[5] = () => { _tafReqStatus = ""; isOnSpecialPage = "Page3"; CJ4_FMC_DatalinkMain.ShowPage3(fmc); };
     }
 
@@ -286,12 +286,12 @@ class CJ4_FMC_DatalinkMain {
         let rcvdMetarFive = WTDataStore.get("WT_CJ4_MetarFive", `METAR FOR ${tafFive} UNAVAILABLE`);
         let rcvdMetarSix = WTDataStore.get("WT_CJ4_MetarSix", `METAR FOR ${tafSix} UNAVAILABLE`);
 
-        rcvdTafOne = (rcvdMetarOne.includes("METAR") ? rcvdMetarOne : "METAR " + rcvdMetarOne) + " " + rcvdTafOne;
-        rcvdTafTwo = (rcvdMetarTwo.includes("METAR") ? rcvdMetarTwo : "METAR " + rcvdMetarTwo) + " " + rcvdTafTwo;
-        rcvdTafThree = (rcvdMetarThree.includes("METAR") ? rcvdMetarThree : "METAR " + rcvdMetarThree) + " " + rcvdTafThree;
-        rcvdTafFour = (rcvdMetarFour.includes("METAR") ? rcvdMetarFour : "METAR " + rcvdMetarFour) + " " + rcvdTafFour;
-        rcvdTafFive = (rcvdMetarFive.includes("METAR") ? rcvdMetarFive : "METAR " + rcvdMetarFive) + " " + rcvdTafFive;
-        rcvdTafSix = (rcvdMetarSix.includes("METAR") ? rcvdMetarSix : "METAR " + rcvdMetarSix) + " " + rcvdTafSix;
+        rcvdTafOne = (!rcvdMetarOne.startsWith(tafOne) ? rcvdMetarOne : "METAR " + rcvdMetarOne) + " " + rcvdTafOne;
+        rcvdTafTwo = (!rcvdMetarTwo.startsWith(tafTwo) ? rcvdMetarTwo : "METAR " + rcvdMetarTwo) + " " + rcvdTafTwo;
+        rcvdTafThree = (!rcvdMetarThree.startsWith(tafThree) ? rcvdMetarThree : "METAR " + rcvdMetarThree) + " " + rcvdTafThree;
+        rcvdTafFour = (!rcvdMetarFour.startsWith(tafFour) ? rcvdMetarFour : "METAR " + rcvdMetarFour) + " " + rcvdTafFour;
+        rcvdTafFive = (!rcvdMetarFive.startsWith(tafFive) ? rcvdMetarFive : "METAR " + rcvdMetarFive) + " " + rcvdTafFive;
+        rcvdTafSix = (!rcvdMetarSix.startsWith(tafSix) ? rcvdMetarSix : "METAR " + rcvdMetarSix) + " " + rcvdTafSix;
 
         fmc.registerPeriodicPageRefresh(() => {
 
